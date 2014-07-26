@@ -27,6 +27,9 @@ public abstract class SubLogicPart
 		partRegistry.put(13, PartStateCell.class);
 		partRegistry.put(14, PartRandomizer.class);
 		partRegistry.put(15, PartPulseFormer.class);
+		partRegistry.put(16, PartRSLatch.class);
+		partRegistry.put(17, PartToggleLatch.class);
+		partRegistry.put(18, PartTranspartentLatch.class);
 	}
 	
 	public static int[][][] matrix = new int[][][]{
@@ -1014,6 +1017,26 @@ public abstract class SubLogicPart
 		public PartTranspartentLatch(int x, int y, PartCircuit parent) 
 		{
 			super(x, y, parent);
+		}
+
+		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			super.onInputChange(side);
+			ForgeDirection s2 = Content.rotn(side, getRotation());
+			if(s2 == ForgeDirection.SOUTH || (s2 == ForgeDirection.WEST && getInputFromSide(Content.rotn(ForgeDirection.SOUTH, -getRotation())))) 
+			{
+				if(getInputFromSide(Content.rotn(ForgeDirection.WEST, -getRotation()))) setState(getState() | 128);
+				else setState(getState() & ~128);
+			}
+		}
+
+		@Override
+		public boolean getOutputToSide(ForgeDirection side) 
+		{
+			ForgeDirection s2 = Content.rotn(side, getRotation());
+			if(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH) return (getState() & 128) > 0;
+			return false;
 		}
 	}
 }
