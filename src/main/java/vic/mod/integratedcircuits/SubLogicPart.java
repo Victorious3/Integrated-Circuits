@@ -1012,6 +1012,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
+	//TODO Untested
 	public static class PartTranspartentLatch extends PartGate
 	{
 		public PartTranspartentLatch(int x, int y, PartCircuit parent) 
@@ -1036,6 +1037,57 @@ public abstract class SubLogicPart
 		{
 			ForgeDirection s2 = Content.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH) return (getState() & 128) > 0;
+			return false;
+		}
+	}
+	
+	//TODO Insert the counter here, might get back to it at some point.
+	
+	//TODO Untested
+	public static class PartSynchronizer extends PartGate
+	{
+		public PartSynchronizer(int x, int y, PartCircuit parent) 
+		{
+			super(x, y, parent);
+		}
+
+		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			super.onInputChange(side);
+			ForgeDirection s2 = Content.rotn(side, getRotation());
+			
+			if(s2 == ForgeDirection.SOUTH && getInputFromSide(s2)) setState(getState() & ~896);
+			else if(s2 == ForgeDirection.EAST && !getInputFromSide(Content.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 128);
+			else if(s2 == ForgeDirection.WEST && !getInputFromSide(Content.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 256);
+			
+			if((getState() & 384) >> 7 == 3) 
+			{
+				setState(getState() & ~384);
+				setState(getState() | 512);
+			}
+		}
+
+		@Override
+		public void onUpdateTick()
+		{
+			if(getUpdateFlag())
+			{
+				notifyNeighbours();
+				if((getState() & 512) > 0)
+				{
+					setState(getState() & ~512);
+					setUpdate(true);
+				}
+				else setUpdate(false);
+			}
+		}
+
+		@Override
+		public boolean getOutputToSide(ForgeDirection side) 
+		{
+			ForgeDirection s2 = Content.rotn(side, getRotation());
+			if(s2 == ForgeDirection.NORTH) return (getState() & 512) > 0;
 			return false;
 		}
 	}
