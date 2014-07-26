@@ -1,0 +1,16 @@
+[
+{
+  "modid": "integratedcircuits",
+  "name": "Integrated Circuits",
+  "description": "Some description here, currently missing.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Vic"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
