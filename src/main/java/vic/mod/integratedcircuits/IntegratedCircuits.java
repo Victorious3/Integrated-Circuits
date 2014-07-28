@@ -17,6 +17,8 @@ public class IntegratedCircuits
 	
 	public static ItemCircuit itemCircuit;
 	
+	public static BlockPCBLayout blockPCBLayout;
+	
 	@Instance(modID)
 	public static IntegratedCircuits instance;
     
@@ -29,6 +31,11 @@ public class IntegratedCircuits
     	SubLogicPart.simulation();
     	itemCircuit = new ItemCircuit();
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);
+    	
+    	blockPCBLayout = new BlockPCBLayout();
+    	GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
+    	
+    	GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayout");
     }
     
     @EventHandler

@@ -13,6 +13,6 @@ public class GuiPCBLayout extends GuiContainer
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) 
 	{
-		
+		fontRendererObj.drawString("Test", x, y, 0xFFFFFF);
 	}
 }
