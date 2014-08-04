@@ -7,6 +7,7 @@ import mrtjp.projectred.integration.BundledGateLogic;
 import mrtjp.projectred.integration.BundledGatePart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
@@ -17,7 +18,7 @@ import codechicken.lib.vec.Vector3;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartCircuit extends BundledGatePart
+public class PartCircuit extends BundledGatePart implements ICircuit
 {
 	@SideOnly(Side.CLIENT)
 	public static PartCircuitRenderer renderer = new PartCircuitRenderer();
@@ -44,6 +45,7 @@ public class PartCircuit extends BundledGatePart
 		tier = 2;
 		name = "IC_" + new Random().nextInt(10);
 		genOutput();
+		genMatrix();
 		scheduleTick(0);
     }
 
@@ -62,6 +64,8 @@ public class PartCircuit extends BundledGatePart
 		//My part
 		tier = tag.getShort("tier");
 		name = tag.getString("name");
+		genMatrix();
+		matrix = Misc.readPCBMatrix(tag);
 		genOutput();
 	}
 	
@@ -72,6 +76,7 @@ public class PartCircuit extends BundledGatePart
 		
 		tag.setShort("tier", tier);
 		tag.setString("name", name);
+		Misc.writePCBMatrix(tag, matrix);
 	}
 
 	@Override
@@ -87,6 +92,8 @@ public class PartCircuit extends BundledGatePart
 		//My part
 		tier = packet.readShort();
 		name = packet.readString();
+		genMatrix();
+		matrix = Misc.readPCBMatrix(packet.readNBTTagCompound());
 		genOutput();
 	}
 	
@@ -97,6 +104,9 @@ public class PartCircuit extends BundledGatePart
 		
 		packet.writeShort(tier);
 		packet.writeString(name);
+		NBTTagCompound compound = new NBTTagCompound();
+		Misc.writePCBMatrix(compound, matrix);
+		packet.writeNBTTagCompound(compound);
 	}
 
 	@Override
@@ -197,15 +207,10 @@ public class PartCircuit extends BundledGatePart
 		return (state & mask) > 0;
 	}
 	
-	private void genMatrix(int tier)
+	private void genMatrix()
 	{
 		int s = tier == 1 ? 18 : tier == 2 ? 34 : 68;
 		matrix = new int[s][s][2];
-	}
-	
-	private void loadMatrix(NBTTagCompound compound)
-	{
-		
 	}
 	
 	private void genOutput()
@@ -221,5 +226,24 @@ public class PartCircuit extends BundledGatePart
 			}
 			else output[i] = new byte[]{15};
 		}
+	}
+
+	@Override
+	public int[][][] getMatrix() 
+	{
+		return matrix;
+	}
+
+	@Override
+	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
+	{
+		// TODO Auto-generated method stub
 	}
 }

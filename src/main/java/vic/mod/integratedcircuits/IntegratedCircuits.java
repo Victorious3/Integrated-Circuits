@@ -28,7 +28,6 @@ public class IntegratedCircuits
     @EventHandler
 	public void preInit(FMLPreInitializationEvent event) 
     {
-    	SubLogicPart.simulation();
     	itemCircuit = new ItemCircuit();
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);
     	
@@ -41,7 +40,7 @@ public class IntegratedCircuits
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
-    	MultiPartRegistry.registerParts(new Content(), new String[]{partCircuit});
+    	MultiPartRegistry.registerParts(new Misc(), new String[]{partCircuit});
     	proxy.initialize();
     }
 }

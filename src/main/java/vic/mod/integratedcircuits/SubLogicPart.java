@@ -1,6 +1,5 @@
 package vic.mod.integratedcircuits;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -31,83 +30,12 @@ public abstract class SubLogicPart
 		partRegistry.put(17, PartToggleLatch.class);
 		partRegistry.put(18, PartTranspartentLatch.class);
 	}
-	
-	public static int[][][] matrix = new int[][][]{
-		new int[][]
-		{
-			//<-- North
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 2, 1, 1, 15, 1, 1, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-		},
-		new int[][]
-		{
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-		}
-	};
-	
-	public static void simulation()
+
+	public static SubLogicPart getPart(int x, int y, ICircuit parent)
 	{
-		getPart(4, 3).onPlaced();
-		print();
-		tick();
-		print();
-	}
-	
-	private static void tick()
-	{
-		for(int x = 0; x < matrix[0].length; x++)
-		{
-			for(int y = 0; y < matrix[0][x].length; y++)
-			{
-				if(matrix[0][x][y] != 0) getPart(x, y).onUpdateTick();
-			}
-		}
-	}
-	
-	private static SubLogicPart getPart(int x, int y)
-	{
-		if(matrix[0][x][y] == 0) return new PartNull(x, y, null);
+		if(parent.getMatrix()[0][x][y] == 0) return new PartNull(x, y, parent);
 		try {
-			return partRegistry.get(matrix[0][x][y]).getConstructor(int.class, int.class, PartCircuit.class).newInstance(x, y, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public static void print()
-	{
-		for(int[] i1 : matrix[1])
-		{
-			System.out.println(Arrays.toString(i1));
-		}
-		System.out.println();
-	}
-	
-	//------- END OF TESTING --------
-	
-	public static SubLogicPart getPart(int x, int y, PartCircuit parent)
-	{
-		if(parent.matrix[0][x][y] == 0) return new PartNull(x, y, parent);
-		try {
-			return partRegistry.get(parent.matrix[0][x][y]).getConstructor(int.class, int.class, PartCircuit.class).newInstance(x, y, parent);
+			return partRegistry.get(parent.getMatrix()[0][x][y]).getConstructor(int.class, int.class, ICircuit.class).newInstance(x, y, parent);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -115,7 +43,7 @@ public abstract class SubLogicPart
 		return null;
 	}
 	
-	public SubLogicPart(int x, int y, PartCircuit parent)
+	public SubLogicPart(int x, int y, ICircuit parent)
 	{
 		this.x = x;
 		this.y = y;
@@ -124,7 +52,7 @@ public abstract class SubLogicPart
 	
 	private final int x;
 	private final int y;
-	private final PartCircuit parent;
+	private final ICircuit parent;
 	
 	public void onPlaced()
 	{
@@ -145,16 +73,19 @@ public abstract class SubLogicPart
 		return y;
 	}
 	
+	public final ICircuit getParent()
+	{
+		return parent;
+	}
+	
 	public final int getState()
 	{
-		//TODO
-		return matrix[1][getX()][getY()];
+		return parent.getMatrix()[1][getX()][getY()];
 	}
 	
 	public final void setState(int state)
 	{
-		//TODO
-		matrix[1][getX()][getY()] = state;
+		parent.getMatrix()[1][getX()][getY()] = state;
 	}
 	
 	public boolean canConnectToSide(ForgeDirection side)
@@ -201,7 +132,7 @@ public abstract class SubLogicPart
 	public final SubLogicPart getNeighbourOnSide(ForgeDirection side)
 	{	
 		//TODO
-		return getPart(x + side.offsetX, y + side.offsetZ);
+		return getPart(x + side.offsetX, y + side.offsetZ, parent);
 	}
 	
 	public final boolean getInput()
@@ -214,18 +145,24 @@ public abstract class SubLogicPart
 	
 	public static class PartNull extends SubLogicPart
 	{
-		public PartNull(int x, int y, PartCircuit parent) 
+		public PartNull(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
 
 		@Override
-		public void onInputChange(ForgeDirection side) {}	
+		public void onInputChange(ForgeDirection side) {}
+
+		@Override
+		public boolean canConnectToSide(ForgeDirection side) 
+		{
+			return false;
+		}
 	}
 	
 	public static class PartWire extends SubLogicPart
 	{
-		public PartWire(int x, int y, PartCircuit parent) 
+		public PartWire(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -246,7 +183,7 @@ public abstract class SubLogicPart
 	
 	public static class PartTorch extends SubLogicPart
 	{
-		public PartTorch(int x, int y, PartCircuit parent) 
+		public PartTorch(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -262,7 +199,7 @@ public abstract class SubLogicPart
 	{
 		private boolean updateLater = false;
 		
-		public PartGate(int x, int y, PartCircuit parent) 
+		public PartGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -319,7 +256,7 @@ public abstract class SubLogicPart
 	
 	public static class Part3I1O extends PartGate
 	{
-		public Part3I1O(int x, int y, PartCircuit parent) 
+		public Part3I1O(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -339,7 +276,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH) return true;
 			int i = (getState() & 384) >> 7;
 			if(s2 == ForgeDirection.EAST && i == 1) return false;
@@ -351,14 +288,15 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			if(s2 != ForgeDirection.NORTH) super.onInputChange(side);
+			ForgeDirection s2 = Misc.rotn(side, getRotation());		
+			super.onInputChange(side);
+			if(s2 == ForgeDirection.NORTH) setUpdate(false);
 		}
 	}
 	
 	public static class Part1I3O extends PartGate
 	{
-		public Part1I3O(int x, int y, PartCircuit parent) 
+		public Part1I3O(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -378,14 +316,15 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			if(s2 == ForgeDirection.NORTH) super.onInputChange(side);
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			super.onInputChange(side);
+			if(s2 != ForgeDirection.NORTH) setUpdate(false);
 		}
 		
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH) return true;
 			int i = (getState() & 896) >> 7;
 			//TODO I bet there would be a better solution for this.
@@ -398,7 +337,7 @@ public abstract class SubLogicPart
 	
 	public static class PartANDGate extends Part3I1O
 	{
-		public PartANDGate(int x, int y, PartCircuit parent) 
+		public PartANDGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -406,10 +345,10 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			ForgeDirection s3 = Content.rotn(ForgeDirection.SOUTH, -getRotation());
-			ForgeDirection s4 = Content.rotn(ForgeDirection.EAST, -getRotation());
-			ForgeDirection s5 = Content.rotn(ForgeDirection.WEST, -getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			ForgeDirection s3 = Misc.rotn(ForgeDirection.SOUTH, -getRotation());
+			ForgeDirection s4 = Misc.rotn(ForgeDirection.EAST, -getRotation());
+			ForgeDirection s5 = Misc.rotn(ForgeDirection.WEST, -getRotation());
 			return s2 == ForgeDirection.NORTH 
 				&& (!canConnectToSide(s3) || getInputFromSide(s3))
 				&& (!canConnectToSide(s4) || getInputFromSide(s4))
@@ -419,7 +358,7 @@ public abstract class SubLogicPart
 	
 	public static class PartORGate extends Part3I1O
 	{
-		public PartORGate(int x, int y, PartCircuit parent) 
+		public PartORGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -427,10 +366,10 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			ForgeDirection s3 = Content.rotn(ForgeDirection.SOUTH, -getRotation());
-			ForgeDirection s4 = Content.rotn(ForgeDirection.EAST, -getRotation());
-			ForgeDirection s5 = Content.rotn(ForgeDirection.WEST, -getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			ForgeDirection s3 = Misc.rotn(ForgeDirection.SOUTH, -getRotation());
+			ForgeDirection s4 = Misc.rotn(ForgeDirection.EAST, -getRotation());
+			ForgeDirection s5 = Misc.rotn(ForgeDirection.WEST, -getRotation());
 			return s2 == ForgeDirection.NORTH &&
 				((!canConnectToSide(s3) || getInputFromSide(s3))
 				|| (!canConnectToSide(s4) || getInputFromSide(s4))
@@ -440,7 +379,7 @@ public abstract class SubLogicPart
 	
 	public static class PartNORGate extends PartORGate
 	{
-		public PartNORGate(int x, int y, PartCircuit parent) 
+		public PartNORGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -454,7 +393,7 @@ public abstract class SubLogicPart
 	
 	public static class PartNANDGate extends PartANDGate
 	{
-		public PartNANDGate(int x, int y, PartCircuit parent) 
+		public PartNANDGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -468,7 +407,7 @@ public abstract class SubLogicPart
 	
 	public static class PartBufferGate extends Part1I3O
 	{
-		public PartBufferGate(int x, int y, PartCircuit parent) 
+		public PartBufferGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -476,15 +415,15 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			if(s2 != ForgeDirection.NORTH) return getInputFromSide(Content.rotn(ForgeDirection.NORTH, -getRotation()));
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			if(s2 != ForgeDirection.NORTH) return getInputFromSide(Misc.rotn(ForgeDirection.NORTH, -getRotation()));
 			return false;
 		}
 	}
 	
 	public static class PartNOTGate extends Part1I3O
 	{
-		public PartNOTGate(int x, int y, PartCircuit parent) 
+		public PartNOTGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -492,15 +431,15 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			if(s2 != ForgeDirection.NORTH) return !getInputFromSide(Content.rotn(ForgeDirection.NORTH, -getRotation()));
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			if(s2 != ForgeDirection.NORTH) return !getInputFromSide(Misc.rotn(ForgeDirection.NORTH, -getRotation()));
 			return false;
 		}
 	}
 
 	public static class PartXORGate extends PartGate
 	{
-		public PartXORGate(int x, int y, PartCircuit parent) 
+		public PartXORGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -508,22 +447,22 @@ public abstract class SubLogicPart
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			return Content.rotn(side, getRotation()) != ForgeDirection.SOUTH;
+			return Misc.rotn(side, getRotation()) != ForgeDirection.SOUTH;
 		}
 
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection fd = Content.rotn(side, getRotation());
+			ForgeDirection fd = Misc.rotn(side, getRotation());
 			return fd == ForgeDirection.NORTH &&
-				(getInputFromSide(Content.rotn(ForgeDirection.EAST, -getRotation()))
-				!= getInputFromSide(Content.rotn(ForgeDirection.WEST, -getRotation())));
+				(getInputFromSide(Misc.rotn(ForgeDirection.EAST, -getRotation()))
+				!= getInputFromSide(Misc.rotn(ForgeDirection.WEST, -getRotation())));
 		}	
 	}
 	
 	public static class PartXNORGate extends PartXORGate
 	{
-		public PartXNORGate(int x, int y, PartCircuit parent) 
+		public PartXNORGate(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -537,7 +476,7 @@ public abstract class SubLogicPart
 	
 	public static class PartMultiplexer extends PartGate
 	{
-		public PartMultiplexer(int x, int y, PartCircuit parent) 
+		public PartMultiplexer(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -546,23 +485,23 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			if(Content.rotn(side, getRotation()) == ForgeDirection.NORTH) setUpdate(false);
+			if(Misc.rotn(side, getRotation()) == ForgeDirection.NORTH) setUpdate(false);
 		}
 
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(Content.rotn(side, getRotation()) != ForgeDirection.NORTH) return false;
-			if(getInputFromSide(Content.rotn(ForgeDirection.SOUTH, -getRotation())))
-				return getInputFromSide(Content.rotn(ForgeDirection.EAST, -getRotation()));
-			else return getInputFromSide(Content.rotn(ForgeDirection.WEST, -getRotation()));
+			if(Misc.rotn(side, getRotation()) != ForgeDirection.NORTH) return false;
+			if(getInputFromSide(Misc.rotn(ForgeDirection.SOUTH, -getRotation())))
+				return getInputFromSide(Misc.rotn(ForgeDirection.EAST, -getRotation()));
+			else return getInputFromSide(Misc.rotn(ForgeDirection.WEST, -getRotation()));
 		}	
 	}
 
 	/** Uses 8 bits for the delay. 255 ticks = 12.75 seconds*/
 	public static abstract class PartDelayedAction extends PartGate
 	{
-		public PartDelayedAction(int x, int y, PartCircuit parent) 
+		public PartDelayedAction(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -606,7 +545,7 @@ public abstract class SubLogicPart
 	
 	public static class PartRepeater extends PartDelayedAction
 	{
-		public PartRepeater(int x, int y, PartCircuit parent) 
+		public PartRepeater(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -649,14 +588,14 @@ public abstract class SubLogicPart
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			return s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH;
 		}
 		
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 != ForgeDirection.SOUTH) return false;
 			return getCurrentDelay() > 0 ? (getState() & 32768) > 0 : (getState() & 32768) == 0;
 		}
@@ -678,7 +617,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			if(Content.rotn(side, getRotation()) != ForgeDirection.NORTH) return;
+			if(Misc.rotn(side, getRotation()) != ForgeDirection.NORTH) return;
 			if(getCurrentDelay() != 0) super.onInputChange(side);
 			else
 			{
@@ -694,7 +633,7 @@ public abstract class SubLogicPart
 	
 	public static class PartTimer extends PartDelayedAction
 	{
-		public PartTimer(int x, int y, PartCircuit parent) 
+		public PartTimer(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -723,7 +662,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			if(Content.rotn(side, getRotation()) == ForgeDirection.SOUTH) return;
+			if(Misc.rotn(side, getRotation()) == ForgeDirection.SOUTH) return;
 			super.onInputChange(side);
 			if(getInputFromSide(side))
 			{
@@ -745,14 +684,14 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(Content.rotn(side, getRotation()) == ForgeDirection.NORTH) return false;
+			if(Misc.rotn(side, getRotation()) == ForgeDirection.NORTH) return false;
 			return (getState() & 32768) > 0;
 		}		
 	}
 	
 	public static class PartSequencer extends PartTimer
 	{
-		public PartSequencer(int x, int y, PartCircuit parent) 
+		public PartSequencer(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -769,7 +708,7 @@ public abstract class SubLogicPart
 			if((getState() & 32768) == 0)
 			{
 				ForgeDirection fd = ForgeDirection.getOrientation(((getState() & 50331648) >> 24) + 2);
-				fd = Content.rot(fd);
+				fd = Misc.rot(fd);
 				setState(getState() & ~50331648 | (fd.ordinal() - 2) << 24); 
 			}
 			super.onDelay();
@@ -778,7 +717,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(ForgeDirection.getOrientation(((getState() & 50331648) >> 24) + 2) == Content.rotn(side, getRotation()))
+			if(ForgeDirection.getOrientation(((getState() & 50331648) >> 24) + 2) == Misc.rotn(side, getRotation()))
 				return (getState() & 32768) > 0;
 			else return false;
 		}
@@ -786,7 +725,7 @@ public abstract class SubLogicPart
 	
 	public static class PartStateCell extends PartDelayedAction
 	{
-		public PartStateCell(int x, int y, PartCircuit parent) 
+		public PartStateCell(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -811,7 +750,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH && (getState() & f1) > 0) return true;
 			if(s2 == ForgeDirection.EAST && (getState() & f2) > 0) return true;
 			return false;
@@ -839,7 +778,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.WEST)
 			{
 				super.onInputChange(side);
@@ -858,7 +797,7 @@ public abstract class SubLogicPart
 	//TODO Untested
 	public static class PartRandomizer extends PartDelayedAction
 	{
-		public PartRandomizer(int x, int y, PartCircuit parent) 
+		public PartRandomizer(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -887,8 +826,8 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(getInputFromSide(Content.rotn(ForgeDirection.NORTH, -getRotation()))) return false;
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			if(getInputFromSide(Misc.rotn(ForgeDirection.NORTH, -getRotation()))) return false;
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH) return false;
 			int rand = (getState() & 229376) >> 15;
 			if(s2 == ForgeDirection.EAST && (rand >> 2 & 1) == 1) return true;
@@ -901,7 +840,7 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 != ForgeDirection.NORTH) return;
 			if(!getInputFromSide(side)) setUpdate(false);
 		}
@@ -909,7 +848,7 @@ public abstract class SubLogicPart
 	
 	public static class PartPulseFormer extends PartGate
 	{
-		public PartPulseFormer(int x, int y, PartCircuit parent) 
+		public PartPulseFormer(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -918,14 +857,14 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			if((Content.rotn(side, getRotation()) != ForgeDirection.NORTH) || !getInputFromSide(side)) setUpdate(false);
+			if((Misc.rotn(side, getRotation()) != ForgeDirection.NORTH) || !getInputFromSide(side)) setUpdate(false);
 			notifyNeighbours();
 		}
 
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection f2 = Content.rotn(side, getRotation());
+			ForgeDirection f2 = Misc.rotn(side, getRotation());
 			if(f2 != ForgeDirection.SOUTH) return false;
 			return getUpdateFlag();
 		}	
@@ -933,7 +872,7 @@ public abstract class SubLogicPart
 	
 	public static class PartToggleLatch extends PartGate
 	{
-		public PartToggleLatch(int x, int y, PartCircuit parent) 
+		public PartToggleLatch(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -949,7 +888,7 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if((s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH))
 			{
 				if(getInputFromSide(side)) setState(getState() ^ 128);
@@ -960,7 +899,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.EAST) return (getState() & 128) > 0;
 			if(s2 == ForgeDirection.WEST) return (getState() & 128) == 0;
 			return false;
@@ -970,7 +909,7 @@ public abstract class SubLogicPart
 	//TODO Untested
 	public static class PartRSLatch extends PartGate
 	{
-		public PartRSLatch(int x, int y, PartCircuit parent) 
+		public PartRSLatch(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -991,7 +930,7 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(!(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH)) 
 			{
 				setUpdate(false);
@@ -1004,8 +943,8 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			if((getState() & 512) > 0) s2 = Content.rotn(s2, 2);
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			if((getState() & 512) > 0) s2 = Misc.rotn(s2, 2);
 			if((s2 == ForgeDirection.EAST || (s2 == ForgeDirection.NORTH && (getState() & 256) > 0)) && (getState() & 128) > 0) return true;
 			if((s2 == ForgeDirection.WEST || (s2 == ForgeDirection.SOUTH && (getState() & 256) > 0)) && (getState() & 128) == 0) return true;
 			return false;
@@ -1015,7 +954,7 @@ public abstract class SubLogicPart
 	//TODO Untested
 	public static class PartTranspartentLatch extends PartGate
 	{
-		public PartTranspartentLatch(int x, int y, PartCircuit parent) 
+		public PartTranspartentLatch(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -1024,10 +963,10 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = Content.rotn(side, getRotation());
-			if(s2 == ForgeDirection.SOUTH || (s2 == ForgeDirection.WEST && getInputFromSide(Content.rotn(ForgeDirection.SOUTH, -getRotation())))) 
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			if(s2 == ForgeDirection.SOUTH || (s2 == ForgeDirection.WEST && getInputFromSide(Misc.rotn(ForgeDirection.SOUTH, -getRotation())))) 
 			{
-				if(getInputFromSide(Content.rotn(ForgeDirection.WEST, -getRotation()))) setState(getState() | 128);
+				if(getInputFromSide(Misc.rotn(ForgeDirection.WEST, -getRotation()))) setState(getState() | 128);
 				else setState(getState() & ~128);
 			}
 		}
@@ -1035,7 +974,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH) return (getState() & 128) > 0;
 			return false;
 		}
@@ -1046,7 +985,7 @@ public abstract class SubLogicPart
 	//TODO Untested
 	public static class PartSynchronizer extends PartGate
 	{
-		public PartSynchronizer(int x, int y, PartCircuit parent) 
+		public PartSynchronizer(int x, int y, ICircuit parent) 
 		{
 			super(x, y, parent);
 		}
@@ -1055,11 +994,11 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			
 			if(s2 == ForgeDirection.SOUTH && getInputFromSide(s2)) setState(getState() & ~896);
-			else if(s2 == ForgeDirection.EAST && !getInputFromSide(Content.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 128);
-			else if(s2 == ForgeDirection.WEST && !getInputFromSide(Content.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 256);
+			else if(s2 == ForgeDirection.EAST && !getInputFromSide(Misc.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 128);
+			else if(s2 == ForgeDirection.WEST && !getInputFromSide(Misc.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 256);
 			
 			if((getState() & 384) >> 7 == 3) 
 			{
@@ -1086,7 +1025,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = Content.rotn(side, getRotation());
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH) return (getState() & 512) > 0;
 			return false;
 		}

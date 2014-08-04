@@ -19,7 +19,6 @@ public class BlockPCBLayout extends BlockContainer
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) 
 	{
-		System.out.println("DEVBUG");
 		player.openGui(IntegratedCircuits.instance, 0, world, x, y, z);
 		return true;
 	}
@@ -27,6 +26,8 @@ public class BlockPCBLayout extends BlockContainer
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) 
 	{
-		return new TileEntityPCBLayout();
+		TileEntityPCBLayout te = new TileEntityPCBLayout();
+		te.setup(32, 32);
+		return te;
 	}
 }
