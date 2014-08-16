@@ -26,7 +26,7 @@ public class IntegratedCircuits
 	public static CommonProxy proxy;
 
     @EventHandler
-	public void preInit(FMLPreInitializationEvent event) 
+	public void preInit(FMLPreInitializationEvent event)
     {
     	itemCircuit = new ItemCircuit();
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);

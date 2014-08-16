@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -29,6 +30,8 @@ public abstract class SubLogicPart
 		partRegistry.put(16, PartRSLatch.class);
 		partRegistry.put(17, PartToggleLatch.class);
 		partRegistry.put(18, PartTranspartentLatch.class);
+		partRegistry.put(19, PartXORGate.class);
+		partRegistry.put(20, PartXNORGate.class);
 	}
 
 	public static SubLogicPart getPart(int x, int y, ICircuit parent)
@@ -71,6 +74,16 @@ public abstract class SubLogicPart
 	public final int getY()
 	{
 		return y;
+	}
+	
+	public String getName()
+	{
+		return getClass().getSimpleName().substring(4);
+	}
+	
+	public ArrayList<String> getInformation() 
+	{
+		return new ArrayList<String>();
 	}
 	
 	public final ICircuit getParent()
@@ -229,7 +242,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onClick(int button, boolean shift) 
 		{
-			if(button == 1)
+			if(button == 0 && !shift)
 			{
 				int rot = getRotation() + 1;
 				setRotation(rot > 3 ? 0 : rot);
@@ -265,7 +278,7 @@ public abstract class SubLogicPart
 		public void onClick(int button, boolean shift) 
 		{
 			super.onClick(button, shift);
-			if(button == 1 && shift)
+			if(button == 0 && shift)
 			{
 				int i1 = (getState() & 384) >> 7;
 				i1 = i1 + 1 > 3 ? 0 : i1 + 1;
@@ -318,7 +331,7 @@ public abstract class SubLogicPart
 		{
 			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			super.onInputChange(side);
-			if(s2 != ForgeDirection.NORTH) setUpdate(false);
+			if(s2 != ForgeDirection.SOUTH) setUpdate(false);
 		}
 		
 		@Override
@@ -387,7 +400,9 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			return !super.getOutputToSide(side);
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
+			return false;
 		}
 	}
 	
@@ -401,7 +416,9 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			return !super.getOutputToSide(side);
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
+			return false;
 		}
 	}
 	
@@ -416,7 +433,7 @@ public abstract class SubLogicPart
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = Misc.rotn(side, getRotation());
-			if(s2 != ForgeDirection.NORTH) return getInputFromSide(Misc.rotn(ForgeDirection.NORTH, -getRotation()));
+			if(s2 != ForgeDirection.SOUTH) return getInputFromSide(Misc.rotn(ForgeDirection.SOUTH, -getRotation()));
 			return false;
 		}
 	}
@@ -432,7 +449,7 @@ public abstract class SubLogicPart
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = Misc.rotn(side, getRotation());
-			if(s2 != ForgeDirection.NORTH) return !getInputFromSide(Misc.rotn(ForgeDirection.NORTH, -getRotation()));
+			if(s2 != ForgeDirection.SOUTH) return !getInputFromSide(Misc.rotn(ForgeDirection.SOUTH, -getRotation()));
 			return false;
 		}
 	}
@@ -470,7 +487,9 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			return !super.getOutputToSide(side);
+			ForgeDirection s2 = Misc.rotn(side, getRotation());
+			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
+			return false;
 		}
 	}
 	
@@ -566,7 +585,7 @@ public abstract class SubLogicPart
 		public void onClick(int button, boolean shift) 
 		{
 			super.onClick(button, shift);
-			if(button == 1 && shift)
+			if(button == 0 && shift)
 			{
 				int delay = getDelay();
 				int newDelay = 0;
@@ -579,9 +598,9 @@ public abstract class SubLogicPart
 				case 32 : delay = 64; break;
 				case 64 : delay = 128; break;
 				case 128 : delay = 255; break;
-				case 255 : delay = 0; break;
+				default : delay = 2; break;
 				}
-				setState((getState() & 16711680) | delay);
+				setState((getState() & ~16711680) | delay << 16);
 			}
 		}
 
@@ -629,6 +648,14 @@ public abstract class SubLogicPart
 				}
 			}
 		}
+
+		@Override
+		public ArrayList<String> getInformation() 
+		{
+			ArrayList<String> list = super.getInformation();
+			list.add("Delay: " + getDelay());
+			return list;
+		}	
 	}
 	
 	public static class PartTimer extends PartDelayedAction
@@ -881,7 +908,7 @@ public abstract class SubLogicPart
 		public void onClick(int button, boolean shift) 
 		{
 			super.onClick(button, shift);
-			if(button == 1 && shift) setState(getState() ^ 128); 
+			if(button == 0 && shift) setState(getState() ^ 128); 
 		}
 
 		@Override
@@ -918,7 +945,7 @@ public abstract class SubLogicPart
 		public void onClick(int button, boolean shift) 
 		{
 			super.onClick(button, shift);
-			if(button == 1 && shift)
+			if(button == 0 && shift)
 			{
 				int state = (getState() & 768) >> 8;
 				state = state++ > 3 ? 0 : state++;
