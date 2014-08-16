@@ -6,9 +6,11 @@ import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
+import com.google.common.collect.HashBiMap;
+
 public abstract class SubLogicPart
 {
-	private static HashMap<Integer, Class<? extends SubLogicPart>> partRegistry = new HashMap<Integer, Class<? extends SubLogicPart>>();
+	private static HashBiMap<Integer, Class<? extends SubLogicPart>> partRegistry = HashBiMap.create(new HashMap<Integer, Class<? extends SubLogicPart>>());
 	
 	static 
 	{
@@ -32,6 +34,8 @@ public abstract class SubLogicPart
 		partRegistry.put(18, PartTranspartentLatch.class);
 		partRegistry.put(19, PartXORGate.class);
 		partRegistry.put(20, PartXNORGate.class);
+		partRegistry.put(21, PartSynchronizer.class);
+		partRegistry.put(22, PartNullCell.class);
 	}
 
 	public static SubLogicPart getPart(int x, int y, ICircuit parent)
@@ -44,6 +48,13 @@ public abstract class SubLogicPart
 		}
 		
 		return null;
+	}
+	
+	public static void setPart(int x, int y, ICircuit parent, Class<? extends SubLogicPart> part)
+	{
+		if(part == null) part = PartNull.class;
+		parent.getMatrix()[0][x][y] = partRegistry.inverse().get(part);
+		getPart(x, y, parent).onPlaced();
 	}
 	
 	public SubLogicPart(int x, int y, ICircuit parent)
@@ -1055,6 +1066,28 @@ public abstract class SubLogicPart
 			ForgeDirection s2 = Misc.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH) return (getState() & 512) > 0;
 			return false;
+		}
+	}
+	
+	//If I ever loose this file, I'll totally be doomed.
+	public static class PartNullCell extends SubLogicPart
+	{
+		public PartNullCell(int x, int y, ICircuit parent) 
+		{
+			super(x, y, parent);
+		}
+
+		@Override
+		public boolean getOutputToSide(ForgeDirection side) 
+		{
+			return getInputFromSide(side.getOpposite()) && !getInputFromSide(side);
+		}
+		
+		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			super.onInputChange(side);
+			notifyNeighbours();
 		}
 	}
 }
