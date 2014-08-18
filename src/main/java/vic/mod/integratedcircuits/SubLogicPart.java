@@ -50,10 +50,11 @@ public abstract class SubLogicPart
 		return null;
 	}
 	
-	public static void setPart(int x, int y, ICircuit parent, Class<? extends SubLogicPart> part)
+	public static void setPart(int x, int y, ICircuit parent, SubLogicPart part)
 	{
-		if(part == null) part = PartNull.class;
-		parent.getMatrix()[0][x][y] = partRegistry.inverse().get(part);
+		if(part == null) part = new PartNull(x, y, parent);
+		parent.getMatrix()[0][x][y] = partRegistry.inverse().get(part.getClass());
+		parent.getMatrix()[1][x][y] = part.getState();
 		getPart(x, y, parent).onPlaced();
 	}
 	
@@ -70,12 +71,13 @@ public abstract class SubLogicPart
 	
 	public void onPlaced()
 	{
+		updateInput();
 		notifyNeighbours();
 	}
 	
 	public void onUpdateTick(){}
 	
-	public void onClick(int button, boolean shift){}
+	public void onClick(int button, boolean ctrl){}
 	
 	public final int getX()
 	{
@@ -126,6 +128,11 @@ public abstract class SubLogicPart
 	
 	public void onInputChange(ForgeDirection side)
 	{
+		updateInput();
+	}
+	
+	public void updateInput()
+	{
 		int newState = 0;
 		//Check every side to update the internal buffer.
 		newState |= (getNeighbourOnSide(ForgeDirection.NORTH).getOutputToSide(ForgeDirection.NORTH.getOpposite()) ? 1 : 0) << 3;
@@ -155,7 +162,6 @@ public abstract class SubLogicPart
 	
 	public final SubLogicPart getNeighbourOnSide(ForgeDirection side)
 	{	
-		//TODO
 		return getPart(x + side.offsetX, y + side.offsetZ, parent);
 	}
 	
@@ -202,6 +208,25 @@ public abstract class SubLogicPart
 		{
 			super.onInputChange(side);
 			notifyNeighbours();
+		}
+		
+		public int getColor()
+		{
+			return (getState() & ~16) >> 5;
+		}
+
+		@Override
+		public boolean canConnectToSide(ForgeDirection side) 
+		{
+			SubLogicPart part = getNeighbourOnSide(side);
+			if(part instanceof PartWire)
+			{
+				int pcolor = ((PartWire)part).getColor();
+				int color = getColor();
+				if(pcolor == 0 || color == 0) return true;
+				return color == pcolor;
+			}
+			return true;
 		}
 	}
 	
@@ -251,9 +276,9 @@ public abstract class SubLogicPart
 		}
 		
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
-			if(button == 0 && !shift)
+			if(button == 0 && !ctrl)
 			{
 				int rot = getRotation() + 1;
 				setRotation(rot > 3 ? 0 : rot);
@@ -286,10 +311,10 @@ public abstract class SubLogicPart
 		}
 		
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
-			super.onClick(button, shift);
-			if(button == 0 && shift)
+			super.onClick(button, ctrl);
+			if(button == 0 && ctrl)
 			{
 				int i1 = (getState() & 384) >> 7;
 				i1 = i1 + 1 > 3 ? 0 : i1 + 1;
@@ -326,10 +351,10 @@ public abstract class SubLogicPart
 		}
 		
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
-			super.onClick(button, shift);
-			if(button == 1 && shift)
+			super.onClick(button, ctrl);
+			if(button == 1 && ctrl)
 			{
 				int i1 = (getState() & 896) >> 7;
 				i1 = i1 + 1 > 5 ? 0 : i1 + 1;
@@ -593,10 +618,10 @@ public abstract class SubLogicPart
 		}
 
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
-			super.onClick(button, shift);
-			if(button == 0 && shift)
+			super.onClick(button, ctrl);
+			if(button == 0 && ctrl)
 			{
 				int delay = getDelay();
 				int newDelay = 0;
@@ -691,10 +716,10 @@ public abstract class SubLogicPart
 		}
 
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
 			//TODO Insert some gui here.
-			super.onClick(button, shift);
+			super.onClick(button, ctrl);
 		}
 		
 		@Override
@@ -772,10 +797,10 @@ public abstract class SubLogicPart
 		private static int f2 = 1 << 24;
 		
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
 			//TODO Insert some gui here too.
-			super.onClick(button, shift);
+			super.onClick(button, ctrl);
 		}
 
 		@Override
@@ -916,10 +941,10 @@ public abstract class SubLogicPart
 		}
 
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
-			super.onClick(button, shift);
-			if(button == 0 && shift) setState(getState() ^ 128); 
+			super.onClick(button, ctrl);
+			if(button == 0 && ctrl) setState(getState() ^ 128); 
 		}
 
 		@Override
@@ -953,10 +978,10 @@ public abstract class SubLogicPart
 		}
 		
 		@Override
-		public void onClick(int button, boolean shift) 
+		public void onClick(int button, boolean ctrl) 
 		{
-			super.onClick(button, shift);
-			if(button == 0 && shift)
+			super.onClick(button, ctrl);
+			if(button == 0 && ctrl)
 			{
 				int state = (getState() & 768) >> 8;
 				state = state++ > 3 ? 0 : state++;

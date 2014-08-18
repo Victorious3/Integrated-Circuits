@@ -35,7 +35,7 @@ public class SubLogicPartRenderer
 {
 	public static void renderPart(SubLogicPart part, Gui gui, int x, int y)
 	{
-		Minecraft.getMinecraft().renderEngine.bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
+		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
 		GL11.glPushMatrix();
 		if(part instanceof PartWire) renderPartWire((PartWire)part, gui, x, y);
 		else if(part instanceof PartNullCell) renderPartNullCell((PartNullCell)part, gui, x, y);
@@ -75,8 +75,22 @@ public class SubLogicPartRenderer
 	
 	public static void renderPartWire(PartWire wire, Gui gui, int x, int y)
 	{
-		if(wire.getInput()) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
+		int color = wire.getColor();
+		switch (color) {
+		case 1:
+			if(wire.getInput()) GL11.glColor3f(1F, 0F, 0F);
+			else GL11.glColor3f(0.4F, 0F, 0F);
+			break;
+		case 2:
+			if(wire.getInput()) GL11.glColor3f(1F, 0.4F, 0F);
+			else GL11.glColor3f(0.4F, 0.2F, 0F);
+			break;
+		default:
+			if(wire.getInput()) GL11.glColor3f(0F, 1F, 0F);
+			else GL11.glColor3f(0F, 0.4F, 0F);
+			break;
+		}	
+		
 		int con = checkConnections(wire);
 		if((con & 12) == 12 && (con & ~12) == 0) drawTexture(6 * 16, 0, gui, x, y);
 		else if((con & 3) == 3 && (con & ~3) == 0) drawTexture(5 * 16, 0, gui, x, y);
@@ -190,10 +204,29 @@ public class SubLogicPartRenderer
 		return null;
 	}
 	
+	public static SubLogicPart createEncapsulated(Class<? extends SubLogicPart> clazz, int state)
+	{
+		try {
+			return clazz.getConstructor(int.class, int.class, ICircuit.class).newInstance(1, 1, new CurcuitRenderWrapper(state));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static class CurcuitRenderWrapper implements ICircuit
 	{
-		private static int[][][] matrix = new int[][][]{new int[][]{new int[]{0, 1, 0}, new int[]{1, 0, 1}, new int[]{0, 1, 0}}, new int[3][3]};
-		public static CurcuitRenderWrapper instance = new CurcuitRenderWrapper();
+		private int[][][] matrix;
+		public static CurcuitRenderWrapper instance = new CurcuitRenderWrapper(0);
+		
+		private CurcuitRenderWrapper(int state)
+		{
+			matrix = new int[][][]
+			{
+				new int[][]{new int[]{0, 1, 0}, new int[]{1, 0, 1}, new int[]{0, 1, 0}}, 
+				new int[][]{new int[]{0, 0, 0}, new int[]{0, state, 0}, new int[]{0, 0, 0}}
+			};
+		}
 		
 		@Override
 		public int[][][] getMatrix() 
