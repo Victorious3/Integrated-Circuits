@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
+import vic.mod.integratedcircuits.SubLogicPart.PartNull;
 
 public class GuiPartChooser extends GuiButton
 {
-	private SubLogicPart current;
+	public SubLogicPart current;
 	private ArrayList<GuiPartChooser> list;
-	private int mode;
+	public int mode;
 	private boolean active = false;
 	private boolean showList = false;
 	private GuiPCBLayout parent;
@@ -58,10 +59,17 @@ public class GuiPartChooser extends GuiButton
 		
 		if(showList && list != null)
 		{
+			drawRect(xPosition, yPosition - 1, xPosition + width + 1, yPosition + height + 1, 180 << 24);
+			drawRect(xPosition - 22, yPosition - 1, xPosition, yPosition + list.size() * 21, 180 << 24);
 			for(GuiPartChooser child : list)
 			{
 				child.drawButton(mc, x, y);
 			}
+		}
+		
+		if(x > xPosition && y > yPosition && x < xPosition + width && y < yPosition + height)
+		{
+			parent.hoveredChooser = this;
 		}
 	}
 	
@@ -78,7 +86,6 @@ public class GuiPartChooser extends GuiButton
 		{
 			for(GuiPartChooser child : list)
 			{
-				child.setActive(false);
 				if(child.mousePressed(mc, x, y))
 				{
 					child.func_146113_a(mc.getSoundHandler());
@@ -86,7 +93,11 @@ public class GuiPartChooser extends GuiButton
 				}
 			}
 		}
-		if(!bool && list != null) showList = false;
+		if(!bool && list != null) 
+		{
+			showList = false;
+			parent.blockMouseInput = false;
+		}	
 		return bool;
 	}
 
@@ -100,14 +111,25 @@ public class GuiPartChooser extends GuiButton
 					if(obj instanceof GuiPartChooser) ((GuiPartChooser)obj).setActive(false);
 					
 			active = true;
-			if(chooserParent != null) chooserParent.current = this.current;
+			
+			if(chooserParent != null) 
+			{
+				for(GuiPartChooser child : chooserParent.list)
+				{
+					child.setActive(false);
+				}
+				setActive(true);
+				chooserParent.current = this.current;
+			}
+			
 			if(mode == 1) parent.selectedPart = null;
-			else if(mode == 2) parent.selectedPart = SubLogicPartRenderer.createEncapsulated(null);
+			else if(mode == 2) parent.selectedPart = SubLogicPartRenderer.createEncapsulated(PartNull.class);
 			else parent.selectedPart = this.current;
 		}
 		if(list != null)
 		{
 			showList = !showList;
+			parent.blockMouseInput = showList;
 			for(GuiPartChooser child : list)
 			{
 				child.visible = showList;

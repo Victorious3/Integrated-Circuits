@@ -14,6 +14,7 @@ public abstract class SubLogicPart
 	
 	static 
 	{
+		partRegistry.put(0, PartNull.class);
 		partRegistry.put(1, PartWire.class);
 		partRegistry.put(2, PartTorch.class);
 		partRegistry.put(3, PartANDGate.class);
@@ -40,7 +41,6 @@ public abstract class SubLogicPart
 
 	public static SubLogicPart getPart(int x, int y, ICircuit parent)
 	{
-		if(parent.getMatrix()[0][x][y] == 0) return new PartNull(x, y, parent);
 		try {
 			return partRegistry.get(parent.getMatrix()[0][x][y]).getConstructor(int.class, int.class, ICircuit.class).newInstance(x, y, parent);
 		} catch (Exception e) {
@@ -182,6 +182,17 @@ public abstract class SubLogicPart
 
 		@Override
 		public void onInputChange(ForgeDirection side) {}
+
+		@Override
+		public void onPlaced() 
+		{
+			for(int i = 2; i < 6; i++)
+			{
+				ForgeDirection fd = ForgeDirection.getOrientation(i);
+				SubLogicPart part = getNeighbourOnSide(fd);
+				part.onInputChange(fd.getOpposite());
+			}
+		}
 
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
