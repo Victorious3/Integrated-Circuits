@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -44,9 +42,9 @@ public class GuiPCBLayout extends GuiContainer
 {	
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/pcblayout.png");
 	
-	private float scale = 1F;
-	private float offX = 20;
-	private float offY = 20;
+	private float scale = 0.5F;
+	private double offX;
+	private double offY;
 	private int lastX, lastY;
 	private boolean offsetChanged;
 	
@@ -127,29 +125,29 @@ public class GuiPCBLayout extends GuiContainer
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
-		float guiScale = scaledresolution.getScaleFactor() * 0.5F;
+		int guiScale = scaledresolution.getScaleFactor();
 		
 		int[][][] matrix = ((ICircuit)inventorySlots).getMatrix();
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		
 		if(Mouse.isButtonDown(0) && (Math.abs(x - lastX) > 0 || Math.abs(y - lastY) > 0) && shiftDown)
 		{
-			offX += ((float)(x - lastX)) / scale;
-			offY += ((float)(y - lastY)) / scale;
+			offX += (x - lastX) / scale;
+			offY += (y - lastY) / scale;
 		}
 		lastX = x;
 		lastY = y;
 		
-		int j = Minecraft.getMinecraft().displayWidth;
-		int k = Minecraft.getMinecraft().displayHeight;
+		int j = this.mc.displayWidth;
+		int k = this.mc.displayHeight;
 		
 		drawCenteredString(fontRendererObj, "PCB Layout CAD", width / 2, guiTop + 10, 0xFFFFFF);
 		
 		GL11.glPushMatrix();
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor(j / 2 - (int)(213 * guiScale), k / 2 - (int)(213 * guiScale), (int)(374 * guiScale), (int)(374 * guiScale));
+		GL11.glScissor((int)((guiLeft + 17) * guiScale), k - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));
 		GL11.glScalef(scale, scale, 1F);
-		GL11.glTranslatef(offX, offY, 0);
+		GL11.glTranslated(offX, offY, 0);
 		
 		for(int x2 = 0; x2 < matrix[0].length; x2++)
 		{
@@ -166,21 +164,21 @@ public class GuiPCBLayout extends GuiContainer
 			}
 		}
 		
-		GL11.glTranslatef(-offX, -offY, 0);
+		GL11.glTranslated(-offX, -offY, 0);
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
 		
-		int x2 = (int)((x - offX * scale) / 16F / scale);
-		int y2 = (int)((y - offY * scale) / 16F / scale);
+		double x2 = (int)((x - offX * scale) / 16F / scale);
+		double y2 = (int)((y - offY * scale) / 16F / scale);
 		int w = ((ICircuit)inventorySlots).getMatrix()[0].length;
 		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown && !blockMouseInput)
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				x2 = (int)(x2 * 16 + offX);
-				y2 = (int)(y2 * 16 + offY);
+				x2 = x2 * 16 + offX;
+				y2 = y2 * 16 + offY;
 				SubLogicPartRenderer.renderPart(selectedPart, this, x2, y2);
 			}		
 		}
@@ -264,13 +262,18 @@ public class GuiPCBLayout extends GuiContainer
 	public void handleMouseInput() 
 	{
 		int i = Mouse.getEventDWheel();
-		float change = scale * 0.1F;
-		if(i > 0) scale += change;
-		else if(i < 0) scale -= change;
-		scale = MathHelper.clamp_float(scale, 0.25F, 2F);
-
+		float oldScale = scale;
+		int index = scales.indexOf(scale);
+		if(i > 0 && index + 1 < scales.size()) scale = scales.get(index + 1);
+		if(i < 0 && index - 1 >= 0) scale = scales.get(index - 1);
+		
+		float change = scale / oldScale;
+		offX /= change;
+		offY /= change;
 		super.handleMouseInput();
 	}
+	
+	private static List<Float> scales = Arrays.asList(0.17F, 0.2F, 0.25F, 0.33F, 0.5F, 0.67F, 1F, 1.5F, 2F);
 
 	@Override
 	protected void mouseMovedOrUp(int x, int y, int button) 

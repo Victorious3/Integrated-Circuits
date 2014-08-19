@@ -33,7 +33,7 @@ import vic.mod.integratedcircuits.SubLogicPart.PartXORGate;
 
 public class SubLogicPartRenderer 
 {
-	public static void renderPart(SubLogicPart part, Gui gui, int x, int y)
+	public static void renderPart(SubLogicPart part, Gui gui, double x, double y)
 	{
 		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
 		GL11.glPushMatrix();
@@ -45,18 +45,18 @@ public class SubLogicPartRenderer
 		GL11.glPopMatrix();
 	}
 
-	public static void drawTexture(int u, int v, Gui gui, int x, int y)
+	public static void drawTexture(int u, int v, Gui gui, double x, double y)
 	{
 		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, 0);
+		GL11.glTranslated(x, y, 0);
 		gui.drawTexturedModalRect(0, 0, u, v, 16, 16);
 		GL11.glPopMatrix();
 	}
 	
-	public static void drawTexture(int u, int v, float rotation, Gui gui, int x, int y)
+	public static void drawTexture(int u, int v, float rotation, Gui gui, double x, double y)
 	{
 		GL11.glPushMatrix();
-		GL11.glTranslatef(x, y, 0);
+		GL11.glTranslated(x, y, 0);
 		GL11.glTranslatef(8F, 8F, 0);
 		GL11.glRotatef(rotation, 0, 0, 1);
 		GL11.glTranslatef(-8F, -8F, 0);
@@ -73,7 +73,7 @@ public class SubLogicPartRenderer
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
 	
-	public static void renderPartWire(PartWire wire, Gui gui, int x, int y)
+	public static void renderPartWire(PartWire wire, Gui gui, double x, double y)
 	{
 		int color = wire.getColor();
 		switch (color) {
@@ -104,7 +104,7 @@ public class SubLogicPartRenderer
 		}
 	}
 
-	public static void renderPartNullCell(PartNullCell cell, Gui gui, int x, int y) 
+	public static void renderPartNullCell(PartNullCell cell, Gui gui, double x, double y) 
 	{
 		if(cell.getOutputToSide(ForgeDirection.NORTH) 
 			|| cell.getInputFromSide(ForgeDirection.NORTH) 
@@ -123,7 +123,7 @@ public class SubLogicPartRenderer
 		drawTexture(16, 2 * 16, gui, x, y);
 	}
 	
-	public static void renderPartGate(PartGate gate, Gui gui, int x, int y) 
+	public static void renderPartGate(PartGate gate, Gui gui, double x, double y) 
 	{
 		if(gate.getOutputToSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.NORTH)) GL11.glColor3f(0F, 1F, 0F);
 		else GL11.glColor3f(0F, 0.4F, 0F);
@@ -164,7 +164,7 @@ public class SubLogicPartRenderer
 		else if(gate instanceof PartTranspartentLatch) drawTexture(9 * 16, 16, gate.getRotation() * 90, gui, x, y);
 	}
 	
-	public static void renderPartTorch(PartTorch torch, Gui gui, int x, int y) 
+	public static void renderPartTorch(PartTorch torch, Gui gui, double x, double y) 
 	{
 		GL11.glColor3f(0F, 1F, 0F);
 		
@@ -177,7 +177,7 @@ public class SubLogicPartRenderer
 		drawTexture(13 * 16, 0, gui, x, y);
 	}
 	
-	public static void renderPart1I1O(PartGate gate, Gui gui, int x, int y)
+	public static void renderPart1I1O(PartGate gate, Gui gui, double x, double y)
 	{
 		if(gate.getOutputToSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.NORTH)) GL11.glColor3f(0F, 1F, 0F);
 		else GL11.glColor3f(0F, 0.4F, 0F);
