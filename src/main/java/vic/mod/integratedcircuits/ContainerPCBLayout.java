@@ -6,7 +6,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class ContainerPCBLayout extends Container implements ICircuit
 {
-	private TileEntityPCBLayout tileentity;
+	public TileEntityPCBLayout tileentity;
 	
 	public ContainerPCBLayout(TileEntityPCBLayout tileentity)
 	{
@@ -28,13 +28,12 @@ public class ContainerPCBLayout extends Container implements ICircuit
 	@Override
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		// TODO Auto-generated method stub	
+		
 	}
 }
