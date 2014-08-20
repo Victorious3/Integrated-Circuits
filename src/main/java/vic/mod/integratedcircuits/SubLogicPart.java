@@ -609,6 +609,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
+	//TODO acts strange on first placing.
 	public static class PartRepeater extends PartDelayedAction
 	{
 		public PartRepeater(int x, int y, ICircuit parent) 
@@ -662,7 +663,7 @@ public abstract class SubLogicPart
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = Misc.rotn(side, getRotation());
-			if(s2 != ForgeDirection.SOUTH) return false;
+			if(s2 != ForgeDirection.NORTH) return false;
 			return getCurrentDelay() > 0 ? (getState() & 32768) > 0 : (getState() & 32768) == 0;
 		}
 
@@ -683,7 +684,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			if(Misc.rotn(side, getRotation()) != ForgeDirection.NORTH) return;
+			if(Misc.rotn(side, getRotation()) != ForgeDirection.SOUTH) return;
 			if(getCurrentDelay() != 0) super.onInputChange(side);
 			else
 			{
@@ -705,6 +706,7 @@ public abstract class SubLogicPart
 		}	
 	}
 	
+	//FIXME: Can't rotate due to very frequent updates.
 	public static class PartTimer extends PartDelayedAction
 	{
 		public PartTimer(int x, int y, ICircuit parent) 
@@ -736,7 +738,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			if(Misc.rotn(side, getRotation()) == ForgeDirection.SOUTH) return;
+			if(Misc.rotn(side, getRotation()) == ForgeDirection.NORTH) return;
 			super.onInputChange(side);
 			if(getInputFromSide(side))
 			{
@@ -758,7 +760,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(Misc.rotn(side, getRotation()) == ForgeDirection.NORTH) return false;
+			if(Misc.rotn(side, getRotation()) == ForgeDirection.SOUTH) return false;
 			return (getState() & 32768) > 0;
 		}		
 	}
@@ -931,7 +933,7 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			if((Misc.rotn(side, getRotation()) != ForgeDirection.NORTH) || !getInputFromSide(side)) setUpdate(false);
+			if((Misc.rotn(side, getRotation()) != ForgeDirection.SOUTH) || !getInputFromSide(side)) setUpdate(false);
 			notifyNeighbours();
 		}
 
@@ -939,9 +941,16 @@ public abstract class SubLogicPart
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection f2 = Misc.rotn(side, getRotation());
-			if(f2 != ForgeDirection.SOUTH) return false;
+			if(f2 != ForgeDirection.NORTH) return false;
 			return getUpdateFlag();
-		}	
+		}
+
+		@Override
+		public boolean canConnectToSide(ForgeDirection side) 
+		{
+			ForgeDirection f2 = Misc.rotn(side, getRotation());
+			return f2 == ForgeDirection.NORTH || f2 == ForgeDirection.SOUTH;
+		}
 	}
 	
 	public static class PartToggleLatch extends PartGate

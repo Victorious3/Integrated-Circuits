@@ -39,7 +39,6 @@ public class SubLogicPartRenderer
 		GL11.glPushMatrix();
 		if(part instanceof PartWire) renderPartWire((PartWire)part, gui, x, y);
 		else if(part instanceof PartNullCell) renderPartNullCell((PartNullCell)part, gui, x, y);
-		else if(part instanceof PartRepeater || part instanceof PartPulseFormer) renderPart1I1O((PartGate)part, gui, x, y);
 		else if(part instanceof PartGate) renderPartGate((PartGate)part, gui, x, y);
 		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, gui, x, y);
 		GL11.glPopMatrix();
@@ -125,21 +124,33 @@ public class SubLogicPartRenderer
 	
 	public static void renderPartGate(PartGate gate, Gui gui, double x, double y) 
 	{
-		if(gate.getOutputToSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.NORTH)) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
-		drawTexture(2 * 16, 0, gui, x, y);
+		if(gate.canConnectToSide(ForgeDirection.NORTH))
+		{
+			if(gate.getOutputToSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.NORTH)) GL11.glColor3f(0F, 1F, 0F);
+			else GL11.glColor3f(0F, 0.4F, 0F);
+			drawTexture(2 * 16, 0, gui, x, y);
+		}
+
+		if(gate.canConnectToSide(ForgeDirection.SOUTH))
+		{
+			if(gate.getOutputToSide(ForgeDirection.SOUTH) || gate.getInputFromSide(ForgeDirection.SOUTH)) GL11.glColor3f(0F, 1F, 0F);
+			else GL11.glColor3f(0F, 0.4F, 0F);
+			drawTexture(4 * 16, 0, gui, x, y);
+		}
 		
-		if(gate.getOutputToSide(ForgeDirection.SOUTH) || gate.getInputFromSide(ForgeDirection.SOUTH)) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
-		drawTexture(4 * 16, 0, gui, x, y);
+		if(gate.canConnectToSide(ForgeDirection.WEST))
+		{
+			if(gate.getOutputToSide(ForgeDirection.WEST) || gate.getInputFromSide(ForgeDirection.WEST)) GL11.glColor3f(0F, 1F, 0F);
+			else GL11.glColor3f(0F, 0.4F, 0F);
+			drawTexture(1 * 16, 0, gui, x, y);
+		}
 		
-		if(gate.getOutputToSide(ForgeDirection.WEST) || gate.getInputFromSide(ForgeDirection.WEST)) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
-		drawTexture(1 * 16, 0, gui, x, y);
-		
-		if(gate.getOutputToSide(ForgeDirection.EAST) || gate.getInputFromSide(ForgeDirection.EAST)) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
-		drawTexture(3 * 16, 0, gui, x, y);
+		if(gate.canConnectToSide(ForgeDirection.EAST))
+		{
+			if(gate.getOutputToSide(ForgeDirection.EAST) || gate.getInputFromSide(ForgeDirection.EAST)) GL11.glColor3f(0F, 1F, 0F);
+			else GL11.glColor3f(0F, 0.4F, 0F);
+			drawTexture(3 * 16, 0, gui, x, y);
+		}
 
 		GL11.glColor3f(0F, 1F, 0F);
 		
@@ -162,6 +173,9 @@ public class SubLogicPartRenderer
 		else if(gate instanceof PartRSLatch) drawTexture(7 * 16, 16, gate.getRotation() * 90, gui, x, y);
 		else if(gate instanceof PartToggleLatch) drawTexture(8 * 16, 16, gate.getRotation() * 90, gui, x, y);
 		else if(gate instanceof PartTranspartentLatch) drawTexture(9 * 16, 16, gate.getRotation() * 90, gui, x, y);
+		
+		else if(gate instanceof PartRepeater) drawTexture(16, 16, gate.getRotation() * 90, gui, x, y);
+		else if(gate instanceof PartPulseFormer) drawTexture(6 * 16, 16, gate.getRotation() * 90, gui, x, y);
 	}
 	
 	public static void renderPartTorch(PartTorch torch, Gui gui, double x, double y) 
@@ -175,22 +189,6 @@ public class SubLogicPartRenderer
 		if((con & 1) > 0) drawTexture(3 * 16, 0, gui, x, y);
 		
 		drawTexture(13 * 16, 0, gui, x, y);
-	}
-	
-	public static void renderPart1I1O(PartGate gate, Gui gui, double x, double y)
-	{
-		if(gate.getOutputToSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.NORTH)) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
-		drawTexture(2 * 16, 0, gui, x, y);
-		
-		if(gate.getOutputToSide(ForgeDirection.SOUTH) || gate.getInputFromSide(ForgeDirection.SOUTH)) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
-		drawTexture(4 * 16, 0, gui, x, y);
-		
-		GL11.glColor3f(0F, 1F, 0F);
-		
-		if(gate instanceof PartRepeater) drawTexture(16, 16, gate.getRotation() * 90, gui, x, y);
-		else if(gate instanceof PartPulseFormer) drawTexture(6 * 16, 16, gate.getRotation() * 90, gui, x, y);
 	}
 	
 	//Used for rendering

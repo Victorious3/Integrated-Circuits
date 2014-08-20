@@ -7,26 +7,22 @@ import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketUpdatePCB extends AbstractPacket<PacketUpdatePCB>
+public class PacketPCBUpdate extends PacketPCB<PacketPCBUpdate>
 {
-	private int x, y, z;
 	private int[][][] matrix;
 	
-	public PacketUpdatePCB(){}
+	public PacketPCBUpdate(){}
 	
-	public PacketUpdatePCB(int[][][] matrix, int x, int y, int z)
+	public PacketPCBUpdate(int[][][] matrix, int tx, int ty, int tz)
 	{
-		this.x = x; this.y = y; this.z = z;
+		super(tx, ty, tz);
 		this.matrix = matrix;
 	}
 	
 	@Override
 	public void read(PacketBuffer buffer) throws IOException 
 	{
-		this.x = buffer.readInt();
-		this.y = buffer.readInt();
-		this.z = buffer.readInt();
-		
+		super.read(buffer);
 		byte size = buffer.readByte();
 		matrix = new int[2][size][size];
 		
@@ -39,10 +35,7 @@ public class PacketUpdatePCB extends AbstractPacket<PacketUpdatePCB>
 	@Override
 	public void write(PacketBuffer buffer) throws IOException 
 	{
-		buffer.writeInt(x);
-		buffer.writeInt(y);
-		buffer.writeInt(z);
-		
+		super.write(buffer);
 		byte size = (byte)matrix[0].length;
 		buffer.writeByte(size);
 		for(int i = 0; i < size * size; i++)
@@ -54,7 +47,7 @@ public class PacketUpdatePCB extends AbstractPacket<PacketUpdatePCB>
 	@Override
 	public void process(EntityPlayer player, Side side) 
 	{
-		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(x, y, z);
+		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te != null) te.pcbMatrix = matrix;
 	}
 }

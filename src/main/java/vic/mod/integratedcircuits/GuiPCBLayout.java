@@ -32,6 +32,7 @@ import vic.mod.integratedcircuits.SubLogicPart.PartRandomizer;
 import vic.mod.integratedcircuits.SubLogicPart.PartRepeater;
 import vic.mod.integratedcircuits.SubLogicPart.PartSequencer;
 import vic.mod.integratedcircuits.SubLogicPart.PartStateCell;
+import vic.mod.integratedcircuits.SubLogicPart.PartSynchronizer;
 import vic.mod.integratedcircuits.SubLogicPart.PartTimer;
 import vic.mod.integratedcircuits.SubLogicPart.PartToggleLatch;
 import vic.mod.integratedcircuits.SubLogicPart.PartTorch;
@@ -39,6 +40,7 @@ import vic.mod.integratedcircuits.SubLogicPart.PartTranspartentLatch;
 import vic.mod.integratedcircuits.SubLogicPart.PartWire;
 import vic.mod.integratedcircuits.SubLogicPart.PartXNORGate;
 import vic.mod.integratedcircuits.SubLogicPart.PartXORGate;
+import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer
@@ -86,29 +88,30 @@ public class GuiPCBLayout extends GuiContainer
 		
 		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 131, SubLogicPartRenderer.createEncapsulated(PartWire.class),
 			new ArrayList<SubLogicPart>(Arrays.asList(
-			SubLogicPartRenderer.createEncapsulated(PartWire.class, 1 << 5), 
+			SubLogicPartRenderer.createEncapsulated(PartWire.class, 1 << 5),
 			SubLogicPartRenderer.createEncapsulated(PartWire.class, 2 << 5))), this));
 		
 		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, SubLogicPartRenderer.createEncapsulated(PartToggleLatch.class),
 				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartRSLatch.class), 
+				SubLogicPartRenderer.createEncapsulated(PartRSLatch.class),
 				SubLogicPartRenderer.createEncapsulated(PartTranspartentLatch.class))), this));
 		
 		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, SubLogicPartRenderer.createEncapsulated(PartANDGate.class),
 				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartORGate.class), 
+				SubLogicPartRenderer.createEncapsulated(PartORGate.class),
 				SubLogicPartRenderer.createEncapsulated(PartXORGate.class),
 				SubLogicPartRenderer.createEncapsulated(PartBufferGate.class))), this));
 		
 		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, SubLogicPartRenderer.createEncapsulated(PartNANDGate.class),
 				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartNORGate.class), 
+				SubLogicPartRenderer.createEncapsulated(PartNORGate.class),
 				SubLogicPartRenderer.createEncapsulated(PartXNORGate.class),
 				SubLogicPartRenderer.createEncapsulated(PartNOTGate.class))), this));
 		
 		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, SubLogicPartRenderer.createEncapsulated(PartTimer.class),
 				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartSequencer.class), 
+				SubLogicPartRenderer.createEncapsulated(PartSequencer.class),
+				SubLogicPartRenderer.createEncapsulated(PartSynchronizer.class),
 				SubLogicPartRenderer.createEncapsulated(PartStateCell.class),
 				SubLogicPartRenderer.createEncapsulated(PartPulseFormer.class),
 				SubLogicPartRenderer.createEncapsulated(PartRandomizer.class),
@@ -168,7 +171,7 @@ public class GuiPCBLayout extends GuiContainer
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
 		
-		int[][][] matrix = ((ICircuit)inventorySlots).getMatrix();
+		int[][][] matrix = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix();
 		int w = matrix[0].length;
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		
@@ -212,7 +215,7 @@ public class GuiPCBLayout extends GuiContainer
 				if(x2 == 0 || y2 == 0 || x2 == matrix[0].length - 1 || y2 == i1.length - 1) 
 					SubLogicPartRenderer.drawTexture(16, 15 * 16, this, x2 * 16, y2 * 16);
 				else SubLogicPartRenderer.drawTexture(0, 15 * 16, this, x2 * 16, y2 * 16);
-				SubLogicPart part = SubLogicPart.getPart(x2, y2, (ICircuit)inventorySlots);
+				SubLogicPart part = SubLogicPart.getPart(x2, y2, ((ContainerPCBLayout)inventorySlots).tileentity);
 				SubLogicPartRenderer.renderPart(part, this, x2 * 16, y2 * 16);
 			}
 		}
@@ -246,10 +249,10 @@ public class GuiPCBLayout extends GuiContainer
 	{		
 		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
 		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
-		int w = ((ICircuit)inventorySlots).getMatrix()[0].length;
+		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix()[0].length;
 		if(x2 > 0 && y2 > 0 && x2 < w && y2 < w)
 		{
-			SubLogicPart part = SubLogicPart.getPart(x2, y2, (ICircuit)inventorySlots);
+			SubLogicPart part = SubLogicPart.getPart(x2, y2,((ContainerPCBLayout)inventorySlots).tileentity);
 			if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
 			{
 				ArrayList<String> text = new ArrayList<String>();
@@ -296,20 +299,33 @@ public class GuiPCBLayout extends GuiContainer
 			return;
 		}		
 		
+		int[][][] matrix = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix();
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		boolean crtlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
 		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
-		int w = ((ICircuit)inventorySlots).getMatrix()[0].length;
+		int w = matrix[0].length;
 		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
 		{
+			int pid = matrix[0][x2][y2];
+			int pdata = matrix[1][x2][y2];
+			
 			if(selectedPart == null)
 			{
-				SubLogicPart part = SubLogicPart.getPart(x2, y2, (ICircuit)inventorySlots);
+				SubLogicPart part = SubLogicPart.getPart(x2, y2, ((ContainerPCBLayout)inventorySlots).tileentity);
 				part.onClick(flag, crtlDown);
 			}
-			else SubLogicPart.setPart(x2, y2, (ICircuit)inventorySlots, selectedPart);
+			else SubLogicPart.setPart(x2, y2, ((ContainerPCBLayout)inventorySlots).tileentity, selectedPart);
+			
+			int cid = matrix[0][x2][y2];
+			int cdata = matrix[1][x2][y2];
+			
+			if(pid != cid || pdata != cdata)
+			{
+				TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, cid, cdata, te.xCoord, te.yCoord, te.zCoord));
+			}			
 		}
 		
 		super.mouseClicked(x, y, flag);
@@ -335,7 +351,7 @@ public class GuiPCBLayout extends GuiContainer
 	@Override
 	public void handleMouseInput() 
 	{
-		int w = ((ICircuit)inventorySlots).getMatrix()[0].length;
+		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix()[0].length;
 		double ow = w * 16 * scale;	
 		int i = Mouse.getEventDWheel();
 		float oldScale = scale;

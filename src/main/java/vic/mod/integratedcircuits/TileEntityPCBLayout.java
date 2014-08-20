@@ -1,15 +1,16 @@
 package vic.mod.integratedcircuits;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.net.PacketPCBUpdate;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class TileEntityPCBLayout extends TileEntity
+public class TileEntityPCBLayout extends TileEntity implements ICircuit
 {
 	public int[][][] pcbMatrix;
 	public String name;
+	int playersUsing;
 	
 	public void setup(int width, int height)
 	{
@@ -21,6 +22,18 @@ public class TileEntityPCBLayout extends TileEntity
 	{
 		//Update the matrix in case there is at least one player watching.
 		super.updateEntity();
+		if(!worldObj.isRemote && playersUsing > 0)
+		{
+			for(int x = 0; x < pcbMatrix[0].length; x++)
+			{
+				for(int y = 0; y < pcbMatrix[0][x].length; y++)
+				{
+					SubLogicPart.getPart(x, y, this).onUpdateTick();
+				}
+			}
+			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getMatrix(), xCoord, yCoord, zCoord), 
+				new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+		}
 	}
 
 	@Override
@@ -38,18 +51,43 @@ public class TileEntityPCBLayout extends TileEntity
 		Misc.writePCBMatrix(compound, pcbMatrix);
 		compound.setString("name", name);
 	}
-
-	@Override
-	public Packet getDescriptionPacket() 
+	
+	public void onContainerOpened()
 	{
-		NBTTagCompound compound = new NBTTagCompound();
-		this.writeToNBT(compound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, compound);
+		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, ++playersUsing);
+	}
+	
+	public void onContainerClosed()
+	{
+		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, --playersUsing);
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) 
+	public boolean receiveClientEvent(int id, int par)
 	{
-		NBTTagCompound compound = pkt.func_148857_g();
+		if(id == 0)
+		{
+			playersUsing = par;
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public int[][][] getMatrix() 
+	{
+		return pcbMatrix;
+	}
+
+	@Override
+	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
+	{
+		return false;
+	}
+
+	@Override
+	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
+	{
+		
 	}
 }
