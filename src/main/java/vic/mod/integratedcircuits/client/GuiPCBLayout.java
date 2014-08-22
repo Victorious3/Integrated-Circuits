@@ -47,6 +47,7 @@ import vic.mod.integratedcircuits.SubLogicPartRenderer;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
+import vic.mod.integratedcircuits.net.PacketPCBIO;
 import vic.mod.integratedcircuits.net.PacketPCBReload;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
@@ -163,6 +164,10 @@ public class GuiPCBLayout extends GuiContainer
 			w = w == 18 ? 34 : w == 34 ? 66 : 18;
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBReload((byte)w, te.xCoord, te.yCoord, te.zCoord));
 		}
+		else if(button.id == 13)
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));	
+		else if(button.id == 14)
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(false, te.xCoord, te.yCoord, te.zCoord));	
 	}
 	
 	public List getButtonList()

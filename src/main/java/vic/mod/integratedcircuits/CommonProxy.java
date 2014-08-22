@@ -43,7 +43,7 @@ public class CommonProxy
 	@SubscribeEvent
 	public void onPlayerInteract(PlayerInteractEvent event)
 	{
-		if(event.action != Action.RIGHT_CLICK_AIR) return;
+		if(event.action != Action.RIGHT_CLICK_BLOCK) return;
 		Block block = event.world.getBlock(event.x, event.y, event.z);
 		if(!(block instanceof BlockPCBLayout)) return;
 		TileEntityPCBLayout te = (TileEntityPCBLayout)event.world.getTileEntity(event.x, event.y, event.z);
@@ -66,9 +66,8 @@ public class CommonProxy
 				te.setInventorySlotContents(0, stack);
 				event.entityPlayer.setCurrentItemOrArmor(0, null);
 			}
+			event.useBlock = Result.DENY;
+			event.useItem = Result.DENY;
 		}
-		
-		event.useBlock = Result.DENY;
-		event.useItem = Result.DENY;
 	}
 }

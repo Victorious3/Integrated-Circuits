@@ -8,8 +8,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -27,8 +29,17 @@ public class BlockPCBLayout extends BlockContainer
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) 
 	{
-		player.openGui(IntegratedCircuits.instance, 0, world, x, y, z);
-		return true;
+		Vec3 hitVec = Vec3.createVectorHelper(par7, par8, par9);
+		hitVec = hitVec.addVector(x, y, z);
+		TileEntityPCBLayout te = (TileEntityPCBLayout)world.getTileEntity(x, y, z);
+		AxisAlignedBB box = IntegratedCircuits.proxy.getDiskDriveBoundingBox(te, x, y, z, hitVec);
+		int rotation = te.rotation;
+		boolean canInteract = rotation == 3 && par6 == 4 
+			|| rotation == 0 && par6 == 2 
+			|| rotation == 1 && par6 == 5 
+			|| rotation == 2 && par6 == 3;
+		if(box == null && canInteract) player.openGui(IntegratedCircuits.instance, 0, world, x, y, z);
+		return canInteract;
 	}
 
 	@Override

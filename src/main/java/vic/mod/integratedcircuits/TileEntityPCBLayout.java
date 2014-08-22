@@ -146,6 +146,7 @@ public class TileEntityPCBLayout extends TileEntity implements ICircuit, IInvent
 	public void setInventorySlotContents(int id, ItemStack stack) 
 	{
 		if(id == 0) floppyStack = stack;
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		markDirty();
 	}
 
@@ -176,12 +177,14 @@ public class TileEntityPCBLayout extends TileEntity implements ICircuit, IInvent
 	@Override
 	public void openInventory() 
 	{
+		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, ++playersUsing);
 	}
 
 	@Override
 	public void closeInventory() 
 	{
+		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, --playersUsing);
 	}
 
