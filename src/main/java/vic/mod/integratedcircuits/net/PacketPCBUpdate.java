@@ -2,9 +2,11 @@ package vic.mod.integratedcircuits.net;
 
 import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.client.GuiPCBLayout;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketPCBUpdate extends PacketPCB<PacketPCBUpdate>
@@ -48,6 +50,11 @@ public class PacketPCBUpdate extends PacketPCB<PacketPCBUpdate>
 	public void process(EntityPlayer player, Side side) 
 	{
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
-		if(te != null) te.setMatrix(matrix);
+		if(te != null) 
+		{
+			te.setMatrix(matrix);
+			if(Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
+				Minecraft.getMinecraft().currentScreen.initGui();
+		}
 	}
 }

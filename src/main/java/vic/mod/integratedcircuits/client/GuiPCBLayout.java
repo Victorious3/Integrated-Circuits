@@ -166,7 +166,7 @@ public class GuiPCBLayout extends GuiContainer
 		}
 		else if(button.id == 13)
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));	
-		else if(button.id == 14)
+		else if(button.id == 12)
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(false, te.xCoord, te.yCoord, te.zCoord));	
 	}
 	

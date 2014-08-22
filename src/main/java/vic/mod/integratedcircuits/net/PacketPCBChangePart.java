@@ -51,10 +51,12 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		if(te != null)
 		{
 			int[][][] matrix = te.getMatrix();
+			int oid = matrix[0][x][y];
 			matrix[0][x][y] = id;
 			matrix[1][x][y] = data;
 			
-			SubLogicPart.getPart(x, y, te).notifyNeighbours();
+			if(oid != id) SubLogicPart.getPart(x, y, te).onPlaced();
+			else SubLogicPart.getPart(x, y, te).notifyNeighbours();
 			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(matrix, xCoord, yCoord, zCoord), 
 				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 		}
