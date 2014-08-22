@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +16,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.ContainerPCBLayout;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.SubLogicPart;
 import vic.mod.integratedcircuits.SubLogicPart.PartANDGate;
 import vic.mod.integratedcircuits.SubLogicPart.PartBufferGate;
 import vic.mod.integratedcircuits.SubLogicPart.PartGate;
@@ -40,7 +43,11 @@ import vic.mod.integratedcircuits.SubLogicPart.PartTranspartentLatch;
 import vic.mod.integratedcircuits.SubLogicPart.PartWire;
 import vic.mod.integratedcircuits.SubLogicPart.PartXNORGate;
 import vic.mod.integratedcircuits.SubLogicPart.PartXORGate;
+import vic.mod.integratedcircuits.SubLogicPartRenderer;
+import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
+import vic.mod.integratedcircuits.net.PacketPCBReload;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer
@@ -123,13 +130,16 @@ public class GuiPCBLayout extends GuiContainer
 		buttonMinus = new GuiButtonExt(9, cx + 201, cy + 238, 10, 10, "-");
 		this.buttonList.add(buttonMinus);
 		
+		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+		int w = te.getMatrix()[0].length - 2;
 		this.buttonList.add(new GuiButtonExt(10, cx + 93, cy + 14, 12, 12, "+"));
-		this.buttonList.add(new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, "16x16"));
+		this.buttonList.add(new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, w + "x" + w));
 		
 		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
 		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
 		
 		nameField = new GuiTextField(fontRendererObj, cx + 154, cy + 15, 50, 10);
+		nameField.setText(te.name);
 		nameField.setMaxStringLength(7);
 		nameField.setCanLoseFocus(true);
 		nameField.setFocused(false);
@@ -140,11 +150,18 @@ public class GuiPCBLayout extends GuiContainer
 	@Override
 	protected void actionPerformed(GuiButton button) 
 	{
+		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+		int w = te.getMatrix()[0].length;
 		if(button.id == 8) scale(1);
 		else if(button.id == 9) scale(-1);
 		else if(button.id == 10)
 		{
-			
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBReload((byte)w, te.xCoord, te.yCoord, te.zCoord));
+		}
+		else if(button.id == 11)
+		{
+			w = w == 18 ? 34 : w == 34 ? 66 : 18;
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBReload((byte)w, te.xCoord, te.yCoord, te.zCoord));
 		}
 	}
 	
@@ -395,7 +412,16 @@ public class GuiPCBLayout extends GuiContainer
 	@Override
 	protected void keyTyped(char par1, int par2) 
 	{
+		String oname = nameField.getText();
 		if(nameField.isFocused()) nameField.textboxKeyTyped(par1, par2);
 		else super.keyTyped(par1, par2);
+		
+		if(!oname.equals(nameField.getText()))
+		{
+			TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeName(nameField.getText(), te.xCoord, te.yCoord, te.zCoord));
+		}		
 	}
+	
+	
 }

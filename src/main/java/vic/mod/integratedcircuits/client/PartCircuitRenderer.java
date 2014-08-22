@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.client;
 
 import mrtjp.projectred.integration.ComponentStore;
 import mrtjp.projectred.integration.ComponentStore.ComponentModel;
@@ -11,6 +11,8 @@ import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
 import scala.actors.threadpool.Arrays;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.PartCircuit;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Rotation;

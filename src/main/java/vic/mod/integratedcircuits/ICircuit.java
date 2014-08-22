@@ -6,6 +6,8 @@ public interface ICircuit
 {
 	public int[][][] getMatrix();
 	
+	public void setMatrix(int[][][] matrix);
+	
 	public boolean getInputFromSide(ForgeDirection dir, int frequency);
 	
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output);

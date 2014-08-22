@@ -50,14 +50,13 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te != null)
 		{
-			te.pcbMatrix[0][x][y] = id;
-			te.pcbMatrix[1][x][y] = data;
-			if(side == Side.SERVER)
-			{
-				SubLogicPart.getPart(x, y, te).onPlaced();
-				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(te.pcbMatrix, xCoord, yCoord, zCoord), 
-					new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
-			}
+			int[][][] matrix = te.getMatrix();
+			matrix[0][x][y] = id;
+			matrix[1][x][y] = data;
+			
+			SubLogicPart.getPart(x, y, te).notifyNeighbours();
+			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(matrix, xCoord, yCoord, zCoord), 
+				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 		}
 	}
 }

@@ -57,7 +57,7 @@ public class SubLogicPartRenderer
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, 0);
 		GL11.glTranslatef(8F, 8F, 0);
-		GL11.glRotatef(rotation, 0, 0, 1);
+		GL11.glRotatef(-rotation, 0, 0, 1);
 		GL11.glTranslatef(-8F, -8F, 0);
 		gui.drawTexturedModalRect(0, 0, u, v, 16, 16);
 		GL11.glPopMatrix();
@@ -232,6 +232,7 @@ public class SubLogicPartRenderer
 			return matrix;
 		}
 
+		@Override public void setMatrix(int[][][] matrix) {}
 		@Override public boolean getInputFromSide(ForgeDirection dir, int frequency) { return false; }
 		@Override public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) {}
 	}

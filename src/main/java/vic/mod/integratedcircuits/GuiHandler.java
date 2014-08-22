@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import vic.mod.integratedcircuits.client.GuiPCBLayout;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.network.IGuiHandler;

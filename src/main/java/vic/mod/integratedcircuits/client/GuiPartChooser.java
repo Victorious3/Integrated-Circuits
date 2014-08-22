@@ -1,10 +1,13 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.client;
 
 import java.util.ArrayList;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.SubLogicPart;
+import vic.mod.integratedcircuits.SubLogicPartRenderer;
 import vic.mod.integratedcircuits.SubLogicPart.PartNull;
 
 public class GuiPartChooser extends GuiButton

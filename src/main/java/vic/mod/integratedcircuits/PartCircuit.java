@@ -3,6 +3,7 @@ package vic.mod.integratedcircuits;
 import java.util.Arrays;
 import java.util.Random;
 
+import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import mrtjp.projectred.integration.BundledGateLogic;
 import mrtjp.projectred.integration.BundledGatePart;
 import net.minecraft.entity.player.EntityPlayer;
@@ -65,7 +66,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		tier = tag.getShort("tier");
 		name = tag.getString("name");
 		genMatrix();
-		matrix = Misc.readPCBMatrix(tag);
+		matrix = MiscUtils.readPCBMatrix(tag);
 		genOutput();
 	}
 	
@@ -76,7 +77,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		
 		tag.setShort("tier", tier);
 		tag.setString("name", name);
-		Misc.writePCBMatrix(tag, matrix);
+		MiscUtils.writePCBMatrix(tag, matrix);
 	}
 
 	@Override
@@ -93,7 +94,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		tier = packet.readShort();
 		name = packet.readString();
 		genMatrix();
-		matrix = Misc.readPCBMatrix(packet.readNBTTagCompound());
+		matrix = MiscUtils.readPCBMatrix(packet.readNBTTagCompound());
 		genOutput();
 	}
 	
@@ -105,7 +106,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		packet.writeShort(tier);
 		packet.writeString(name);
 		NBTTagCompound compound = new NBTTagCompound();
-		Misc.writePCBMatrix(compound, matrix);
+		MiscUtils.writePCBMatrix(compound, matrix);
 		packet.writeNBTTagCompound(compound);
 	}
 
@@ -232,6 +233,12 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	public int[][][] getMatrix() 
 	{
 		return matrix;
+	}
+	
+	@Override
+	public void setMatrix(int[][][] matrix) 
+	{
+		this.matrix = matrix;
 	}
 
 	@Override

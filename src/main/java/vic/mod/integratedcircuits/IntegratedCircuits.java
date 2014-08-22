@@ -1,6 +1,8 @@
 package vic.mod.integratedcircuits;
 
+import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
+import vic.mod.integratedcircuits.net.PacketPCBReload;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import codechicken.multipart.MultiPartRegistry;
 import cpw.mods.fml.common.Mod;
@@ -21,6 +23,7 @@ public class IntegratedCircuits
 	public static final String partCircuit = modID + "_circuit";
 	
 	public static ItemCircuit itemCircuit;
+	public static ItemFloppyDisk itemFloppyDisk;
 	
 	public static BlockPCBLayout blockPCBLayout;
 	public static SimpleNetworkWrapper networkWrapper;
@@ -35,22 +38,27 @@ public class IntegratedCircuits
 	public void preInit(FMLPreInitializationEvent event)
     {
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
-    	Misc.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
-    	Misc.registerPacket(PacketPCBChangePart.class, null, 1);
+    	MiscUtils.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
+    	MiscUtils.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
+    	MiscUtils.registerPacket(PacketPCBReload.class, null, 2);
+    	MiscUtils.registerPacket(PacketPCBChangeName.class, null, 3);
     	
     	itemCircuit = new ItemCircuit();
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);
     	
+    	itemFloppyDisk = new ItemFloppyDisk();
+    	GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);
+    	
     	blockPCBLayout = new BlockPCBLayout();
     	GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
     	
-    	GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayout");
+    	GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
     }
     
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
-    	MultiPartRegistry.registerParts(new Misc(), new String[]{partCircuit});
+    	MultiPartRegistry.registerParts(new PartFactory(), new String[]{partCircuit});
     	proxy.initialize();
     }
 }

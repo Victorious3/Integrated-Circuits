@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import vic.mod.integratedcircuits.Misc;
+import vic.mod.integratedcircuits.MiscUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -18,7 +18,7 @@ public abstract class AbstractPacket<T extends AbstractPacket<T>> implements IMe
 	@Override
 	public IMessage onMessage(T message, MessageContext ctx) 
 	{
-		message.process(ctx.side.isServer() ? ctx.getServerHandler().playerEntity : Misc.thePlayer(), ctx.side);
+		message.process(ctx.side.isServer() ? ctx.getServerHandler().playerEntity : MiscUtils.thePlayer(), ctx.side);
 		return null;
 	}
 

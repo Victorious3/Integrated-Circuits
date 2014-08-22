@@ -48,6 +48,6 @@ public class PacketPCBUpdate extends PacketPCB<PacketPCBUpdate>
 	public void process(EntityPlayer player, Side side) 
 	{
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
-		if(te != null) te.pcbMatrix = matrix;
+		if(te != null) te.setMatrix(matrix);
 	}
 }
