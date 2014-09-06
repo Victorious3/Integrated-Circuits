@@ -14,6 +14,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockPCBLayout extends BlockContainer
 {
@@ -51,12 +53,14 @@ public class BlockPCBLayout extends BlockContainer
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int meta) 
 	{
 		return getIcon(null, side);
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int s) 
 	{
 		return getIcon((TileEntityPCBLayout)world.getTileEntity(x, y, z), s);
@@ -78,6 +82,7 @@ public class BlockPCBLayout extends BlockContainer
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister ir) 
 	{
 		front_off = ir.registerIcon(IntegratedCircuits.modID + ":cad_front_off");

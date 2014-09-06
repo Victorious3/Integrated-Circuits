@@ -10,6 +10,7 @@ import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -29,6 +30,7 @@ public class ClientProxy extends CommonProxy
 	public void registerRenderers()
 	{
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 	}
 	
 	@SubscribeEvent

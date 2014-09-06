@@ -27,6 +27,7 @@ public class IntegratedCircuits
 	public static ItemFloppyDisk itemFloppyDisk;
 	
 	public static BlockPCBLayout blockPCBLayout;
+	public static BlockAssembler blockAssembler;
 	public static SimpleNetworkWrapper networkWrapper;
 	
 	@Instance(modID)
@@ -52,9 +53,12 @@ public class IntegratedCircuits
     	GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);
     	
     	blockPCBLayout = new BlockPCBLayout();
+    	blockAssembler = new BlockAssembler();
     	GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
+    	GameRegistry.registerBlock(blockAssembler, modID + ".assembler");
     	
     	GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
+    	GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
     }
     
     @EventHandler
