@@ -51,7 +51,7 @@ public class BlockAssembler extends BlockContainer
 		top = ir.registerIcon(IntegratedCircuits.modID + ":assembler_top");
 		side = ir.registerIcon(IntegratedCircuits.modID + ":assembler_side");
 	}
-	
+
 	@Override
 	public boolean isOpaqueCube() 
 	{

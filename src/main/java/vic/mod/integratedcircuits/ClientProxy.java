@@ -2,11 +2,13 @@ package vic.mod.integratedcircuits;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
+import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -72,5 +74,15 @@ public class ClientProxy extends CommonProxy
 		GL11.glDisable(GL11.GL_BLEND);
 		
 		event.setCanceled(true);
+	}
+	
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload event)
+	{
+		for(Framebuffer buf : TileEntityAssembler.fboArray)
+		{
+			buf.deleteFramebuffer();
+		}
+		TileEntityAssembler.fboArray.clear();
 	}
 }

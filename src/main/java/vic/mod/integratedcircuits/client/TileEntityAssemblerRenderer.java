@@ -30,15 +30,16 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 		tes.draw();
 		
-		if(te.circuitFBO == null) te.initFramebuffer();
-		
-		te.circuitFBO.bindFramebufferTexture();
-		tes.startDrawingQuads();
-		tes.addVertexWithUV(0, 9 / 16F, 0, 0, 0);
-		tes.addVertexWithUV(0, 9 / 16F, 1, 0, 1);
-		tes.addVertexWithUV(1, 9 / 16F, 1, 1, 1);
-		tes.addVertexWithUV(1, 9 / 16F, 0, 1, 0);
-		tes.draw();
+		if(te.circuitFBO != null)
+		{
+			te.circuitFBO.bindFramebufferTexture();
+			tes.startDrawingQuads();
+			tes.addVertexWithUV(0, 9 / 16F, 0, 0, 0);
+			tes.addVertexWithUV(0, 9 / 16F, 1, 0, 1);
+			tes.addVertexWithUV(1, 9 / 16F, 1, 1, 1);
+			tes.addVertexWithUV(1, 9 / 16F, 0, 1, 0);
+			tes.draw();
+		}
 
 		GL11.glRotatef(180, 0, 0, 1);
 		GL11.glTranslatef(-1.005F, -1, 0);
