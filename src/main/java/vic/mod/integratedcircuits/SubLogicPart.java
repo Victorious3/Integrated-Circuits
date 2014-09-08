@@ -625,6 +625,7 @@ public abstract class SubLogicPart
 		public void onPlaced()
 		{
 			setState(2 << 16);
+			setState(getState() | 32768);
 		}
 
 		@Override
@@ -844,7 +845,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onPlaced()
 		{
-			setState(10 << 15);
+			setState(10 << 16);
 		}
 
 		@Override
@@ -860,9 +861,18 @@ public abstract class SubLogicPart
 					setState(getState() & ~f2);
 					setUpdate(false);
 				}
-				else setUpdate(true);
+				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())))
+					setUpdate(true);
+				
+				notifyNeighbours();
 			}
-			else if(s2 == ForgeDirection.SOUTH && (getState() & f1) > 0) setUpdate(true);
+			else if(s2 == ForgeDirection.SOUTH && (getState() & f1) > 0)
+			{
+				super.onInputChange(side);
+				if(getInputFromSide(side)) setUpdate(false);
+				else setUpdate(true);
+				notifyNeighbours();
+			}
 		}	
 	}
 
@@ -928,7 +938,11 @@ public abstract class SubLogicPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			if((MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) || !getInputFromSide(side)) setUpdate(false);
+			if((MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) || !getInputFromSide(side)) 
+			{
+				setUpdate(false);
+				return;
+			}
 			if(getInputFromSide(side)) setState(getState() | 128); 
 			notifyNeighbours();
 		}
