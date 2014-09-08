@@ -937,14 +937,13 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
+			if((MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH)) return;
 			super.onInputChange(side);
-			if((MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) || !getInputFromSide(side)) 
+			if(getInputFromSide(side)) 
 			{
-				setUpdate(false);
-				return;
+				setState(getState() | 128);
+				notifyNeighbours();
 			}
-			if(getInputFromSide(side)) setState(getState() | 128); 
-			notifyNeighbours();
 		}
 
 		@Override
