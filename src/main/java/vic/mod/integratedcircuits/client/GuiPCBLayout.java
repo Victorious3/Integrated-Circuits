@@ -100,31 +100,31 @@ public class GuiPCBLayout extends GuiContainer
 			SubLogicPartRenderer.createEncapsulated(PartWire.class, 2 << 5))), this));
 		
 		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, SubLogicPartRenderer.createEncapsulated(PartToggleLatch.class),
-				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartRSLatch.class),
-				SubLogicPartRenderer.createEncapsulated(PartTranspartentLatch.class))), this));
+			new ArrayList<SubLogicPart>(Arrays.asList(
+			SubLogicPartRenderer.createEncapsulated(PartRSLatch.class),
+			SubLogicPartRenderer.createEncapsulated(PartTranspartentLatch.class))), this));
 		
 		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, SubLogicPartRenderer.createEncapsulated(PartANDGate.class),
-				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartORGate.class),
-				SubLogicPartRenderer.createEncapsulated(PartXORGate.class),
-				SubLogicPartRenderer.createEncapsulated(PartBufferGate.class))), this));
+			new ArrayList<SubLogicPart>(Arrays.asList(
+			SubLogicPartRenderer.createEncapsulated(PartORGate.class),
+			SubLogicPartRenderer.createEncapsulated(PartXORGate.class),
+			SubLogicPartRenderer.createEncapsulated(PartBufferGate.class))), this));
 		
 		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, SubLogicPartRenderer.createEncapsulated(PartNANDGate.class),
-				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartNORGate.class),
-				SubLogicPartRenderer.createEncapsulated(PartXNORGate.class),
-				SubLogicPartRenderer.createEncapsulated(PartNOTGate.class))), this));
+			new ArrayList<SubLogicPart>(Arrays.asList(
+			SubLogicPartRenderer.createEncapsulated(PartNORGate.class),
+			SubLogicPartRenderer.createEncapsulated(PartXNORGate.class),
+			SubLogicPartRenderer.createEncapsulated(PartNOTGate.class))), this));
 		
 		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, SubLogicPartRenderer.createEncapsulated(PartTimer.class),
-				new ArrayList<SubLogicPart>(Arrays.asList(
-				SubLogicPartRenderer.createEncapsulated(PartSequencer.class),
-				SubLogicPartRenderer.createEncapsulated(PartSynchronizer.class),
-				SubLogicPartRenderer.createEncapsulated(PartStateCell.class),
-				SubLogicPartRenderer.createEncapsulated(PartPulseFormer.class),
-				SubLogicPartRenderer.createEncapsulated(PartRandomizer.class),
-				SubLogicPartRenderer.createEncapsulated(PartRepeater.class),
-				SubLogicPartRenderer.createEncapsulated(PartMultiplexer.class))), this));
+			new ArrayList<SubLogicPart>(Arrays.asList(
+			SubLogicPartRenderer.createEncapsulated(PartSequencer.class),
+			SubLogicPartRenderer.createEncapsulated(PartSynchronizer.class),
+			SubLogicPartRenderer.createEncapsulated(PartStateCell.class),
+			SubLogicPartRenderer.createEncapsulated(PartPulseFormer.class),
+			SubLogicPartRenderer.createEncapsulated(PartRandomizer.class),
+			SubLogicPartRenderer.createEncapsulated(PartRepeater.class),
+			SubLogicPartRenderer.createEncapsulated(PartMultiplexer.class))), this));
 		
 		buttonPlus = new GuiButtonExt(8, cx + 190, cy + 238, 10, 10, "+");
 		this.buttonList.add(buttonPlus);
@@ -144,7 +144,7 @@ public class GuiPCBLayout extends GuiContainer
 		nameField.setMaxStringLength(7);
 		nameField.setCanLoseFocus(true);
 		nameField.setFocused(false);
-		
+
 		super.initGui();
 	}
 	
@@ -355,6 +355,10 @@ public class GuiPCBLayout extends GuiContainer
 	
 	private void scale(int i)
 	{
+		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix()[0].length;
+		double ow = w * 16 * scale;	
+		float oldScale = scale;
+		
 		int index = scales.indexOf(scale);
 		
 		if(i > 0 && index + 1 < scales.size()) scale = scales.get(index + 1);
@@ -367,18 +371,7 @@ public class GuiPCBLayout extends GuiContainer
 			
 			if(scale == 0.17F) buttonMinus.enabled = false;
 			if(scale == 2F) buttonPlus.enabled = false;
-		}	
-	}
-	
-	@Override
-	public void handleMouseInput() 
-	{
-		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix()[0].length;
-		double ow = w * 16 * scale;	
-		int i = Mouse.getEventDWheel();
-		float oldScale = scale;
-		
-		scale(i);
+		}
 		
 		double change = (double)scale / (double)oldScale;
 		double nw = w * 16 * scale;
@@ -397,6 +390,12 @@ public class GuiPCBLayout extends GuiContainer
 			offX = offX / change;
 			offY = offY / change;
 		}
+	}
+	
+	@Override
+	public void handleMouseInput() 
+	{
+		scale(Mouse.getEventDWheel());
 		
 		super.handleMouseInput();
 	}

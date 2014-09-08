@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.DiskDriveUtils;
 import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
@@ -19,10 +20,13 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 	private ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
-	{	
+	{		
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
+		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
+		GL11.glRotatef(-90 * te.rotation, 0, 1, 0);
+		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		
 		Tessellator tes = Tessellator.instance;
 		this.bindTexture(bottomTex);
@@ -56,6 +60,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		tes.draw();
 		
 		GL11.glPopMatrix();
+		
+		DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
 	}
 	
 	@Override

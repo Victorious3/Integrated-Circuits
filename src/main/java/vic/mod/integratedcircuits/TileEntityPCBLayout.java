@@ -29,7 +29,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 			{
 				for(int y = 0; y < pcbMatrix[0][x].length; y++)
 				{
-					SubLogicPart.getPart(x, y, this).onUpdateTick();
+					SubLogicPart.getPart(x, y, this).onTick();
 				}
 			}
 			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getMatrix(), xCoord, yCoord, zCoord), 

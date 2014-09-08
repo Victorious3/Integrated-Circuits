@@ -3,12 +3,12 @@ package vic.mod.integratedcircuits;
 import java.util.Arrays;
 import java.util.Random;
 
-import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import mrtjp.projectred.integration.BundledGateLogic;
 import mrtjp.projectred.integration.BundledGatePart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;

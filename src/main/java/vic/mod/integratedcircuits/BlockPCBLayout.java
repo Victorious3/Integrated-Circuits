@@ -69,6 +69,7 @@ public class BlockPCBLayout extends BlockContainer
 		return getIcon((TileEntityPCBLayout)world.getTileEntity(x, y, z), s);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	private IIcon getIcon(TileEntityPCBLayout te, int s)
 	{
 		boolean on = false;

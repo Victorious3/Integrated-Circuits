@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 
 import org.lwjgl.opengl.GL11;
@@ -28,7 +29,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@SideOnly(Side.CLIENT)
 	public void updateFramebuffer()
 	{
-		if(matrix == null) return;
+//		if(matrix == null) return;
 		if(circuitFBO == null)
 		{
 			circuitFBO = new Framebuffer(64, 64, false);
@@ -79,6 +80,28 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	}
 
 	@Override
+	public void readFromNBT(NBTTagCompound compound) 
+	{
+		super.readFromNBT(compound);
+		for(int i = 0; i < 1; i++)
+		{
+			if(compound.getCompoundTag("stack_" + i).hasNoTags())
+				contents[i] = null;
+			else contents[i] = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("stack_" + i));
+		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound compound) 
+	{
+		super.writeToNBT(compound);
+		for(int i = 0; i < 1; i++)
+		{
+			compound.setTag("stack_" + i, contents[i] != null ? contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
+		}
+	}
+
+	@Override
 	public void updateEntity() 
 	{
 		if(circuitFBO == null && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) updateFramebuffer();
@@ -88,7 +111,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void invalidate() 
 	{
 		super.invalidate();
-		if(worldObj.isRemote) 
+		if(worldObj.isRemote && circuitFBO != null) 
 		{
 			circuitFBO.deleteFramebuffer();
 			fboArray.remove(circuitFBO);

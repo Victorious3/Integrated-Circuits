@@ -75,7 +75,7 @@ public abstract class SubLogicPart
 		notifyNeighbours();
 	}
 	
-	public void onUpdateTick(){}
+	public void onTick(){}
 	
 	public void onClick(int button, boolean ctrl){}
 	
@@ -220,7 +220,7 @@ public abstract class SubLogicPart
 			super.onInputChange(side);
 			notifyNeighbours();
 		}
-		
+
 		public int getColor()
 		{
 			return (getState() & ~16) >> 5;
@@ -297,7 +297,7 @@ public abstract class SubLogicPart
 		}
 
 		@Override
-		public void onUpdateTick() 
+		public void onTick() 
 		{
 			if(getUpdateFlag())
 			{
@@ -578,7 +578,7 @@ public abstract class SubLogicPart
 		}
 		
 		@Override
-		public void onUpdateTick() 
+		public void onTick() 
 		{
 			if(getUpdateFlag())
 			{
@@ -672,10 +672,10 @@ public abstract class SubLogicPart
 		}
 		
 		@Override
-		public void onUpdateTick() 
+		public void onTick() 
 		{
 			int state = getState();
-			super.onUpdateTick();
+			super.onTick();
 		}
 
 		@Override
@@ -703,7 +703,6 @@ public abstract class SubLogicPart
 		}	
 	}
 	
-	//FIXME: Can't rotate due to very frequent updates.
 	public static class PartTimer extends PartDelayedAction
 	{
 		public PartTimer(int x, int y, ICircuit parent) 
@@ -867,7 +866,6 @@ public abstract class SubLogicPart
 		}	
 	}
 
-	//TODO Untested
 	public static class PartRandomizer extends PartDelayedAction
 	{
 		public PartRandomizer(int x, int y, ICircuit parent) 
@@ -919,7 +917,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	public static class PartPulseFormer extends PartGate
+	public static class PartPulseFormer extends PartDelayedAction
 	{
 		public PartPulseFormer(int x, int y, ICircuit parent) 
 		{
@@ -931,6 +929,7 @@ public abstract class SubLogicPart
 		{
 			super.onInputChange(side);
 			if((MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) || !getInputFromSide(side)) setUpdate(false);
+			if(getInputFromSide(side)) setState(getState() | 128); 
 			notifyNeighbours();
 		}
 
@@ -939,7 +938,7 @@ public abstract class SubLogicPart
 		{
 			ForgeDirection f2 = MiscUtils.rotn(side, getRotation());
 			if(f2 != ForgeDirection.NORTH) return false;
-			return getUpdateFlag();
+			return (getState() & 128) > 0;
 		}
 
 		@Override
@@ -947,6 +946,25 @@ public abstract class SubLogicPart
 		{
 			ForgeDirection f2 = MiscUtils.rotn(side, getRotation());
 			return f2 == ForgeDirection.NORTH || f2 == ForgeDirection.SOUTH;
+		}
+
+		@Override
+		public void onTick() 
+		{
+			super.onTick();
+		}
+
+		@Override
+		protected int getDelay() 
+		{
+			return 2;
+		}
+
+		@Override
+		public void onDelay() 
+		{
+			setState(getState() & ~128);
+			super.onDelay();
 		}
 	}
 	
@@ -1088,7 +1106,7 @@ public abstract class SubLogicPart
 		}
 
 		@Override
-		public void onUpdateTick()
+		public void onTick()
 		{
 			if(getUpdateFlag())
 			{

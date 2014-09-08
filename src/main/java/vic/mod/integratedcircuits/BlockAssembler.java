@@ -4,8 +4,12 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -29,15 +33,44 @@ public class BlockAssembler extends BlockContainer
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int s, int meta) 
+	public IIcon getIcon(int side, int meta) 
 	{
-		switch(s) {
-		case 0 : return bottom;
-		case 1 : return top;
-		case 2 : return front_on;
-		case 3 : return back;
-		default : return side;
-		}
+		return getIcon(null, side);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int s) 
+	{
+		return getIcon((TileEntityAssembler)world.getTileEntity(x, y, z), s);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	private IIcon getIcon(TileEntityAssembler te, int s)
+	{
+		int rotation = te != null ? te.rotation : 0;
+		
+		if(s == 0) return bottom;
+		else if(s == 1) return top;
+		else if(s == 2 && rotation == 0 || s == 5 && rotation == 1 
+			|| s == 3 && rotation == 2 || s == 4 && rotation == 3) return front_on;
+		else if(s == 3 && rotation == 0 || s == 4 && rotation == 1 
+			|| s == 2 && rotation == 2 || s == 5 && rotation == 3) return back;
+		else return side;
+	}
+	
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) 
+	{
+		int rotation = MathHelper.floor_double((double)(entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+		TileEntityAssembler te = (TileEntityAssembler)world.getTileEntity(x, y, z);
+		if(te != null) te.rotation = rotation;
+	}
+
+	@Override
+	public void onBlockPreDestroy(World world, int x, int y, int z, int meta) 
+	{
+		DiskDriveUtils.dropFloppy((IDiskDrive)world.getTileEntity(x, y, z), world, x, y, z);
 	}
 
 	@Override

@@ -48,11 +48,8 @@ public class ClientProxy extends CommonProxy
 		Block block = world.getBlock(x, y, z);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		
-		if(block instanceof BlockPCBLayout)
-		{
-			box = DiskDriveUtils.getDiskDriveBoundingBox((TileEntityPCBLayout)tileEntity, x, y, z, event.target.hitVec);
-		}
-		
+		if(tileEntity instanceof IDiskDrive)
+			box = DiskDriveUtils.getDiskDriveBoundingBox((IDiskDrive)tileEntity, x, y, z, event.target.hitVec);	
 		if(box == null) return;
 		
 		double xOff = event.player.lastTickPosX + (event.player.posX - event.player.lastTickPosX) * event.partialTicks;
