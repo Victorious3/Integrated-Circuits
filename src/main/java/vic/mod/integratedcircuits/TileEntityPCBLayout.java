@@ -1,23 +1,16 @@
 package vic.mod.integratedcircuits;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
-public class TileEntityPCBLayout extends TileEntity implements ICircuit, IInventory
+public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDiskDrive
 {
 	private int[][][] pcbMatrix;
 	public String name = "NO_NAME";
-	public int rotation;
-	public int playersUsing;
 	private ItemStack floppyStack;
 	
 	public void setup(int width, int height)
@@ -49,7 +42,6 @@ public class TileEntityPCBLayout extends TileEntity implements ICircuit, IInvent
 	{
 		super.readFromNBT(compound);
 		pcbMatrix = MiscUtils.readPCBMatrix(compound);
-		rotation = compound.getInteger("rotation");
 		NBTTagCompound stackCompound = compound.getCompoundTag("floppyStack");
 		floppyStack = ItemStack.loadItemStackFromNBT(stackCompound);
 		name = compound.getString("name");
@@ -60,39 +52,12 @@ public class TileEntityPCBLayout extends TileEntity implements ICircuit, IInvent
 	{
 		super.writeToNBT(compound);
 		MiscUtils.writePCBMatrix(compound, pcbMatrix);
-		compound.setInteger("rotation", rotation);
 		NBTTagCompound stackCompound = new NBTTagCompound();
 		if(floppyStack != null) floppyStack.writeToNBT(stackCompound);
 		compound.setTag("floppyStack", stackCompound);
 		compound.setString("name", name);
 	}
-
-	@Override
-	public Packet getDescriptionPacket() 
-	{
-		NBTTagCompound compound = new NBTTagCompound();
-		writeToNBT(compound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, compound);
-	}
-
-	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) 
-	{
-		NBTTagCompound compound = pkt.func_148857_g();
-		readFromNBT(compound);
-	}
-
-	@Override
-	public boolean receiveClientEvent(int id, int par)
-	{
-		if(id == 0)
-		{
-			playersUsing = par;
-			return true;
-		}
-		return false;
-	}
-
+	
 	@Override
 	public int[][][] getMatrix() 
 	{
@@ -169,28 +134,26 @@ public class TileEntityPCBLayout extends TileEntity implements ICircuit, IInvent
 	}
 
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player) 
-	{
-		return player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 64;
-	}
-
-	@Override
-	public void openInventory() 
-	{
-		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
-		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, ++playersUsing);
-	}
-
-	@Override
-	public void closeInventory() 
-	{
-		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
-		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, --playersUsing);
-	}
-
-	@Override
 	public boolean isItemValidForSlot(int id, ItemStack stack) 
 	{
 		return id == 0 && (stack == null || stack.getItem() == null || stack.getItem() == IntegratedCircuits.itemFloppyDisk);
+	}
+
+	@Override
+	public AxisAlignedBB getBoundingBox() 
+	{
+		return MiscUtils.getRotatedInstance(AxisAlignedBB.getBoundingBox(1 / 16F, 1 / 16F, -1 / 16F, 13 / 16F, 3 / 16F, 1 / 16F), rotation);
+	}
+
+	@Override
+	public ItemStack getDisk() 
+	{
+		return getStackInSlot(0);
+	}
+
+	@Override
+	public void setDisk(ItemStack stack) 
+	{
+		setInventorySlotContents(0, stack);
 	}
 }

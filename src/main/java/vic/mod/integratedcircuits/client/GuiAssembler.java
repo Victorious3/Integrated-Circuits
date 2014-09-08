@@ -1,11 +1,11 @@
 package vic.mod.integratedcircuits.client;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.inventory.Container;
+import vic.mod.integratedcircuits.ContainerAssembler;
 
 public class GuiAssembler extends GuiContainer
 {
-	public GuiAssembler(Container container) 
+	public GuiAssembler(ContainerAssembler container) 
 	{
 		super(container);
 	}

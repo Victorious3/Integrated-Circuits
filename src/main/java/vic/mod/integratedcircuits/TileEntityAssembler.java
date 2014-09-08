@@ -3,7 +3,9 @@ package vic.mod.integratedcircuits;
 import java.util.ArrayList;
 
 import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
 
 import org.lwjgl.opengl.GL11;
 
@@ -11,7 +13,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAssembler extends TileEntity
+public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory
 {
 	@SideOnly(Side.CLIENT)
 	public Framebuffer circuitFBO;
@@ -20,16 +22,19 @@ public class TileEntityAssembler extends TileEntity
 	@SideOnly(Side.CLIENT)
 	public static ArrayList<Framebuffer> fboArray = new ArrayList<Framebuffer>();
 	
-	public TileEntityAssembler()
-	{
-		
-	}
+	public int[][][] matrix;
+	public ItemStack[] contents = new ItemStack[1];
 	
 	@SideOnly(Side.CLIENT)
-	public void initFramebuffer()
+	public void updateFramebuffer()
 	{
-		circuitFBO = new Framebuffer(64, 64, false);
-		fboArray.add(circuitFBO);
+		if(matrix == null) return;
+		if(circuitFBO == null)
+		{
+			circuitFBO = new Framebuffer(64, 64, false);
+			fboArray.add(circuitFBO);
+		}
+		circuitFBO.framebufferClear();
 		circuitFBO.bindFramebuffer(false);
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -39,7 +44,7 @@ public class TileEntityAssembler extends TileEntity
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
         
-		GL11.glColor3f(1F, 0, 0);
+		GL11.glColor3f(0, 0.3F, 0);
 		
 		GL11.glBegin(GL11.GL_QUADS);
 		GL11.glVertex2i(0, 0);
@@ -56,7 +61,7 @@ public class TileEntityAssembler extends TileEntity
 		GL11.glEnd();
 		
 		GL11.glLineWidth(1F);
-		GL11.glColor3f(1F, 1F, 0);
+		GL11.glColor3f(0, 0.8F, 0);
 		GL11.glBegin(GL11.GL_LINES);
 		GL11.glVertex2i(1, 1);
 		GL11.glVertex2i(15, 30);
@@ -76,7 +81,7 @@ public class TileEntityAssembler extends TileEntity
 	@Override
 	public void updateEntity() 
 	{
-		if(circuitFBO == null && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) initFramebuffer();
+		if(circuitFBO == null && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) updateFramebuffer();
 	}
 
 	@Override
@@ -88,5 +93,104 @@ public class TileEntityAssembler extends TileEntity
 			circuitFBO.deleteFramebuffer();
 			fboArray.remove(circuitFBO);
 		}
+	}
+
+	@Override
+	public int getSizeInventory() 
+	{
+		return 1;
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int id) 
+	{
+		return contents[id];
+	}
+
+	@Override
+	public ItemStack decrStackSize(int id, int amount) 
+	{
+		if(contents[id] == null) return null;
+		contents[id].stackSize -= amount;
+		if(contents[id].stackSize < 1) contents[id] = null;
+		this.markDirty();
+		return contents[id];
+	}
+
+	@Override
+	public ItemStack getStackInSlotOnClosing(int id) 
+	{
+		return getStackInSlot(id);
+	}
+
+	@Override
+	public void setInventorySlotContents(int id, ItemStack stack) 
+	{
+		contents[id] = stack;
+		markDirty();
+	}
+
+	@Override
+	public String getInventoryName() 
+	{
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomInventoryName() 
+	{
+		return false;
+	}
+
+	@Override
+	public int getInventoryStackLimit() 
+	{
+		return 1;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int id, ItemStack stack) 
+	{
+		return id == 0 && (stack == null || stack.getItem() == null || stack.getItem() == IntegratedCircuits.itemFloppyDisk);
+	}
+
+	@Override
+	public AxisAlignedBB getBoundingBox() 
+	{
+		return MiscUtils.getRotatedInstance(AxisAlignedBB.getBoundingBox(1 / 16F, 1 / 16F, -1 / 16F, 13 / 16F, 3 / 16F, 1 / 16F), rotation);
+	}
+
+	@Override
+	public ItemStack getDisk() 
+	{
+		return getStackInSlot(0);
+	}
+
+	@Override
+	public void setDisk(ItemStack stack) 
+	{
+		setInventorySlotContents(0, stack);
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+
+	@Override
+	public int[] getAccessibleSlotsFromSide(int side) 
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean canInsertItem(int slot, ItemStack stack, int side) 
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean canExtractItem(int slot, ItemStack stack, int side) 
+	{
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

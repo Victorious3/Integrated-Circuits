@@ -7,13 +7,16 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 
 public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 {
-	ResourceLocation safetyRegulationsTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_safety.png");
-	ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
+	private static ModelFloppy model = new ModelFloppy(-7, -7, -9, 12, 2, 1);
+	
+	private ResourceLocation safetyRegulationsTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_safety.png");
+	private ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
 	{	

@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -31,16 +30,14 @@ public class BlockPCBLayout extends BlockContainer
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) 
 	{
-		Vec3 hitVec = Vec3.createVectorHelper(par7, par8, par9);
-		hitVec = hitVec.addVector(x, y, z);
 		TileEntityPCBLayout te = (TileEntityPCBLayout)world.getTileEntity(x, y, z);
-		AxisAlignedBB box = IntegratedCircuits.proxy.getDiskDriveBoundingBox(te, x, y, z, hitVec);
 		int rotation = te.rotation;
+		boolean bool = DiskDriveUtils.canInteractWith(Vec3.createVectorHelper(par7, par8, par9), world, x, y, z);
 		boolean canInteract = rotation == 3 && par6 == 4 
 			|| rotation == 0 && par6 == 2 
 			|| rotation == 1 && par6 == 5 
 			|| rotation == 2 && par6 == 3;
-		if(box == null && canInteract) player.openGui(IntegratedCircuits.instance, 0, world, x, y, z);
+		if(bool && canInteract) player.openGui(IntegratedCircuits.instance, 0, world, x, y, z);
 		return canInteract;
 	}
 
@@ -50,6 +47,12 @@ public class BlockPCBLayout extends BlockContainer
 		int rotation = MathHelper.floor_double((double)(entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 		TileEntityPCBLayout te = (TileEntityPCBLayout)world.getTileEntity(x, y, z);
 		if(te != null) te.rotation = rotation;
+	}
+
+	@Override
+	public void onBlockPreDestroy(World world, int x, int y, int z, int meta) 
+	{
+		DiskDriveUtils.dropFloppy((IDiskDrive)world.getTileEntity(x, y, z), world, x, y, z);
 	}
 
 	@Override

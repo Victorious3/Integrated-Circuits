@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.Constants.NBT;
@@ -106,5 +107,17 @@ public class MiscUtils
 		
 		MovingObjectPosition target = player.worldObj.rayTraceBlocks(start, end);
 		return target;
+	}
+	
+	public static AxisAlignedBB getRotatedInstance(AxisAlignedBB def, int rotation)
+	{
+		def.offset(-0.5, -0.5, -0.5);
+		switch (rotation) {
+		case 2 : def = AxisAlignedBB.getBoundingBox(def.minZ, def.minY, def.maxX * -1, def.maxZ, def.maxY, def.minX * -1);
+		case 3 : def = AxisAlignedBB.getBoundingBox(def.maxX * -1, def.minY, def.maxZ * -1, def.minX * -1, def.maxY, def.minZ * -1);
+		case 1 : def = AxisAlignedBB.getBoundingBox(def.maxZ * -1, def.minY, def.minX, def.minZ * -1, def.maxY, def.maxX);
+		}
+		def.offset(0.5, 0.5, 0.5);	
+		return def;
 	}
 }

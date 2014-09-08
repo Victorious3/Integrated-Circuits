@@ -635,8 +635,7 @@ public abstract class SubLogicPart
 			{
 				int delay = getDelay();
 				int newDelay = 0;
-				switch(delay)
-				{
+				switch (delay) {
 				case 2 : delay = 4; break;
 				case 4 : delay = 8; break;
 				case 8 : delay = 16; break;

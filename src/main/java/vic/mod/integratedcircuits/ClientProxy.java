@@ -50,7 +50,7 @@ public class ClientProxy extends CommonProxy
 		
 		if(block instanceof BlockPCBLayout)
 		{
-			box = getDiskDriveBoundingBox((TileEntityPCBLayout)tileEntity, x, y, z, event.target.hitVec);
+			box = DiskDriveUtils.getDiskDriveBoundingBox((TileEntityPCBLayout)tileEntity, x, y, z, event.target.hitVec);
 		}
 		
 		if(box == null) return;
