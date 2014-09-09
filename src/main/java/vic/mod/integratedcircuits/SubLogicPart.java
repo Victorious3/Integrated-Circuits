@@ -824,7 +824,7 @@ public abstract class SubLogicPart
 		{
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
 			if(s2 == ForgeDirection.WEST && (getState() & f1) > 0) return true;
-			if(s2 == ForgeDirection.SOUTH && (getState() & f2) > 0) return true;
+			if(s2 == ForgeDirection.NORTH && (getState() & f2) > 0) return true;
 			return false;
 		}
 
@@ -1015,7 +1015,6 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	//FIXME Almost. Messed up.
 	public static class PartRSLatch extends PartGate
 	{
 		public PartRSLatch(int x, int y, ICircuit parent) 
@@ -1034,28 +1033,34 @@ public abstract class SubLogicPart
 				setState(getState() | state << 8);
 			}
 		}
+		
+		private boolean isMirrored()
+		{
+			return (getState() & 512) > 0;
+		}
+		
+		private boolean isSpecial()
+		{
+			return (getState() & 256) > 0;
+		}
 
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			super.onInputChange(side);
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if(!(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH)) 
-			{
-				setUpdate(false);
-				return;
-			}
-			if(s2 == ForgeDirection.NORTH || (getState() & 512) > 0) setState(getState() | 128);
+			if(s2 == ForgeDirection.EAST || s2 == ForgeDirection.WEST) return;
+			if(s2 == ForgeDirection.NORTH || isMirrored()) setState(getState() | 128);
 			else setState(getState() & ~128);
+			setUpdate(true);
 		}
 
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if((getState() & 512) > 0) s2 = MiscUtils.rotn(s2, 2);
-			if((s2 == ForgeDirection.EAST || (s2 == ForgeDirection.NORTH && (getState() & 256) > 0)) && (getState() & 128) > 0) return true;
-			if((s2 == ForgeDirection.WEST || (s2 == ForgeDirection.SOUTH && (getState() & 256) > 0)) && (getState() & 128) == 0) return true;
+			if(isMirrored()) s2 = MiscUtils.rotn(s2, 2);
+			if((s2 == ForgeDirection.EAST || (s2 == ForgeDirection.NORTH && isSpecial())) && (getState() & 128) > 0) return true;
+			if((s2 == ForgeDirection.WEST || (s2 == ForgeDirection.SOUTH && isSpecial())) && (getState() & 128) == 0) return true;
 			return false;
 		}
 	}
