@@ -94,7 +94,7 @@ public class CircuitData implements Cloneable
 	{
 		if(part == null) part = new PartNull(x, y, parent);
 		id[x][y] = SubLogicPart.getId(part.getClass());
-		meta[x][y] = part.getState();
+		meta[x][y] = 0;
 		getPart(x, y).onPlaced();
 	}
 	
