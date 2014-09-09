@@ -43,7 +43,7 @@ public class PacketPCBReload extends PacketPCB<PacketPCBReload>
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te != null)
 		{
-			te.setMatrix(new int[2][size][size]);
+			te.getCircuitData().clear(size);
 			if(side == side.SERVER)
 				IntegratedCircuits.networkWrapper.sendToAllAround(this, 
 					new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));

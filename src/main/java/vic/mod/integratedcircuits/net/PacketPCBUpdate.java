@@ -3,51 +3,43 @@ package vic.mod.integratedcircuits.net;
 import java.io.IOException;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
+import vic.mod.integratedcircuits.CircuitData;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketPCBUpdate extends PacketPCB<PacketPCBUpdate>
 {
-	private int[][][] matrix;
+	private CircuitData data;
 	
 	public PacketPCBUpdate(){}
 	
-	public PacketPCBUpdate(int[][][] matrix, int tx, int ty, int tz)
+	public PacketPCBUpdate(CircuitData data, int tx, int ty, int tz)
 	{
 		super(tx, ty, tz);
-		this.matrix = matrix;
+		this.data = data;
 	}
 	
 	@Override
 	public void read(PacketBuffer buffer) throws IOException 
 	{
 		super.read(buffer);
-		byte size = buffer.readByte();
-		matrix = new int[2][size][size];
-		
-		for(int i = 0; i < size * size; i++)
-			matrix[0][i - i / size * size][i / size] = buffer.readInt();
-		for(int i = 0; i < size * size; i++)
-			matrix[1][i - i / size * size][i / size] = buffer.readInt();
+		data = CircuitData.readFromNBT(buffer.readNBTTagCompoundFromBuffer());	
 	}
 
 	@Override
 	public void write(PacketBuffer buffer) throws IOException 
 	{
 		super.write(buffer);
-		byte size = (byte)matrix[0].length;
-		buffer.writeByte(size);
-		for(int i = 0; i < size * size; i++)
-			buffer.writeInt(matrix[0][i - i / size * size][i / size]);
-		for(int i = 0; i < size * size; i++)
-			buffer.writeInt(matrix[1][i - i / size * size][i / size]);
+		buffer.writeNBTTagCompoundToBuffer(data.writeToNBTRaw(new NBTTagCompound()));
 	}
 
 	@Override
 	public void process(EntityPlayer player, Side side) 
 	{
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
-		if(te != null) te.setMatrix(matrix);
+		data.setParent(te);
+		if(te != null) te.setCircuitData(data);
 	}
 }

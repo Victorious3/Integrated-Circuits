@@ -27,7 +27,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	public short tier;
 	public String name;
 	public byte[][] output;
-	public int[][][] matrix;
+	public CircuitData circuitData;
 	
 	@Override
 	public String getType() 
@@ -66,7 +66,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		tier = tag.getShort("tier");
 		name = tag.getString("name");
 		genMatrix();
-		matrix = MiscUtils.readPCBMatrix(tag);
+		circuitData = CircuitData.readFromNBT(tag.getCompoundTag("circuit"), this);
 		genOutput();
 	}
 	
@@ -77,7 +77,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		
 		tag.setShort("tier", tier);
 		tag.setString("name", name);
-		MiscUtils.writePCBMatrix(tag, matrix);
+		tag.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
 	}
 
 	@Override
@@ -93,8 +93,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		//My part
 		tier = packet.readShort();
 		name = packet.readString();
-		genMatrix();
-		matrix = MiscUtils.readPCBMatrix(packet.readNBTTagCompound());
+		circuitData = CircuitData.readFromNBT(packet.readNBTTagCompound(), this);
 		genOutput();
 	}
 	
@@ -105,9 +104,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		
 		packet.writeShort(tier);
 		packet.writeString(name);
-		NBTTagCompound compound = new NBTTagCompound();
-		MiscUtils.writePCBMatrix(compound, matrix);
-		packet.writeNBTTagCompound(compound);
+		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
 	}
 
 	@Override
@@ -211,7 +208,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	private void genMatrix()
 	{
 		int s = tier == 1 ? 18 : tier == 2 ? 34 : 68;
-		matrix = new int[s][s][2];
+		circuitData = new CircuitData(s, this);
 	}
 	
 	private void genOutput()
@@ -230,15 +227,15 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	}
 
 	@Override
-	public int[][][] getMatrix() 
+	public CircuitData getCircuitData() 
 	{
-		return matrix;
+		return circuitData;
 	}
 	
 	@Override
-	public void setMatrix(int[][][] matrix) 
+	public void setCircuitData(CircuitData data) 
 	{
-		this.matrix = matrix;
+		this.circuitData = data;
 	}
 
 	@Override
@@ -250,12 +247,6 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
-	{
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void scheduleTick(int x, int y) 
 	{
 		// TODO Auto-generated method stub
 	}

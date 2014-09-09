@@ -16,6 +16,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.CircuitData;
 import vic.mod.integratedcircuits.ContainerPCBLayout;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.SubLogicPart;
@@ -132,7 +133,7 @@ public class GuiPCBLayout extends GuiContainer
 		this.buttonList.add(buttonMinus);
 		
 		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
-		int w = te.getMatrix()[0].length - 2;
+		int w = te.getCircuitData().getSize() - 2;
 		this.buttonList.add(new GuiButtonExt(10, cx + 93, cy + 14, 12, 12, "+"));
 		this.buttonList.add(new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, w + "x" + w));
 		
@@ -152,7 +153,7 @@ public class GuiPCBLayout extends GuiContainer
 	protected void actionPerformed(GuiButton button) 
 	{
 		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
-		int w = te.getMatrix()[0].length;
+		int w = te.getCircuitData().getSize();
 		if(button.id == 8) scale(1);
 		else if(button.id == 9) scale(-1);
 		else if(button.id == 10)
@@ -193,8 +194,8 @@ public class GuiPCBLayout extends GuiContainer
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
 		
-		int[][][] matrix = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix();
-		int w = matrix[0].length;
+		CircuitData data = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData();
+		int w = data.getSize();
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		
 		if(Mouse.isButtonDown(0) && (Math.abs(x - lastX) > 0 || Math.abs(y - lastY) > 0) && shiftDown)
@@ -227,17 +228,16 @@ public class GuiPCBLayout extends GuiContainer
 		GL11.glScalef(scale, scale, 1F);
 		GL11.glTranslated(offX, offY, 0);
 		
-		for(int x2 = 0; x2 < matrix[0].length; x2++)
+		for(int x2 = 0; x2 < w; x2++)
 		{
-			int[] i1 = matrix[0][x2];
-			for(int y2 = 0; y2 < i1.length; y2++)
+			for(int y2 = 0; y2 < w; y2++)
 			{
 				GL11.glColor3f(1.0F, 1.0F, 1.0F);
 				mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
-				if(x2 == 0 || y2 == 0 || x2 == matrix[0].length - 1 || y2 == i1.length - 1) 
+				if(x2 == 0 || y2 == 0 || x2 == w - 1 || y2 == w - 1) 
 					SubLogicPartRenderer.drawTexture(16, 15 * 16, this, x2 * 16, y2 * 16);
 				else SubLogicPartRenderer.drawTexture(0, 15 * 16, this, x2 * 16, y2 * 16);
-				SubLogicPart part = SubLogicPart.getPart(x2, y2, ((ContainerPCBLayout)inventorySlots).tileentity);
+				SubLogicPart part = data.getPart(x2, y2);
 				SubLogicPartRenderer.renderPart(part, this, x2 * 16, y2 * 16);
 			}
 		}
@@ -271,12 +271,13 @@ public class GuiPCBLayout extends GuiContainer
 	{		
 		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
 		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
-		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix()[0].length;
+		CircuitData data = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData();
+		int w = data.getSize();
 		if(x2 > 0 && y2 > 0 && x2 < w && y2 < w && !blockMouseInput)
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				SubLogicPart part = SubLogicPart.getPart(x2, y2,((ContainerPCBLayout)inventorySlots).tileentity);
+				SubLogicPart part = data.getPart(x2, y2);
 				if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
 				{
 					ArrayList<String> text = new ArrayList<String>();
@@ -324,27 +325,27 @@ public class GuiPCBLayout extends GuiContainer
 			return;
 		}		
 		
-		int[][][] matrix = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix();
+		CircuitData data = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData();
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		boolean crtlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
 		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
-		int w = matrix[0].length;
+		int w = data.getSize();
 		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
 		{
-			int pid = matrix[0][x2][y2];
-			int pdata = matrix[1][x2][y2];
+			int pid = data.getID(x2, y2);
+			int pdata = data.getMeta(x2, y2);
 			
 			if(selectedPart == null)
 			{
-				SubLogicPart part = SubLogicPart.getPart(x2, y2, ((ContainerPCBLayout)inventorySlots).tileentity);
+				SubLogicPart part = data.getPart(x2, y2);
 				part.onClick(flag, crtlDown);
 			}
-			else SubLogicPart.setPart(x2, y2, ((ContainerPCBLayout)inventorySlots).tileentity, selectedPart);
+			else data.setPart(x2, y2, selectedPart);
 			
-			int cid = matrix[0][x2][y2];
-			int cdata = matrix[1][x2][y2];
+			int cid = data.getID(x2, y2);
+			int cdata = data.getMeta(x2, y2);
 			
 			if(pid != cid || pdata != cdata)
 			{
@@ -358,7 +359,7 @@ public class GuiPCBLayout extends GuiContainer
 	
 	private void scale(int i)
 	{
-		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix()[0].length;
+		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData().getSize();
 		double ow = w * 16 * scale;	
 		float oldScale = scale;
 		

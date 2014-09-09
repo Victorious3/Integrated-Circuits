@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
+import vic.mod.integratedcircuits.CircuitData;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.SubLogicPart;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
@@ -50,14 +50,14 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te != null)
 		{
-			int[][][] matrix = te.getMatrix();
-			int oid = matrix[0][x][y];
-			matrix[0][x][y] = id;
-			matrix[1][x][y] = data;
+			CircuitData cdata = te.getCircuitData();
+			int oid = cdata.getID(x, y);
+			cdata.setID(x, y, id);
+			cdata.setMeta(x, y, data);
 			
-			if(oid != id) SubLogicPart.getPart(x, y, te).onPlaced();
-			else SubLogicPart.getPart(x, y, te).notifyNeighbours();
-			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(matrix, xCoord, yCoord, zCoord), 
+			if(oid != id) cdata.getPart(x, y).onPlaced();
+			else cdata.getPart(x, y).notifyNeighbours();
+			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(te.getCircuitData(), xCoord, yCoord, zCoord), 
 				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 		}
 	}

@@ -66,9 +66,9 @@ public class SubLogicPartRenderer
 	private static int checkConnections(SubLogicPart part)
 	{
 		boolean c1 = part.getY() > 0 ? part.canConnectToSide(ForgeDirection.NORTH) && part.getNeighbourOnSide(ForgeDirection.NORTH).canConnectToSide(ForgeDirection.SOUTH) : false;
-		boolean c2 = part.getY() < part.getParent().getMatrix()[0].length ? part.canConnectToSide(ForgeDirection.SOUTH) && part.getNeighbourOnSide(ForgeDirection.SOUTH).canConnectToSide(ForgeDirection.NORTH) : false;
+		boolean c2 = part.getY() < part.getParent().getCircuitData().getSize() ? part.canConnectToSide(ForgeDirection.SOUTH) && part.getNeighbourOnSide(ForgeDirection.SOUTH).canConnectToSide(ForgeDirection.NORTH) : false;
 		boolean c3 = part.getX() > 0 ? part.canConnectToSide(ForgeDirection.WEST) && part.getNeighbourOnSide(ForgeDirection.WEST).canConnectToSide(ForgeDirection.EAST) : false;
-		boolean c4 = part.getX() < part.getParent().getMatrix()[0].length ? part.canConnectToSide(ForgeDirection.EAST) && part.getNeighbourOnSide(ForgeDirection.EAST).canConnectToSide(ForgeDirection.WEST) : false;
+		boolean c4 = part.getX() < part.getParent().getCircuitData().getSize() ? part.canConnectToSide(ForgeDirection.EAST) && part.getNeighbourOnSide(ForgeDirection.EAST).canConnectToSide(ForgeDirection.WEST) : false;
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
 	
@@ -214,27 +214,22 @@ public class SubLogicPartRenderer
 	
 	public static class CurcuitRenderWrapper implements ICircuit
 	{
-		private int[][][] matrix;
+		private CircuitData data;
 		public static CurcuitRenderWrapper instance = new CurcuitRenderWrapper(0);
 		
 		private CurcuitRenderWrapper(int state)
 		{
-			matrix = new int[][][]
-			{
-				new int[][]{new int[]{0, 1, 0}, new int[]{1, 0, 1}, new int[]{0, 1, 0}}, 
-				new int[][]{new int[]{0, 0, 0}, new int[]{0, state, 0}, new int[]{0, 0, 0}}
-			};
+			data = CircuitData.createShallowInstance(state, this);
 		}
 		
-		@Override
-		public int[][][] getMatrix() 
+		@Override 
+		public CircuitData getCircuitData() 
 		{
-			return matrix;
+			return data;
 		}
 
-		@Override public void setMatrix(int[][][] matrix) {}
+		@Override public void setCircuitData(CircuitData data) {}
 		@Override public boolean getInputFromSide(ForgeDirection dir, int frequency) { return false; }
 		@Override public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) {}
-		@Override public void scheduleTick(int x, int y) {}
 	}
 }

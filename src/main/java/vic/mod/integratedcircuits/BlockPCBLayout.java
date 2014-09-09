@@ -100,7 +100,7 @@ public class BlockPCBLayout extends BlockContainer
 	public TileEntity createNewTileEntity(World world, int meta) 
 	{
 		TileEntityPCBLayout te = new TileEntityPCBLayout();
-		te.setup(32, 32);
+		te.setup(34);
 		return te;
 	}
 

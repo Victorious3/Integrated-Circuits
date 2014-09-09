@@ -7,13 +7,9 @@ import static net.minecraftforge.common.util.ForgeDirection.WEST;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagIntArray;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
-import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -22,50 +18,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class MiscUtils 
 {
-	public static int[][][] readPCBMatrix(NBTTagCompound compound)
-	{
-		NBTTagCompound matrixCompound = compound.getCompoundTag("matrix");
-		NBTTagList idlist = matrixCompound.getTagList("id", NBT.TAG_INT_ARRAY);
-		int[][] id = new int[idlist.tagCount()][];
-		for(int i = 0; i < idlist.tagCount(); i++)
-		{
-			id[i] = idlist.func_150306_c(i);
-		}
-		
-		NBTTagList metalist = matrixCompound.getTagList("meta", NBT.TAG_INT_ARRAY);
-		int[][] meta = new int[metalist.tagCount()][];
-		for(int i = 0; i < metalist.tagCount(); i++)
-		{
-			meta[i] = metalist.func_150306_c(i);
-		}
-		
-		int[][][] pcbMatrix = new int[2][][];
-		pcbMatrix[0] = id;
-		pcbMatrix[1] = meta;
-		
-		return pcbMatrix;
-	}
-
-	public static void writePCBMatrix(NBTTagCompound compound, int[][][] pcbMatrix)
-	{
-		NBTTagList idlist = new NBTTagList();
-		for(int i = 0; i < pcbMatrix[0].length; i++)
-		{
-			idlist.appendTag(new NBTTagIntArray(pcbMatrix[0][i]));
-		}
-		
-		NBTTagList metalist = new NBTTagList();
-		for(int i = 0; i < pcbMatrix[1].length; i++)
-		{
-			metalist.appendTag(new NBTTagIntArray(pcbMatrix[1][i]));
-		}
-		
-		NBTTagCompound matrixCompound = new NBTTagCompound();
-		matrixCompound.setTag("id", idlist);
-		matrixCompound.setTag("meta", metalist);
-		compound.setTag("matrix", matrixCompound);
-	}
-
 	@SideOnly(Side.CLIENT)
 	public static EntityPlayer thePlayer() 
 	{

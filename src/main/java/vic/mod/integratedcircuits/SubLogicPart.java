@@ -38,24 +38,15 @@ public abstract class SubLogicPart
 		partRegistry.put(21, PartSynchronizer.class);
 		partRegistry.put(22, PartNullCell.class);
 	}
-
-	public static SubLogicPart getPart(int x, int y, ICircuit parent)
+	
+	public static Integer getId(Class<? extends SubLogicPart> part)
 	{
-		try {
-			return partRegistry.get(parent.getMatrix()[0][x][y]).getConstructor(int.class, int.class, ICircuit.class).newInstance(x, y, parent);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+		return partRegistry.inverse().get(part);
 	}
 	
-	public static void setPart(int x, int y, ICircuit parent, SubLogicPart part)
+	public static Class<? extends SubLogicPart> getPart(int id)
 	{
-		if(part == null) part = new PartNull(x, y, parent);
-		parent.getMatrix()[0][x][y] = partRegistry.inverse().get(part.getClass());
-		parent.getMatrix()[1][x][y] = part.getState();
-		getPart(x, y, parent).onPlaced();
+		return partRegistry.get(id);
 	}
 	
 	public SubLogicPart(int x, int y, ICircuit parent)
@@ -81,7 +72,7 @@ public abstract class SubLogicPart
 	
 	public final void scheduleTick()
 	{
-		getParent().scheduleTick(getX(), getY());
+		getParent().getCircuitData().scheduleTick(getX(), getY());
 	}
 	
 	public void onClick(int button, boolean ctrl){}
@@ -113,12 +104,12 @@ public abstract class SubLogicPart
 	
 	public final int getState()
 	{
-		return parent.getMatrix()[1][getX()][getY()];
+		return parent.getCircuitData().getMeta(getX(), getY());
 	}
 	
 	public final void setState(int state)
 	{
-		parent.getMatrix()[1][getX()][getY()] = state;
+		parent.getCircuitData().setMeta(getX(), getY(), state);
 	}
 	
 	public boolean canConnectToSide(ForgeDirection side)
@@ -169,7 +160,7 @@ public abstract class SubLogicPart
 	
 	public final SubLogicPart getNeighbourOnSide(ForgeDirection side)
 	{	
-		return getPart(x + side.offsetX, y + side.offsetZ, parent);
+		return parent.getCircuitData().getPart(x + side.offsetX, y + side.offsetZ);
 	}
 	
 	public final boolean getInput()
@@ -993,6 +984,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
+	//TODO Acts a little bit different then described on the P:R wiki. I'll come back to this.
 	public static class PartRSLatch extends PartGate
 	{
 		public PartRSLatch(int x, int y, ICircuit parent) 

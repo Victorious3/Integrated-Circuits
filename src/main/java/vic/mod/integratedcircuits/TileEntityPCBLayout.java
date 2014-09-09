@@ -1,8 +1,5 @@
 package vic.mod.integratedcircuits;
 
-import java.awt.Point;
-import java.util.LinkedList;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -12,14 +9,13 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDiskDrive
 {
-	private int[][][] pcbMatrix;
-	private LinkedList<Point> tickSchedule = new LinkedList<Point>();
 	public String name = "NO_NAME";
 	private ItemStack floppyStack;
+	private CircuitData circuitData;
 	
-	public void setup(int width, int height)
+	public void setup(int size)
 	{
-		pcbMatrix = new int[2][width + 2][height + 2];
+		circuitData = new CircuitData(size, this);
 	}
 
 	@Override
@@ -29,20 +25,8 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		super.updateEntity();
 		if(!worldObj.isRemote && playersUsing > 0)
 		{
-			LinkedList<Point> tmp = (LinkedList<Point>)tickSchedule.clone();
-			tickSchedule.clear();
-			for(Point p : tmp)
-			{
-				SubLogicPart.getPart(p.x, p.y, this).onScheduledTick();
-			}
-			for(int x = 0; x < pcbMatrix[0].length; x++)
-			{
-				for(int y = 0; y < pcbMatrix[0][x].length; y++)
-				{
-					SubLogicPart.getPart(x, y, this).onTick();
-				}
-			}
-			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getMatrix(), xCoord, yCoord, zCoord), 
+			getCircuitData().updateMatrix();
+			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), 
 				new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 		}
 	}
@@ -51,7 +35,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void readFromNBT(NBTTagCompound compound) 
 	{
 		super.readFromNBT(compound);
-		pcbMatrix = MiscUtils.readPCBMatrix(compound);
+		circuitData = CircuitData.readFromNBT(compound.getCompoundTag("circuit"), this);
 		NBTTagCompound stackCompound = compound.getCompoundTag("floppyStack");
 		floppyStack = ItemStack.loadItemStackFromNBT(stackCompound);
 		name = compound.getString("name");
@@ -61,23 +45,11 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void writeToNBT(NBTTagCompound compound) 
 	{
 		super.writeToNBT(compound);
-		MiscUtils.writePCBMatrix(compound, pcbMatrix);
+		compound.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
 		NBTTagCompound stackCompound = new NBTTagCompound();
 		if(floppyStack != null) floppyStack.writeToNBT(stackCompound);
 		compound.setTag("floppyStack", stackCompound);
 		compound.setString("name", name);
-	}
-	
-	@Override
-	public int[][][] getMatrix() 
-	{
-		return pcbMatrix;
-	}
-	
-	@Override
-	public void setMatrix(int[][][] matrix) 
-	{
-		this.pcbMatrix = matrix;
 	}
 
 	@Override
@@ -168,8 +140,14 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	}
 
 	@Override
-	public void scheduleTick(int x, int y) 
+	public CircuitData getCircuitData() 
 	{
-		tickSchedule.add(new Point(x, y));
+		return circuitData;
+	}
+
+	@Override
+	public void setCircuitData(CircuitData data) 
+	{
+		this.circuitData = data;
 	}
 }
