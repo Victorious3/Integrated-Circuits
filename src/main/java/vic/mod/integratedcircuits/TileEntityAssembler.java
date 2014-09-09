@@ -1,6 +1,6 @@
 package vic.mod.integratedcircuits;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.inventory.ISidedInventory;
@@ -21,7 +21,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	
 	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
 	@SideOnly(Side.CLIENT)
-	public static ArrayList<Framebuffer> fboArray = new ArrayList<Framebuffer>();
+	public static LinkedList<Framebuffer> fboArray = new LinkedList<Framebuffer>();
 	
 	public int[][][] matrix;
 	public ItemStack[] contents = new ItemStack[1];

@@ -253,4 +253,10 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	{
 		// TODO Auto-generated method stub
 	}
+
+	@Override
+	public void scheduleTick(int x, int y) 
+	{
+		// TODO Auto-generated method stub
+	}
 }

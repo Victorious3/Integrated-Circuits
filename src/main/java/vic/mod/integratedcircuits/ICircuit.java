@@ -11,4 +11,6 @@ public interface ICircuit
 	public boolean getInputFromSide(ForgeDirection dir, int frequency);
 	
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output);
+	
+	public void scheduleTick(int x, int y);
 }

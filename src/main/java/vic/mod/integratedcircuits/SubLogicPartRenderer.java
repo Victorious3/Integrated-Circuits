@@ -235,5 +235,6 @@ public class SubLogicPartRenderer
 		@Override public void setMatrix(int[][][] matrix) {}
 		@Override public boolean getInputFromSide(ForgeDirection dir, int frequency) { return false; }
 		@Override public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) {}
+		@Override public void scheduleTick(int x, int y) {}
 	}
 }

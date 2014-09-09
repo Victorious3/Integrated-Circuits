@@ -77,6 +77,13 @@ public abstract class SubLogicPart
 	
 	public void onTick(){}
 	
+	public void onScheduledTick(){}
+	
+	public final void scheduleTick()
+	{
+		getParent().scheduleTick(getX(), getY());
+	}
+	
 	public void onClick(int button, boolean ctrl){}
 	
 	public final int getX()
@@ -275,17 +282,6 @@ public abstract class SubLogicPart
 			notifyNeighbours();
 		}
 		
-		protected final boolean getUpdateFlag()
-		{
-			return (getState() & 64) > 0; 
-		}
-		
-		protected void setUpdate(boolean update)
-		{
-			if(update) setState(getState() | 64);
-			else setState(getState() & ~64);
-		}
-		
 		@Override
 		public void onClick(int button, boolean ctrl) 
 		{
@@ -297,20 +293,9 @@ public abstract class SubLogicPart
 		}
 
 		@Override
-		public void onTick() 
+		public void onScheduledTick() 
 		{
-			if(getUpdateFlag())
-			{
-				setUpdate(false);
-				notifyNeighbours();
-			}
-		}
-		
-		@Override
-		public void onInputChange(ForgeDirection side) 
-		{
-			super.onInputChange(side);
-			setUpdate(true);
+			notifyNeighbours();
 		}
 	}
 	
@@ -348,9 +333,9 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());		
-			super.onInputChange(side);
-			if(s2 == ForgeDirection.NORTH) setUpdate(false);
+			updateInput();
+			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			if(s2 != ForgeDirection.NORTH) scheduleTick();
 		}
 	}
 	
@@ -376,9 +361,9 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
+			updateInput();
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			super.onInputChange(side);
-			if(s2 != ForgeDirection.SOUTH) setUpdate(false);
+			if(s2 == ForgeDirection.SOUTH) scheduleTick();
 		}
 		
 		@Override
@@ -387,7 +372,6 @@ public abstract class SubLogicPart
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
 			if(s2 == ForgeDirection.NORTH) return true;
 			int i = (getState() & 896) >> 7;
-			//TODO I bet there would be a better solution for this.
 			if(s2 == ForgeDirection.EAST && (i == 3 || i == 4 || i == 5)) return false;
 			if(s2 == ForgeDirection.SOUTH && (i == 2 || i == 4 || i == 6)) return false;
 			if(s2 == ForgeDirection.WEST && (i == 1 || i == 5 || i == 6)) return false;
@@ -548,8 +532,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			super.onInputChange(side);
-			if(MiscUtils.rotn(side, getRotation()) == ForgeDirection.NORTH) setUpdate(false);
+			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.NORTH) super.onInputChange(side);
 		}
 
 		@Override
@@ -578,19 +561,19 @@ public abstract class SubLogicPart
 		}
 		
 		@Override
-		public void onTick() 
+		public void onScheduledTick() 
 		{
-			if(getUpdateFlag())
+			int counter = getCurrentDelay();
+			counter--;
+			if(counter == 0)
 			{
-				int counter = getCurrentDelay();
-				counter--;
-				if(counter == 0)
-				{
-					setUpdate(false);
-					setState(getState() & ~32640);
-					onDelay();
-				}
-				else setState(getState() & ~32640 | counter << 7);
+				setState(getState() & ~32640);
+				onDelay();
+			}
+			else 
+			{
+				setState(getState() & ~32640 | counter << 7);
+				scheduleTick();
 			}
 		}
 		
@@ -599,15 +582,17 @@ public abstract class SubLogicPart
 			notifyNeighbours();
 		}
 
-		@Override
-		protected void setUpdate(boolean update) 
+		protected void setDelay(boolean b)
 		{
-			setState(getState() & ~32640 | getDelay() << 7);
-			super.setUpdate(update);
+			if(b) 
+			{
+				setState(getState() & ~32640 | getDelay() << 7);
+				scheduleTick();
+			}
+			else setState(getState() & ~32640);
 		}
 	}
 	
-	//TODO acts strange on first placing.
 	public static class PartRepeater extends PartDelayedAction
 	{
 		public PartRepeater(int x, int y, ICircuit parent) 
@@ -671,13 +656,6 @@ public abstract class SubLogicPart
 			setState(getState() ^ 32768);
 			super.onDelay();
 		}
-		
-		@Override
-		public void onTick() 
-		{
-			int state = getState();
-			super.onTick();
-		}
 
 		@Override
 		public void onInputChange(ForgeDirection side) 
@@ -691,7 +669,7 @@ public abstract class SubLogicPart
 					setState(getState() & ~32768 | (getInputFromSide(side) ? 1 : 0) << 15);
 				}
 			}
-			setUpdate(true);
+			setDelay(true);
 		}
 
 		@Override
@@ -721,7 +699,7 @@ public abstract class SubLogicPart
 		public void onPlaced()
 		{
 			setState(10 << 16);
-			setUpdate(true);
+			setDelay(true);
 		}
 
 		@Override
@@ -739,17 +717,17 @@ public abstract class SubLogicPart
 			if(getInputFromSide(side))
 			{
 				setState(getState() & ~32768);
-				setUpdate(false);
+				setDelay(false);
 				notifyNeighbours();
 			}
-			else setUpdate(true);
+			else setDelay(true);
 		}
 
 		@Override
 		public void onDelay() 
 		{
 			setState(getState() ^ 32768);
-			setUpdate(true);
+			setDelay(true);
 			super.onDelay();
 		}
 
@@ -767,7 +745,7 @@ public abstract class SubLogicPart
 		{
 			super(x, y, parent);
 		}
-		
+
 		@Override
 		public void onInputChange(ForgeDirection side)
 		{
@@ -836,7 +814,7 @@ public abstract class SubLogicPart
 			{
 				setState(getState() & ~f1);
 				setState(getState() | f2);
-				setUpdate(true);
+				setDelay(true);
 			}
 			super.onDelay();
 		}
@@ -861,13 +839,13 @@ public abstract class SubLogicPart
 					notifyNeighbours();
 				}
 				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, -getRotation())))
-					setUpdate(true);
+					setDelay(true);
 			}
 			else if(s2 == ForgeDirection.EAST && (getState() & f1) > 0)
 			{
-				if(getInputFromSide(side)) setUpdate(false);
+				if(getInputFromSide(side)) setDelay(false);
 				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())))
-					setUpdate(true);
+					setDelay(true);
 				notifyNeighbours();
 			}
 		}	
@@ -889,7 +867,7 @@ public abstract class SubLogicPart
 		@Override
 		public void onPlaced()
 		{
-			setUpdate(true);
+			setDelay(true);
 		}
 
 		@Override
@@ -898,7 +876,7 @@ public abstract class SubLogicPart
 			setState(getState() & ~229376);
 			setState(getState() | new Random().nextInt(7) << 15);
 			super.onDelay();
-			setUpdate(true);
+			setDelay(true);
 		}
 
 		@Override
@@ -920,7 +898,7 @@ public abstract class SubLogicPart
 			super.onInputChange(side);
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
 			if(s2 != ForgeDirection.SOUTH) return;
-			if(!getInputFromSide(side)) setUpdate(false);
+			if(!getInputFromSide(side)) setDelay(false);
 		}
 	}
 	
@@ -940,7 +918,7 @@ public abstract class SubLogicPart
 			{
 				setState(getState() | 128);
 				notifyNeighbours();
-				setUpdate(true);
+				setDelay(true);
 			}
 		}
 
@@ -1001,8 +979,8 @@ public abstract class SubLogicPart
 			if((s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH))
 			{
 				if(getInputFromSide(side)) setState(getState() ^ 128);
+				scheduleTick();
 			}
-			else setUpdate(false);
 		}
 
 		@Override
@@ -1051,7 +1029,7 @@ public abstract class SubLogicPart
 			if(s2 == ForgeDirection.EAST || s2 == ForgeDirection.WEST) return;
 			if(s2 == ForgeDirection.NORTH || isMirrored()) setState(getState() | 128);
 			else setState(getState() & ~128);
-			setUpdate(true);
+			scheduleTick();
 		}
 
 		@Override
@@ -1120,22 +1098,18 @@ public abstract class SubLogicPart
 			{
 				setState(getState() & ~384);
 				setState(getState() | 512);
-				setUpdate(true);
+				scheduleTick();
 			}
 		}
 
 		@Override
-		public void onTick()
+		public void onScheduledTick()
 		{
-			if(getUpdateFlag())
+			notifyNeighbours();
+			if((getState() & 512) > 0)
 			{
-				notifyNeighbours();
-				if((getState() & 512) > 0)
-				{
-					setState(getState() & ~512);
-					setUpdate(true);
-				}
-				else setUpdate(false);
+				setState(getState() & ~512);
+				scheduleTick();
 			}
 		}
 

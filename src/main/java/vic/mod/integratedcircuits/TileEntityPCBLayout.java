@@ -1,5 +1,8 @@
 package vic.mod.integratedcircuits;
 
+import java.awt.Point;
+import java.util.LinkedList;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -10,6 +13,7 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDiskDrive
 {
 	private int[][][] pcbMatrix;
+	private LinkedList<Point> tickSchedule = new LinkedList<Point>();
 	public String name = "NO_NAME";
 	private ItemStack floppyStack;
 	
@@ -25,6 +29,12 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		super.updateEntity();
 		if(!worldObj.isRemote && playersUsing > 0)
 		{
+			LinkedList<Point> tmp = (LinkedList<Point>)tickSchedule.clone();
+			tickSchedule.clear();
+			for(Point p : tmp)
+			{
+				SubLogicPart.getPart(p.x, p.y, this).onScheduledTick();
+			}
 			for(int x = 0; x < pcbMatrix[0].length; x++)
 			{
 				for(int y = 0; y < pcbMatrix[0][x].length; y++)
@@ -155,5 +165,11 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void setDisk(ItemStack stack) 
 	{
 		setInventorySlotContents(0, stack);
+	}
+
+	@Override
+	public void scheduleTick(int x, int y) 
+	{
+		tickSchedule.add(new Point(x, y));
 	}
 }
