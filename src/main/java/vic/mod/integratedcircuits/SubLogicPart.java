@@ -557,8 +557,8 @@ public abstract class SubLogicPart
 		{
 			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.NORTH) return false;
 			if(getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())))
-				return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, -getRotation()));
-			else return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, -getRotation()));
+				return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, -getRotation()));
+			else return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, -getRotation()));
 		}	
 	}
 
@@ -682,17 +682,16 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
+			updateInput();
 			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) return;
-			if(getCurrentDelay() != 0) super.onInputChange(side);
-			else
+			if(getCurrentDelay() == 0)
 			{
-				super.onInputChange(side);
 				if(((getState() & 32768) >> 15) != (getInputFromSide(side) ? 1 : 0))
 				{
 					setState(getState() & ~32768 | (getInputFromSide(side) ? 1 : 0) << 15);
-					setUpdate(true);
 				}
 			}
+			setUpdate(true);
 		}
 
 		@Override
@@ -824,8 +823,8 @@ public abstract class SubLogicPart
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if(s2 == ForgeDirection.NORTH && (getState() & f1) > 0) return true;
-			if(s2 == ForgeDirection.EAST && (getState() & f2) > 0) return true;
+			if(s2 == ForgeDirection.WEST && (getState() & f1) > 0) return true;
+			if(s2 == ForgeDirection.SOUTH && (getState() & f2) > 0) return true;
 			return false;
 		}
 
@@ -851,26 +850,24 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
+			updateInput();
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if(s2 == ForgeDirection.WEST)
+			if(s2 == ForgeDirection.SOUTH)
 			{
-				super.onInputChange(side);
 				if(getInputFromSide(side))
 				{
 					setState(getState() | f1);
 					setState(getState() & ~f2);
-					setUpdate(false);
+					notifyNeighbours();
 				}
+				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, -getRotation())))
+					setUpdate(true);
+			}
+			else if(s2 == ForgeDirection.EAST && (getState() & f1) > 0)
+			{
+				if(getInputFromSide(side)) setUpdate(false);
 				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())))
 					setUpdate(true);
-				
-				notifyNeighbours();
-			}
-			else if(s2 == ForgeDirection.SOUTH && (getState() & f1) > 0)
-			{
-				super.onInputChange(side);
-				if(getInputFromSide(side)) setUpdate(false);
-				else setUpdate(true);
 				notifyNeighbours();
 			}
 		}	
@@ -937,12 +934,13 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
+			updateInput();
 			if((MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH)) return;
-			super.onInputChange(side);
 			if(getInputFromSide(side)) 
 			{
 				setState(getState() | 128);
 				notifyNeighbours();
+				setUpdate(true);
 			}
 		}
 
@@ -1017,7 +1015,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	//TODO Untested
+	//FIXME Almost. Messed up.
 	public static class PartRSLatch extends PartGate
 	{
 		public PartRSLatch(int x, int y, ICircuit parent) 
@@ -1062,7 +1060,6 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	//TODO Untested
 	public static class PartTranspartentLatch extends PartGate
 	{
 		public PartTranspartentLatch(int x, int y, ICircuit parent) 
@@ -1086,14 +1083,14 @@ public abstract class SubLogicPart
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH) return (getState() & 128) > 0;
+			if(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.EAST) return (getState() & 128) > 0;
 			return false;
 		}
 	}
 	
 	//TODO Insert the counter here, might get back to it at some point.
 	
-	//TODO Untested
+	//TODO Is currently giving a one tick pulse, might cause problems with other gates.
 	public static class PartSynchronizer extends PartGate
 	{
 		public PartSynchronizer(int x, int y, ICircuit parent) 
@@ -1104,17 +1101,21 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			super.onInputChange(side);
+			updateInput();
 			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			boolean input = getInputFromSide(s2);
 			
 			if(s2 == ForgeDirection.SOUTH && getInputFromSide(s2)) setState(getState() & ~896);
-			else if(s2 == ForgeDirection.EAST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 128);
-			else if(s2 == ForgeDirection.WEST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation()))) setState(getState() | 256);
+			else if(s2 == ForgeDirection.EAST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())) && input) 
+				setState(getState() | 128);
+			else if(s2 == ForgeDirection.WEST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())) && input) 
+				setState(getState() | 256);
 			
 			if((getState() & 384) >> 7 == 3) 
 			{
 				setState(getState() & ~384);
 				setState(getState() | 512);
+				setUpdate(true);
 			}
 		}
 

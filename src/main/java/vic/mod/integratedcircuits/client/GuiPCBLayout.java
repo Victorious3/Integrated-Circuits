@@ -272,25 +272,28 @@ public class GuiPCBLayout extends GuiContainer
 		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
 		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
 		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getMatrix()[0].length;
-		if(x2 > 0 && y2 > 0 && x2 < w && y2 < w)
+		if(x2 > 0 && y2 > 0 && x2 < w && y2 < w && !blockMouseInput)
 		{
-			SubLogicPart part = SubLogicPart.getPart(x2, y2,((ContainerPCBLayout)inventorySlots).tileentity);
-			if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
+			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				ArrayList<String> text = new ArrayList<String>();
-				text.add(part.getName());
-				if(part instanceof PartGate) 
+				SubLogicPart part = SubLogicPart.getPart(x2, y2,((ContainerPCBLayout)inventorySlots).tileentity);
+				if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
 				{
-					int rotation = ((PartGate)part).getRotation();
-					ForgeDirection rot = 
-							rotation == 0 ? ForgeDirection.NORTH :
-							rotation == 1 ? ForgeDirection.EAST :
-							rotation == 2 ? ForgeDirection.SOUTH :
-							ForgeDirection.WEST;
-					text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + rot.toString());
+					ArrayList<String> text = new ArrayList<String>();
+					text.add(part.getName());
+					if(part instanceof PartGate) 
+					{
+						int rotation = ((PartGate)part).getRotation();
+						ForgeDirection rot = 
+								rotation == 0 ? ForgeDirection.NORTH :
+								rotation == 1 ? ForgeDirection.EAST :
+								rotation == 2 ? ForgeDirection.SOUTH :
+								ForgeDirection.WEST;
+						text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + rot.toString());
+					}
+					text.addAll(part.getInformation());
+					drawHoveringText(text, x - guiLeft, y - guiTop, this.fontRendererObj);
 				}
-				text.addAll(part.getInformation());
-				drawHoveringText(text, x - guiLeft, y - guiTop, this.fontRendererObj);
 			}
 		}
 		if(hoveredChooser != null)
