@@ -554,18 +554,22 @@ public abstract class SubLogicPart
 		@Override
 		public void onScheduledTick() 
 		{
-			int counter = getCurrentDelay();
-			counter--;
-			if(counter == 0)
+			if((getState() & 64) > 0)
 			{
-				setState(getState() & ~32640);
-				onDelay();
-			}
-			else 
-			{
-				setState(getState() & ~32640 | counter << 7);
-				scheduleTick();
-			}
+				int counter = getCurrentDelay();
+				counter--;
+				if(counter == 0)
+				{
+					setState(getState() & ~32640);
+					setState(getState() & ~64);
+					onDelay();
+				}
+				else 
+				{
+					setState(getState() & ~32640 | counter << 7);
+					scheduleTick();
+				}
+			}	
 		}
 		
 		public void onDelay()
@@ -575,12 +579,13 @@ public abstract class SubLogicPart
 
 		protected void setDelay(boolean b)
 		{
+			setState(getState() & ~32640 | getDelay() << 7);
 			if(b) 
 			{
-				setState(getState() & ~32640 | getDelay() << 7);
+				setState(getState() | 64);
 				scheduleTick();
 			}
-			else setState(getState() & ~32640);
+			else setState(getState() & ~64);
 		}
 	}
 	
@@ -672,6 +677,7 @@ public abstract class SubLogicPart
 		}	
 	}
 	
+	//FIXME Completely derps up when placed on the side of another timer.
 	public static class PartTimer extends PartDelayedAction
 	{
 		public PartTimer(int x, int y, ICircuit parent) 
@@ -690,7 +696,8 @@ public abstract class SubLogicPart
 		public void onPlaced()
 		{
 			setState(10 << 16);
-			setDelay(true);
+			updateInput();
+			if(!getInputFromSide(ForgeDirection.SOUTH)) setDelay(true);
 		}
 
 		@Override
@@ -703,11 +710,11 @@ public abstract class SubLogicPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			if(MiscUtils.rotn(side, getRotation()) == ForgeDirection.NORTH) return;
-			super.onInputChange(side);
+			updateInput();
+			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) return;
+			setState(getState() & ~32768);
 			if(getInputFromSide(side))
 			{
-				setState(getState() & ~32768);
 				setDelay(false);
 				notifyNeighbours();
 			}
@@ -726,7 +733,7 @@ public abstract class SubLogicPart
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			if(MiscUtils.rotn(side, getRotation()) == ForgeDirection.SOUTH) return false;
-			return (getState() & 32768) > 0;
+			return (getState() & 32768) != 0;
 		}		
 	}
 	

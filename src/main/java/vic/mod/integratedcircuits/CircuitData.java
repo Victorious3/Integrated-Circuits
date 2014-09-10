@@ -100,7 +100,8 @@ public class CircuitData implements Cloneable
 	
 	public void scheduleTick(int x, int y)
 	{
-		tickSchedule.add(new Point(x, y));
+		Point p = new Point(x, y);
+		if(!tickSchedule.contains(p)) tickSchedule.add(p);
 	}
 	
 	public void updateMatrix()
