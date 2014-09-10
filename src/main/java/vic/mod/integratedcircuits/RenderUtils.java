@@ -22,7 +22,7 @@ public class RenderUtils
 		float blue = (float)(rbga >> 8 & 255) / 255.0F;
 		float green = (float)(rbga & 255) / 255.0F;
 		float alpha = (float)(rbga >> 24 & 255) / 255.0F;
-        GL11.glColor4f(red, blue, green, alpha);
+		GL11.glColor4f(red, blue, green, alpha);
 	}
 	
 	public static void applyColorIRGB(int rbg)
@@ -30,6 +30,6 @@ public class RenderUtils
 		float red = (float)(rbg >> 16 & 255) / 255.0F;
 		float blue = (float)(rbg >> 8 & 255) / 255.0F;
 		float green = (float)(rbg & 255) / 255.0F;
-        GL11.glColor4f(red, blue, green, 1F);
+		GL11.glColor4f(red, blue, green, 1F);
 	}
 }

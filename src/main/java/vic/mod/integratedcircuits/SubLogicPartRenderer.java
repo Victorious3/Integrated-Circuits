@@ -61,12 +61,12 @@ public class SubLogicPartRenderer
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
 	
-	private static void addQuad(double u, double v, double x, double y, double w, double h)
+	private static void addQuad(double x, double y, double u, double v, double w, double h)
 	{
-		addQuad(u, v, 0, x, y, w, h);
+		addQuad(x, y, u, v, w, h, 0);
 	}
 	
-	private static void addQuad(double u, double v, double rotation, double x, double y, double w, double h)
+	private static void addQuad(double x, double y, double u, double v, double w, double h, double rotation)
 	{
 		double d1, d2, d3, d4;
 		double scale = 1 / 256D;
@@ -129,8 +129,8 @@ public class SubLogicPartRenderer
 		for(int x2 = 0; x2 < data.getSize(); x2++)
 			for(int y2 = 0; y2 < data.getSize(); y2++)
 				if(x2 == 0 || y2 == 0 || x2 == w - 1 || y2 == w - 1) 
-					addQuad(16, 15 * 16, x2 * 16, y2 * 16, 16, 16);
-				else addQuad(0, 15 * 16, x2 * 16, y2 * 16, 16, 16);
+					addQuad(x2 * 16, y2 * 16, 16, 15 * 16, 16, 16);
+				else addQuad(x2 * 16, y2 * 16, 0, 15 * 16, 16, 16);
 		tes.draw();
 		
 		tes.startDrawingQuads();
@@ -161,15 +161,15 @@ public class SubLogicPartRenderer
 		}	
 		
 		int con = checkConnections(wire);
-		if((con & 12) == 12 && (con & ~12) == 0) addQuad(6 * 16, 0, x, y, 16, 16);
-		else if((con & 3) == 3 && (con & ~3) == 0) addQuad(5 * 16, 0, x, y, 16, 16);
+		if((con & 12) == 12 && (con & ~12) == 0) addQuad(x, y, 6 * 16, 0, 16, 16);
+		else if((con & 3) == 3 && (con & ~3) == 0) addQuad(x, y, 5 * 16, 0, 16, 16);
 		else 
 		{
-			if((con & 8) > 0) addQuad(2 * 16, 0, x, y, 16, 16);
-			if((con & 4) > 0) addQuad(4 * 16, 0, x, y, 16, 16);
-			if((con & 2) > 0) addQuad(1 * 16, 0, x, y, 16, 16);
-			if((con & 1) > 0) addQuad(3 * 16, 0, x, y, 16, 16);
-			addQuad(0, 0, x, y, 16, 16);
+			if((con & 8) > 0) addQuad(x, y, 2 * 16, 0, 16, 16);
+			if((con & 4) > 0) addQuad(x, y, 4 * 16, 0, 16, 16);
+			if((con & 2) > 0) addQuad(x, y, 1 * 16, 0, 16, 16);
+			if((con & 1) > 0) addQuad(x, y, 3 * 16, 0, 16, 16);
+			addQuad(x, y, 0, 0, 16, 16);
 		}
 	}
 
@@ -183,7 +183,7 @@ public class SubLogicPartRenderer
 			|| cell.getInputFromSide(ForgeDirection.SOUTH)) 
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(0, 2 * 16, x, y, 16, 16);
+		addQuad(x, y, 0, 2 * 16, 16, 16);
 		
 		if(cell.getOutputToSide(ForgeDirection.EAST) 
 			|| cell.getInputFromSide(ForgeDirection.EAST) 
@@ -191,7 +191,7 @@ public class SubLogicPartRenderer
 			|| cell.getInputFromSide(ForgeDirection.WEST)) 
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(16, 2 * 16, x, y, 16, 16);
+		addQuad(x, y, 16, 2 * 16, 16, 16);
 	}
 	
 	public static void renderPartGate(PartGate gate, double x, double y) 
@@ -201,54 +201,54 @@ public class SubLogicPartRenderer
 		{
 			if(gate.getOutputToSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.NORTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(2 * 16, 0, x, y, 16, 16);
+			addQuad(x, y, 2 * 16, 0, 16, 16);
 		}
 
 		if(gate.canConnectToSide(ForgeDirection.SOUTH))
 		{
 			if(gate.getOutputToSide(ForgeDirection.SOUTH) || gate.getInputFromSide(ForgeDirection.SOUTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(4 * 16, 0, x, y, 16, 16);
+			addQuad(x, y, 4 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.WEST))
 		{
 			if(gate.getOutputToSide(ForgeDirection.WEST) || gate.getInputFromSide(ForgeDirection.WEST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(1 * 16, 0, x, y, 16, 16);
+			addQuad(x, y, 1 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.EAST))
 		{
 			if(gate.getOutputToSide(ForgeDirection.EAST) || gate.getInputFromSide(ForgeDirection.EAST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(3 * 16, 0, x, y, 16, 16);
+			addQuad(x, y, 3 * 16, 0, 16, 16);
 		}
 
 		tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		
-		if(gate instanceof PartNANDGate) addQuad(10 * 16, 0, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartNORGate) addQuad(11 * 16, 0, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartXNORGate) addQuad(12 * 16, 0, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartANDGate) addQuad(7 * 16, 0, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartORGate) addQuad(8 * 16, 0, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartXORGate) addQuad(9 * 16, 0, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartBufferGate) addQuad(14 * 16, 0, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartNOTGate) addQuad(15 * 16, 0, gate.getRotation(), x, y, 16, 16);
+		if(gate instanceof PartNANDGate) addQuad(x, y, 10 * 16, 0, 16, 16, gate.getRotation());
+		else if(gate instanceof PartNORGate) addQuad(x, y, 11 * 16, 0, 16, 16, gate.getRotation());
+		else if(gate instanceof PartXNORGate) addQuad(x, y, 12 * 16, 0, 16, 16, gate.getRotation());
+		else if(gate instanceof PartANDGate) addQuad(x, y, 7 * 16, 0, 16, 16, gate.getRotation());
+		else if(gate instanceof PartORGate) addQuad(x, y, 8 * 16, 0, 16, 16, gate.getRotation());
+		else if(gate instanceof PartXORGate) addQuad(x, y, 9 * 16, 0, 16, 16, gate.getRotation());
+		else if(gate instanceof PartBufferGate) addQuad(x, y, 14 * 16, 0, 16, 16, gate.getRotation());
+		else if(gate instanceof PartNOTGate) addQuad(x, y, 15 * 16, 0, 16, 16, gate.getRotation());
 		
-		else if(gate instanceof PartMultiplexer) addQuad(0, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartTimer) addQuad(2 * 16, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartSequencer) addQuad(3 * 16, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartStateCell) addQuad(4 * 16, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartRandomizer) addQuad(5 * 16, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartSynchronizer) addQuad(10 * 16, 16, gate.getRotation(), x, y, 16, 16);
+		else if(gate instanceof PartMultiplexer) addQuad(x, y, 0, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartTimer) addQuad(x, y, 2 * 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartSequencer) addQuad(x, y, 3 * 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartStateCell) addQuad(x, y, 4 * 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartRandomizer) addQuad(x, y, 5 * 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartSynchronizer) addQuad(x, y, 10 * 16, 16, 16, 16, gate.getRotation());
 		
-		else if(gate instanceof PartRSLatch) addQuad(7 * 16, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartToggleLatch) addQuad(8 * 16, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartTranspartentLatch) addQuad(9 * 16, 16, gate.getRotation(), x, y, 16, 16);
+		else if(gate instanceof PartRSLatch) addQuad(x, y, 7 * 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartToggleLatch) addQuad(x, y, 8 * 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartTranspartentLatch) addQuad(x, y, 9 * 16, 16, 16, 16, gate.getRotation());
 		
-		else if(gate instanceof PartRepeater) addQuad(16, 16, gate.getRotation(), x, y, 16, 16);
-		else if(gate instanceof PartPulseFormer) addQuad(6 * 16, 16, gate.getRotation(), x, y, 16, 16);
+		else if(gate instanceof PartRepeater) addQuad(x, y, 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartPulseFormer) addQuad(x, y, 6 * 16, 16, 16, 16, gate.getRotation());
 	}
 	
 	public static void renderPartTorch(PartTorch torch, double x, double y) 
@@ -256,12 +256,12 @@ public class SubLogicPartRenderer
 		Tessellator.instance.setColorRGBA_F(0F, 1F, 0F, 1F);
 		
 		int con = checkConnections(torch);
-		if((con & 8) > 0) addQuad(2 * 16, 0, x, y, 16, 16);
-		if((con & 4) > 0) addQuad(4 * 16, 0, x, y, 16, 16);
-		if((con & 2) > 0) addQuad(1 * 16, 0, x, y, 16, 16);
-		if((con & 1) > 0) addQuad(3 * 16, 0, x, y, 16, 16);
+		if((con & 8) > 0) addQuad(x, y, 2 * 16, 0, 16, 16);
+		if((con & 4) > 0) addQuad(x, y, 4 * 16, 0, 16, 16);
+		if((con & 2) > 0) addQuad(x, y, 1 * 16, 0, 16, 16);
+		if((con & 1) > 0) addQuad(x, y, 3 * 16, 0, 16, 16);
 		
-		addQuad(13 * 16, 0, x, y, 16, 16);
+		addQuad(x, y, 13 * 16, 0, 16, 16);
 	}
 	
 	//Used for rendering
