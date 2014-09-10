@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.client;
 
 import net.minecraft.client.gui.Gui;
 
@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderUtils 
 {
-	public static void drawTexture(int u, int v, float rotation, Gui gui, double x, double y, int w, int h)
+	public static void drawTexture(double x, double y, int u, int v, int w, int h, float rotation, Gui gui)
 	{
 		GL11.glTranslated(x, y, 0);
 		GL11.glTranslatef(w /2F, h /2F, 0);

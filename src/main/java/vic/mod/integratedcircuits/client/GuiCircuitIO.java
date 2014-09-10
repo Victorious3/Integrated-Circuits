@@ -8,7 +8,6 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.RenderUtils;
 
 public class GuiCircuitIO extends GuiButton
 {
@@ -31,9 +30,22 @@ public class GuiCircuitIO extends GuiButton
 		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.xPosition, this.yPosition, 0);
+		GL11.glTranslatef(4F, 4F, 0F);
+		GL11.glRotatef(side * 90, 0F, 0F, 1F);
+		GL11.glTranslatef(-4F, -4F, -0F);
 		GL11.glScalef(0.5F, 0.5F, 1F);
+		
+		if(isActive) GL11.glColor3f(0F, 1F, 0F);
+		else GL11.glColor3f(0F, 0.4F, 0F);
+		drawTexturedModalRect(0, 6, 4 * 16, 15 * 16, 16, 16);
+		
+		GL11.glColor3f(1F, 1F, 1F);
 		RenderUtils.applyColorIRGB(MapColor.getMapColorForBlockColored(color).colorValue);
 		drawTexturedModalRect(0, 0, 2 * 16, (getHoverState(field_146123_n) == 1 ? 15 : 14) * 16, 16, 16);
+		
+		if(isActive) GL11.glColor3f(0F, 1F, 0F);
+		else GL11.glColor3f(0F, 0.4F, 0F);
+		drawTexturedModalRect(0, 0, 3 * 16, 15 * 16, 16, 16);
 		GL11.glPopMatrix();
 	}
 }

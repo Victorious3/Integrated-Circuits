@@ -8,6 +8,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -90,6 +92,42 @@ public class GuiPCBLayout extends GuiContainer
 		GuiPartChooser c1 = new GuiPartChooser(0, cx + 220, cy + 194, 1, this);
 		c1.setActive(true);
 		
+		buttonPlus = new GuiButtonExt(8, cx + 190, cy + 238, 10, 10, "+");
+		this.buttonList.add(buttonPlus);
+		buttonMinus = new GuiButtonExt(9, cx + 201, cy + 238, 10, 10, "-");
+		this.buttonList.add(buttonMinus);
+		
+		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+		int w = te.getCircuitData().getSize() - 2;
+		this.buttonList.add(new GuiButtonExt(10, cx + 93, cy + 14, 12, 12, "+"));
+		this.buttonList.add(new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, w + "x" + w));
+		
+		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
+		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
+		
+		nameField = new GuiTextField(fontRendererObj, cx + 154, cy + 15, 50, 10);
+		nameField.setText(te.name);
+		nameField.setMaxStringLength(7);
+		nameField.setCanLoseFocus(true);
+		nameField.setFocused(false);
+		
+		for(int i = 0; i < 16; i++)
+		{
+			this.buttonList.add(new GuiCircuitIO(i + 13, cx + 39 + i * 9, cy + 37, i, 0));
+		}
+		for(int i = 0; i < 16; i++)
+		{
+			this.buttonList.add(new GuiCircuitIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, i, 1));
+		}
+		for(int i = 0; i < 16; i++)
+		{
+			this.buttonList.add(new GuiCircuitIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3));
+		}
+		for(int i = 0; i < 16; i++)
+		{
+			this.buttonList.add(new GuiCircuitIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2));
+		}
+		
 		this.buttonList.add(c1);
 		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
 		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 152, SubLogicPartRenderer.createEncapsulated(PartNullCell.class), this));
@@ -126,30 +164,6 @@ public class GuiPCBLayout extends GuiContainer
 			SubLogicPartRenderer.createEncapsulated(PartRandomizer.class),
 			SubLogicPartRenderer.createEncapsulated(PartRepeater.class),
 			SubLogicPartRenderer.createEncapsulated(PartMultiplexer.class))), this));
-		
-		buttonPlus = new GuiButtonExt(8, cx + 190, cy + 238, 10, 10, "+");
-		this.buttonList.add(buttonPlus);
-		buttonMinus = new GuiButtonExt(9, cx + 201, cy + 238, 10, 10, "-");
-		this.buttonList.add(buttonMinus);
-		
-		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
-		int w = te.getCircuitData().getSize() - 2;
-		this.buttonList.add(new GuiButtonExt(10, cx + 93, cy + 14, 12, 12, "+"));
-		this.buttonList.add(new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, w + "x" + w));
-		
-		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
-		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
-		
-		nameField = new GuiTextField(fontRendererObj, cx + 154, cy + 15, 50, 10);
-		nameField.setText(te.name);
-		nameField.setMaxStringLength(7);
-		nameField.setCanLoseFocus(true);
-		nameField.setFocused(false);
-		
-		for(int i = 0; i < 16; i++)
-		{
-			this.buttonList.add(new GuiCircuitIO(i + 13, cx + i * 8, cy, i, 0));
-		}
 
 		super.initGui();
 	}
@@ -255,6 +269,50 @@ public class GuiPCBLayout extends GuiContainer
 		
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		GL11.glPopMatrix();
+		
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+		GL11.glShadeModel(GL11.GL_SMOOTH); 
+		Tessellator tes = Tessellator.instance;
+		tes.startDrawingQuads();
+		
+		int i1 = guiLeft + 17, i2 = guiTop + 44, i3 = 187, i4 = 4;
+		
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(i1, i2 + i4, 0);
+		tes.addVertex(i1 + i3, i2 + i4, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(i1 + i3, i2, 0);
+		tes.addVertex(i1, i2, 0);
+		
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(i1, i2 + i3, 0);
+		tes.addVertex(i1 + i3, i2 + i3, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(i1 + i3, i2 + i3 - i4, 0);
+		tes.addVertex(i1, i2 + i3 - i4, 0);
+		
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(i1, i2, 0);
+		tes.addVertex(i1, i2 + i3, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(i1 + i4, i2 + i3, 0);
+		tes.addVertex(i1 + i4, i2, 0);
+		
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(i1 + i3 - i4, i2, 0);
+		tes.addVertex(i1 + i3 - i4, i2 + i3, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(i1 + i3, i2 + i3, 0);
+		tes.addVertex(i1 + i3, i2, 0);
+		
+		tes.draw();
+		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
 		nameField.drawTextBox();
 	}
