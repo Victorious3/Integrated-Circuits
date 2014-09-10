@@ -7,8 +7,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.SubLogicPart;
-import vic.mod.integratedcircuits.SubLogicPartRenderer;
 import vic.mod.integratedcircuits.SubLogicPart.PartNull;
+import vic.mod.integratedcircuits.SubLogicPartRenderer;
 
 public class GuiPartChooser extends GuiButton
 {
@@ -57,8 +57,8 @@ public class GuiPartChooser extends GuiButton
 	{
 		super.drawButton(mc, x, y);
 		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
-		if(mode == 0) SubLogicPartRenderer.renderPart(current, this, this.xPosition + 2, this.yPosition + 2);
-		else SubLogicPartRenderer.drawTexture((4 + mode) * 16, 15 * 16, this, this.xPosition + 2, this.yPosition + 1);
+		if(mode == 0) SubLogicPartRenderer.renderPart(current, this.xPosition + 2, this.yPosition + 2);
+		else drawTexturedModalRect(this.xPosition + 2, this.yPosition + 1, (4 + mode) * 16, 15 * 16, 16, 16);
 		
 		if(showList && list != null)
 		{

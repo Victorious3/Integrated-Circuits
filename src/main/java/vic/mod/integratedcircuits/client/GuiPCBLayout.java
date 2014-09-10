@@ -145,6 +145,11 @@ public class GuiPCBLayout extends GuiContainer
 		nameField.setMaxStringLength(7);
 		nameField.setCanLoseFocus(true);
 		nameField.setFocused(false);
+		
+		for(int i = 0; i < 16; i++)
+		{
+			this.buttonList.add(new GuiCircuitIO(i + 13, cx + i * 8, cy, i, 0));
+		}
 
 		super.initGui();
 	}
@@ -223,26 +228,14 @@ public class GuiPCBLayout extends GuiContainer
 		
 		GL11.glPushMatrix();
 		GL11.glTranslated(guiLeft, guiTop, 0);
+		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
+		
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor((int)((guiLeft + 17) * guiScale), k - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));
 		GL11.glScalef(scale, scale, 1F);
-		GL11.glTranslated(offX, offY, 0);
 		
-		for(int x2 = 0; x2 < w; x2++)
-		{
-			for(int y2 = 0; y2 < w; y2++)
-			{
-				GL11.glColor3f(1.0F, 1.0F, 1.0F);
-				mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
-				if(x2 == 0 || y2 == 0 || x2 == w - 1 || y2 == w - 1) 
-					SubLogicPartRenderer.drawTexture(16, 15 * 16, this, x2 * 16, y2 * 16);
-				else SubLogicPartRenderer.drawTexture(0, 15 * 16, this, x2 * 16, y2 * 16);
-				SubLogicPart part = data.getPart(x2, y2);
-				SubLogicPartRenderer.renderPart(part, this, x2 * 16, y2 * 16);
-			}
-		}
+		SubLogicPartRenderer.renderPCB(offX, offY, data);
 		
-		GL11.glTranslated(-offX, -offY, 0);
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
@@ -256,7 +249,7 @@ public class GuiPCBLayout extends GuiContainer
 			{
 				x2 = x2 * 16 + offX;
 				y2 = y2 * 16 + offY;
-				SubLogicPartRenderer.renderPart(selectedPart, this, x2, y2);
+				SubLogicPartRenderer.renderPart(selectedPart, x2, y2);
 			}		
 		}
 		
