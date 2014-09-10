@@ -7,7 +7,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
-import vic.mod.integratedcircuits.SubLogicPart.PartNull;
 
 import com.google.common.primitives.Ints;
 
@@ -88,14 +87,6 @@ public class CircuitData implements Cloneable
 			e.printStackTrace();
 		}	
 		return null;
-	}
-	
-	public void setPart(int x, int y, SubLogicPart part)
-	{
-		if(part == null) part = new PartNull(x, y, parent);
-		id[x][y] = SubLogicPart.getId(part.getClass());
-		meta[x][y] = part.getState();
-		getPart(x, y).onPlaced();
 	}
 	
 	public void scheduleTick(int x, int y)

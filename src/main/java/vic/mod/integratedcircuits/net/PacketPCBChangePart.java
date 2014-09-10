@@ -5,23 +5,23 @@ import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.CircuitData;
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 {
-	private int x, y, id, data;
+	private int x, y, id, button;
+	boolean ctrl;
 	
 	public PacketPCBChangePart(){}
 	
-	public PacketPCBChangePart(int x, int y, int id, int data, int tx, int ty, int tz)
+	public PacketPCBChangePart(int x, int y, int id, int button, boolean ctrl, int tx, int ty, int tz)
 	{
 		super(tx, ty, tz);
 		this.x = x; this.y = y; 
 		this.id = id; 
-		this.data = data; 
+		this.button = button;
+		this.ctrl = ctrl;
 	}
 	
 	@Override
@@ -31,7 +31,8 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		x = buffer.readInt();
 		y = buffer.readInt();
 		id = buffer.readInt();
-		data = buffer.readInt();
+		button = buffer.readInt();
+		ctrl = buffer.readBoolean();
 	}
 
 	@Override
@@ -41,7 +42,8 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		buffer.writeInt(x);
 		buffer.writeInt(y);
 		buffer.writeInt(id);
-		buffer.writeInt(data);
+		buffer.writeInt(button);
+		buffer.writeBoolean(ctrl);
 	}
 
 	@Override
@@ -51,14 +53,12 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		if(te != null)
 		{
 			CircuitData cdata = te.getCircuitData();
-			int oid = cdata.getID(x, y);
-			cdata.setID(x, y, id);
-			cdata.setMeta(x, y, data);
-			
-			if(oid != id) cdata.getPart(x, y).onPlaced();
-			else cdata.getPart(x, y).notifyNeighbours();
-			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(te.getCircuitData(), xCoord, yCoord, zCoord), 
-				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+			if(button != -1) cdata.getPart(x, y).onClick(button, ctrl);
+			else
+			{
+				cdata.setID(x, y, id);
+				cdata.getPart(x, y).onPlaced();
+			}
 		}
 	}
 }

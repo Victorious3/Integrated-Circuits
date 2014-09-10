@@ -378,31 +378,19 @@ public class GuiPCBLayout extends GuiContainer
 		
 		CircuitData data = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData();
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-		boolean crtlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
+		boolean ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
 		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
 		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
 		int w = data.getSize();
 		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
 		{
-			int pid = data.getID(x2, y2);
-			int pdata = data.getMeta(x2, y2);
-			
+			TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 			if(selectedPart == null)
 			{
-				SubLogicPart part = data.getPart(x2, y2);
-				part.onClick(flag, crtlDown);
+				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, 0, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));			
 			}
-			else data.setPart(x2, y2, selectedPart);
-			
-			int cid = data.getID(x2, y2);
-			int cdata = data.getMeta(x2, y2);
-			
-			if(pid != cid || pdata != cdata)
-			{
-				TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
-				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, cid, cdata, te.xCoord, te.yCoord, te.zCoord));
-			}			
+			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, SubLogicPart.getId(selectedPart.getClass()), -1, false, te.xCoord, te.yCoord, te.zCoord));			
 		}
 		
 		super.mouseClicked(x, y, flag);

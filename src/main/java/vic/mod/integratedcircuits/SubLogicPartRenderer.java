@@ -75,7 +75,7 @@ public class SubLogicPartRenderer
 		d1 = u + 0;
 		d2 = u + w;
 		
-		if(rotation == 1)
+		if(rotation == 3)
 		{
 			d3 = v + h;
 			d4 = v + 0;
@@ -95,7 +95,7 @@ public class SubLogicPartRenderer
 			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scale, d3 * scale);
 			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scale, d3 * scale);
 		}
-		else if(rotation == 3)
+		else if(rotation == 1)
 		{
 			d3 = v + 0;
 			d4 = v + h;
