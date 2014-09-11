@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.ic;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -7,33 +7,35 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.SubLogicPart.PartANDGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartBufferGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartMultiplexer;
-import vic.mod.integratedcircuits.SubLogicPart.PartNANDGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartNORGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartNOTGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartNullCell;
-import vic.mod.integratedcircuits.SubLogicPart.PartORGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartPulseFormer;
-import vic.mod.integratedcircuits.SubLogicPart.PartRSLatch;
-import vic.mod.integratedcircuits.SubLogicPart.PartRandomizer;
-import vic.mod.integratedcircuits.SubLogicPart.PartRepeater;
-import vic.mod.integratedcircuits.SubLogicPart.PartSequencer;
-import vic.mod.integratedcircuits.SubLogicPart.PartStateCell;
-import vic.mod.integratedcircuits.SubLogicPart.PartSynchronizer;
-import vic.mod.integratedcircuits.SubLogicPart.PartTimer;
-import vic.mod.integratedcircuits.SubLogicPart.PartToggleLatch;
-import vic.mod.integratedcircuits.SubLogicPart.PartTorch;
-import vic.mod.integratedcircuits.SubLogicPart.PartTranspartentLatch;
-import vic.mod.integratedcircuits.SubLogicPart.PartWire;
-import vic.mod.integratedcircuits.SubLogicPart.PartXNORGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartXORGate;
+import vic.mod.integratedcircuits.CircuitData;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartMultiplexer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNANDGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNORGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNOTGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNullCell;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartORGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartPulseFormer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartRSLatch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartRandomizer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartRepeater;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartSequencer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartStateCell;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartSynchronizer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartTimer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartToggleLatch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartTorch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartTranspartentLatch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartWire;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartXNORGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartXORGate;
 
-public class SubLogicPartRenderer 
+public class CircuitPartRenderer 
 {
-	public static void renderPart(SubLogicPart part, double x, double y)
+	public static void renderPart(CircuitPart part, double x, double y)
 	{
 		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
 		Tessellator tes = Tessellator.instance;
@@ -44,7 +46,7 @@ public class SubLogicPartRenderer
 		GL11.glTranslated(-x, -y, 0);
 	}
 	
-	private static void renderPartPayload(SubLogicPart part, double x, double y)
+	private static void renderPartPayload(CircuitPart part, double x, double y)
 	{
 		if(part instanceof PartWire) renderPartWire((PartWire)part, x, y);
 		else if(part instanceof PartNullCell) renderPartNullCell((PartNullCell)part, x, y);
@@ -52,7 +54,7 @@ public class SubLogicPartRenderer
 		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, x, y);
 	}
 
-	private static int checkConnections(SubLogicPart part)
+	private static int checkConnections(CircuitPart part)
 	{
 		boolean c1 = part.getY() > 0 ? part.canConnectToSide(ForgeDirection.NORTH) && part.getNeighbourOnSide(ForgeDirection.NORTH).canConnectToSide(ForgeDirection.SOUTH) : false;
 		boolean c2 = part.getY() < part.getParent().getCircuitData().getSize() ? part.canConnectToSide(ForgeDirection.SOUTH) && part.getNeighbourOnSide(ForgeDirection.SOUTH).canConnectToSide(ForgeDirection.NORTH) : false;
@@ -265,7 +267,7 @@ public class SubLogicPartRenderer
 	}
 	
 	//Used for rendering
-	public static SubLogicPart createEncapsulated(Class<? extends SubLogicPart> clazz)
+	public static CircuitPart createEncapsulated(Class<? extends CircuitPart> clazz)
 	{
 		try {
 			return clazz.getConstructor(int.class, int.class, ICircuit.class).newInstance(1, 1, CurcuitRenderWrapper.instance);
@@ -275,7 +277,7 @@ public class SubLogicPartRenderer
 		return null;
 	}
 	
-	public static SubLogicPart createEncapsulated(Class<? extends SubLogicPart> clazz, int state)
+	public static CircuitPart createEncapsulated(Class<? extends CircuitPart> clazz, int state)
 	{
 		try {
 			return clazz.getConstructor(int.class, int.class, ICircuit.class).newInstance(1, 1, new CurcuitRenderWrapper(state));

@@ -6,13 +6,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.SubLogicPart;
-import vic.mod.integratedcircuits.SubLogicPart.PartNull;
-import vic.mod.integratedcircuits.SubLogicPartRenderer;
+import vic.mod.integratedcircuits.ic.CircuitPart;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNull;
 
 public class GuiPartChooser extends GuiButton implements IHoverable
 {
-	public SubLogicPart current;
+	public CircuitPart current;
 	private ArrayList<GuiPartChooser> list;
 	public int mode;
 	private boolean active = false;
@@ -27,12 +27,12 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 		this.parent = parent;
 	}
 	
-	public GuiPartChooser(int id, int x, int y, SubLogicPart current, GuiPCBLayout parent)
+	public GuiPartChooser(int id, int x, int y, CircuitPart current, GuiPCBLayout parent)
 	{
 		this(id, x, y, current, null, parent);
 	}
 	
-	public GuiPartChooser(int id, int x, int y, SubLogicPart current, ArrayList<SubLogicPart> list, GuiPCBLayout parent) 
+	public GuiPartChooser(int id, int x, int y, CircuitPart current, ArrayList<CircuitPart> list, GuiPCBLayout parent) 
 	{
 		super(id, x, y, 20, 20, "");
 		this.current = current;
@@ -57,7 +57,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 	{
 		super.drawButton(mc, x, y);
 		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
-		if(mode == 0) SubLogicPartRenderer.renderPart(current, this.xPosition + 2, this.yPosition + 2);
+		if(mode == 0) CircuitPartRenderer.renderPart(current, this.xPosition + 2, this.yPosition + 2);
 		else drawTexturedModalRect(this.xPosition + 2, this.yPosition + 1, (4 + mode) * 16, 15 * 16, 16, 16);
 		
 		if(showList && list != null)
@@ -126,7 +126,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 			}
 			
 			if(mode == 1) parent.selectedPart = null;
-			else if(mode == 2) parent.selectedPart = SubLogicPartRenderer.createEncapsulated(PartNull.class);
+			else if(mode == 2) parent.selectedPart = CircuitPartRenderer.createEncapsulated(PartNull.class);
 			else parent.selectedPart = this.current;
 		}
 		if(list != null)

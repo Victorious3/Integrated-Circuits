@@ -1,5 +1,6 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.ic;
 
+import vic.mod.integratedcircuits.CircuitData;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public interface ICircuit 

@@ -4,6 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;

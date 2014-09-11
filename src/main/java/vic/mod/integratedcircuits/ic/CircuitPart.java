@@ -1,16 +1,17 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.ic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.MiscUtils;
 
 import com.google.common.collect.HashBiMap;
 
-public abstract class SubLogicPart
+public abstract class CircuitPart
 {
-	private static HashBiMap<Integer, Class<? extends SubLogicPart>> partRegistry = HashBiMap.create(new HashMap<Integer, Class<? extends SubLogicPart>>());
+	private static HashBiMap<Integer, Class<? extends CircuitPart>> partRegistry = HashBiMap.create(new HashMap<Integer, Class<? extends CircuitPart>>());
 	
 	static 
 	{
@@ -39,17 +40,17 @@ public abstract class SubLogicPart
 		partRegistry.put(22, PartNullCell.class);
 	}
 	
-	public static Integer getId(Class<? extends SubLogicPart> part)
+	public static Integer getId(Class<? extends CircuitPart> part)
 	{
 		return partRegistry.inverse().get(part);
 	}
 	
-	public static Class<? extends SubLogicPart> getPart(int id)
+	public static Class<? extends CircuitPart> getPart(int id)
 	{
 		return partRegistry.get(id);
 	}
 	
-	public SubLogicPart(int x, int y, ICircuit parent)
+	public CircuitPart(int x, int y, ICircuit parent)
 	{
 		this.x = x;
 		this.y = y;
@@ -150,7 +151,7 @@ public abstract class SubLogicPart
 		for(int i = 2; i < 6; i++)
 		{
 			ForgeDirection fd = ForgeDirection.getOrientation(i);
-			SubLogicPart part = getNeighbourOnSide(fd);
+			CircuitPart part = getNeighbourOnSide(fd);
 			if(canConnectToSide(fd) 
 				&& part.canConnectToSide(fd.getOpposite()) 
 				&& getOutputToSide(fd) != part.getInputFromSide(fd.getOpposite())) 
@@ -158,7 +159,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	public final SubLogicPart getNeighbourOnSide(ForgeDirection side)
+	public final CircuitPart getNeighbourOnSide(ForgeDirection side)
 	{	
 		return parent.getCircuitData().getPart(x + side.offsetX, y + side.offsetZ);
 	}
@@ -171,7 +172,7 @@ public abstract class SubLogicPart
 			|| getInputFromSide(ForgeDirection.WEST);
 	}
 	
-	public static class PartNull extends SubLogicPart
+	public static class PartNull extends CircuitPart
 	{
 		public PartNull(int x, int y, ICircuit parent) 
 		{
@@ -187,7 +188,7 @@ public abstract class SubLogicPart
 			for(int i = 2; i < 6; i++)
 			{
 				ForgeDirection fd = ForgeDirection.getOrientation(i);
-				SubLogicPart part = getNeighbourOnSide(fd);
+				CircuitPart part = getNeighbourOnSide(fd);
 				part.onInputChange(fd.getOpposite());
 			}
 		}
@@ -199,7 +200,52 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	public static class PartWire extends SubLogicPart
+	public static class PartIOBit extends CircuitPart
+	{
+		public PartIOBit(int x, int y, ICircuit parent) 
+		{
+			super(x, y, parent);
+		}
+		
+		public final int getRotation()
+		{
+			return (getState() & 3);
+		}
+		
+		public final void setRotation(int rotation)
+		{
+			setState(getState() & ~3 | rotation);
+		}
+		
+		public final int getFrequency()
+		{
+			return (getState() & 60) >> 2;
+		}
+		
+		public final void setFrequency(int frequency)
+		{
+			setState(getState() & ~60 | frequency << 2);
+		}
+
+		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			ForgeDirection dir = MiscUtils.getDirection(getRotation());
+			if(side == dir.getOpposite())
+				getParent().setOutputToSide(dir, getFrequency(), getNeighbourOnSide(side).getOutputToSide(side.getOpposite()));
+		}
+
+		@Override
+		public boolean getOutputToSide(ForgeDirection side) 
+		{
+			ForgeDirection dir = MiscUtils.getDirection(getRotation());
+			if(side == dir.getOpposite())
+				return getParent().getInputFromSide(dir, getFrequency());
+			else return false;
+		}
+	}
+	
+	public static class PartWire extends CircuitPart
 	{
 		public PartWire(int x, int y, ICircuit parent) 
 		{
@@ -227,7 +273,7 @@ public abstract class SubLogicPart
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			SubLogicPart part = getNeighbourOnSide(side);
+			CircuitPart part = getNeighbourOnSide(side);
 			if(part instanceof PartWire)
 			{
 				int pcolor = ((PartWire)part).getColor();
@@ -239,7 +285,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	public static class PartTorch extends SubLogicPart
+	public static class PartTorch extends CircuitPart
 	{
 		public PartTorch(int x, int y, ICircuit parent) 
 		{
@@ -253,7 +299,7 @@ public abstract class SubLogicPart
 		}
 	}
 	
-	public static abstract class PartGate extends SubLogicPart
+	public static abstract class PartGate extends CircuitPart
 	{
 		private boolean updateLater = false;
 		
@@ -677,7 +723,6 @@ public abstract class SubLogicPart
 		}	
 	}
 	
-	//FIXME Completely derps up when placed on the side of another timer.
 	public static class PartTimer extends PartDelayedAction
 	{
 		public PartTimer(int x, int y, ICircuit parent) 
@@ -1122,7 +1167,7 @@ public abstract class SubLogicPart
 	}
 	
 	//If I ever loose this file, I'll totally be doomed.
-	public static class PartNullCell extends SubLogicPart
+	public static class PartNullCell extends CircuitPart
 	{
 		public PartNullCell(int x, int y, ICircuit parent) 
 		{

@@ -21,33 +21,33 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.CircuitData;
 import vic.mod.integratedcircuits.ContainerPCBLayout;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.SubLogicPart;
-import vic.mod.integratedcircuits.SubLogicPart.PartANDGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartBufferGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartMultiplexer;
-import vic.mod.integratedcircuits.SubLogicPart.PartNANDGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartNORGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartNOTGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartNull;
-import vic.mod.integratedcircuits.SubLogicPart.PartNullCell;
-import vic.mod.integratedcircuits.SubLogicPart.PartORGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartPulseFormer;
-import vic.mod.integratedcircuits.SubLogicPart.PartRSLatch;
-import vic.mod.integratedcircuits.SubLogicPart.PartRandomizer;
-import vic.mod.integratedcircuits.SubLogicPart.PartRepeater;
-import vic.mod.integratedcircuits.SubLogicPart.PartSequencer;
-import vic.mod.integratedcircuits.SubLogicPart.PartStateCell;
-import vic.mod.integratedcircuits.SubLogicPart.PartSynchronizer;
-import vic.mod.integratedcircuits.SubLogicPart.PartTimer;
-import vic.mod.integratedcircuits.SubLogicPart.PartToggleLatch;
-import vic.mod.integratedcircuits.SubLogicPart.PartTorch;
-import vic.mod.integratedcircuits.SubLogicPart.PartTranspartentLatch;
-import vic.mod.integratedcircuits.SubLogicPart.PartWire;
-import vic.mod.integratedcircuits.SubLogicPart.PartXNORGate;
-import vic.mod.integratedcircuits.SubLogicPart.PartXORGate;
-import vic.mod.integratedcircuits.SubLogicPartRenderer;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.ic.CircuitPart;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartMultiplexer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNANDGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNORGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNOTGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNull;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNullCell;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartORGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartPulseFormer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartRSLatch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartRandomizer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartRepeater;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartSequencer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartStateCell;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartSynchronizer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartTimer;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartToggleLatch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartTorch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartTranspartentLatch;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartWire;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartXNORGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartXORGate;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
@@ -59,23 +59,26 @@ public class GuiPCBLayout extends GuiContainer
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/pcblayout.png");
 	
 	private int lastX, lastY;
+	private TileEntityPCBLayout te;
 	
 	private GuiTextField nameField;
 	private GuiButtonExt buttonPlus;
 	private GuiButtonExt buttonMinus;
+	private GuiButtonExt buttonSize;
 	
 	//Because of private.
 	public GuiPartChooser selectedChooser;
 	public boolean blockMouseInput = false;
 	public IHoverable hoveredElement;
 	
-	public SubLogicPart selectedPart;
+	public CircuitPart selectedPart;
 	
 	public GuiPCBLayout(ContainerPCBLayout container) 
 	{
 		super(container);
 		this.xSize = 248;
 		this.ySize = 249;
+		this.te = container.tileentity;
 	}
 
 	@Override
@@ -93,10 +96,10 @@ public class GuiPCBLayout extends GuiContainer
 		buttonMinus = new GuiButtonExt(9, cx + 201, cy + 238, 10, 10, "-");
 		this.buttonList.add(buttonMinus);
 		
-		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 		int w = te.getCircuitData().getSize() - 2;
 		this.buttonList.add(new GuiButtonExt(10, cx + 93, cy + 14, 12, 12, "+"));
-		this.buttonList.add(new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, w + "x" + w));
+		buttonSize = new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, w + "x" + w);
+		this.buttonList.add(buttonSize);
 		
 		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
 		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
@@ -126,48 +129,53 @@ public class GuiPCBLayout extends GuiContainer
 		
 		this.buttonList.add(c1);
 		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 152, SubLogicPartRenderer.createEncapsulated(PartNullCell.class), this));
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, SubLogicPartRenderer.createEncapsulated(PartTorch.class), this));
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 152, CircuitPartRenderer.createEncapsulated(PartNullCell.class), this));
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, CircuitPartRenderer.createEncapsulated(PartTorch.class), this));
 		
-		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 131, SubLogicPartRenderer.createEncapsulated(PartWire.class),
-			new ArrayList<SubLogicPart>(Arrays.asList(
-			SubLogicPartRenderer.createEncapsulated(PartWire.class, 1 << 5),
-			SubLogicPartRenderer.createEncapsulated(PartWire.class, 2 << 5))), this));
+		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 131, CircuitPartRenderer.createEncapsulated(PartWire.class),
+			new ArrayList<CircuitPart>(Arrays.asList(
+			CircuitPartRenderer.createEncapsulated(PartWire.class, 1 << 5),
+			CircuitPartRenderer.createEncapsulated(PartWire.class, 2 << 5))), this));
 		
-		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, SubLogicPartRenderer.createEncapsulated(PartToggleLatch.class),
-			new ArrayList<SubLogicPart>(Arrays.asList(
-			SubLogicPartRenderer.createEncapsulated(PartRSLatch.class),
-			SubLogicPartRenderer.createEncapsulated(PartTranspartentLatch.class))), this));
+		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, CircuitPartRenderer.createEncapsulated(PartToggleLatch.class),
+			new ArrayList<CircuitPart>(Arrays.asList(
+			CircuitPartRenderer.createEncapsulated(PartRSLatch.class),
+			CircuitPartRenderer.createEncapsulated(PartTranspartentLatch.class))), this));
 		
-		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, SubLogicPartRenderer.createEncapsulated(PartANDGate.class),
-			new ArrayList<SubLogicPart>(Arrays.asList(
-			SubLogicPartRenderer.createEncapsulated(PartORGate.class),
-			SubLogicPartRenderer.createEncapsulated(PartXORGate.class),
-			SubLogicPartRenderer.createEncapsulated(PartBufferGate.class))), this));
+		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, CircuitPartRenderer.createEncapsulated(PartANDGate.class),
+			new ArrayList<CircuitPart>(Arrays.asList(
+			CircuitPartRenderer.createEncapsulated(PartORGate.class),
+			CircuitPartRenderer.createEncapsulated(PartXORGate.class),
+			CircuitPartRenderer.createEncapsulated(PartBufferGate.class))), this));
 		
-		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, SubLogicPartRenderer.createEncapsulated(PartNANDGate.class),
-			new ArrayList<SubLogicPart>(Arrays.asList(
-			SubLogicPartRenderer.createEncapsulated(PartNORGate.class),
-			SubLogicPartRenderer.createEncapsulated(PartXNORGate.class),
-			SubLogicPartRenderer.createEncapsulated(PartNOTGate.class))), this));
+		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, CircuitPartRenderer.createEncapsulated(PartNANDGate.class),
+			new ArrayList<CircuitPart>(Arrays.asList(
+			CircuitPartRenderer.createEncapsulated(PartNORGate.class),
+			CircuitPartRenderer.createEncapsulated(PartXNORGate.class),
+			CircuitPartRenderer.createEncapsulated(PartNOTGate.class))), this));
 		
-		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, SubLogicPartRenderer.createEncapsulated(PartTimer.class),
-			new ArrayList<SubLogicPart>(Arrays.asList(
-			SubLogicPartRenderer.createEncapsulated(PartSequencer.class),
-			SubLogicPartRenderer.createEncapsulated(PartSynchronizer.class),
-			SubLogicPartRenderer.createEncapsulated(PartStateCell.class),
-			SubLogicPartRenderer.createEncapsulated(PartPulseFormer.class),
-			SubLogicPartRenderer.createEncapsulated(PartRandomizer.class),
-			SubLogicPartRenderer.createEncapsulated(PartRepeater.class),
-			SubLogicPartRenderer.createEncapsulated(PartMultiplexer.class))), this));
+		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, CircuitPartRenderer.createEncapsulated(PartTimer.class),
+			new ArrayList<CircuitPart>(Arrays.asList(
+			CircuitPartRenderer.createEncapsulated(PartSequencer.class),
+			CircuitPartRenderer.createEncapsulated(PartSynchronizer.class),
+			CircuitPartRenderer.createEncapsulated(PartStateCell.class),
+			CircuitPartRenderer.createEncapsulated(PartPulseFormer.class),
+			CircuitPartRenderer.createEncapsulated(PartRandomizer.class),
+			CircuitPartRenderer.createEncapsulated(PartRepeater.class),
+			CircuitPartRenderer.createEncapsulated(PartMultiplexer.class))), this));
 
 		super.initGui();
+	}
+	
+	public void refreshUI()
+	{
+		int w = te.getCircuitData().getSize() - 2;
+		buttonSize.displayString = w + "x" + w;
 	}
 	
 	@Override
 	protected void actionPerformed(GuiButton button) 
 	{
-		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 		int w = te.getCircuitData().getSize();
 		if(button.id == 8) scale(1);
 		else if(button.id == 9) scale(-1);
@@ -209,7 +217,6 @@ public class GuiPCBLayout extends GuiContainer
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
 		
-		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 		CircuitData data = te.getCircuitData();
 		
 		int w = data.getSize();
@@ -246,7 +253,7 @@ public class GuiPCBLayout extends GuiContainer
 		GL11.glScissor((int)((guiLeft + 17) * guiScale), k - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));
 		GL11.glScalef(te.scale, te.scale, 1F);
 		
-		SubLogicPartRenderer.renderPCB(te.offX, te.offY, data);
+		CircuitPartRenderer.renderPCB(te.offX, te.offY, data);
 		
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -261,7 +268,7 @@ public class GuiPCBLayout extends GuiContainer
 			{
 				x2 = x2 * 16 + te.offX;
 				y2 = y2 * 16 + te.offY;
-				SubLogicPartRenderer.renderPart(selectedPart, x2, y2);
+				CircuitPartRenderer.renderPart(selectedPart, x2, y2);
 			}		
 		}
 		
@@ -318,7 +325,6 @@ public class GuiPCBLayout extends GuiContainer
 	@Override
 	protected void drawGuiContainerForegroundLayer(int x, int y) 
 	{		
-		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 		CircuitData data = te.getCircuitData();
 		
 		int x2 = (int)((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
@@ -329,7 +335,7 @@ public class GuiPCBLayout extends GuiContainer
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				SubLogicPart part = data.getPart(x2, y2);
+				CircuitPart part = data.getPart(x2, y2);
 				if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
 				{
 					ArrayList<String> text = new ArrayList<String>();
@@ -370,7 +376,6 @@ public class GuiPCBLayout extends GuiContainer
 			return;
 		}		
 		
-		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 		CircuitData data = te.getCircuitData();
 		
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
@@ -385,7 +390,7 @@ public class GuiPCBLayout extends GuiContainer
 			{
 				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, 0, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));			
 			}
-			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, SubLogicPart.getId(selectedPart.getClass()), -1, false, te.xCoord, te.yCoord, te.zCoord));			
+			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, CircuitPart.getId(selectedPart.getClass()), -1, false, te.xCoord, te.yCoord, te.zCoord));			
 		}
 		
 		super.mouseClicked(x, y, flag);
@@ -393,7 +398,6 @@ public class GuiPCBLayout extends GuiContainer
 	
 	private void scale(int i)
 	{
-		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 		int w = te.getCircuitData().getSize();
 		
 		double ow = w * 16 * te.scale;	
@@ -462,10 +466,7 @@ public class GuiPCBLayout extends GuiContainer
 		
 		if(!oname.equals(nameField.getText()))
 		{
-			TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeName(nameField.getText(), te.xCoord, te.yCoord, te.zCoord));
 		}		
 	}
-	
-	
 }

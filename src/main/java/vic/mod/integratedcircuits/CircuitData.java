@@ -3,6 +3,8 @@ package vic.mod.integratedcircuits;
 import java.awt.Point;
 import java.util.LinkedList;
 
+import vic.mod.integratedcircuits.ic.ICircuit;
+import vic.mod.integratedcircuits.ic.CircuitPart;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
@@ -34,6 +36,11 @@ public class CircuitData implements Cloneable
 		this.id = id;
 		this.meta = meta;
 		this.tickSchedule = tickSchedule;
+	}
+	
+	public void setup()
+	{
+		//TODO Insertion of the IO bit parts on the sides. Should refresh the adjacent neighbors.
 	}
 	
 	public int getMeta(int x, int y)
@@ -79,10 +86,10 @@ public class CircuitData implements Cloneable
 		this.size = size;
 	}
 	
-	public SubLogicPart getPart(int x, int y)
+	public CircuitPart getPart(int x, int y)
 	{
 		try {
-			return SubLogicPart.getPart(id[x][y]).getConstructor(int.class, int.class, ICircuit.class).newInstance(x, y, parent);
+			return CircuitPart.getPart(id[x][y]).getConstructor(int.class, int.class, ICircuit.class).newInstance(x, y, parent);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
