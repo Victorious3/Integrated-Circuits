@@ -47,6 +47,7 @@ public class PacketPCBReload extends PacketPCB<PacketPCBReload>
 			if(side == side.SERVER)
 				IntegratedCircuits.networkWrapper.sendToAllAround(this, 
 					new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+			//FIXME ARE YOU CRAZY? REALLOCATING EVERY FUCKING BUTTON JUST BECAUSE YOU ARE TOO LAZY TO WRITE A METHOD FOR REFRESHING THE BITS YOU NEED ?!!
 			else if(Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
 				Minecraft.getMinecraft().currentScreen.initGui();
 		}
