@@ -30,8 +30,8 @@ public class MiscUtils
 		if(side == null || side == Side.SERVER) IntegratedCircuits.networkWrapper.registerMessage(clazz, clazz, id, Side.SERVER);
 	}
 
-	public static ForgeDirection[] order = new ForgeDirection[]{NORTH, EAST, SOUTH, WEST};
-	public static int[] index = new int[]{-1, -1, 0, 2, 3, 1, -1};
+	private static ForgeDirection[] order = new ForgeDirection[]{NORTH, EAST, SOUTH, WEST};
+	private static int[] index = new int[]{-1, -1, 0, 2, 3, 1, -1};
 	
 	public static ForgeDirection rotn(ForgeDirection fd, int offset)
 	{
@@ -39,6 +39,16 @@ public class MiscUtils
 		int newPos = pos + offset;
 		pos = newPos > 3 ? newPos - 4 : newPos < 0 ? newPos + 4 : newPos;
 		return order[pos];
+	}
+	
+	public static ForgeDirection getDirection(int side)
+	{
+		return order[side];
+	}
+	
+	public static int getSide(ForgeDirection dir)
+	{
+		return index[dir.ordinal()];
 	}
 
 	public static ForgeDirection rot(ForgeDirection fd)

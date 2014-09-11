@@ -58,11 +58,7 @@ public class GuiPCBLayout extends GuiContainer
 {	
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/pcblayout.png");
 	
-	private float scale = 0.33F;
-	private double offX = 63;
-	private double offY = 145;
 	private int lastX, lastY;
-	private boolean offsetChanged;
 	
 	private GuiTextField nameField;
 	private GuiButtonExt buttonPlus;
@@ -71,7 +67,7 @@ public class GuiPCBLayout extends GuiContainer
 	//Because of private.
 	public GuiPartChooser selectedChooser;
 	public boolean blockMouseInput = false;
-	public GuiPartChooser hoveredChooser;
+	public IHoverable hoveredElement;
 	
 	public SubLogicPart selectedPart;
 	
@@ -113,19 +109,19 @@ public class GuiPCBLayout extends GuiContainer
 		
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13, cx + 39 + i * 9, cy + 37, i, 0));
+			this.buttonList.add(new GuiCircuitIO(i + 13, cx + 39 + i * 9, cy + 37, i, 0, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, i, 1));
+			this.buttonList.add(new GuiCircuitIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, i, 1, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3));
+			this.buttonList.add(new GuiCircuitIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2));
+			this.buttonList.add(new GuiCircuitIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2, this, te));
 		}
 		
 		this.buttonList.add(c1);
@@ -185,9 +181,9 @@ public class GuiPCBLayout extends GuiContainer
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBReload((byte)w, te.xCoord, te.yCoord, te.zCoord));
 		}
 		else if(button.id == 13)
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));	
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));
 		else if(button.id == 12)
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(false, te.xCoord, te.yCoord, te.zCoord));	
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(false, te.xCoord, te.yCoord, te.zCoord));
 	}
 	
 	public List getButtonList()
@@ -204,16 +200,18 @@ public class GuiPCBLayout extends GuiContainer
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) 
 	{
-		hoveredChooser = null;
+		hoveredElement = null;
 		
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		GL11.glColor3f(1F, 1F, 1F);
 		mc.getTextureManager().bindTexture(backgroundTexture);
-		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	
 		
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
 		
-		CircuitData data = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData();
+		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+		CircuitData data = te.getCircuitData();
+		
 		int w = data.getSize();
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		
@@ -221,19 +219,19 @@ public class GuiPCBLayout extends GuiContainer
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				offX += (x - lastX) / scale;
-				offY += (y - lastY) / scale;
+				te.offX += (x - lastX) / te.scale;
+				te.offY += (y - lastY) / te.scale;
 			}
 		}
 		lastX = x;
 		lastY = y;
 		
-		double mx = (204 / scale) - 16;
-		double ix = (-(w * 16) + 17 / scale) + 16;
-		double my = (231 / scale) - 16;
-		double iy = (-(w * 16) + 44 / scale) + 16;
-		offX = offX > mx ? mx : offX < ix ? ix : offX;
-		offY = offY > my ? my : offY < iy ? iy : offY;
+		double mx = (204 / te.scale) - 16;
+		double ix = (-(w * 16) + 17 / te.scale) + 16;
+		double my = (231 / te.scale) - 16;
+		double iy = (-(w * 16) + 44 / te.scale) + 16;
+		te.offX = te.offX > mx ? mx : te.offX < ix ? ix : te.offX;
+		te.offY = te.offY > my ? my : te.offY < iy ? iy : te.offY;
 		
 		int j = this.mc.displayWidth;
 		int k = this.mc.displayHeight;
@@ -246,23 +244,23 @@ public class GuiPCBLayout extends GuiContainer
 		
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor((int)((guiLeft + 17) * guiScale), k - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));
-		GL11.glScalef(scale, scale, 1F);
+		GL11.glScalef(te.scale, te.scale, 1F);
 		
-		SubLogicPartRenderer.renderPCB(offX, offY, data);
+		SubLogicPartRenderer.renderPCB(te.offX, te.offY, data);
 		
 		GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
 		
-		double x2 = (int)((x - guiLeft - offX * scale) / 16F / scale);
-		double y2 = (int)((y - guiTop - offY * scale) / 16F / scale);
+		double x2 = (int)((x - guiLeft - te.offX * te.scale) / 16F / te.scale);
+		double y2 = (int)((y - guiTop - te.offY * te.scale) / 16F / te.scale);
 		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown && !blockMouseInput)
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				x2 = x2 * 16 + offX;
-				y2 = y2 * 16 + offY;
+				x2 = x2 * 16 + te.offX;
+				y2 = y2 * 16 + te.offY;
 				SubLogicPartRenderer.renderPart(selectedPart, x2, y2);
 			}		
 		}
@@ -320,9 +318,12 @@ public class GuiPCBLayout extends GuiContainer
 	@Override
 	protected void drawGuiContainerForegroundLayer(int x, int y) 
 	{		
-		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
-		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
-		CircuitData data = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData();
+		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+		CircuitData data = te.getCircuitData();
+		
+		int x2 = (int)((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
+		int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
+		
 		int w = data.getSize();
 		if(x2 > 0 && y2 > 0 && x2 < w && y2 < w && !blockMouseInput)
 		{
@@ -348,17 +349,10 @@ public class GuiPCBLayout extends GuiContainer
 				}
 			}
 		}
-		if(hoveredChooser != null)
-		{
-			String text = "";
-			if(hoveredChooser.current != null) text = hoveredChooser.current.getName();
-			else if(hoveredChooser.mode == 1) text = "Edit";
-			else if(hoveredChooser.mode == 2) text = "Erase";
-			
-			drawCreativeTabHoveringText(text, x - guiLeft, y - guiTop);
-		}
+		if(hoveredElement != null)
+			drawHoveringText(hoveredElement.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
 		GL11.glDisable(GL11.GL_LIGHTING);
-		fontRendererObj.drawString((int)(scale * 100) + "%", 217, 235, 0x333333);
+		fontRendererObj.drawString((int)(te.scale * 100) + "%", 217, 235, 0x333333);
 	}
 
 	@Override
@@ -376,16 +370,17 @@ public class GuiPCBLayout extends GuiContainer
 			return;
 		}		
 		
-		CircuitData data = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData();
+		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+		CircuitData data = te.getCircuitData();
+		
 		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 		boolean ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
-		int x2 = (int)((x - guiLeft - offX * scale) / (16F * scale));
-		int y2 = (int)((y - guiTop - offY * scale) / (16F * scale));
+		int x2 = (int)((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
+		int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
 		int w = data.getSize();
 		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
 		{
-			TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
 			if(selectedPart == null)
 			{
 				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, 0, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));			
@@ -398,40 +393,42 @@ public class GuiPCBLayout extends GuiContainer
 	
 	private void scale(int i)
 	{
-		int w = ((ContainerPCBLayout)inventorySlots).tileentity.getCircuitData().getSize();
-		double ow = w * 16 * scale;	
-		float oldScale = scale;
+		TileEntityPCBLayout te = ((ContainerPCBLayout)inventorySlots).tileentity;
+		int w = te.getCircuitData().getSize();
 		
-		int index = scales.indexOf(scale);
+		double ow = w * 16 * te.scale;	
+		float oldScale = te.scale;
 		
-		if(i > 0 && index + 1 < scales.size()) scale = scales.get(index + 1);
-		if(i < 0 && index - 1 >= 0) scale = scales.get(index - 1);
+		int index = scales.indexOf(te.scale);
+		
+		if(i > 0 && index + 1 < scales.size()) te.scale = scales.get(index + 1);
+		if(i < 0 && index - 1 >= 0) te.scale = scales.get(index - 1);
 		
 		if(i != 0)
 		{
 			buttonMinus.enabled = true;
 			buttonPlus.enabled = true;
 			
-			if(scale == 0.17F) buttonMinus.enabled = false;
-			if(scale == 2F) buttonPlus.enabled = false;
+			if(te.scale == 0.17F) buttonMinus.enabled = false;
+			if(te.scale == 2F) buttonPlus.enabled = false;
 		}
 		
-		double change = (double)scale / (double)oldScale;
-		double nw = w * 16 * scale;
+		double change = (double)te.scale / (double)oldScale;
+		double nw = w * 16 * te.scale;
 				
 		if(i > 0)
 		{
-			offX = offX / change;
-			offY = offY / change;
-			offX -= (nw - ow) / 2 / scale;
-			offY -= (nw - ow) / 2 / scale;
+			te.offX = te.offX / change;
+			te.offY = te.offY / change;
+			te.offX -= (nw - ow) / 2 / te.scale;
+			te.offY -= (nw - ow) / 2 / te.scale;
 		}
 		else if (i < 0)
 		{
-			offX -= (nw - ow) / 2 / oldScale;
-			offY -= (nw - ow) / 2 / oldScale;
-			offX = offX / change;
-			offY = offY / change;
+			te.offX -= (nw - ow) / 2 / oldScale;
+			te.offY -= (nw - ow) / 2 / oldScale;
+			te.offX = te.offX / change;
+			te.offY = te.offY / change;
 		}
 	}
 	

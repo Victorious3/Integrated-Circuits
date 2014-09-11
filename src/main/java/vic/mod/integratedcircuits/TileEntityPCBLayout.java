@@ -4,14 +4,28 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDiskDrive
 {
 	public String name = "NO_NAME";
 	private ItemStack floppyStack;
 	private CircuitData circuitData;
+	
+	//Used for the GUI, client side.
+	@SideOnly(Side.CLIENT)
+	public float scale = 0.33F;
+	@SideOnly(Side.CLIENT)
+	public double offX = 63;
+	@SideOnly(Side.CLIENT)
+	public double offY = 145;
+	
+	public int[] i = new int[4];
+	public int[] o = new int[4];
 	
 	public void setup(int size)
 	{
@@ -55,14 +69,32 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	@Override
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return (i[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
+	}
+	
+	public boolean getOutputToSide(ForgeDirection dir, int frequency) 
+	{
+		return (o[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void setInputFromSide(ForgeDirection dir, int frequency, boolean output) 
+	{
+		int[] i = this.i.clone();
+		if(output) i[MiscUtils.getSide(dir)] |= 1 << frequency;
+		else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
+		
+		IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, xCoord, yCoord, zCoord));
 	}
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		// TODO Auto-generated method stub
+		if(output) o[MiscUtils.getSide(dir)] |= 1 << frequency;
+		else o[MiscUtils.getSide(dir)] &= ~(1 << frequency);
+		
+		IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, xCoord, yCoord, zCoord), 
+			new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 	}
 
 	@Override

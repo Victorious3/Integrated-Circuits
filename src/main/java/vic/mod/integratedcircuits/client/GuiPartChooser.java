@@ -10,7 +10,7 @@ import vic.mod.integratedcircuits.SubLogicPart;
 import vic.mod.integratedcircuits.SubLogicPart.PartNull;
 import vic.mod.integratedcircuits.SubLogicPartRenderer;
 
-public class GuiPartChooser extends GuiButton
+public class GuiPartChooser extends GuiButton implements IHoverable
 {
 	public SubLogicPart current;
 	private ArrayList<GuiPartChooser> list;
@@ -72,7 +72,7 @@ public class GuiPartChooser extends GuiButton
 		
 		if(x > xPosition && y > yPosition && x < xPosition + width && y < yPosition + height)
 		{
-			parent.hoveredChooser = this;
+			parent.hoveredElement = this;
 		}
 	}
 	
@@ -144,5 +144,15 @@ public class GuiPartChooser extends GuiButton
 	public int getHoverState(boolean par1) 
 	{
 		return !enabled ? 0 : active ? 2 : par1 ? 2 : 1;
+	}
+
+	@Override
+	public ArrayList<String> getHoverInformation() 
+	{
+		ArrayList<String> text = new ArrayList<String>();
+		if(current != null) text.add(current.getName());
+		else if(mode == 1) text.add("Edit");
+		else if(mode == 2) text.add("Erase");
+		return text;
 	}
 }
