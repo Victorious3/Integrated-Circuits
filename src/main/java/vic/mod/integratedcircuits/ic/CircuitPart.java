@@ -366,7 +366,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH) return true;
 			int i = (getState() & 384) >> 7;
 			if(s2 == ForgeDirection.EAST && i == 1) return false;
@@ -379,7 +379,7 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			updateInput();
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 != ForgeDirection.NORTH) scheduleTick();
 		}
 	}
@@ -407,14 +407,14 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			updateInput();
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.SOUTH) scheduleTick();
 		}
 		
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH) return true;
 			int i = (getState() & 896) >> 7;
 			if(s2 == ForgeDirection.EAST && (i == 3 || i == 4 || i == 5)) return false;
@@ -434,10 +434,10 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation());
-			ForgeDirection s4 = MiscUtils.rotn(ForgeDirection.EAST, -getRotation());
-			ForgeDirection s5 = MiscUtils.rotn(ForgeDirection.WEST, -getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+			ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.SOUTH, getRotation());
+			ForgeDirection s4 = MiscUtils.rotn(ForgeDirection.EAST, getRotation());
+			ForgeDirection s5 = MiscUtils.rotn(ForgeDirection.WEST, getRotation());
 			return s2 == ForgeDirection.NORTH 
 				&& (!canConnectToSide(s3) || getInputFromSide(s3))
 				&& (!canConnectToSide(s4) || getInputFromSide(s4))
@@ -455,10 +455,10 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation());
-			ForgeDirection s4 = MiscUtils.rotn(ForgeDirection.EAST, -getRotation());
-			ForgeDirection s5 = MiscUtils.rotn(ForgeDirection.WEST, -getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+			ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.SOUTH, getRotation());
+			ForgeDirection s4 = MiscUtils.rotn(ForgeDirection.EAST, getRotation());
+			ForgeDirection s5 = MiscUtils.rotn(ForgeDirection.WEST, getRotation());
 			return s2 == ForgeDirection.NORTH && (getInputFromSide(s3)
 				|| getInputFromSide(s4) || getInputFromSide(s5));
 		}
@@ -474,7 +474,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
 			return false;
 		}
@@ -490,7 +490,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
 			return false;
 		}
@@ -506,8 +506,8 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if(s2 != ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation()));
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+			if(s2 != ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
 			return false;
 		}
 	}
@@ -522,8 +522,8 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if(s2 != ForgeDirection.SOUTH) return !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation()));
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+			if(s2 != ForgeDirection.SOUTH) return !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
 			return false;
 		}
 	}
@@ -544,10 +544,10 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection fd = MiscUtils.rotn(side, getRotation());
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
 			return fd == ForgeDirection.NORTH &&
-				(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, -getRotation()))
-				!= getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, -getRotation())));
+				(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()))
+				!= getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation())));
 		}	
 	}
 	
@@ -561,7 +561,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
 			return false;
 		}
@@ -577,16 +577,16 @@ public abstract class CircuitPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.NORTH) super.onInputChange(side);
+			if(MiscUtils.rotn(side, -getRotation()) != ForgeDirection.NORTH) super.onInputChange(side);
 		}
 
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.NORTH) return false;
-			if(getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())))
-				return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, -getRotation()));
-			else return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, -getRotation()));
+			if(MiscUtils.rotn(side, -getRotation()) != ForgeDirection.NORTH) return false;
+			if(getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())))
+				return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()));
+			else return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()));
 		}	
 	}
 
@@ -688,14 +688,14 @@ public abstract class CircuitPart
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			return s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH;
 		}
 		
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 != ForgeDirection.NORTH) return false;
 			return getCurrentDelay() > 0 ? (getState() & 32768) > 0 : (getState() & 32768) == 0;
 		}
@@ -711,7 +711,7 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			updateInput();
-			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) return;
+			if(MiscUtils.rotn(side, -getRotation()) != ForgeDirection.SOUTH) return;
 			if(getCurrentDelay() == 0)
 			{
 				if(((getState() & 32768) >> 15) != (getInputFromSide(side) ? 1 : 0))
@@ -764,7 +764,7 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			updateInput();
-			if(MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH) return;
+			if(MiscUtils.rotn(side, -getRotation()) != ForgeDirection.SOUTH) return;
 			setState(getState() & ~32768);
 			if(getInputFromSide(side))
 			{
@@ -785,7 +785,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(MiscUtils.rotn(side, getRotation()) == ForgeDirection.SOUTH) return false;
+			if(MiscUtils.rotn(side, -getRotation()) == ForgeDirection.SOUTH) return false;
 			return (getState() & 32768) != 0;
 		}		
 	}
@@ -818,7 +818,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(ForgeDirection.getOrientation(((getState() & 50331648) >> 24) + 2) == MiscUtils.rotn(side, getRotation()))
+			if(ForgeDirection.getOrientation(((getState() & 50331648) >> 24) + 2) == MiscUtils.rotn(side, -getRotation()))
 				return (getState() & 32768) > 0;
 			else return false;
 		}
@@ -851,7 +851,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.WEST && (getState() & f1) > 0) return true;
 			if(s2 == ForgeDirection.NORTH && (getState() & f2) > 0) return true;
 			return false;
@@ -880,7 +880,7 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			updateInput();
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.SOUTH)
 			{
 				if(getInputFromSide(side))
@@ -889,13 +889,13 @@ public abstract class CircuitPart
 					setState(getState() & ~f2);
 					notifyNeighbours();
 				}
-				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, -getRotation())))
+				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation())))
 					setDelay(true);
 			}
 			else if(s2 == ForgeDirection.EAST && (getState() & f1) > 0)
 			{
 				if(getInputFromSide(side)) setDelay(false);
-				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())))
+				else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())))
 					setDelay(true);
 				notifyNeighbours();
 			}
@@ -933,8 +933,8 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation()))) return false;
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()))) return false;
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.SOUTH) return false;
 			int rand = (getState() & 229376) >> 15;
 			if(s2 == ForgeDirection.EAST && (rand >> 2 & 1) == 1) return true;
@@ -947,7 +947,7 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 != ForgeDirection.SOUTH) return;
 			if(!getInputFromSide(side)) setDelay(false);
 		}
@@ -964,7 +964,7 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			updateInput();
-			if((MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH)) return;
+			if((MiscUtils.rotn(side, -getRotation()) != ForgeDirection.SOUTH)) return;
 			if(getInputFromSide(side)) 
 			{
 				setState(getState() | 128);
@@ -976,7 +976,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection f2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection f2 = MiscUtils.rotn(side, -getRotation());
 			if(f2 != ForgeDirection.NORTH) return false;
 			return (getState() & 128) > 0;
 		}
@@ -984,7 +984,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			ForgeDirection f2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection f2 = MiscUtils.rotn(side, -getRotation());
 			return f2 == ForgeDirection.NORTH || f2 == ForgeDirection.SOUTH;
 		}
 
@@ -1030,7 +1030,7 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if((s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH))
 			{
 				if(getInputFromSide(side)) setState(getState() ^ 128);
@@ -1041,7 +1041,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.EAST) return (getState() & 128) > 0;
 			if(s2 == ForgeDirection.WEST) return (getState() & 128) == 0;
 			return false;
@@ -1081,7 +1081,7 @@ public abstract class CircuitPart
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.EAST || s2 == ForgeDirection.WEST) return;
 			if(s2 == ForgeDirection.NORTH || isMirrored()) setState(getState() | 128);
 			else setState(getState() & ~128);
@@ -1091,7 +1091,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(isMirrored()) s2 = MiscUtils.rotn(s2, 2);
 			if((s2 == ForgeDirection.EAST || (s2 == ForgeDirection.NORTH && isSpecial())) && (getState() & 128) > 0) return true;
 			if((s2 == ForgeDirection.WEST || (s2 == ForgeDirection.SOUTH && isSpecial())) && (getState() & 128) == 0) return true;
@@ -1110,10 +1110,10 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			super.onInputChange(side);
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
-			if(s2 == ForgeDirection.SOUTH || (s2 == ForgeDirection.WEST && getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())))) 
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+			if(s2 == ForgeDirection.SOUTH || (s2 == ForgeDirection.WEST && getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())))) 
 			{
-				if(getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, -getRotation()))) setState(getState() | 128);
+				if(getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()))) setState(getState() | 128);
 				else setState(getState() & ~128);
 			}
 		}
@@ -1121,7 +1121,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH || s2 == ForgeDirection.EAST) return (getState() & 128) > 0;
 			return false;
 		}
@@ -1141,13 +1141,13 @@ public abstract class CircuitPart
 		public void onInputChange(ForgeDirection side) 
 		{
 			updateInput();
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			boolean input = getInputFromSide(s2);
 			
 			if(s2 == ForgeDirection.SOUTH && getInputFromSide(s2)) setState(getState() & ~896);
-			else if(s2 == ForgeDirection.EAST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())) && input) 
+			else if(s2 == ForgeDirection.EAST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())) && input) 
 				setState(getState() | 128);
-			else if(s2 == ForgeDirection.WEST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, -getRotation())) && input) 
+			else if(s2 == ForgeDirection.WEST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())) && input) 
 				setState(getState() | 256);
 			
 			if((getState() & 384) >> 7 == 3) 
@@ -1172,7 +1172,7 @@ public abstract class CircuitPart
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, getRotation());
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH) return (getState() & 512) > 0;
 			return false;
 		}

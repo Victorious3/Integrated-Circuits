@@ -87,9 +87,9 @@ public class GuiCircuitIO extends GuiButton implements IHoverable
 	{
 		ArrayList<String> text = new ArrayList<String>();
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		boolean isActive = te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
-		text.add("0x" + Integer.toHexString(color));
-		text.add(isActive ? "HIGH" : "LOW");
+		text.add("F: 0x" + Integer.toHexString(color));
+		text.add("I: " + (te.getInputFromSide(dir, color) ? "HIGH" : "LOW"));
+		text.add("O: " + (te.getOutputToSide(dir, color) ? "HIGH" : "LOW"));
 		return text;
 	}
 }
