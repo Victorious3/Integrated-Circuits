@@ -15,31 +15,39 @@ buildscript {
     }
 }
 
+repositories {
+    maven {
+        name "chickenbones"
+        url "http://chickenbones.net/maven/"
+    }
+}
+
+// Read properties file
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    // Load config.  It shall from now be referenced as simply config or project.config
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
 apply plugin: 'forge'
 
-version = "0.1r01"
-group= "vic.mod.integratedcircuits"
+version = "${config.version}"
+group = "vic.mod.integratedcircuits"
 archivesBaseName = "integratedcircuits"
 
 minecraft {
-    version = "1.7.10-10.13.0.1186"
+    version = "${config.mc.version}-${config.forge.version}"
     assetDir = "eclipse/assets"
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
+    compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
+    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
+    compile files(config.pr.file)
 }
 
 processResources
@@ -51,7 +59,7 @@ processResources
         include 'mcmod.info'
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
