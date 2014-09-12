@@ -206,13 +206,13 @@ public class CircuitData implements Cloneable
 		NBTTagList idlist = new NBTTagList();
 		for(int i = 0; i < size; i++)
 		{
-			idlist.appendTag(new NBTTagIntArray(id[i]));
+			idlist.appendTag(new NBTTagIntArray(id[i].clone()));
 		}
 		
 		NBTTagList metalist = new NBTTagList();
 		for(int i = 0; i < size; i++)
 		{
-			metalist.appendTag(new NBTTagIntArray(meta[i]));
+			metalist.appendTag(new NBTTagIntArray(meta[i].clone()));
 		}
 		
 		compound.setInteger("size", size);
@@ -231,7 +231,7 @@ public class CircuitData implements Cloneable
 			tmp.add(p.x);
 			tmp.add(p.y);
 		}
-		compound.setIntArray("scheduled", Ints.toArray(tmp));		
+		compound.setIntArray("scheduled", Ints.toArray(tmp));
 		
 		return compound;
 	}
