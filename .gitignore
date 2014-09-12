@@ -3,4 +3,5 @@
 !.gitignore
 !build.gradle
 !/src/
-/src/api
+!/libs/
+!/build.properties
