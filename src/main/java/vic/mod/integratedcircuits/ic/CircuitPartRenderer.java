@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.ic;
 
+import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
@@ -7,11 +8,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.CircuitData;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNORGate;
@@ -52,14 +53,15 @@ public class CircuitPartRenderer
 		else if(part instanceof PartNullCell) renderPartNullCell((PartNullCell)part, x, y);
 		else if(part instanceof PartGate) renderPartGate((PartGate)part, x, y);
 		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, x, y);
+		else if(part instanceof PartIOBit) renderPartIOBit((PartIOBit)part, x, y);
 	}
 
 	private static int checkConnections(CircuitPart part)
 	{
 		boolean c1 = part.getY() > 0 ? part.canConnectToSide(ForgeDirection.NORTH) && part.getNeighbourOnSide(ForgeDirection.NORTH).canConnectToSide(ForgeDirection.SOUTH) : false;
-		boolean c2 = part.getY() < part.getParent().getCircuitData().getSize() ? part.canConnectToSide(ForgeDirection.SOUTH) && part.getNeighbourOnSide(ForgeDirection.SOUTH).canConnectToSide(ForgeDirection.NORTH) : false;
+		boolean c2 = part.getY() < part.getData().getSize() ? part.canConnectToSide(ForgeDirection.SOUTH) && part.getNeighbourOnSide(ForgeDirection.SOUTH).canConnectToSide(ForgeDirection.NORTH) : false;
 		boolean c3 = part.getX() > 0 ? part.canConnectToSide(ForgeDirection.WEST) && part.getNeighbourOnSide(ForgeDirection.WEST).canConnectToSide(ForgeDirection.EAST) : false;
-		boolean c4 = part.getX() < part.getParent().getCircuitData().getSize() ? part.canConnectToSide(ForgeDirection.EAST) && part.getNeighbourOnSide(ForgeDirection.EAST).canConnectToSide(ForgeDirection.WEST) : false;
+		boolean c4 = part.getX() < part.getData().getSize() ? part.canConnectToSide(ForgeDirection.EAST) && part.getNeighbourOnSide(ForgeDirection.EAST).canConnectToSide(ForgeDirection.WEST) : false;
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
 	
@@ -77,7 +79,7 @@ public class CircuitPartRenderer
 		d1 = u + 0;
 		d2 = u + w;
 		
-		if(rotation == 3)
+		if(rotation == 1)
 		{
 			d3 = v + h;
 			d4 = v + 0;
@@ -97,7 +99,7 @@ public class CircuitPartRenderer
 			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scale, d3 * scale);
 			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scale, d3 * scale);
 		}
-		else if(rotation == 1)
+		else if(rotation == 3)
 		{
 			d3 = v + 0;
 			d4 = v + h;
@@ -141,6 +143,20 @@ public class CircuitPartRenderer
 				renderPartPayload(data.getPart(x2, y2), x2 * 16, y2 * 16);
 		tes.draw();
 		GL11.glTranslated(-offX, -offY, 0);
+	}
+	
+	public static void renderPartIOBit(PartIOBit bit, double x, double y)
+	{
+		int freq = bit.getFrequency();
+		int rot = bit.getRotation();
+		Tessellator tes = Tessellator.instance;
+		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
+		addQuad(x, y, 2 * 16, 2 * 16, 16, 16, rot);
+		if(bit.isPowered()) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
+		tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
+		addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
 	}
 
 	public static void renderPartWire(PartWire wire, double x, double y)
@@ -270,7 +286,7 @@ public class CircuitPartRenderer
 	public static CircuitPart createEncapsulated(Class<? extends CircuitPart> clazz)
 	{
 		try {
-			return clazz.getConstructor(int.class, int.class, ICircuit.class).newInstance(1, 1, CurcuitRenderWrapper.instance);
+			return clazz.getConstructor(int.class, int.class, CircuitData.class).newInstance(1, 1, CurcuitRenderWrapper.instance.data);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -280,7 +296,7 @@ public class CircuitPartRenderer
 	public static CircuitPart createEncapsulated(Class<? extends CircuitPart> clazz, int state)
 	{
 		try {
-			return clazz.getConstructor(int.class, int.class, ICircuit.class).newInstance(1, 1, new CurcuitRenderWrapper(state));
+			return clazz.getConstructor(int.class, int.class, CircuitData.class).newInstance(1, 1, new CurcuitRenderWrapper(state).data);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

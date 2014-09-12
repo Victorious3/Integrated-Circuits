@@ -1,14 +1,14 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.ic;
 
 import java.awt.Point;
 import java.util.LinkedList;
 
-import vic.mod.integratedcircuits.ic.ICircuit;
-import vic.mod.integratedcircuits.ic.CircuitPart;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNull;
 
 import com.google.common.primitives.Ints;
 
@@ -40,7 +40,50 @@ public class CircuitData implements Cloneable
 	
 	public void setup()
 	{
-		//TODO Insertion of the IO bit parts on the sides. Should refresh the adjacent neighbors.
+		int o = size / 2 - 8;
+		int cid = CircuitPart.getId(CircuitPart.PartIOBit.class);
+		
+		for(int i = 0; i < 16; i++)
+		{
+			setID(i + o, 0, cid);
+			setID(size - 1, i + o, cid);
+			setID(i + o, size - 1, cid);
+			setID(0, i + o, cid);
+			
+			PartIOBit io1 = (PartIOBit)getPart(i + o, 0);
+			PartIOBit io2 = (PartIOBit)getPart(size - 1, i + o);
+			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
+			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
+			
+			io1.setFrequency(i);
+			io2.setFrequency(i);
+			io3.setFrequency(i);
+			io4.setFrequency(i);
+			
+			io1.setRotation(0);
+			io2.setRotation(1);
+			io3.setRotation(2);
+			io4.setRotation(3);
+		}
+	}
+	
+	/** Syncs the circuit's IO bits with the suspected input **/
+	public void updateInput()
+	{
+		int o = size / 2 - 8;
+		
+		for(int i = 0; i < 16; i++)
+		{		
+			PartIOBit io1 = (PartIOBit)getPart(i + o, 0);
+			PartIOBit io2 = (PartIOBit)getPart(size - 1, i + o);
+			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
+			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
+			
+			io1.notifyNeighbours();
+			io2.notifyNeighbours();
+			io3.notifyNeighbours();
+			io4.notifyNeighbours();
+		}
 	}
 	
 	public int getMeta(int x, int y)
@@ -63,7 +106,7 @@ public class CircuitData implements Cloneable
 		id[x][y] = i;
 	}
 	
-	public ICircuit getParent()
+	public ICircuit getCircuit()
 	{
 		return parent;
 	}
@@ -84,12 +127,14 @@ public class CircuitData implements Cloneable
 		this.meta = new int[size][size];
 		tickSchedule = new LinkedList<Point>();
 		this.size = size;
+		setup();
 	}
 	
 	public CircuitPart getPart(int x, int y)
 	{
+		if(x < 0 || y < 0 || x >= size || y >= size) return new PartNull(x, y, this);
 		try {
-			return CircuitPart.getPart(id[x][y]).getConstructor(int.class, int.class, ICircuit.class).newInstance(x, y, parent);
+			return CircuitPart.getPart(id[x][y]).getConstructor(int.class, int.class, CircuitData.class).newInstance(x, y, this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	

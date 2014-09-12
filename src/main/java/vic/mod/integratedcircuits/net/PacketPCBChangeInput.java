@@ -53,7 +53,11 @@ public class PacketPCBChangeInput extends PacketPCB<PacketPCBChangeInput>
 		if(te == null) return;
 		if(input) te.i = io;
 		else te.o = io;
-		if(input && side == Side.SERVER) IntegratedCircuits.networkWrapper.sendToAllAround(this, 
-			new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+		if(input && side == Side.SERVER)
+		{
+			te.getCircuitData().updateInput();
+			IntegratedCircuits.networkWrapper.sendToAllAround(this, 
+				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+		}	
 	}
 }

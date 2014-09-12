@@ -4,22 +4,23 @@ import java.io.IOException;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import vic.mod.integratedcircuits.CircuitData;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.ic.CircuitData;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 {
-	private int x, y, id, button;
+	private int x, y, id, meta, button;
 	boolean ctrl;
 	
 	public PacketPCBChangePart(){}
 	
-	public PacketPCBChangePart(int x, int y, int id, int button, boolean ctrl, int tx, int ty, int tz)
+	public PacketPCBChangePart(int x, int y, int id, int meta, int button, boolean ctrl, int tx, int ty, int tz)
 	{
 		super(tx, ty, tz);
-		this.x = x; this.y = y; 
-		this.id = id; 
+		this.x = x; this.y = y;
+		this.id = id;
+		this.meta = meta;
 		this.button = button;
 		this.ctrl = ctrl;
 	}
@@ -31,6 +32,7 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		x = buffer.readInt();
 		y = buffer.readInt();
 		id = buffer.readInt();
+		meta = buffer.readInt();
 		button = buffer.readInt();
 		ctrl = buffer.readBoolean();
 	}
@@ -42,6 +44,7 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 		buffer.writeInt(x);
 		buffer.writeInt(y);
 		buffer.writeInt(id);
+		buffer.writeInt(meta);
 		buffer.writeInt(button);
 		buffer.writeBoolean(ctrl);
 	}
@@ -57,6 +60,7 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 			else
 			{
 				cdata.setID(x, y, id);
+				cdata.setMeta(x, y, meta);
 				cdata.getPart(x, y).onPlaced();
 			}
 		}

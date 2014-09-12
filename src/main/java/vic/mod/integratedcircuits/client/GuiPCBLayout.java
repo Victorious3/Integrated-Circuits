@@ -18,12 +18,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.CircuitData;
 import vic.mod.integratedcircuits.ContainerPCBLayout;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
-import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartGate;
@@ -48,6 +47,7 @@ import vic.mod.integratedcircuits.ic.CircuitPart.PartTranspartentLatch;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartWire;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartXNORGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartXORGate;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
@@ -388,9 +388,9 @@ public class GuiPCBLayout extends GuiContainer
 		{
 			if(selectedPart == null)
 			{
-				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, 0, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));			
+				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, 0, 0, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));			
 			}
-			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, CircuitPart.getId(selectedPart.getClass()), -1, false, te.xCoord, te.yCoord, te.zCoord));			
+			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, CircuitPart.getId(selectedPart.getClass()), selectedPart.getState(), -1, false, te.xCoord, te.yCoord, te.zCoord));			
 		}
 		
 		super.mouseClicked(x, y, flag);

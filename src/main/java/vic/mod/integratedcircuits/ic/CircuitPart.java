@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.MiscUtils;
+import vic.mod.integratedcircuits.util.MiscUtils;
 
 import com.google.common.collect.HashBiMap;
 
@@ -38,6 +38,7 @@ public abstract class CircuitPart
 		partRegistry.put(20, PartXNORGate.class);
 		partRegistry.put(21, PartSynchronizer.class);
 		partRegistry.put(22, PartNullCell.class);
+		partRegistry.put(23, PartIOBit.class);
 	}
 	
 	public static Integer getId(Class<? extends CircuitPart> part)
@@ -50,7 +51,7 @@ public abstract class CircuitPart
 		return partRegistry.get(id);
 	}
 	
-	public CircuitPart(int x, int y, ICircuit parent)
+	public CircuitPart(int x, int y, CircuitData parent)
 	{
 		this.x = x;
 		this.y = y;
@@ -59,7 +60,7 @@ public abstract class CircuitPart
 	
 	private final int x;
 	private final int y;
-	private final ICircuit parent;
+	private final CircuitData parent;
 	
 	public void onPlaced()
 	{
@@ -73,7 +74,7 @@ public abstract class CircuitPart
 	
 	public final void scheduleTick()
 	{
-		getParent().getCircuitData().scheduleTick(getX(), getY());
+		getData().scheduleTick(getX(), getY());
 	}
 	
 	public void onClick(int button, boolean ctrl){}
@@ -98,19 +99,19 @@ public abstract class CircuitPart
 		return new ArrayList<String>();
 	}
 	
-	public final ICircuit getParent()
+	public final CircuitData getData()
 	{
 		return parent;
 	}
 	
 	public final int getState()
 	{
-		return parent.getCircuitData().getMeta(getX(), getY());
+		return parent.getMeta(getX(), getY());
 	}
 	
 	public final void setState(int state)
 	{
-		parent.getCircuitData().setMeta(getX(), getY(), state);
+		parent.setMeta(getX(), getY(), state);
 	}
 	
 	public boolean canConnectToSide(ForgeDirection side)
@@ -130,7 +131,7 @@ public abstract class CircuitPart
 		updateInput();
 	}
 	
-	public void updateInput()
+	public final void updateInput()
 	{
 		int newState = 0;
 		//Check every side to update the internal buffer.
@@ -146,7 +147,7 @@ public abstract class CircuitPart
 		return false;
 	}
 	
-	public void notifyNeighbours()
+	public final void notifyNeighbours()
 	{
 		for(int i = 2; i < 6; i++)
 		{
@@ -161,7 +162,7 @@ public abstract class CircuitPart
 	
 	public final CircuitPart getNeighbourOnSide(ForgeDirection side)
 	{	
-		return parent.getCircuitData().getPart(x + side.offsetX, y + side.offsetZ);
+		return parent.getPart(x + side.offsetX, y + side.offsetZ);
 	}
 	
 	public final boolean getInput()
@@ -174,7 +175,7 @@ public abstract class CircuitPart
 	
 	public static class PartNull extends CircuitPart
 	{
-		public PartNull(int x, int y, ICircuit parent) 
+		public PartNull(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -202,37 +203,38 @@ public abstract class CircuitPart
 	
 	public static class PartIOBit extends CircuitPart
 	{
-		public PartIOBit(int x, int y, ICircuit parent) 
+		public PartIOBit(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
 		
 		public final int getRotation()
 		{
-			return (getState() & 3);
+			return (getState() & 48) >> 4;
 		}
 		
 		public final void setRotation(int rotation)
 		{
-			setState(getState() & ~3 | rotation);
+			setState(getState() & ~48 | rotation << 4);
 		}
 		
 		public final int getFrequency()
 		{
-			return (getState() & 60) >> 2;
+			return (getState() & 960) >> 6;
 		}
 		
 		public final void setFrequency(int frequency)
 		{
-			setState(getState() & ~60 | frequency << 2);
+			setState(getState() & ~960 | frequency << 6);
 		}
 
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
+			updateInput();
 			ForgeDirection dir = MiscUtils.getDirection(getRotation());
 			if(side == dir.getOpposite())
-				getParent().setOutputToSide(dir, getFrequency(), getNeighbourOnSide(side).getOutputToSide(side.getOpposite()));
+				getData().getCircuit().setOutputToSide(dir, getFrequency(), getInputFromSide(side));
 		}
 
 		@Override
@@ -240,14 +242,20 @@ public abstract class CircuitPart
 		{
 			ForgeDirection dir = MiscUtils.getDirection(getRotation());
 			if(side == dir.getOpposite())
-				return getParent().getInputFromSide(dir, getFrequency());
+				return getData().getCircuit().getInputFromSide(dir, getFrequency());
 			else return false;
+		}
+		
+		public boolean isPowered()
+		{
+			ForgeDirection dir = MiscUtils.getDirection(getRotation()).getOpposite();
+			return getOutputToSide(dir) || getNeighbourOnSide(dir).getOutputToSide(dir.getOpposite());
 		}
 	}
 	
 	public static class PartWire extends CircuitPart
 	{
-		public PartWire(int x, int y, ICircuit parent) 
+		public PartWire(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -287,7 +295,7 @@ public abstract class CircuitPart
 	
 	public static class PartTorch extends CircuitPart
 	{
-		public PartTorch(int x, int y, ICircuit parent) 
+		public PartTorch(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -303,7 +311,7 @@ public abstract class CircuitPart
 	{
 		private boolean updateLater = false;
 		
-		public PartGate(int x, int y, ICircuit parent) 
+		public PartGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -338,7 +346,7 @@ public abstract class CircuitPart
 	
 	public static class Part3I1O extends PartGate
 	{
-		public Part3I1O(int x, int y, ICircuit parent) 
+		public Part3I1O(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -378,7 +386,7 @@ public abstract class CircuitPart
 	
 	public static class Part1I3O extends PartGate
 	{
-		public Part1I3O(int x, int y, ICircuit parent) 
+		public Part1I3O(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -418,7 +426,7 @@ public abstract class CircuitPart
 	
 	public static class PartANDGate extends Part3I1O
 	{
-		public PartANDGate(int x, int y, ICircuit parent) 
+		public PartANDGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -439,7 +447,7 @@ public abstract class CircuitPart
 	
 	public static class PartORGate extends Part3I1O
 	{
-		public PartORGate(int x, int y, ICircuit parent) 
+		public PartORGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -458,7 +466,7 @@ public abstract class CircuitPart
 	
 	public static class PartNORGate extends PartORGate
 	{
-		public PartNORGate(int x, int y, ICircuit parent) 
+		public PartNORGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -474,7 +482,7 @@ public abstract class CircuitPart
 	
 	public static class PartNANDGate extends PartANDGate
 	{
-		public PartNANDGate(int x, int y, ICircuit parent) 
+		public PartNANDGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -490,7 +498,7 @@ public abstract class CircuitPart
 	
 	public static class PartBufferGate extends Part1I3O
 	{
-		public PartBufferGate(int x, int y, ICircuit parent) 
+		public PartBufferGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -506,7 +514,7 @@ public abstract class CircuitPart
 	
 	public static class PartNOTGate extends Part1I3O
 	{
-		public PartNOTGate(int x, int y, ICircuit parent) 
+		public PartNOTGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -522,7 +530,7 @@ public abstract class CircuitPart
 
 	public static class PartXORGate extends PartGate
 	{
-		public PartXORGate(int x, int y, ICircuit parent) 
+		public PartXORGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -545,7 +553,7 @@ public abstract class CircuitPart
 	
 	public static class PartXNORGate extends PartXORGate
 	{
-		public PartXNORGate(int x, int y, ICircuit parent) 
+		public PartXNORGate(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -561,7 +569,7 @@ public abstract class CircuitPart
 	
 	public static class PartMultiplexer extends PartGate
 	{
-		public PartMultiplexer(int x, int y, ICircuit parent) 
+		public PartMultiplexer(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -585,7 +593,7 @@ public abstract class CircuitPart
 	/** Uses 8 bits for the delay. 255 ticks = 12.75 seconds*/
 	public static abstract class PartDelayedAction extends PartGate
 	{
-		public PartDelayedAction(int x, int y, ICircuit parent) 
+		public PartDelayedAction(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -637,7 +645,7 @@ public abstract class CircuitPart
 	
 	public static class PartRepeater extends PartDelayedAction
 	{
-		public PartRepeater(int x, int y, ICircuit parent) 
+		public PartRepeater(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -725,7 +733,7 @@ public abstract class CircuitPart
 	
 	public static class PartTimer extends PartDelayedAction
 	{
-		public PartTimer(int x, int y, ICircuit parent) 
+		public PartTimer(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -784,7 +792,7 @@ public abstract class CircuitPart
 	
 	public static class PartSequencer extends PartTimer
 	{
-		public PartSequencer(int x, int y, ICircuit parent) 
+		public PartSequencer(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -818,7 +826,7 @@ public abstract class CircuitPart
 	
 	public static class PartStateCell extends PartDelayedAction
 	{
-		public PartStateCell(int x, int y, ICircuit parent) 
+		public PartStateCell(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -896,7 +904,7 @@ public abstract class CircuitPart
 
 	public static class PartRandomizer extends PartDelayedAction
 	{
-		public PartRandomizer(int x, int y, ICircuit parent) 
+		public PartRandomizer(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -947,7 +955,7 @@ public abstract class CircuitPart
 	
 	public static class PartPulseFormer extends PartDelayedAction
 	{
-		public PartPulseFormer(int x, int y, ICircuit parent) 
+		public PartPulseFormer(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -1002,7 +1010,7 @@ public abstract class CircuitPart
 	
 	public static class PartToggleLatch extends PartGate
 	{
-		public PartToggleLatch(int x, int y, ICircuit parent) 
+		public PartToggleLatch(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -1011,7 +1019,11 @@ public abstract class CircuitPart
 		public void onClick(int button, boolean ctrl) 
 		{
 			super.onClick(button, ctrl);
-			if(button == 0 && ctrl) setState(getState() ^ 128);
+			if(button == 0 && ctrl) 
+			{
+				setState(getState() ^ 128);
+				notifyNeighbours();
+			}
 		}
 
 		@Override
@@ -1039,7 +1051,7 @@ public abstract class CircuitPart
 	//TODO Acts a little bit different then described on the P:R wiki. I'll come back to this.
 	public static class PartRSLatch extends PartGate
 	{
-		public PartRSLatch(int x, int y, ICircuit parent) 
+		public PartRSLatch(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -1089,7 +1101,7 @@ public abstract class CircuitPart
 	
 	public static class PartTranspartentLatch extends PartGate
 	{
-		public PartTranspartentLatch(int x, int y, ICircuit parent) 
+		public PartTranspartentLatch(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -1120,7 +1132,7 @@ public abstract class CircuitPart
 	//TODO Is currently giving a one tick pulse, might cause problems with other gates.
 	public static class PartSynchronizer extends PartGate
 	{
-		public PartSynchronizer(int x, int y, ICircuit parent) 
+		public PartSynchronizer(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}
@@ -1169,7 +1181,7 @@ public abstract class CircuitPart
 	//If I ever loose this file, I'll totally be doomed.
 	public static class PartNullCell extends CircuitPart
 	{
-		public PartNullCell(int x, int y, ICircuit parent) 
+		public PartNullCell(int x, int y, CircuitData parent) 
 		{
 			super(x, y, parent);
 		}

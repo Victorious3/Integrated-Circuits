@@ -11,8 +11,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.MiscUtils;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.util.MiscUtils;
+import vic.mod.integratedcircuits.util.RenderUtils;
 
 public class GuiCircuitIO extends GuiButton implements IHoverable
 {

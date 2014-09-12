@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import vic.mod.integratedcircuits.util.MiscUtils;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
