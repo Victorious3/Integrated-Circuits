@@ -18,6 +18,7 @@ public class CircuitData implements Cloneable
 	private int[][] id;
 	private int[][] meta;
 	private LinkedList<Point> tickSchedule;
+	private LinkedList<Point> updateQueue;
 	private ICircuit parent;
 	
 	private CircuitData(){};
@@ -145,6 +146,12 @@ public class CircuitData implements Cloneable
 	{
 		Point p = new Point(x, y);
 		if(!tickSchedule.contains(p)) tickSchedule.add(p);
+	}
+	
+	public void markForUpdate(int x, int y)
+	{
+		Point p = new Point(x, y);
+		if(!updateQueue.contains(p)) updateQueue.add(p);
 	}
 	
 	public void updateMatrix()

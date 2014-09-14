@@ -77,6 +77,11 @@ public abstract class CircuitPart
 		getData().scheduleTick(getX(), getY());
 	}
 	
+	public final void markForUpdate()
+	{
+		getData().markForUpdate(getX(), getY());
+	}
+	
 	public void onClick(int button, boolean ctrl){}
 	
 	public final int getX()

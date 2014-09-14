@@ -40,7 +40,7 @@ archivesBaseName = "integratedcircuits"
 
 minecraft {
     version = "${config.mc.version}-${config.forge.version}"
-    assetDir = "eclipse/assets"
+    runDir = "eclipse"
 }
 
 dependencies {
