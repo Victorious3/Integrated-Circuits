@@ -11,13 +11,13 @@ import vic.mod.integratedcircuits.client.GuiPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBReload extends PacketPCB<PacketPCBReload>
+public class PacketPCBClear extends PacketPCB<PacketPCBClear>
 {
 	private byte size;
 	
-	public PacketPCBReload() {}
+	public PacketPCBClear() {}
 	
-	public PacketPCBReload(byte size, int xCoord, int yCoord, int zCoord)
+	public PacketPCBClear(byte size, int xCoord, int yCoord, int zCoord)
 	{
 		super(xCoord, yCoord, zCoord);
 		this.size = size;

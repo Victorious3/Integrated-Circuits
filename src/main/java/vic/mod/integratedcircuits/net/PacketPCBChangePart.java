@@ -62,6 +62,7 @@ public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
 				cdata.setID(x, y, id);
 				cdata.setMeta(x, y, meta);
 				cdata.getPart(x, y).onPlaced();
+				cdata.markForUpdate(x, y);
 			}
 		}
 	}

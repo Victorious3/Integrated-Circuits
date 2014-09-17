@@ -43,9 +43,11 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		if(!worldObj.isRemote && playersUsing > 0)
 		{
 			getCircuitData().updateMatrix();
-			//FIXME God dammit! OPTIMIZE YOUR SHIT ALREADY!
-			IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), 
-				new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+			if(getCircuitData().checkUpdate())
+			{
+				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), 
+					new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+			}		
 		}
 	}
 

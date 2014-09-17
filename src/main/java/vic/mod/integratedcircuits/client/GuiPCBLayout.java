@@ -50,8 +50,8 @@ import vic.mod.integratedcircuits.ic.CircuitPart.PartXORGate;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
+import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
-import vic.mod.integratedcircuits.net.PacketPCBReload;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer
@@ -181,12 +181,12 @@ public class GuiPCBLayout extends GuiContainer
 		else if(button.id == 9) scale(-1);
 		else if(button.id == 10)
 		{
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBReload((byte)w, te.xCoord, te.yCoord, te.zCoord));
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
 		}
 		else if(button.id == 11)
 		{
 			w = w == 18 ? 34 : w == 34 ? 66 : 18;
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBReload((byte)w, te.xCoord, te.yCoord, te.zCoord));
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
 		}
 		else if(button.id == 13)
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));
@@ -344,10 +344,10 @@ public class GuiPCBLayout extends GuiContainer
 					{
 						int rotation = ((PartGate)part).getRotation();
 						ForgeDirection rot = 
-								rotation == 0 ? ForgeDirection.NORTH :
-								rotation == 1 ? ForgeDirection.EAST :
-								rotation == 2 ? ForgeDirection.SOUTH :
-								ForgeDirection.WEST;
+							rotation == 0 ? ForgeDirection.NORTH :
+							rotation == 1 ? ForgeDirection.EAST :
+							rotation == 2 ? ForgeDirection.SOUTH :
+							ForgeDirection.WEST;
 						text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + rot.toString());
 					}
 					text.addAll(part.getInformation());

@@ -17,6 +17,7 @@ import vic.mod.integratedcircuits.ic.CircuitPart.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNORGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNOTGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartNull;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNullCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartORGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartPulseFormer;
@@ -58,10 +59,32 @@ public class CircuitPartRenderer
 
 	private static int checkConnections(CircuitPart part)
 	{
-		boolean c1 = part.getY() > 0 ? part.canConnectToSide(ForgeDirection.NORTH) && part.getNeighbourOnSide(ForgeDirection.NORTH).canConnectToSide(ForgeDirection.SOUTH) : false;
-		boolean c2 = part.getY() < part.getData().getSize() ? part.canConnectToSide(ForgeDirection.SOUTH) && part.getNeighbourOnSide(ForgeDirection.SOUTH).canConnectToSide(ForgeDirection.NORTH) : false;
-		boolean c3 = part.getX() > 0 ? part.canConnectToSide(ForgeDirection.WEST) && part.getNeighbourOnSide(ForgeDirection.WEST).canConnectToSide(ForgeDirection.EAST) : false;
-		boolean c4 = part.getX() < part.getData().getSize() ? part.canConnectToSide(ForgeDirection.EAST) && part.getNeighbourOnSide(ForgeDirection.EAST).canConnectToSide(ForgeDirection.WEST) : false;
+		boolean c1 = false;
+		if(part.getY() > 0) 
+		{
+			CircuitPart n = part.getNeighbourOnSide(ForgeDirection.NORTH);
+			c1 = part.canConnectToSide(ForgeDirection.NORTH) && n.canConnectToSide(ForgeDirection.SOUTH) && !(n instanceof PartNull);
+		}
+		
+		boolean c2 = false; 
+		if(part.getY() < part.getData().getSize())
+		{
+			CircuitPart n = part.getNeighbourOnSide(ForgeDirection.SOUTH);
+			c2 = part.canConnectToSide(ForgeDirection.SOUTH) && n.canConnectToSide(ForgeDirection.NORTH) && !(n instanceof PartNull);
+		}
+		
+		boolean c3 = false; if(part.getX() > 0)
+		{
+			CircuitPart n = part.getNeighbourOnSide(ForgeDirection.WEST);
+			c3 = part.canConnectToSide(ForgeDirection.WEST) && n.canConnectToSide(ForgeDirection.EAST) && !(n instanceof PartNull);
+		}
+		
+		boolean c4 = false; if(part.getX() < part.getData().getSize())
+		{
+			CircuitPart n = part.getNeighbourOnSide(ForgeDirection.EAST);
+			c4 = part.canConnectToSide(ForgeDirection.EAST) && n.canConnectToSide(ForgeDirection.WEST) && !(n instanceof PartNull);
+		}
+		
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
 	
@@ -217,28 +240,28 @@ public class CircuitPartRenderer
 		Tessellator tes = Tessellator.instance;
 		if(gate.canConnectToSide(ForgeDirection.NORTH))
 		{
-			if(gate.getOutputToSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.NORTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.NORTH).getInputFromSide(ForgeDirection.SOUTH) || gate.getInputFromSide(ForgeDirection.NORTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 2 * 16, 0, 16, 16);
 		}
 
 		if(gate.canConnectToSide(ForgeDirection.SOUTH))
 		{
-			if(gate.getOutputToSide(ForgeDirection.SOUTH) || gate.getInputFromSide(ForgeDirection.SOUTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.SOUTH).getInputFromSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.SOUTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 4 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.WEST))
 		{
-			if(gate.getOutputToSide(ForgeDirection.WEST) || gate.getInputFromSide(ForgeDirection.WEST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.WEST).getInputFromSide(ForgeDirection.EAST) || gate.getInputFromSide(ForgeDirection.WEST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 1 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.EAST))
 		{
-			if(gate.getOutputToSide(ForgeDirection.EAST) || gate.getInputFromSide(ForgeDirection.EAST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.EAST).getInputFromSide(ForgeDirection.WEST) || gate.getInputFromSide(ForgeDirection.EAST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 3 * 16, 0, 16, 16);
 		}

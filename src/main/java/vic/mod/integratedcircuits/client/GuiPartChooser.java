@@ -7,8 +7,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitPart;
-import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNull;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 
 public class GuiPartChooser extends GuiButton implements IHoverable
 {

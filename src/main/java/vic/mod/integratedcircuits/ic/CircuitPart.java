@@ -158,10 +158,12 @@ public abstract class CircuitPart
 		{
 			ForgeDirection fd = ForgeDirection.getOrientation(i);
 			CircuitPart part = getNeighbourOnSide(fd);
-			if(canConnectToSide(fd) 
-				&& part.canConnectToSide(fd.getOpposite()) 
-				&& getOutputToSide(fd) != part.getInputFromSide(fd.getOpposite())) 
+			if(canConnectToSide(fd) && part.canConnectToSide(fd.getOpposite()) && getOutputToSide(fd) != part.getInputFromSide(fd.getOpposite()))
+			{
 				part.onInputChange(fd.getOpposite());
+				part.markForUpdate();
+			}
+			markForUpdate();
 		}
 	}
 	
@@ -186,9 +188,6 @@ public abstract class CircuitPart
 		}
 
 		@Override
-		public void onInputChange(ForgeDirection side) {}
-
-		@Override
 		public void onPlaced() 
 		{
 			for(int i = 2; i < 6; i++)
@@ -197,12 +196,6 @@ public abstract class CircuitPart
 				CircuitPart part = getNeighbourOnSide(fd);
 				part.onInputChange(fd.getOpposite());
 			}
-		}
-
-		@Override
-		public boolean canConnectToSide(ForgeDirection side) 
-		{
-			return false;
 		}
 	}
 	
@@ -340,6 +333,7 @@ public abstract class CircuitPart
 				int rot = getRotation() + 1;
 				setRotation(rot > 3 ? 0 : rot);
 			}
+			markForUpdate();
 		}
 
 		@Override

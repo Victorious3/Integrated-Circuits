@@ -1,5 +1,7 @@
 package vic.mod.integratedcircuits.ic;
 
+import io.netty.buffer.ByteBuf;
+
 import java.awt.Point;
 import java.util.LinkedList;
 
@@ -18,7 +20,7 @@ public class CircuitData implements Cloneable
 	private int[][] id;
 	private int[][] meta;
 	private LinkedList<Point> tickSchedule;
-	private LinkedList<Point> updateQueue;
+	private LinkedList<Point> updateQueue = new LinkedList<Point>();
 	private ICircuit parent;
 	
 	private CircuitData(){};
@@ -42,7 +44,7 @@ public class CircuitData implements Cloneable
 	public void setup()
 	{
 		int o = size / 2 - 8;
-		int cid = CircuitPart.getId(CircuitPart.PartIOBit.class);
+		int cid = 23;
 		
 		for(int i = 0; i < 16; i++)
 		{
@@ -206,10 +208,9 @@ public class CircuitData implements Cloneable
 		
 		return new CircuitData(size, parent, id, meta, scheduledTicks);
 	}
-	
-	/** Used by the PCB to exclude the unused tick schedule for the client **/
-	public NBTTagCompound writeToNBTRaw(NBTTagCompound compound)
-	{
+
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
+	{			
 		NBTTagList idlist = new NBTTagList();
 		for(int i = 0; i < size; i++)
 		{
@@ -226,12 +227,6 @@ public class CircuitData implements Cloneable
 		compound.setTag("id", idlist);
 		compound.setTag("meta", metalist);
 		
-		return compound;
-	}
-
-	public NBTTagCompound writeToNBT(NBTTagCompound compound)
-	{			
-		compound = writeToNBTRaw(compound);
 		LinkedList<Integer> tmp = new LinkedList<Integer>();
 		for(Point p : tickSchedule)
 		{
@@ -241,6 +236,40 @@ public class CircuitData implements Cloneable
 		compound.setIntArray("scheduled", Ints.toArray(tmp));
 		
 		return compound;
+	}
+	
+	public void writeToStream(ByteBuf buf)
+	{
+		buf.writeInt(updateQueue.size());
+		for(Point p : updateQueue)
+		{
+			int x = (int)p.getX();
+			int y = (int)p.getY();
+			buf.writeByte(x);
+			buf.writeByte(y);
+			buf.writeByte(id[x][y]);
+			buf.writeInt(meta[x][y]);
+		}
+		updateQueue.clear();
+	}
+	
+	public void readFromStream(ByteBuf buf)
+	{
+		int length = buf.readInt();
+		for(int i = 0; i < length; i++)
+		{
+			int x = buf.readByte();
+			int y = buf.readByte();
+			int cid = buf.readByte();
+			int data = buf.readInt();
+			id[x][y] = cid;
+			meta[x][y] = data;
+		}
+	}
+	
+	public boolean checkUpdate()
+	{
+		return updateQueue.size() > 0;
 	}
 	
 	public static CircuitData createShallowInstance(int state, ICircuit parent)
