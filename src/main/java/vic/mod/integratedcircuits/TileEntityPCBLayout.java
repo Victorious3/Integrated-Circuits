@@ -27,11 +27,12 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	@SideOnly(Side.CLIENT)
 	public double offY = 145;
 	
-	public int[] i = new int[4];
-	public int[] o = new int[4];
+	public int[] i, o;
+	private boolean updateIO;
 	
 	public void setup(int size)
 	{
+		clearIO();
 		circuitData = new CircuitData(size, this);
 	}
 
@@ -47,7 +48,13 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 			{
 				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), 
 					new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
-			}		
+			}
+			if(updateIO)
+			{
+				updateIO = false;
+				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, xCoord, yCoord, zCoord), 
+					new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+			}
 		}
 	}
 
@@ -98,9 +105,13 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	{
 		if(output) o[MiscUtils.getSide(dir)] |= 1 << frequency;
 		else o[MiscUtils.getSide(dir)] &= ~(1 << frequency);
-		
-		IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, xCoord, yCoord, zCoord), 
-			new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+		updateIO = true;
+	}
+	
+	public void clearIO()
+	{
+		i = new int[4];
+		o = new int[4];
 	}
 
 	@Override

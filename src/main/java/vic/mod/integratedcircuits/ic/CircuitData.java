@@ -91,21 +91,25 @@ public class CircuitData implements Cloneable
 	
 	public int getMeta(int x, int y)
 	{
+		if(x < 0 || y < 0 || x >= size || y >= size) return 0;
 		return meta[x][y];
 	}
 	
 	public void setMeta(int x, int y, int m)
 	{
+		if(x < 0 || y < 0 || x >= size || y >= size) return;
 		meta[x][y] = m;
 	}
 	
 	public int getID(int x, int y) 
 	{
+		if(x < 0 || y < 0 || x >= size || y >= size) return 0;
 		return id[x][y];
 	}
 	
 	public void setID(int x, int y, int i)
 	{
+		if(x < 0 || y < 0 || x >= size || y >= size) return;
 		id[x][y] = i;
 	}
 	
@@ -129,6 +133,7 @@ public class CircuitData implements Cloneable
 		this.id = new int[size][size];
 		this.meta = new int[size][size];
 		tickSchedule = new LinkedList<Point>();
+		updateQueue = new LinkedList<Point>();
 		this.size = size;
 		setup();
 	}
@@ -137,6 +142,7 @@ public class CircuitData implements Cloneable
 	{
 		if(x < 0 || y < 0 || x >= size || y >= size) return new PartNull(x, y, this);
 		try {
+			//FIXME You moron are saving memory by sending the PCB size as byte and then you think that creating 4624 instances per frame is A GOOD IDEA?!
 			return CircuitPart.getPart(id[x][y]).getConstructor(int.class, int.class, CircuitData.class).newInstance(x, y, this);
 		} catch (Exception e) {
 			e.printStackTrace();

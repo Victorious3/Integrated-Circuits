@@ -43,6 +43,7 @@ public class PacketPCBClear extends PacketPCB<PacketPCBClear>
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te != null)
 		{
+			te.clearIO();
 			te.getCircuitData().clear(size);
 			if(side == side.SERVER)
 				IntegratedCircuits.networkWrapper.sendToAllAround(this, 

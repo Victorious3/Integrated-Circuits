@@ -68,7 +68,7 @@ public class PacketPCBIO extends PacketPCB<PacketPCBIO>
 					NBTTagCompound comp = floppy.getTagCompound();
 					if(comp == null) return;
 					String name = comp.getString("name");
-					if(comp.hasKey("circuit")) te.setCircuitData(CircuitData.readFromNBT(comp.getCompoundTag("circuit"), te));
+					if(comp.hasKey("circuit")) te.setCircuitData(CircuitData.readFromNBT((NBTTagCompound)comp.getCompoundTag("circuit").copy(), te));
 					else te.getCircuitData().clear(te.getCircuitData().getSize());
 					IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeName(name, xCoord, yCoord, zCoord), 
 						new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
