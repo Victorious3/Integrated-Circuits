@@ -197,7 +197,7 @@ public abstract class CircuitPart implements Cloneable
 		{
 			ForgeDirection fd = ForgeDirection.getOrientation(i);
 			CircuitPart part = getNeighbourOnSide(fd);
-			if(canConnectToSide(fd) && part.canConnectToSide(fd.getOpposite()) && getOutputToSide(fd) != part.getInputFromSide(fd.getOpposite()))
+			if(part != null && canConnectToSide(fd) && part.canConnectToSide(fd.getOpposite()) && getOutputToSide(fd) != part.getInputFromSide(fd.getOpposite()))
 			{
 				part.onInputChange(fd.getOpposite());
 				part.markForUpdate();

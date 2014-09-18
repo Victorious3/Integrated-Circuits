@@ -38,6 +38,8 @@ import vic.mod.integratedcircuits.ic.CircuitPart.PartXORGate;
 public class CircuitPartRenderer 
 {
 	public static ResourceLocation partResource = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png");
+	public static ResourceLocation partBG1 = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/bg1.png");
+	public static ResourceLocation partBG2 = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/bg2.png");
 	
 	public static void renderPart(CircuitPart part, double x, double y)
 	{
@@ -97,71 +99,83 @@ public class CircuitPartRenderer
 	
 	private static void addQuad(double x, double y, double u, double v, double w, double h, double rotation)
 	{
+		addQuad(x, y, u, v, w, h, w, h, 256, 256, rotation);
+	}
+	
+	private static void addQuad(double x, double y, double u, double v, double w, double h, double w2, double h2, double tw, double th, double rotation)
+	{
 		double d1, d2, d3, d4;
-		double scale = 1 / 256D;
+		double scalew = 1 / tw;
+		double scaleh = 1 / th;
 		Tessellator tes = Tessellator.instance;
 		
 		d1 = u + 0;
-		d2 = u + w;
+		d2 = u + w2;
 		
 		if(rotation == 1)
 		{
-			d3 = v + h;
+			d3 = v + h2;
 			d4 = v + 0;
 			
-			tes.addVertexWithUV(x + w, y + h, 0, d1 * scale, d4 * scale);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scale, d4 * scale);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scale, d3 * scale);
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scale, d3 * scale);
+			tes.addVertexWithUV(x + w, y + h, 0, d1 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d3 * scaleh);
 		}
 		else if(rotation == 2)
 		{
-			d3 = v + h;
+			d3 = v + h2;
 			d4 = v + 0;
 			
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scale, d4 * scale);
-			tes.addVertexWithUV(x + w, y + h, 0, d2 * scale, d4 * scale);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scale, d3 * scale);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scale, d3 * scale);
+			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + h, 0, d2 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scalew, d3 * scaleh);
 		}
 		else if(rotation == 3)
 		{
 			d3 = v + 0;
-			d4 = v + h;
+			d4 = v + h2;
 			
-			tes.addVertexWithUV(x + w, y + h, 0, d1 * scale, d4 * scale);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scale, d4 * scale);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scale, d3 * scale);
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scale, d3 * scale);
+			tes.addVertexWithUV(x + w, y + h, 0, d1 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d3 * scaleh);
 		}
 		else
 		{
 			d3 = v + 0;
-			d4 = v + h;
+			d4 = v + h2;
 			
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scale, d4 * scale);
-			tes.addVertexWithUV(x + w, y + h, 0, d2 * scale, d4 * scale);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scale, d3 * scale);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scale, d3 * scale);
+			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + h, 0, d2 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scalew, d3 * scaleh);
 		}
 	}
 	
 	public static void renderPCB(double offX, double offY, CircuitData data)
 	{
-		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
 		Tessellator tes = Tessellator.instance;
 		int w = data.getSize();
 		
 		GL11.glTranslated(offX, offY, 0);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(partBG1);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		for(int x2 = 0; x2 < data.getSize(); x2++)
-			for(int y2 = 0; y2 < data.getSize(); y2++)
-				if(x2 == 0 || y2 == 0 || x2 == w - 1 || y2 == w - 1) 
-					addQuad(x2 * 16, y2 * 16, 16, 15 * 16, 16, 16);
-				else addQuad(x2 * 16, y2 * 16, 0, 15 * 16, 16, 16);
+		addQuad(0, 0, 0, 0, data.getSize() * 16, data.getSize() * 16, 16, 16, 16D / data.getSize(), 16D / data.getSize(), 0);
 		tes.draw();
 		
+		Minecraft.getMinecraft().getTextureManager().bindTexture(partBG2);
+		tes.startDrawingQuads();
+		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
+		addQuad(0, 0, 0, 0, 16, data.getSize() * 16, 16, 16, 16D, 16D / data.getSize(), 0);
+		addQuad(data.getSize() * 16 - 16, 0, 0, 0, 16, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 0);
+		addQuad(0, 0, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
+		addQuad(0, data.getSize() * 16 - 16, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
+		tes.draw();
+		
+		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
 		tes.startDrawingQuads();
 		for(int x2 = 0; x2 < data.getSize(); x2++)
 			for(int y2 = 0; y2 < data.getSize(); y2++)

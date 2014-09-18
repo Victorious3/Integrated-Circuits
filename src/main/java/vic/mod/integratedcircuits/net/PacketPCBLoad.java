@@ -2,10 +2,12 @@ package vic.mod.integratedcircuits.net;
 
 import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.client.GuiPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import cpw.mods.fml.relauncher.Side;
 
@@ -45,5 +47,7 @@ public class PacketPCBLoad extends PacketPCB<PacketPCBLoad>
 			data.setParent(layout);
 			layout.setCircuitData(data);
 		}
+		if(Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
+			((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshUI();
 	}
 }
