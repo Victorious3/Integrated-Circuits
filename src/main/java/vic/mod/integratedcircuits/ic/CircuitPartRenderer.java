@@ -10,9 +10,11 @@ import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartInvertCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNORGate;
@@ -34,6 +36,7 @@ import vic.mod.integratedcircuits.ic.CircuitPart.PartTranspartentLatch;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartWire;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartXNORGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartXORGate;
+import vic.mod.integratedcircuits.util.MiscUtils;
 
 public class CircuitPartRenderer 
 {
@@ -55,7 +58,7 @@ public class CircuitPartRenderer
 	private static void renderPartPayload(CircuitPart part, double x, double y)
 	{
 		if(part instanceof PartWire) renderPartWire((PartWire)part, x, y);
-		else if(part instanceof PartNullCell) renderPartNullCell((PartNullCell)part, x, y);
+		else if(part instanceof PartNullCell || part instanceof PartInvertCell || part instanceof PartBufferCell) renderPartCell(part, x, y);
 		else if(part instanceof PartGate) renderPartGate((PartGate)part, x, y);
 		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, x, y);
 		else if(part instanceof PartIOBit) renderPartIOBit((PartIOBit)part, x, y);
@@ -230,25 +233,30 @@ public class CircuitPartRenderer
 		}
 	}
 
-	public static void renderPartNullCell(PartNullCell cell, double x, double y) 
+	public static void renderPartCell(CircuitPart cell, double x, double y) 
 	{
 		Tessellator tes = Tessellator.instance;
+		int rotation = 0;
+		if(cell instanceof PartGate) rotation = ((PartGate)cell).getRotation();
 		
-		if(cell.getOutputToSide(ForgeDirection.NORTH) 
-			|| cell.getInputFromSide(ForgeDirection.NORTH) 
-			|| cell.getOutputToSide(ForgeDirection.SOUTH) 
-			|| cell.getInputFromSide(ForgeDirection.SOUTH)) 
+		if(cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.NORTH, rotation)) 
+			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, rotation)) 
+			|| cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.SOUTH, rotation)) 
+			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, rotation))) 
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 0, 2 * 16, 16, 16);
+		addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
 		
-		if(cell.getOutputToSide(ForgeDirection.EAST) 
-			|| cell.getInputFromSide(ForgeDirection.EAST) 
-			|| cell.getOutputToSide(ForgeDirection.WEST) 
-			|| cell.getInputFromSide(ForgeDirection.WEST)) 
+		if(cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.EAST, rotation)) 
+			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, rotation)) 
+			|| cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.WEST, rotation)) 
+			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, rotation))) 
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 16, 2 * 16, 16, 16);
+		
+		if(cell instanceof PartNullCell) addQuad(x, y, 16, 2 * 16, 16, 16, rotation);
+		else if(cell instanceof PartInvertCell) addQuad(x, y, 5 * 16, 2 * 16, 16, 16, rotation);
+		else if(cell instanceof PartBufferCell) addQuad(x, y, 6 * 16, 2 * 16, 16, 16, rotation);
 	}
 	
 	public static void renderPartGate(PartGate gate, double x, double y) 

@@ -24,8 +24,10 @@ import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartGate;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartInvertCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNORGate;
@@ -129,7 +131,11 @@ public class GuiPCBLayout extends GuiContainer
 		
 		this.buttonList.add(c1);
 		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 152, CircuitPartRenderer.createEncapsulated(PartNullCell.class), this));
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 152, CircuitPartRenderer.createEncapsulated(PartNullCell.class), 
+			new ArrayList<CircuitPart>(Arrays.asList(
+			CircuitPartRenderer.createEncapsulated(PartBufferCell.class),
+			CircuitPartRenderer.createEncapsulated(PartInvertCell.class))), this));
+		
 		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, CircuitPartRenderer.createEncapsulated(PartTorch.class), this));
 		
 		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 131, CircuitPartRenderer.createEncapsulated(PartWire.class),

@@ -38,6 +38,8 @@ public abstract class CircuitPart implements Cloneable
 		registerPart(21, new PartSynchronizer());
 		registerPart(22, new PartNullCell());
 		registerPart(23, new PartIOBit());
+		registerPart(24, new PartInvertCell());
+		registerPart(25, new PartBufferCell());
 	}
 	
 	public static void registerPart(int id, CircuitPart part)
@@ -81,7 +83,7 @@ public abstract class CircuitPart implements Cloneable
 		notifyNeighbours();
 	}
 	
-	public CircuitPart prepare(int x, int y, CircuitData parent)
+	public final CircuitPart prepare(int x, int y, CircuitData parent)
 	{
 		this.x = x;
 		this.y = y;
@@ -90,7 +92,7 @@ public abstract class CircuitPart implements Cloneable
 	}
 	
 	@Override
-	protected CircuitPart clone()
+	protected final CircuitPart clone()
 	{
 		try {
 			return (CircuitPart) super.clone();
@@ -736,7 +738,7 @@ public abstract class CircuitPart implements Cloneable
 		@Override
 		public void onInputChange(ForgeDirection side)
 		{
-			//The Sequencer doesn't care about input.
+			updateInput();
 		}
 
 		@Override
@@ -1079,7 +1081,6 @@ public abstract class CircuitPart implements Cloneable
 		}
 	}
 	
-	//If I ever loose this file, I'll totally be doomed.
 	public static class PartNullCell extends CircuitPart
 	{
 		@Override
@@ -1091,8 +1092,62 @@ public abstract class CircuitPart implements Cloneable
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			super.onInputChange(side);
+			updateInput();
 			notifyNeighbours();
 		}
+	}
+	
+	public static class PartInvertCell extends PartGate
+	{
+		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			updateInput();
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
+			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
+			getNeighbourOnSide(side.getOpposite()).onInputChange(side);
+		}
+
+		@Override
+		public boolean getOutputToSide(ForgeDirection side) 
+		{
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
+			if(fd == ForgeDirection.EAST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()));
+			else if(fd == ForgeDirection.WEST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()));
+			if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) 
+				if(!(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation())) 
+				|| getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation())))) return true;
+				else if(fd == ForgeDirection.NORTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
+				else if(fd == ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()));
+			return false;
+		}	
+	}
+	
+	public static class PartBufferCell extends PartGate
+	{
+		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			updateInput();
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
+			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
+			getNeighbourOnSide(side.getOpposite()).onInputChange(side);
+		}
+
+		@Override
+		public boolean getOutputToSide(ForgeDirection side) 
+		{
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
+			if(fd == ForgeDirection.EAST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()));
+			else if(fd == ForgeDirection.WEST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()));
+			if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) 
+				if(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation())) 
+				|| getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()))) return true;
+				else if(fd == ForgeDirection.NORTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
+				else if(fd == ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()));
+			return false;
+		}
+		
+		//TODO AND cell?
 	}
 }
