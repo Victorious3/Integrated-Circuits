@@ -37,9 +37,11 @@ import vic.mod.integratedcircuits.ic.CircuitPart.PartXORGate;
 
 public class CircuitPartRenderer 
 {
+	public static ResourceLocation partResource = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png");
+	
 	public static void renderPart(CircuitPart part, double x, double y)
 	{
-		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
+		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
 		Tessellator tes = Tessellator.instance;
 		GL11.glTranslated(x, y, 0);
 		tes.startDrawingQuads();
@@ -146,7 +148,7 @@ public class CircuitPartRenderer
 	
 	public static void renderPCB(double offX, double offY, CircuitData data)
 	{
-		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
+		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
 		Tessellator tes = Tessellator.instance;
 		int w = data.getSize();
 		
@@ -305,25 +307,15 @@ public class CircuitPartRenderer
 		addQuad(x, y, 13 * 16, 0, 16, 16);
 	}
 	
-	//Used for rendering
+	/** Used for rendering **/
 	public static CircuitPart createEncapsulated(Class<? extends CircuitPart> clazz)
 	{
-		try {
-			return clazz.getConstructor(int.class, int.class, CircuitData.class).newInstance(1, 1, CurcuitRenderWrapper.instance.data);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return CircuitPart.getPart(CircuitPart.getIdFromClass(clazz)).prepare(1, 1, CurcuitRenderWrapper.instance.data);
 	}
 	
 	public static CircuitPart createEncapsulated(Class<? extends CircuitPart> clazz, int state)
 	{
-		try {
-			return clazz.getConstructor(int.class, int.class, CircuitData.class).newInstance(1, 1, new CurcuitRenderWrapper(state).data);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		return CircuitPart.getPart(CircuitPart.getIdFromClass(clazz)).prepare(1, 1, new CurcuitRenderWrapper(state).data);
 	}
 	
 	public static class CurcuitRenderWrapper implements ICircuit

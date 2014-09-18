@@ -390,7 +390,7 @@ public class GuiPCBLayout extends GuiContainer
 			{
 				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, 0, 0, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));			
 			}
-			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, CircuitPart.getId(selectedPart.getClass()), selectedPart.getState(), -1, false, te.xCoord, te.yCoord, te.zCoord));			
+			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, CircuitPart.getId(selectedPart), selectedPart.getState(), -1, false, te.xCoord, te.yCoord, te.zCoord));			
 		}
 		
 		super.mouseClicked(x, y, flag);

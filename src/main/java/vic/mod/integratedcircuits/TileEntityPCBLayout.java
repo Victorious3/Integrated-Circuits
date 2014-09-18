@@ -27,12 +27,12 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	@SideOnly(Side.CLIENT)
 	public double offY = 145;
 	
-	public int[] i, o;
+	public int[] i = new int[4];
+	public int[] o = new int[4];
 	private boolean updateIO;
 	
 	public void setup(int size)
 	{
-		clearIO();
 		circuitData = new CircuitData(size, this);
 	}
 

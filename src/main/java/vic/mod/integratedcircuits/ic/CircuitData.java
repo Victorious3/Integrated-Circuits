@@ -10,15 +10,14 @@ import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
-import vic.mod.integratedcircuits.ic.CircuitPart.PartNull;
 
 import com.google.common.primitives.Ints;
 
 public class CircuitData implements Cloneable
 {
 	private int size;
-	private int[][] id;
 	private int[][] meta;
+	private CircuitPart[][] parts;
 	private LinkedList<Point> tickSchedule;
 	private LinkedList<Point> updateQueue = new LinkedList<Point>();
 	private ICircuit parent;
@@ -36,7 +35,14 @@ public class CircuitData implements Cloneable
 	{
 		this.parent = parent;
 		this.size = size;
-		this.id = id;
+		this.parts = new CircuitPart[size][size];
+		for(int x = 0; x < size; x++)
+		{
+			for(int y = 0; y < size; y++)
+			{
+				parts[x][y] = CircuitPart.getPart(id[x][y], x, y, this);
+			}
+		}
 		this.meta = meta;
 		this.tickSchedule = tickSchedule;
 	}
@@ -104,13 +110,13 @@ public class CircuitData implements Cloneable
 	public int getID(int x, int y) 
 	{
 		if(x < 0 || y < 0 || x >= size || y >= size) return 0;
-		return id[x][y];
+		return CircuitPart.getId(parts[x][y]);
 	}
 	
 	public void setID(int x, int y, int i)
 	{
 		if(x < 0 || y < 0 || x >= size || y >= size) return;
-		id[x][y] = i;
+		parts[x][y] = CircuitPart.getPart(i, x, y, this);
 	}
 	
 	public ICircuit getCircuit()
@@ -130,7 +136,14 @@ public class CircuitData implements Cloneable
 	
 	public void clear(int size)
 	{
-		this.id = new int[size][size];
+		this.parts = new CircuitPart[size][size];
+		for(int x = 0; x < size; x++)
+		{
+			for(int y = 0; y < size; y++)
+			{
+				parts[x][y] = CircuitPart.getPart(0, x, y, this);
+			}
+		}
 		this.meta = new int[size][size];
 		tickSchedule = new LinkedList<Point>();
 		updateQueue = new LinkedList<Point>();
@@ -140,14 +153,8 @@ public class CircuitData implements Cloneable
 	
 	public CircuitPart getPart(int x, int y)
 	{
-		if(x < 0 || y < 0 || x >= size || y >= size) return new PartNull(x, y, this);
-		try {
-			//FIXME You moron are saving memory by sending the PCB size as byte and then you think that creating 4624 instances per frame is A GOOD IDEA?!
-			return CircuitPart.getPart(id[x][y]).getConstructor(int.class, int.class, CircuitData.class).newInstance(x, y, this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}	
-		return null;
+		if(x < 0 || y < 0 || x >= size || y >= size) return null;
+		return parts[x][y];
 	}
 	
 	public void scheduleTick(int x, int y)
@@ -220,7 +227,12 @@ public class CircuitData implements Cloneable
 		NBTTagList idlist = new NBTTagList();
 		for(int i = 0; i < size; i++)
 		{
-			idlist.appendTag(new NBTTagIntArray(id[i].clone()));
+			int[] id = new int[size];
+			for(int j = 0; j < size; j++)
+			{
+				id[j] = CircuitPart.getId(parts[i][j]);
+			}
+			idlist.appendTag(new NBTTagIntArray(id));
 		}
 		
 		NBTTagList metalist = new NBTTagList();
@@ -253,7 +265,7 @@ public class CircuitData implements Cloneable
 			int y = (int)p.getY();
 			buf.writeByte(x);
 			buf.writeByte(y);
-			buf.writeByte(id[x][y]);
+			buf.writeByte(CircuitPart.getId(parts[x][y]));
 			buf.writeInt(meta[x][y]);
 		}
 		updateQueue.clear();
@@ -268,7 +280,7 @@ public class CircuitData implements Cloneable
 			int y = buf.readByte();
 			int cid = buf.readByte();
 			int data = buf.readInt();
-			id[x][y] = cid;
+			setID(x, y, cid);
 			meta[x][y] = data;
 		}
 	}
@@ -282,7 +294,17 @@ public class CircuitData implements Cloneable
 	{
 		CircuitData data = new CircuitData();
 		data.size = 3;
-		data.id = new int[][]{new int[]{0, 1, 0}, new int[]{1, 0, 1}, new int[]{0, 1, 0}};
+		data.parts = new CircuitPart[3][3];
+		//TODO How about a loop here?
+		data.parts[0][0] = CircuitPart.getPart(0, 0, 0, data);
+		data.parts[1][0] = CircuitPart.getPart(1, 0, 0, data);
+		data.parts[2][0] = CircuitPart.getPart(0, 0, 0, data);
+		data.parts[0][1] = CircuitPart.getPart(1, 0, 0, data);
+		data.parts[1][1] = CircuitPart.getPart(0, 0, 0, data);
+		data.parts[2][1] = CircuitPart.getPart(1, 0, 0, data);
+		data.parts[0][2] = CircuitPart.getPart(0, 0, 0, data);
+		data.parts[1][2] = CircuitPart.getPart(1, 0, 0, data);
+		data.parts[2][2] = CircuitPart.getPart(0, 0, 0, data);
 		data.meta = new int[][]{new int[]{0, 0, 0}, new int[]{0, state, 0}, new int[]{0, 0, 0}};
 		data.parent = parent;
 		return data;
