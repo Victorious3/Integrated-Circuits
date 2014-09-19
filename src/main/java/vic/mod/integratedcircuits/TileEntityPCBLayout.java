@@ -63,6 +63,8 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	{
 		super.readFromNBT(compound);
 		circuitData = CircuitData.readFromNBT(compound.getCompoundTag("circuit"), this);
+		i = compound.getIntArray("in");
+		o = compound.getIntArray("out");
 		NBTTagCompound stackCompound = compound.getCompoundTag("floppyStack");
 		floppyStack = ItemStack.loadItemStackFromNBT(stackCompound);
 		name = compound.getString("name");
@@ -73,6 +75,8 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	{
 		super.writeToNBT(compound);
 		compound.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
+		compound.setIntArray("in", i);
+		compound.setIntArray("out", o);
 		NBTTagCompound stackCompound = new NBTTagCompound();
 		if(floppyStack != null) floppyStack.writeToNBT(stackCompound);
 		compound.setTag("floppyStack", stackCompound);

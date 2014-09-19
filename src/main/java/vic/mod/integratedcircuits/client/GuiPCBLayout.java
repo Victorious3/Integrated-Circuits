@@ -339,7 +339,7 @@ public class GuiPCBLayout extends GuiContainer
 		int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
 		
 		int w = data.getSize();
-		if(x2 > 0 && y2 > 0 && x2 < w && y2 < w && !blockMouseInput)
+		if(x2 >= 0 && y2 >= 0 && x2 < w && y2 < w && !blockMouseInput)
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
