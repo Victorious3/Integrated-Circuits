@@ -40,6 +40,7 @@ public abstract class CircuitPart implements Cloneable
 		registerPart(23, new PartIOBit());
 		registerPart(24, new PartInvertCell());
 		registerPart(25, new PartBufferCell());
+		registerPart(26, new PartANDCell());
 	}
 	
 	public static void registerPart(int id, CircuitPart part)
@@ -1106,6 +1107,7 @@ public abstract class CircuitPart implements Cloneable
 			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
 			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
 			getNeighbourOnSide(side.getOpposite()).onInputChange(side);
+			markForUpdate();
 		}
 
 		@Override
@@ -1132,6 +1134,7 @@ public abstract class CircuitPart implements Cloneable
 			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
 			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
 			getNeighbourOnSide(side.getOpposite()).onInputChange(side);
+			markForUpdate();
 		}
 
 		@Override
@@ -1147,7 +1150,35 @@ public abstract class CircuitPart implements Cloneable
 				else if(fd == ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()));
 			return false;
 		}
-		
-		//TODO AND cell?
+	}
+	
+	public static class PartANDCell extends PartGate
+	{
+		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			updateInput();
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
+			if(fd == ForgeDirection.EAST) scheduleTick();
+			else if(fd != ForgeDirection.WEST) 
+			{
+				getNeighbourOnSide(side.getOpposite()).onInputChange(side);
+				ForgeDirection fd2 = MiscUtils.rotn(ForgeDirection.WEST, getRotation());
+				getNeighbourOnSide(fd2).onInputChange(fd2.getOpposite());
+			}		
+			markForUpdate();
+		}
+
+		@Override
+		public boolean getOutputToSide(ForgeDirection side) 
+		{
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
+			if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH)
+				return getInputFromSide(side.getOpposite());
+			else if(fd == ForgeDirection.WEST) return getInputFromSide(side.getOpposite()) 
+				&& (getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()))
+				|| getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())));
+			else return false;
+		}
 	}
 }

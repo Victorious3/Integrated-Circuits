@@ -9,6 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.ic.CircuitPart.PartANDCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferGate;
@@ -59,6 +60,7 @@ public class CircuitPartRenderer
 	{
 		if(part instanceof PartWire) renderPartWire((PartWire)part, x, y);
 		else if(part instanceof PartNullCell || part instanceof PartInvertCell || part instanceof PartBufferCell) renderPartCell(part, x, y);
+		else if(part instanceof PartANDCell) renderPartANDCell((PartANDCell)part, x, y);
 		else if(part instanceof PartGate) renderPartGate((PartGate)part, x, y);
 		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, x, y);
 		else if(part instanceof PartIOBit) renderPartIOBit((PartIOBit)part, x, y);
@@ -259,33 +261,66 @@ public class CircuitPartRenderer
 		else if(cell instanceof PartBufferCell) addQuad(x, y, 6 * 16, 2 * 16, 16, 16, rotation);
 	}
 	
+	public static void renderPartANDCell(PartANDCell cell, double x, double y)
+	{
+		Tessellator tes = Tessellator.instance;
+		int rotation = cell.getRotation();
+		
+		ForgeDirection fd = MiscUtils.rotn(ForgeDirection.NORTH, rotation);
+		if(cell.getOutputToSide(fd) 
+			|| cell.getInputFromSide(fd) 
+			|| cell.getOutputToSide(fd.getOpposite()) 
+			|| cell.getInputFromSide(fd.getOpposite())) 
+			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
+		
+		fd = MiscUtils.rotn(ForgeDirection.WEST, rotation);
+		if(cell.getNeighbourOnSide(fd).getInputFromSide(fd.getOpposite())
+			|| cell.getInputFromSide(fd))
+			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		addQuad(x, y, 7 * 16, 2 * 16, 16, 16, rotation);
+		
+		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
+		if(cell.getNeighbourOnSide(fd).getInputFromSide(fd.getOpposite())
+			|| cell.getInputFromSide(fd))
+			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);	
+	}
+	
 	public static void renderPartGate(PartGate gate, double x, double y) 
 	{
 		Tessellator tes = Tessellator.instance;
 		if(gate.canConnectToSide(ForgeDirection.NORTH))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.NORTH).getInputFromSide(ForgeDirection.SOUTH) || gate.getInputFromSide(ForgeDirection.NORTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.NORTH).getInputFromSide(ForgeDirection.SOUTH) 
+				|| gate.getInputFromSide(ForgeDirection.NORTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 2 * 16, 0, 16, 16);
 		}
 
 		if(gate.canConnectToSide(ForgeDirection.SOUTH))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.SOUTH).getInputFromSide(ForgeDirection.NORTH) || gate.getInputFromSide(ForgeDirection.SOUTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.SOUTH).getInputFromSide(ForgeDirection.NORTH) 
+				|| gate.getInputFromSide(ForgeDirection.SOUTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 4 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.WEST))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.WEST).getInputFromSide(ForgeDirection.EAST) || gate.getInputFromSide(ForgeDirection.WEST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.WEST).getInputFromSide(ForgeDirection.EAST) 
+				|| gate.getInputFromSide(ForgeDirection.WEST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 1 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.EAST))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.EAST).getInputFromSide(ForgeDirection.WEST) || gate.getInputFromSide(ForgeDirection.EAST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(gate.getNeighbourOnSide(ForgeDirection.EAST).getInputFromSide(ForgeDirection.WEST) 
+				|| gate.getInputFromSide(ForgeDirection.EAST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 3 * 16, 0, 16, 16);
 		}
