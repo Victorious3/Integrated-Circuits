@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.util.MiscUtils;
 
@@ -977,8 +978,11 @@ public abstract class CircuitPart implements Cloneable
 			if(button == 0 && ctrl)
 			{
 				int state = (getState() & 768) >> 8;
-				state = state++ > 3 ? 0 : state++;
+				state++;
+				state = state > 3 ? 0 : state;
+				setState(getState() & ~768);
 				setState(getState() | state << 8);
+				notifyNeighbours();
 			}
 		}
 		
@@ -995,21 +999,41 @@ public abstract class CircuitPart implements Cloneable
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
+			updateInput();
 			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.EAST || s2 == ForgeDirection.WEST) return;
-			if(s2 == ForgeDirection.NORTH || isMirrored()) setState(getState() | 128);
+			if(s2 == ForgeDirection.NORTH) setState(getState() | 128);
 			else setState(getState() & ~128);
 			scheduleTick();
+			markForUpdate();
 		}
 
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(isMirrored()) s2 = MiscUtils.rotn(s2, 2);
-			if((s2 == ForgeDirection.EAST || (s2 == ForgeDirection.NORTH && isSpecial())) && (getState() & 128) > 0) return true;
-			if((s2 == ForgeDirection.WEST || (s2 == ForgeDirection.SOUTH && isSpecial())) && (getState() & 128) == 0) return true;
+			ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.NORTH, getRotation());
+			boolean b1 = !(getInputFromSide(s3) && getInputFromSide(s3.getOpposite()));
+			if(((s2 == ForgeDirection.EAST && !isMirrored() 
+				|| s2 == ForgeDirection.WEST && isMirrored()) 
+				|| (s2 == ForgeDirection.NORTH && isSpecial() 
+				&& !getInputFromSide(s3.getOpposite()))) 
+				&& b1 && (getState() & 128) != 0) return true;
+			if(((s2 == ForgeDirection.WEST && !isMirrored() 
+				|| s2 == ForgeDirection.EAST && isMirrored()) 
+				|| (s2 == ForgeDirection.SOUTH && isSpecial() 
+				&& !getInputFromSide(s3))) 
+				&& b1 && (getState() & 128) == 0) return true;
 			return false;
+		}
+
+		@Override
+		public ArrayList<String> getInformation() 
+		{
+			ArrayList<String> text = super.getInformation();
+			text.add("Mode: " + (isSpecial() ? 1 : 0));
+			if(isMirrored()) text.add(EnumChatFormatting.ITALIC + "Mirrored");
+			return text;
 		}
 	}
 	
