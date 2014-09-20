@@ -9,7 +9,7 @@ import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBChangeName extends PacketPCB<PacketPCBChangeName>
+public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
 {
 	private String name;
 	

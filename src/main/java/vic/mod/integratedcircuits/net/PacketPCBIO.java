@@ -12,7 +12,7 @@ import vic.mod.integratedcircuits.ic.CircuitData;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBIO extends PacketPCB<PacketPCBIO>
+public class PacketPCBIO extends PacketTileEntity<PacketPCBIO>
 {
 	private boolean write;
 	
@@ -53,8 +53,8 @@ public class PacketPCBIO extends PacketPCB<PacketPCBIO>
 					if(comp == null) comp = new NBTTagCompound();
 					comp.setString("name", te.name);
 					comp.setInteger("size", te.getCircuitData().getSize());
-					NBTTagCompound compMatrix = new NBTTagCompound();
 					comp.setTag("circuit", te.getCircuitData().writeToNBT(new NBTTagCompound()));
+					comp.setInteger("con", te.con);
 					comp.setString("author", player.getCommandSenderName());
 					floppy.setTagCompound(comp);
 					te.setInventorySlotContents(0, floppy);
@@ -68,7 +68,11 @@ public class PacketPCBIO extends PacketPCB<PacketPCBIO>
 					NBTTagCompound comp = floppy.getTagCompound();
 					if(comp == null) return;
 					String name = comp.getString("name");
-					if(comp.hasKey("circuit")) te.setCircuitData(CircuitData.readFromNBT((NBTTagCompound)comp.getCompoundTag("circuit").copy(), te));
+					if(comp.hasKey("circuit")) 
+					{
+						te.setCircuitData(CircuitData.readFromNBT((NBTTagCompound)comp.getCompoundTag("circuit").copy(), te));
+						te.con = comp.getInteger("con");
+					}
 					else te.getCircuitData().clear(te.getCircuitData().getSize());
 					IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeName(name, xCoord, yCoord, zCoord), 
 						new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));

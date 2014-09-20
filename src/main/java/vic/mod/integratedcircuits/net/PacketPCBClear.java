@@ -11,7 +11,7 @@ import vic.mod.integratedcircuits.client.GuiPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBClear extends PacketPCB<PacketPCBClear>
+public class PacketPCBClear extends PacketTileEntity<PacketPCBClear>
 {
 	private byte size;
 	

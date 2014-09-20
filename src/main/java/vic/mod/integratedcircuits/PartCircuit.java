@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import codechicken.lib.data.MCDataInput;
@@ -24,10 +23,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartCircuit extends BundledGatePart implements ICircuit
 {
-	@SideOnly(Side.CLIENT)
-	public static PartCircuitRenderer renderer = new PartCircuitRenderer();
-	
-	public short tier;
+	public byte tier;
 	public String name;
 	public byte[][] output;
 	public CircuitData circuitData;
@@ -45,9 +41,16 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		setSide(side ^ 1);
 		setRotation(Rotation.getSidedRotation(player, side));
 		logic = new CircuitLogic(this);
-		state = (byte)new Random().nextInt(15);
-		tier = 2;
-		name = "IC_" + new Random().nextInt(10);
+		
+		ItemStack stack = player.getCurrentEquippedItem();
+		NBTTagCompound comp = stack.stackTagCompound;
+		if(comp == null) return;
+		
+		state = comp.getByte("con");
+		tier = comp.getByte("tier");
+		name = comp.getString("name");
+		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
+		
 		genOutput();
 		genMatrix();
 		scheduleTick(0);
@@ -66,7 +69,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		logic.load(tag);
 		
 		//My part
-		tier = tag.getShort("tier");
+		tier = tag.getByte("tier");
 		name = tag.getString("name");
 		genMatrix();
 		circuitData = CircuitData.readFromNBT(tag.getCompoundTag("circuit"), this);
@@ -94,16 +97,22 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		logic.readDesc(packet);
 		
 		//My part
-		tier = packet.readShort();
+		tier = packet.readByte();
 		name = packet.readString();
 		circuitData = CircuitData.readFromNBT(packet.readNBTTagCompound(), this);
 		genOutput();
 	}
 	
 	@Override
-	public Iterable<ItemStack> getDrops() 
+	public ItemStack getItem() 
 	{
-		return super.getDrops();
+		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuit);
+		NBTTagCompound comp = new NBTTagCompound();
+		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
+		comp.setInteger("con", state);
+		comp.setString("name", name);
+		stack.stackTagCompound = comp;
+		return stack;
 	}
 
 	@Override
@@ -111,7 +120,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	{
 		super.writeDesc(packet);
 		
-		packet.writeShort(tier);
+		packet.writeByte(tier);
 		packet.writeString(name);
 		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
 	}
@@ -137,8 +146,8 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		{
 			TextureUtils.bindAtlas(0);
 			CCRenderState.setBrightness(world(), x(), y(), z());
-			renderer.prepare(this);
-			renderer.renderStatic(pos.translation(), orientation & 0xFF);
+			ItemCircuit.renderer.prepare(this);
+			ItemCircuit.renderer.renderStatic(pos.translation(), orientation & 0xFF);
 			return true;
 		}	
 		else return false;
@@ -151,8 +160,8 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		if(pass == 0)
 		{
 			TextureUtils.bindAtlas(0);
-			renderer.prepareDynamic(this, frame);
-			renderer.renderDynamic(this.rotationT().with(pos.translation()));
+			ItemCircuit.renderer.prepareDynamic(this, frame);
+			ItemCircuit.renderer.renderDynamic(this.rotationT().with(pos.translation()));
 		}	
 	}
 
@@ -197,7 +206,6 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		public void scheduledTick(BundledGatePart gate) 
 		{
 			super.scheduledTick(gate);
-			System.out.println("I ticked");
 		}
 	}
 	

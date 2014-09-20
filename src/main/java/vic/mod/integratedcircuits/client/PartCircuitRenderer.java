@@ -1,16 +1,19 @@
 package vic.mod.integratedcircuits.client;
 
+import java.util.Arrays;
+
 import mrtjp.projectred.integration.ComponentStore;
 import mrtjp.projectred.integration.ComponentStore.ComponentModel;
 import mrtjp.projectred.integration.RenderGate.GateRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
-import scala.actors.threadpool.Arrays;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.PartCircuit;
 import codechicken.lib.render.CCModel;
@@ -33,13 +36,26 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 	@Override
 	public void prepare(PartCircuit part) 
 	{
-		pinModels[0].isBundeled = (part.state & 1) > 0;
-		pinModels[1].isBundeled = (part.state & 2) > 0;
-		pinModels[2].isBundeled = (part.state & 4) > 0;
-		pinModels[3].isBundeled = (part.state & 8) > 0;
+		pinModels[0].isBundeled = (part.state & 1) != 0;
+		pinModels[1].isBundeled = (part.state & 2) != 0;
+		pinModels[2].isBundeled = (part.state & 4) != 0;
+		pinModels[3].isBundeled = (part.state & 8) != 0;
 		super.prepare(part);
 	}
 	
+	public void prepareInv(ItemStack stack)
+	{
+		NBTTagCompound comp = stack.getTagCompound();	
+		if(comp == null) return;
+		byte con = comp.getByte("con");
+		pinModels[0].isBundeled = (con & 1) != 0;
+		pinModels[1].isBundeled = (con & 2) != 0;
+		pinModels[2].isBundeled = (con & 4) != 0;
+		pinModels[3].isBundeled = (con & 8) != 0;
+		name = comp.getString("name");
+		tier = comp.getByte("tier");
+	}
+
 	public static class ChipModel extends ComponentModel
 	{
 		private static CCModel[] models = new CCModel[24];
@@ -110,8 +126,8 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 		}
 	}
 	
-	private short tier;
-	private String name;
+	private byte tier;
+	private String name = "NO_NAME";
 
 	@Override
 	public void prepareDynamic(PartCircuit part, float frame) 
@@ -125,30 +141,30 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 	public void renderDynamic(Transformation t)
 	{
 		super.renderDynamic(t);
-		GL11.glPushMatrix();
 		GL11.glDisable(GL11.GL_LIGHTING);
-		t.glApply();	
+		GL11.glPushMatrix();
+		t.glApply();
 		new Rotation(Math.toRadians(90), 1, 0, 0).glApply();
 		new Rotation(Math.toRadians(180), 0, 0, 1).glApply();
 		new Translation(-13 / 16D, -5 / 16D, -5.005 / 16D).glApply();
 		
 		FontRenderer fr = RenderManager.instance.getFontRenderer();
+		if(fr == null) return;
 		
 		GL11.glPushMatrix();
 		new Scale(1 / 64D).glApply();;
 		fr.drawString("T" + tier, 0, 0, 0xFFFFFF);
 		GL11.glPopMatrix();
 		
-		new Translation(0, -4 / 16D, 0).glApply();
-		
-		GL11.glPushMatrix();
+		new Translation(0, -4 / 16D, 0).glApply();	
 		new Scale(1 / 64D).glApply();
+		
 		int w = fr.getStringWidth(name);
 		int mw = 42;
 		fr.drawString(name, (int)(mw / 2F - w / 2F), 0, 0xFFFFFF);
-		GL11.glPopMatrix();
 		
 		GL11.glPopMatrix();
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	public static IIcon iconIC;

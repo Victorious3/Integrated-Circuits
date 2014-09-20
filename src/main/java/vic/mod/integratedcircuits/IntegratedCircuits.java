@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
@@ -43,6 +44,7 @@ public class IntegratedCircuits
 	public void preInit(FMLPreInitializationEvent event)
     {
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
+    	
     	MiscUtils.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
     	MiscUtils.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
     	MiscUtils.registerPacket(PacketPCBClear.class, null, 2);
@@ -50,6 +52,8 @@ public class IntegratedCircuits
     	MiscUtils.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
     	MiscUtils.registerPacket(PacketPCBChangeInput.class, null, 5);
     	MiscUtils.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
+    	
+    	MiscUtils.registerPacket(PacketAssemblerStart.class, Side.SERVER, 7);
     	
     	itemCircuit = new ItemCircuit();
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);

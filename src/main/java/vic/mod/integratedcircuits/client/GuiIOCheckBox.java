@@ -23,8 +23,7 @@ public class GuiIOCheckBox extends GuiCheckBox implements IHoverable
 		boolean b = parent.blockMouseInput ? false : super.mousePressed(mc, x, y);
 		if(b)
 		{
-			if(isChecked()) parent.te.setInputMode(parent.te.con | 1 << side);
-			else parent.te.setInputMode(parent.te.con & ~(1 << side));
+			parent.te.setInputMode(isChecked(), side);
 			refresh();
 		}
 		return b;

@@ -14,7 +14,20 @@ public class ContainerPCBLayout extends Container
 		this.tileentity = tileentity;
 		this.tileentity.openInventory();
 		
-		this.addSlotToContainer(new Slot(tileentity, 0, 224, 8));
+		this.addSlotToContainer(new Slot(tileentity, 0, 224, 8)
+		{
+			@Override
+			public boolean isItemValid(ItemStack stack) 
+			{
+				return false;
+			}
+
+			@Override
+			public boolean canTakeStack(EntityPlayer player) 
+			{
+				return false;
+			}
+		});
 	}
 
 	@Override
@@ -29,17 +42,16 @@ public class ContainerPCBLayout extends Container
 	{
 		return this.tileentity.isUseableByPlayer(player);
 	}
-
-	@Override
-	public ItemStack slotClick(int par1, int par2, int par3, EntityPlayer player) 
-	{
-		//You can't interact with the one and only slot.
-		return null;
-	}
-
+	
 	@Override
 	public boolean canDragIntoSlot(Slot slot) 
 	{
 		return false;
-	}	
+	}
+	
+	@Override
+	public ItemStack transferStackInSlot(EntityPlayer player, int slot) 
+	{
+		return null;
+	}
 }

@@ -112,10 +112,11 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public void setInputMode(int con)
+	public void setInputMode(boolean b, int side)
 	{
-		this.i = new int[4];
-		this.con = con;
+		i[side] = 0;
+		if(b) con |= 1 << side;
+		else con &= ~(1 << side);
 		IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
 	}
 

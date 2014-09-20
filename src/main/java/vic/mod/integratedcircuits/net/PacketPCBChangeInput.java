@@ -9,7 +9,7 @@ import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBChangeInput extends PacketPCB<PacketPCBChangeInput>
+public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 {
 	private boolean input;
 	private int[] io;

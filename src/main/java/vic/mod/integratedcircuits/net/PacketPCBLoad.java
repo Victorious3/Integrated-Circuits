@@ -11,7 +11,7 @@ import vic.mod.integratedcircuits.client.GuiPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBLoad extends PacketPCB<PacketPCBLoad>
+public class PacketPCBLoad extends PacketTileEntity<PacketPCBLoad>
 {
 	private CircuitData data;
 	

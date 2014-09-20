@@ -12,7 +12,7 @@ public class GuiHandler implements IGuiHandler
 	public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) 
 	{
 		if(id == 0) return new ContainerPCBLayout((TileEntityPCBLayout)world.getTileEntity(x, y, z));
-		else if(id == 1) return new ContainerAssembler((TileEntityAssembler)world.getTileEntity(x, y, z));
+		else if(id == 1) return new ContainerAssembler(player.inventory, (TileEntityAssembler)world.getTileEntity(x, y, z));
 		return null;
 	}
 
@@ -20,7 +20,7 @@ public class GuiHandler implements IGuiHandler
 	public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) 
 	{
 		if(id == 0) return new GuiPCBLayout(new ContainerPCBLayout((TileEntityPCBLayout)world.getTileEntity(x, y, z)));
-		else if(id == 1) return new GuiAssembler(new ContainerAssembler((TileEntityAssembler)world.getTileEntity(x, y, z)));
+		else if(id == 1) return new GuiAssembler(new ContainerAssembler(player.inventory, (TileEntityAssembler)world.getTileEntity(x, y, z)));
 		return null;
 	}
 }

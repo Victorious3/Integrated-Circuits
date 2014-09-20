@@ -11,7 +11,7 @@ import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBUpdate extends PacketPCB<PacketPCBUpdate>
+public class PacketPCBUpdate extends PacketTileEntity<PacketPCBUpdate>
 {
 	private CircuitData data;
 	private ByteBuf buf;

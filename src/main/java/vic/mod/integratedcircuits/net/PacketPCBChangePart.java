@@ -8,7 +8,7 @@ import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBChangePart extends PacketPCB<PacketPCBChangePart>
+public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 {
 	private int x, y, id, meta, button;
 	boolean ctrl;

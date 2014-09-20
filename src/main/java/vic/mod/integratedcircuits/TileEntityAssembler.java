@@ -25,7 +25,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public static LinkedList<Framebuffer> fboArray = new LinkedList<Framebuffer>();
 	
 	public int[][][] matrix;
-	public ItemStack[] contents = new ItemStack[1];
+	public ItemStack[] contents = new ItemStack[2];
 	
 	@SideOnly(Side.CLIENT)
 	public void updateFramebuffer()
@@ -136,9 +136,10 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		if(contents[id] == null) return null;
 		contents[id].stackSize -= amount;
+		ItemStack ret = contents[id];
 		if(contents[id].stackSize < 1) contents[id] = null;
 		this.markDirty();
-		return contents[id];
+		return ret;
 	}
 
 	@Override
@@ -169,7 +170,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public int getInventoryStackLimit() 
 	{
-		return 1;
+		return 64;
 	}
 
 	@Override

@@ -4,13 +4,13 @@ import java.io.IOException;
 
 import net.minecraft.network.PacketBuffer;
 
-public abstract class PacketPCB<T extends AbstractPacket<T>> extends AbstractPacket<T>
+public abstract class PacketTileEntity<T extends AbstractPacket<T>> extends AbstractPacket<T>
 {
 	protected int xCoord, yCoord, zCoord;
 	
-	public PacketPCB(){}
+	public PacketTileEntity(){}
 	
-	public PacketPCB(int xCoord, int yCoord, int zCoord)
+	public PacketTileEntity(int xCoord, int yCoord, int zCoord)
 	{
 		this.xCoord = xCoord; this.yCoord = yCoord; this.zCoord = zCoord;
 	}
