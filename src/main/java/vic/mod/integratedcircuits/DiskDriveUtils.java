@@ -29,7 +29,7 @@ public class DiskDriveUtils
 	public static boolean canInteractWith(Vec3 hitVec, World world, int x, int y, int z)
 	{
 		hitVec = hitVec.addVector(x, y, z);
-		IDiskDrive drive = (TileEntityPCBLayout)world.getTileEntity(x, y, z);
+		IDiskDrive drive = (IDiskDrive)world.getTileEntity(x, y, z);
 		AxisAlignedBB box = getDiskDriveBoundingBox(drive, x, y, z, hitVec);
 		return box == null;
 	}

@@ -29,6 +29,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	
 	public int[] i = new int[4];
 	public int[] o = new int[4];
+	public int con = 15;
 	private boolean updateIO;
 	
 	public void setup(int size)
@@ -52,7 +53,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 			if(updateIO)
 			{
 				updateIO = false;
-				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, xCoord, yCoord, zCoord), 
+				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, con, xCoord, yCoord, zCoord), 
 					new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 			}
 		}
@@ -65,6 +66,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		circuitData = CircuitData.readFromNBT(compound.getCompoundTag("circuit"), this);
 		i = compound.getIntArray("in");
 		o = compound.getIntArray("out");
+		con = compound.getInteger("con");
 		NBTTagCompound stackCompound = compound.getCompoundTag("floppyStack");
 		floppyStack = ItemStack.loadItemStackFromNBT(stackCompound);
 		name = compound.getString("name");
@@ -77,6 +79,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		compound.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
 		compound.setIntArray("in", i);
 		compound.setIntArray("out", o);
+		compound.setInteger("con", con);
 		NBTTagCompound stackCompound = new NBTTagCompound();
 		if(floppyStack != null) floppyStack.writeToNBT(stackCompound);
 		compound.setTag("floppyStack", stackCompound);
@@ -97,11 +100,23 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	@SideOnly(Side.CLIENT)
 	public void setInputFromSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		int[] i = this.i.clone();
-		if(output) i[MiscUtils.getSide(dir)] |= 1 << frequency;
-		else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
-		
-		IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, xCoord, yCoord, zCoord));
+		boolean im = (con >> MiscUtils.getSide(dir) & 1) != 0;
+		if(im || frequency == 0)
+		{
+			int[] i = this.i.clone();
+			if(output) i[MiscUtils.getSide(dir)] |= 1 << frequency;
+			else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
+			
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void setInputMode(int con)
+	{
+		this.i = new int[4];
+		this.con = con;
+		IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
 	}
 
 	@Override

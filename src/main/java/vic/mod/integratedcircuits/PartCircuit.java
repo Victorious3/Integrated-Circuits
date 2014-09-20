@@ -6,6 +6,7 @@ import java.util.Random;
 import mrtjp.projectred.integration.BundledGateLogic;
 import mrtjp.projectred.integration.BundledGatePart;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
@@ -99,6 +100,12 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		genOutput();
 	}
 	
+	@Override
+	public Iterable<ItemStack> getDrops() 
+	{
+		return super.getDrops();
+	}
+
 	@Override
 	public void writeDesc(MCDataOutput packet) 
 	{

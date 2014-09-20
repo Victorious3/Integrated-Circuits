@@ -5,10 +5,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
@@ -25,6 +27,14 @@ public class BlockAssembler extends BlockContainer
 		setCreativeTab(CreativeTabs.tabMisc);
 	}
 
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) 
+	{
+		if(DiskDriveUtils.canInteractWith(Vec3.createVectorHelper(par7, par8, par9), world, x, y, z))
+			player.openGui(IntegratedCircuits.instance, 1, world, x, y, z);
+		return true;
+	}
+	
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) 
 	{

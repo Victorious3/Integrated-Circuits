@@ -15,14 +15,15 @@ import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
-public class GuiCircuitIO extends GuiButton implements IHoverable
+public class GuiIO extends GuiButton implements IHoverable
 {
 	public int side;
 	public int color;
 	private GuiPCBLayout parent;
 	private TileEntityPCBLayout te;
+	private boolean isActive;
 	
-	public GuiCircuitIO(int id, int x, int y, int color, int side, GuiPCBLayout parent, TileEntityPCBLayout te) 
+	public GuiIO(int id, int x, int y, int color, int side, GuiPCBLayout parent, TileEntityPCBLayout te) 
 	{
 		super(id, x, y, 9, 9, "");
 		this.color = color;
@@ -46,20 +47,21 @@ public class GuiCircuitIO extends GuiButton implements IHoverable
 		GL11.glTranslatef(-4F, -4F, -0F);
 		
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		boolean isActive = te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
+		isActive = (te.con >> side & 1) != 0 || color == 0;
+		boolean isPowered = isActive && te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
 		
-		if(enabled)
+		if(isActive)
 		{
-			if(isActive) GL11.glColor3f(0F, 1F, 0F);
+			if(isPowered) GL11.glColor3f(0F, 1F, 0F);
 			else GL11.glColor3f(0F, 0.4F, 0F);
 			drawTexturedModalRect(0, 3, 5 * 8, 31 * 8, 8, 8);
 		}
 
-		GL11.glColor3f(1F, 1F, 1F);
-		RenderUtils.applyColorIRGB(MapColor.getMapColorForBlockColored(color).colorValue);
-		drawTexturedModalRect(0, 0, 4 * 8, (getHoverState(field_146123_n) == 2 || isActive ? 30 : 31) * 8, 8, 8);
+		GL11.glColor3f(0F, 0F, 0F);
+		if(isActive) RenderUtils.applyColorIRGB(MapColor.getMapColorForBlockColored(color).colorValue);
+		drawTexturedModalRect(0, 0, 4 * 8, (getHoverState(field_146123_n) == 2 || isPowered ? 30 : 31) * 8, 8, 8);
 		
-		if(isActive) GL11.glColor3f(0F, 1F, 0F);
+		if(isPowered) GL11.glColor3f(0F, 1F, 0F);
 		else GL11.glColor3f(0F, 0.4F, 0F);
 		drawTexturedModalRect(0, 0, 5 * 8, 30 * 8, 8, 8);
 		GL11.glPopMatrix();
@@ -88,8 +90,11 @@ public class GuiCircuitIO extends GuiButton implements IHoverable
 		ArrayList<String> text = new ArrayList<String>();
 		ForgeDirection dir = MiscUtils.getDirection(side);
 		text.add("F: 0x" + Integer.toHexString(color));
-		text.add("I: " + (te.getInputFromSide(dir, color) ? "HIGH" : "LOW"));
-		text.add("O: " + (te.getOutputToSide(dir, color) ? "HIGH" : "LOW"));
+		if(isActive)
+		{
+			text.add("I: " + (te.getInputFromSide(dir, color) ? "HIGH" : "LOW"));
+			text.add("O: " + (te.getOutputToSide(dir, color) ? "HIGH" : "LOW"));
+		}	
 		return text;
 	}
 }

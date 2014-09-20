@@ -62,12 +62,16 @@ public class GuiPCBLayout extends GuiContainer
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/pcblayout.png");
 	
 	private int lastX, lastY;
-	private TileEntityPCBLayout te;
+	public TileEntityPCBLayout te;
 	
 	private GuiTextField nameField;
 	private GuiButtonExt buttonPlus;
 	private GuiButtonExt buttonMinus;
 	private GuiButtonExt buttonSize;
+	private GuiIOCheckBox checkN;
+	private GuiIOCheckBox checkE;
+	private GuiIOCheckBox checkS;
+	private GuiIOCheckBox checkW;
 	
 	//Because of private.
 	public GuiPartChooser selectedChooser;
@@ -99,13 +103,22 @@ public class GuiPCBLayout extends GuiContainer
 		buttonMinus = new GuiButtonExt(9, cx + 201, cy + 238, 10, 10, "-");
 		this.buttonList.add(buttonMinus);
 		
-		int w = te.getCircuitData().getSize() - 2;
 		this.buttonList.add(new GuiButtonExt(10, cx + 93, cy + 14, 12, 12, "+"));
-		buttonSize = new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, w + "x" + w);
+		buttonSize = new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, "");
 		this.buttonList.add(buttonSize);
 		
 		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
 		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
+		
+		checkN = new GuiIOCheckBox(65, cx + 26, cy + 35, this, 0);
+		checkE = new GuiIOCheckBox(66, cx + 206, cy + 57, this, 1);
+		checkS = new GuiIOCheckBox(67, cx + 26, cy + 237, this, 2);
+		checkW = new GuiIOCheckBox(68, cx + 4, cy + 57, this, 3);
+		
+		this.buttonList.add(checkN);
+		this.buttonList.add(checkE);
+		this.buttonList.add(checkS);
+		this.buttonList.add(checkW);
 		
 		nameField = new GuiTextField(fontRendererObj, cx + 154, cy + 15, 50, 10);
 		nameField.setText(te.name);
@@ -115,19 +128,19 @@ public class GuiPCBLayout extends GuiContainer
 		
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13, cx + 39 + i * 9, cy + 37, i, 0, this, te));
+			this.buttonList.add(new GuiIO(i + 13, cx + 39 + i * 9, cy + 37, i, 0, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, i, 1, this, te));
+			this.buttonList.add(new GuiIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, i, 1, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3, this, te));
+			this.buttonList.add(new GuiIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiCircuitIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2, this, te));
+			this.buttonList.add(new GuiIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2, this, te));
 		}
 		
 		this.buttonList.add(c1);
@@ -172,6 +185,7 @@ public class GuiPCBLayout extends GuiContainer
 			CircuitPartRenderer.createEncapsulated(PartRepeater.class),
 			CircuitPartRenderer.createEncapsulated(PartMultiplexer.class))), this));
 
+		refreshUI();
 		super.initGui();
 	}
 	
@@ -179,6 +193,10 @@ public class GuiPCBLayout extends GuiContainer
 	{
 		int w = te.getCircuitData().getSize() - 2;
 		buttonSize.displayString = w + "x" + w;
+		checkN.refresh();
+		checkE.refresh();
+		checkS.refresh();
+		checkW.refresh();
 	}
 	
 	@Override
