@@ -681,6 +681,7 @@ public abstract class CircuitPart implements Cloneable
 		}	
 	}
 	
+	//TODO The timer should really use the tick method instead of scheduled ticks.
 	public static class PartTimer extends PartDelayedAction
 	{
 		@Override

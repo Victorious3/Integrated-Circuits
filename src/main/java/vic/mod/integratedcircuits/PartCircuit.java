@@ -1,6 +1,5 @@
 package vic.mod.integratedcircuits;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import mrtjp.projectred.integration.BundledGateLogic;
@@ -11,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.ICircuit;
+import vic.mod.integratedcircuits.util.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
@@ -25,7 +25,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 {
 	public byte tier;
 	public String name;
-	public byte[][] output;
+	public byte[][] output = new byte[4][16];
 	public CircuitData circuitData;
 	
 	@Override
@@ -50,10 +50,6 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		tier = comp.getByte("tier");
 		name = comp.getString("name");
 		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
-		
-		genOutput();
-		genMatrix();
-		scheduleTick(0);
     }
 
 	@Override
@@ -71,9 +67,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		//My part
 		tier = tag.getByte("tier");
 		name = tag.getString("name");
-		genMatrix();
 		circuitData = CircuitData.readFromNBT(tag.getCompoundTag("circuit"), this);
-		genOutput();
 	}
 	
 	@Override
@@ -100,7 +94,6 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		tier = packet.readByte();
 		name = packet.readString();
 		circuitData = CircuitData.readFromNBT(packet.readNBTTagCompound(), this);
-		genOutput();
 	}
 	
 	@Override
@@ -129,7 +122,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(Random rand) 
 	{
-		//Nothing fancy in here...
+		
 	}
 	
 	@Override
@@ -191,9 +184,15 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		}
 
 		@Override
-		public void onChange(BundledGatePart gate) 
+		public int outputMask(int shape) 
 		{
-			
+			return 0xF;
+		}
+
+		@Override
+		public int inputMask(int shape)
+		{
+			return 0xF;
 		}
 
 		@Override
@@ -203,46 +202,31 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		}
 
 		@Override
-		public void scheduledTick(BundledGatePart gate) 
+		public void onTick(BundledGatePart gate) 
 		{
-			super.scheduledTick(gate);
+			if(gate.world().isRemote) return;
+			circuitData.setQueueEnabled(false);
+			circuitData.updateMatrix();
+		}
+
+		@Override
+		public void read(MCDataInput packet, int switch_key) 
+		{
+			super.read(packet, switch_key);
 		}
 	}
 	
 	@Override
 	public byte[] getBundledSignal(int r) 
 	{
-		//Why would I need a mask?
 		return getLogic().getBundledOutput(this, toInternal(r));
 	}
 
 	private boolean isBundeledAtSide(int s)
 	{
-		int mask = (int)Math.pow(2, s);
-		return (state & mask) > 0;
+		return (state & 1 >> s) != 0;
 	}
 	
-	private void genMatrix()
-	{
-		int s = tier == 1 ? 18 : tier == 2 ? 34 : 68;
-		circuitData = new CircuitData(s, this);
-	}
-	
-	private void genOutput()
-	{
-		output = new byte[4][];
-		for(int i = 0; i < 4; i++)
-		{
-			if(isBundeledAtSide(i))
-			{
-				byte[] b = new byte[16];
-				Arrays.fill(b, (byte)255);
-				output[i] = b;
-			}
-			else output[i] = new byte[]{15};
-		}
-	}
-
 	@Override
 	public CircuitData getCircuitData() 
 	{
@@ -258,13 +242,17 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	@Override
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
-		// TODO Auto-generated method stub
-		return false;
+		int side = MiscUtils.getSide(dir);
+		if(isBundeledAtSide(side)) return getBundledInput(side)[frequency] > 0;
+		else return getRedstoneInput(side) > 0;
 	}
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		// TODO Auto-generated method stub
+		int side = MiscUtils.getSide(dir);
+		this.output[side][frequency] = (byte)(output ? 15 : 0);
+		tile().markDirty();
+		notifyNeighbors(15);
 	}
 }

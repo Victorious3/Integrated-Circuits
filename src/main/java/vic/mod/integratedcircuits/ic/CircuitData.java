@@ -21,6 +21,7 @@ public class CircuitData implements Cloneable
 	private LinkedList<Point> tickSchedule;
 	private LinkedList<Point> updateQueue = new LinkedList<Point>();
 	private ICircuit parent;
+	private boolean queueEnabled = true;
 	
 	private CircuitData(){};
 	
@@ -165,6 +166,7 @@ public class CircuitData implements Cloneable
 	
 	public void markForUpdate(int x, int y)
 	{
+		if(!queueEnabled) return;
 		Point p = new Point(x, y);
 		if(!updateQueue.contains(p)) updateQueue.add(p);
 	}
@@ -210,13 +212,10 @@ public class CircuitData implements Cloneable
 		int size = compound.getInteger("size");
 		LinkedList<Point> scheduledTicks = new LinkedList<Point>();
 		
-		if(compound.hasKey("scheduled"))
+		int[] scheduledList = compound.getIntArray("scheduled");
+		for(int i = 0; i < scheduledList.length; i += 2)
 		{
-			int[] scheduledList = compound.getIntArray("scheduled");
-			for(int i = 0; i < scheduledList.length; i += 2)
-			{
-				scheduledTicks.add(new Point(scheduledList[i], scheduledList[i + 1]));
-			}
+			scheduledTicks.add(new Point(scheduledList[i], scheduledList[i + 1]));
 		}
 		
 		return new CircuitData(size, parent, id, meta, scheduledTicks);
@@ -288,6 +287,11 @@ public class CircuitData implements Cloneable
 	public boolean checkUpdate()
 	{
 		return updateQueue.size() > 0;
+	}
+	
+	public void setQueueEnabled(boolean enabled)
+	{
+		queueEnabled = enabled;
 	}
 	
 	public static CircuitData createShallowInstance(int state, ICircuit parent)
