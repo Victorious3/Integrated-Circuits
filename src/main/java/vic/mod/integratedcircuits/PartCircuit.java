@@ -26,6 +26,8 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	public byte tier;
 	public String name;
 	public byte[][] output = new byte[4][16];
+	public byte[][] input = new byte[4][16];
+	
 	public CircuitData circuitData;
 	
 	@Override
@@ -196,6 +198,17 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		}
 
 		@Override
+		public void onChange(BundledGatePart gate) 
+		{
+			int in = getInput(gate, 15);
+			for(int i = 0; i < 4; i++)
+			{
+				input[i][0] = (byte)((in >> i & 1) > 0 ? 15 : 0);
+			}
+			circuitData.updateInput();
+		}
+
+		@Override
 		public byte[] getBundledOutput(BundledGatePart gate, int r) 
 		{
 			return isBundeledAtSide(r) ? output[r] : null;
@@ -224,7 +237,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 
 	private boolean isBundeledAtSide(int s)
 	{
-		return (state & 1 >> s) != 0;
+		return (state >> s & 1) != 0;
 	}
 	
 	@Override
@@ -242,17 +255,22 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	@Override
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
-		int side = MiscUtils.getSide(dir);
-		if(isBundeledAtSide(side)) return getBundledInput(side)[frequency] > 0;
-		else return getRedstoneInput(side) > 0;
+		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
+		return input[side][frequency] > 0 && !(output[side][frequency] > 0);
 	}
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		int side = MiscUtils.getSide(dir);
-		this.output[side][frequency] = (byte)(output ? 15 : 0);
-		tile().markDirty();
-		notifyNeighbors(15);
+		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
+		if(!isBundeledAtSide(side) && frequency > 0) return;
+		byte oldOut = this.output[side][frequency];
+		byte newOut = (byte)(output ? 15 : 0);
+		this.output[side][frequency] = newOut;
+		if(oldOut != newOut)
+		{
+			tile().markDirty();
+			notifyNeighbors(15);
+		}	
 	}
 }

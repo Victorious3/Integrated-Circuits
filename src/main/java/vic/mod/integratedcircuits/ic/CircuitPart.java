@@ -512,6 +512,14 @@ public abstract class CircuitPart implements Cloneable
 		}
 
 		@Override
+		public void onInputChange(ForgeDirection side) 
+		{
+			updateInput();
+			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
+			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
+		}
+
+		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());

@@ -55,6 +55,7 @@ public class CircuitData implements Cloneable
 		
 		for(int i = 0; i < 16; i++)
 		{
+			//FIXME Turn these around so it's actually possible to create a proper 16x16 circuit.
 			setID(i + o, 0, cid);
 			setID(size - 1, i + o, cid);
 			setID(i + o, size - 1, cid);
