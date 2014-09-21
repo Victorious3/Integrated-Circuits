@@ -36,10 +36,10 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 	@Override
 	public void prepare(PartCircuit part) 
 	{
-		pinModels[0].isBundeled = (part.state & 1) != 0;
-		pinModels[1].isBundeled = (part.state & 2) != 0;
-		pinModels[2].isBundeled = (part.state & 4) != 0;
-		pinModels[3].isBundeled = (part.state & 8) != 0;
+		pinModels[2].isBundeled = (part.state & 1) != 0;
+		pinModels[3].isBundeled = (part.state & 2) != 0;
+		pinModels[0].isBundeled = (part.state & 4) != 0;
+		pinModels[1].isBundeled = (part.state & 8) != 0;
 		super.prepare(part);
 	}
 	
@@ -48,10 +48,10 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 		NBTTagCompound comp = stack.getTagCompound();	
 		if(comp == null) return;
 		byte con = comp.getByte("con");
-		pinModels[0].isBundeled = (con & 1) != 0;
-		pinModels[1].isBundeled = (con & 2) != 0;
-		pinModels[2].isBundeled = (con & 4) != 0;
-		pinModels[3].isBundeled = (con & 8) != 0;
+		pinModels[2].isBundeled = (con & 1) != 0;
+		pinModels[3].isBundeled = (con & 2) != 0;
+		pinModels[0].isBundeled = (con & 4) != 0;
+		pinModels[1].isBundeled = (con & 8) != 0;
 		name = comp.getString("name");
 		tier = comp.getByte("tier");
 	}

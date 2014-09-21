@@ -203,7 +203,14 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 			int in = getInput(gate, 15);
 			for(int i = 0; i < 4; i++)
 			{
-				input[i][0] = (byte)((in >> i & 1) > 0 ? 15 : 0);
+				if(!isBundeledAtSide(i)) input[i][0] = (byte)((in >> i & 1) > 0 ? 15 : 0);
+			}
+			for(int i = 0; i < 4; i++)
+			{
+				if(!isBundeledAtSide(i)) continue;
+				byte[] bin = getBundledInput(i);
+				if(bin == null) bin = new byte[16];
+				input[i] = bin;
 			}
 			circuitData.updateInput();
 		}
@@ -237,7 +244,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 
 	private boolean isBundeledAtSide(int s)
 	{
-		return (state >> s & 1) != 0;
+		return ((state >> MiscUtils.rotn(s, 2, 4)) & 1) != 0;
 	}
 	
 	@Override
@@ -256,7 +263,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
 		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
-		return input[side][frequency] > 0 && !(output[side][frequency] > 0);
+		return input[side][frequency] != 0 && !(output[side][frequency] != 0);
 	}
 
 	@Override

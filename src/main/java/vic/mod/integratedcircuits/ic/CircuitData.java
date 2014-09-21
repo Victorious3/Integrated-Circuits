@@ -55,7 +55,6 @@ public class CircuitData implements Cloneable
 		
 		for(int i = 0; i < 16; i++)
 		{
-			//FIXME Turn these around so it's actually possible to create a proper 16x16 circuit.
 			setID(i + o, 0, cid);
 			setID(size - 1, i + o, cid);
 			setID(i + o, size - 1, cid);
@@ -66,8 +65,8 @@ public class CircuitData implements Cloneable
 			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
 			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
 			
-			io1.setFrequency(i);
-			io2.setFrequency(i);
+			io1.setFrequency(15 - i);
+			io2.setFrequency(15 - i);
 			io3.setFrequency(i);
 			io4.setFrequency(i);
 			

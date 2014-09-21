@@ -4,7 +4,6 @@ import static net.minecraftforge.common.util.ForgeDirection.EAST;
 import static net.minecraftforge.common.util.ForgeDirection.NORTH;
 import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
 import static net.minecraftforge.common.util.ForgeDirection.WEST;
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -12,6 +11,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -40,6 +40,12 @@ public class MiscUtils
 		int newPos = pos + offset;
 		pos = newPos > 3 ? newPos - 4 : newPos < 0 ? newPos + 4 : newPos;
 		return order[pos];
+	}
+	
+	public static int rotn(int r, int o, int a)
+	{
+		int nr = r + o;
+		return nr > a - 1 ? nr - a : nr < 0 ? nr + a : nr;
 	}
 	
 	public static ForgeDirection getDirection(int side)

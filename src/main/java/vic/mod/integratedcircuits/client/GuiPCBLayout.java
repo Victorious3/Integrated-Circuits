@@ -128,11 +128,11 @@ public class GuiPCBLayout extends GuiContainer
 		
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiIO(i + 13, cx + 39 + i * 9, cy + 37, i, 0, this, te));
+			this.buttonList.add(new GuiIO(i + 13, cx + 39 + i * 9, cy + 37, 15 - i, 0, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
-			this.buttonList.add(new GuiIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, i, 1, this, te));
+			this.buttonList.add(new GuiIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, 15 - i, 1, this, te));
 		}
 		for(int i = 0; i < 16; i++)
 		{
