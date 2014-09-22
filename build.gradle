@@ -34,7 +34,7 @@ configFile.withReader {
 
 apply plugin: 'forge'
 
-version = "${config.version}"
+version = "${config.mod.version}"
 group = "vic.mod.integratedcircuits"
 archivesBaseName = "integratedcircuits"
 

@@ -3,5 +3,5 @@ item.integratedcircuits.floppy.name=PCB Blueprint Disk
 item.integratedcircuits.circuit.name=Integrated Circuit (%s)
 
 #blocks
-tile.integratedcircuits.pcblayoutcad.name=PCB Layout CAD#
+tile.integratedcircuits.pcblayoutcad.name=PCB Layout CAD
 tile.integratedcircuits.assembler.name=Assembler
