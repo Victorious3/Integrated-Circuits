@@ -2,7 +2,7 @@ package vic.mod.integratedcircuits.client;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
-import vic.mod.integratedcircuits.ItemCircuit;
+import vic.mod.integratedcircuits.ClientProxy;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
@@ -41,11 +41,11 @@ public class ItemCircuitRenderer implements IItemRenderer
 		CCRenderState.reset();
 		CCRenderState.setDynamic();
 		CCRenderState.pullLightmap();
-		ItemCircuit.renderer.prepareInv();
-		ItemCircuit.renderer.prepareInv(stack);
+		ClientProxy.renderer.prepareInv();
+		ClientProxy.renderer.prepareInv(stack);
 		CCRenderState.startDrawing();
-		ItemCircuit.renderer.renderStatic(new Scale(scale).with(new Translation(x, y, z)), 0);
+		ClientProxy.renderer.renderStatic(new Scale(scale).with(new Translation(x, y, z)), 0);
 		CCRenderState.draw();
-		ItemCircuit.renderer.renderDynamic(new Scale(scale).with(new Translation(x, y, z)));
+		ClientProxy.renderer.renderDynamic(new Scale(scale).with(new Translation(x, y, z)));
 	}
 }

@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
+import vic.mod.integratedcircuits.util.MiscUtils;
 
 import com.google.common.primitives.Ints;
 
@@ -93,6 +94,25 @@ public class CircuitData implements Cloneable
 			io2.notifyNeighbours();
 			io3.notifyNeighbours();
 			io4.notifyNeighbours();
+		}
+	}
+	
+	/** Syncs the circuit's IO bits with the suspected output **/
+	public void updateOutput()
+	{
+		int o = size / 2 - 8;
+		
+		for(int i = 0; i < 16; i++)
+		{		
+			PartIOBit io1 = (PartIOBit)getPart(i + o, 0);
+			PartIOBit io2 = (PartIOBit)getPart(size - 1, i + o);
+			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
+			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
+			
+			io1.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
+			io2.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
+			io3.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
+			io4.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
 		}
 	}
 	

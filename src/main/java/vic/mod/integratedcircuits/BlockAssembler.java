@@ -1,9 +1,9 @@
 package vic.mod.integratedcircuits;
 
+import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -24,7 +24,7 @@ public class BlockAssembler extends BlockContainer
 	{
 		super(Material.iron);
 		setBlockName(IntegratedCircuits.modID + ".assembler");
-		setCreativeTab(CreativeTabs.tabMisc);
+		setCreativeTab(ProjectRedIntegration.tabIntegration());
 	}
 
 	@Override

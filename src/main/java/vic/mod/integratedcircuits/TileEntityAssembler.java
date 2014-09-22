@@ -25,7 +25,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public static LinkedList<Framebuffer> fboArray = new LinkedList<Framebuffer>();
 	
 	public int[][][] matrix;
-	public ItemStack[] contents = new ItemStack[2];
+	public ItemStack[] contents = new ItemStack[11];
 	
 	@SideOnly(Side.CLIENT)
 	public void updateFramebuffer()
@@ -81,10 +81,10 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound compound) 
+	public void readFromNBT(NBTTagCompound compound)
 	{
 		super.readFromNBT(compound);
-		for(int i = 0; i < 1; i++)
+		for(int i = 0; i < contents.length; i++)
 		{
 			if(compound.getCompoundTag("stack_" + i).hasNoTags())
 				contents[i] = null;
@@ -93,10 +93,10 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound compound) 
+	public void writeToNBT(NBTTagCompound compound)
 	{
 		super.writeToNBT(compound);
-		for(int i = 0; i < 1; i++)
+		for(int i = 0; i < contents.length; i++)
 		{
 			compound.setTag("stack_" + i, contents[i] != null ? contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
 		}
@@ -122,7 +122,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public int getSizeInventory() 
 	{
-		return 1;
+		return contents.length;
 	}
 
 	@Override
@@ -134,12 +134,24 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public ItemStack decrStackSize(int id, int amount) 
 	{
-		if(contents[id] == null) return null;
-		contents[id].stackSize -= amount;
-		ItemStack ret = contents[id];
-		if(contents[id].stackSize < 1) contents[id] = null;
-		this.markDirty();
-		return ret;
+		if(contents[id] != null)
+		{
+			if(contents[id].stackSize <= amount)
+			{
+				ItemStack stack = this.contents[id];
+				contents[id] = null;
+				this.markDirty();
+				return stack;
+			}
+			else
+			{
+				ItemStack stack = contents[id].splitStack(amount);
+				if(contents[id].stackSize == 0) contents[id] = null;
+				this.markDirty();
+				return stack;
+			}
+		}
+		else return null;
 	}
 
 	@Override
@@ -176,7 +188,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public boolean isItemValidForSlot(int id, ItemStack stack) 
 	{
-		return id == 0 && (stack == null || stack.getItem() == null || stack.getItem() == IntegratedCircuits.itemFloppyDisk);
+		return false;
 	}
 
 	@Override

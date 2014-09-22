@@ -4,6 +4,7 @@ import mrtjp.projectred.core.TItemGlassSound;
 import mrtjp.projectred.core.libmc.WireLib;
 import mrtjp.projectred.integration.BundledGatePart;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -19,12 +20,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemCircuit extends JItemMultiPart implements TItemGlassSound
 {
-	@SideOnly(Side.CLIENT)
-	public static PartCircuitRenderer renderer = new PartCircuitRenderer();
-
-	public ItemCircuit() 
+	public ItemCircuit()
 	{
 		setUnlocalizedName(IntegratedCircuits.modID + ".circuit");
+		setTextureName(IntegratedCircuits.modID + ":ic");
+		setMaxStackSize(1);
 	}
 
 	@Override
@@ -35,15 +35,25 @@ public class ItemCircuit extends JItemMultiPart implements TItemGlassSound
 		part.preparePlacement(arg1, arg3, arg4, arg0.getItemDamage());
 		return part;
 	}
-
+	
 	@Override
-	public void registerIcons(IIconRegister ir) 
+	public String getItemStackDisplayName(ItemStack stack) 
 	{
-		super.registerIcons(ir);
-		ItemCircuit.renderer.registerIcons(ir);
+		if(stack.getTagCompound() == null) I18n.format(getUnlocalizedName() + ".name", stack.getTagCompound().getString("INVALID!"));
+		return I18n.format(getUnlocalizedName() + ".name", stack.getTagCompound().getString("name"));
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IIconRegister ir) 
+	{
+		super.registerIcons(ir);
+		ClientProxy.renderer = new PartCircuitRenderer();
+		ClientProxy.renderer.registerIcons(ir);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
 	public int getSpriteNumber() 
 	{
 		return 0;

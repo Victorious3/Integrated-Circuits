@@ -14,6 +14,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.client.ItemCircuitRenderer;
+import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -24,6 +25,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy
 {
+	public static PartCircuitRenderer renderer;
+
 	@Override
 	public void initialize() 
 	{

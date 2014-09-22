@@ -38,6 +38,9 @@ public class ContainerAssembler extends Container
 			}
 		});
 		
+		for(int i = 0; i < 9; ++i)
+			this.addSlotToContainer(new Slot(this.tileentity, i + 2, 8 + i * 18, 108));
+		
 		for(int i = 0; i < 3; i++)
 			for(int j = 0; j < 9; j++)
 				this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 140 + i * 18));	

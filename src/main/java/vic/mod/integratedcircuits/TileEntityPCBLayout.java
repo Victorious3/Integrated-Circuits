@@ -187,7 +187,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	@Override
 	public boolean isItemValidForSlot(int id, ItemStack stack) 
 	{
-		return id == 0 && (stack == null || stack.getItem() == null || stack.getItem() == IntegratedCircuits.itemFloppyDisk);
+		return false;
 	}
 
 	@Override

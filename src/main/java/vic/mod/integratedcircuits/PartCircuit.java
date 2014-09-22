@@ -53,7 +53,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		name = comp.getString("name");
 		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
     }
-
+	
 	@Override
 	public void load(NBTTagCompound tag) 
 	{
@@ -141,8 +141,8 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		{
 			TextureUtils.bindAtlas(0);
 			CCRenderState.setBrightness(world(), x(), y(), z());
-			ItemCircuit.renderer.prepare(this);
-			ItemCircuit.renderer.renderStatic(pos.translation(), orientation & 0xFF);
+			ClientProxy.renderer.prepare(this);
+			ClientProxy.renderer.renderStatic(pos.translation(), orientation & 0xFF);
 			return true;
 		}	
 		else return false;
@@ -155,11 +155,28 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		if(pass == 0)
 		{
 			TextureUtils.bindAtlas(0);
-			ItemCircuit.renderer.prepareDynamic(this, frame);
-			ItemCircuit.renderer.renderDynamic(this.rotationT().with(pos.translation()));
+			ClientProxy.renderer.prepareDynamic(this, frame);
+			ClientProxy.renderer.renderDynamic(this.rotationT().with(pos.translation()));
 		}	
 	}
 
+	@Override
+	public void onAdded() 
+	{
+		if(!world().isRemote)
+		{
+			((CircuitLogic)logic).calcInput();
+			circuitData.updateInput();
+			circuitData.updateOutput();
+		}
+	}
+	
+	@Override
+	public void onWorldJoin() 
+	{
+		onAdded();
+	}
+	
 	public class CircuitLogic extends BundledGateLogic
 	{	
 		public CircuitLogic(BundledGatePart gate) 
@@ -200,6 +217,12 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		@Override
 		public void onChange(BundledGatePart gate) 
 		{
+			calcInput();
+			circuitData.updateInput();
+		}
+		
+		private void calcInput()
+		{
 			int in = getInput(gate, 15);
 			for(int i = 0; i < 4; i++)
 			{
@@ -212,7 +235,6 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 				if(bin == null) bin = new byte[16];
 				input[i] = bin;
 			}
-			circuitData.updateInput();
 		}
 
 		@Override
