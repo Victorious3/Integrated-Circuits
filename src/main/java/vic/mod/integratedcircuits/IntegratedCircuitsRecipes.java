@@ -19,7 +19,7 @@ public class IntegratedCircuitsRecipes
 					'r', PartDefs.REDINGOT().makeStack()
 		);
 		
-		GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.blockPCBLayout), 
+		GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.blockAssembler), 
 			"###",
 			"#d#",
 			"rrr",

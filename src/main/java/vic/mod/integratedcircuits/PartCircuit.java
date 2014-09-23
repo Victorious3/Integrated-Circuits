@@ -249,6 +249,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 			if(gate.world().isRemote) return;
 			circuitData.setQueueEnabled(false);
 			circuitData.updateMatrix();
+			tile().markDirty();
 		}
 
 		@Override

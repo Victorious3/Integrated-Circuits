@@ -19,12 +19,9 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	private ItemStack floppyStack;
 	private CircuitData circuitData;
 	
-	//Used for the GUI, client side.
-	@SideOnly(Side.CLIENT)
+	//Used for the GUI.
 	public float scale = 0.33F;
-	@SideOnly(Side.CLIENT)
 	public double offX = 63;
-	@SideOnly(Side.CLIENT)
 	public double offY = 145;
 	
 	public int[] i = new int[4];
@@ -56,6 +53,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, con, xCoord, yCoord, zCoord), 
 					new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 			}
+			markDirty();
 		}
 	}
 

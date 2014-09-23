@@ -11,7 +11,6 @@ import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.util.MiscUtils;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -22,7 +21,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	
 	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
 	@SideOnly(Side.CLIENT)
-	public static LinkedList<Framebuffer> fboArray = new LinkedList<Framebuffer>();
+	public static LinkedList<Framebuffer> fboArray;
 	
 	public int[][][] matrix;
 	public ItemStack[] contents = new ItemStack[11];
@@ -105,7 +104,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public void updateEntity() 
 	{
-		if(circuitFBO == null && FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) updateFramebuffer();
+		if(worldObj.isRemote && circuitFBO == null) updateFramebuffer();
 	}
 
 	@Override
@@ -116,7 +115,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		{
 			circuitFBO.deleteFramebuffer();
 			fboArray.remove(circuitFBO);
-		}
+		}	
 	}
 
 	@Override

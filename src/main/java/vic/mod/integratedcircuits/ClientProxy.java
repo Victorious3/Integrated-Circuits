@@ -1,5 +1,7 @@
 package vic.mod.integratedcircuits;
 
+import java.util.LinkedList;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.shader.Framebuffer;
@@ -36,6 +38,7 @@ public class ClientProxy extends CommonProxy
 	
 	public void registerRenderers()
 	{
+		TileEntityAssembler.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemCircuit, new ItemCircuitRenderer());

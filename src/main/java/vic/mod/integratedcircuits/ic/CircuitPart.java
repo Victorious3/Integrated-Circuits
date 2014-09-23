@@ -865,7 +865,7 @@ public abstract class CircuitPart implements Cloneable
 		{
 			setState(getState() & ~229376);
 			setState(getState() | new Random().nextInt(7) << 15);
-			super.onDelay();
+			notifyNeighbours();
 			setDelay(true);
 		}
 
@@ -889,6 +889,7 @@ public abstract class CircuitPart implements Cloneable
 			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 != ForgeDirection.SOUTH) return;
 			if(!getInputFromSide(side)) setDelay(false);
+			else setDelay(true);
 		}
 	}
 	
