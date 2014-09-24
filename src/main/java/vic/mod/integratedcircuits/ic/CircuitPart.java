@@ -328,6 +328,7 @@ public abstract class CircuitPart implements Cloneable
 		}
 	}
 	
+	/** Rotateable Part **/
 	public static abstract class PartGate extends CircuitPart
 	{
 		public final int getRotation()
@@ -359,18 +360,78 @@ public abstract class CircuitPart implements Cloneable
 		}
 	}
 	
-	public static class Part3I1O extends PartGate
+	/** Has only one type of output **/
+	public static abstract class PartSimpleGate extends PartGate
 	{
+		protected final boolean getOutput()
+		{
+			return ((getState()) & 64) != 0;
+		}
+		
+		protected final void setOutput(boolean output)
+		{
+			setState(getState() & ~64);
+			if(output) setState(getState() | 64);
+		}
+		
+		protected abstract void calcOutput();
+		
+		/** already rotated **/
+		protected abstract boolean hasOutputToSide(ForgeDirection fd);
+		
+		@Override
+		public boolean getOutputToSide(ForgeDirection side)
+		{
+			return hasOutputToSide(MiscUtils.rotn(side, -getRotation())) && ((getState() & 128) >> 7) > 0;
+		}
+		
+		@Override
+		public void onInputChange(ForgeDirection side)
+		{
+			updateInput();
+			calcOutput();
+			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+			if(canConnectToSide(side) && !hasOutputToSide(s2)) scheduleTick();
+		}
+
+		@Override
+		public void onScheduledTick()
+		{
+			setState(getState() & ~128);
+			setState(getState() | (getState() & 64) << 1);
+			notifyNeighbours();
+		}
+
+		@Override
+		public void onPlaced() 
+		{
+			updateInput();
+			calcOutput();
+			setState(getState() & ~128);
+			setState(getState() | (getState() & 64) << 1);
+			notifyNeighbours();
+		}
+
 		@Override
 		public void onClick(int button, boolean ctrl) 
 		{
 			super.onClick(button, ctrl);
+			onPlaced();
+		}
+	}
+	
+	public static abstract class Part3I1O extends PartSimpleGate
+	{
+		@Override
+		public void onClick(int button, boolean ctrl) 
+		{
 			if(button == 0 && ctrl)
 			{
-				int i1 = (getState() & 384) >> 7;
+				int i1 = (getState() & 768) >> 8;
 				i1 = i1 + 1 > 3 ? 0 : i1 + 1;
-				setState(getState() & ~384 | i1 << 7);
+				setState(getState() & ~768 | i1 << 8);
 			}
+			super.onClick(button, ctrl);
 		}
 		
 		@Override
@@ -378,7 +439,7 @@ public abstract class CircuitPart implements Cloneable
 		{
 			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			if(s2 == ForgeDirection.NORTH) return true;
-			int i = (getState() & 384) >> 7;
+			int i = (getState() & 768) >> 8;
 			if(s2 == ForgeDirection.EAST && i == 1) return false;
 			if(s2 == ForgeDirection.SOUTH && i == 2) return false;
 			if(s2 == ForgeDirection.WEST && i == 3) return false;
@@ -386,175 +447,157 @@ public abstract class CircuitPart implements Cloneable
 		}
 
 		@Override
-		public void onInputChange(ForgeDirection side) 
+		protected boolean hasOutputToSide(ForgeDirection fd) 
 		{
-			updateInput();
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 != ForgeDirection.NORTH) scheduleTick();
+			return fd == ForgeDirection.NORTH;
 		}
 	}
 	
-	public static class Part1I3O extends PartGate
+	public static abstract class Part1I3O extends PartSimpleGate
 	{
 		@Override
 		public void onClick(int button, boolean ctrl) 
 		{
-			super.onClick(button, ctrl);
-			if(button == 1 && ctrl)
+			if(button == 0 && ctrl)
 			{
-				int i1 = (getState() & 896) >> 7;
-				i1 = i1 + 1 > 5 ? 0 : i1 + 1;
-				setState(getState() & ~896 | i1 << 7);
+				int i1 = (getState() & 1792) >> 8;
+				i1 = i1 + 1 > 6 ? 0 : i1 + 1;
+				setState(getState() & ~1792 | i1 << 8);
 			}
+			super.onClick(button, ctrl);
 		}
 
-		@Override
-		public void onInputChange(ForgeDirection side) 
-		{
-			updateInput();
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 == ForgeDirection.SOUTH) scheduleTick();
-		}
-		
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
 			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 == ForgeDirection.NORTH) return true;
-			int i = (getState() & 896) >> 7;
+			if(s2 == ForgeDirection.SOUTH) return true;
+			int i = (getState() & 1792) >> 8;
 			if(s2 == ForgeDirection.EAST && (i == 3 || i == 4 || i == 5)) return false;
-			if(s2 == ForgeDirection.SOUTH && (i == 2 || i == 4 || i == 6)) return false;
+			if(s2 == ForgeDirection.NORTH && (i == 2 || i == 4 || i == 6)) return false;
 			if(s2 == ForgeDirection.WEST && (i == 1 || i == 5 || i == 6)) return false;
 			return true;
+		}
+		
+		@Override
+		protected boolean hasOutputToSide(ForgeDirection fd) 
+		{
+			return fd != ForgeDirection.SOUTH;
 		}
 	}
 	
 	public static class PartANDGate extends Part3I1O
 	{
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		protected void calcOutput()
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.SOUTH, getRotation());
 			ForgeDirection s4 = MiscUtils.rotn(ForgeDirection.EAST, getRotation());
-			ForgeDirection s5 = MiscUtils.rotn(ForgeDirection.WEST, getRotation());
-			return s2 == ForgeDirection.NORTH 
-				&& (!canConnectToSide(s3) || getInputFromSide(s3))
+			ForgeDirection s5 = s4.getOpposite();
+			
+			setOutput((!canConnectToSide(s3) || getInputFromSide(s3))
 				&& (!canConnectToSide(s4) || getInputFromSide(s4))
-				&& (!canConnectToSide(s5) || getInputFromSide(s5));
+				&& (!canConnectToSide(s5) || getInputFromSide(s5)));
 		}
 	}
 	
 	public static class PartORGate extends Part3I1O
 	{
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		public void calcOutput()
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
 			ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.SOUTH, getRotation());
 			ForgeDirection s4 = MiscUtils.rotn(ForgeDirection.EAST, getRotation());
-			ForgeDirection s5 = MiscUtils.rotn(ForgeDirection.WEST, getRotation());
-			return s2 == ForgeDirection.NORTH && (getInputFromSide(s3)
-				|| getInputFromSide(s4) || getInputFromSide(s5));
+			ForgeDirection s5 = s4.getOpposite();
+			
+			setOutput(getInputFromSide(s3) || getInputFromSide(s4) || getInputFromSide(s5));
 		}
 	}
 	
 	public static class PartNORGate extends PartORGate
 	{
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		public void calcOutput() 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
-			return false;
-		}
+			super.calcOutput();
+			setOutput(!getOutput());
+		}	
 	}
 	
 	public static class PartNANDGate extends PartANDGate
 	{
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		public void calcOutput() 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
-			return false;
+			super.calcOutput();
+			setOutput(!getOutput());
 		}
 	}
 	
 	public static class PartBufferGate extends Part1I3O
 	{
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		public void calcOutput() 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 != ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
-			return false;
+			setOutput(getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())));
 		}
 	}
 	
 	public static class PartNOTGate extends Part1I3O
 	{
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		public void calcOutput() 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 != ForgeDirection.SOUTH) return !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
-			return false;
+			setOutput(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())));
 		}
 	}
 
-	public static class PartXORGate extends PartGate
+	public static class PartXORGate extends PartSimpleGate
 	{
 		@Override
 		public boolean canConnectToSide(ForgeDirection side) 
 		{
-			return MiscUtils.rotn(side, getRotation()) != ForgeDirection.SOUTH;
+			return MiscUtils.rotn(side, -getRotation()) != ForgeDirection.SOUTH;
 		}
-
+		
 		@Override
-		public void onInputChange(ForgeDirection side) 
+		protected boolean hasOutputToSide(ForgeDirection fd) 
 		{
-			updateInput();
-			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
-			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
+			return fd == ForgeDirection.NORTH;
 		}
-
+		
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		protected void calcOutput() 
 		{
-			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
-			return fd == ForgeDirection.NORTH &&
-				(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()))
+			setOutput(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()))
 				!= getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation())));
-		}	
+		}
 	}
 	
 	public static class PartXNORGate extends PartXORGate
 	{
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		public void calcOutput() 
 		{
-			ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-			if(s2 == ForgeDirection.NORTH) return !super.getOutputToSide(side);
-			return false;
+			super.calcOutput();
+			setOutput(!getOutput());
 		}
 	}
 	
-	public static class PartMultiplexer extends PartGate
+	public static class PartMultiplexer extends PartSimpleGate
 	{
 		@Override
-		public void onInputChange(ForgeDirection side) 
+		protected void calcOutput() 
 		{
-			if(MiscUtils.rotn(side, -getRotation()) != ForgeDirection.NORTH) super.onInputChange(side);
+			if(getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())))
+				setOutput(getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation())));
+			else setOutput(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation())));
 		}
 
 		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
+		protected boolean hasOutputToSide(ForgeDirection fd) 
 		{
-			if(MiscUtils.rotn(side, -getRotation()) != ForgeDirection.NORTH) return false;
-			if(getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())))
-				return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()));
-			else return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()));
+			return fd == ForgeDirection.NORTH;
 		}	
 	}
 
@@ -1132,74 +1175,62 @@ public abstract class CircuitPart implements Cloneable
 		}
 	}
 	
-	public static class PartInvertCell extends PartGate
+	public static class PartBufferCell extends PartSimpleGate
 	{
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			updateInput();
-			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
-			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
+			super.onInputChange(side);
 			getNeighbourOnSide(side.getOpposite()).onInputChange(side);
 			markForUpdate();
 		}
-
+		
 		@Override
 		public boolean getOutputToSide(ForgeDirection side) 
 		{
 			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
-			if(fd == ForgeDirection.EAST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()));
-			else if(fd == ForgeDirection.WEST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()));
-			if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) 
-				if(!(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation())) 
-				|| getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation())))) return true;
-				else if(fd == ForgeDirection.NORTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
-				else if(fd == ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()));
-			return false;
+			if(fd == ForgeDirection.NORTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
+			else if(fd == ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()));
+			
+			boolean out = super.getOutputToSide(side);
+			if(fd == ForgeDirection.EAST && !out) return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()));
+			else if(fd == ForgeDirection.WEST && !out) return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()));
+			return out;
+		}
+		
+		@Override
+		protected void calcOutput() 
+		{
+			setOutput((getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation())) 
+				|| getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()))));
+		}
+		
+		@Override
+		protected boolean hasOutputToSide(ForgeDirection fd) 
+		{
+			return fd == ForgeDirection.EAST || fd == ForgeDirection.WEST;
 		}	
 	}
 	
-	public static class PartBufferCell extends PartGate
+	public static class PartInvertCell extends PartBufferCell
 	{
 		@Override
-		public void onInputChange(ForgeDirection side) 
+		protected void calcOutput() 
 		{
-			updateInput();
-			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
-			if(fd == ForgeDirection.EAST || fd == ForgeDirection.WEST) scheduleTick();
-			getNeighbourOnSide(side.getOpposite()).onInputChange(side);
-			markForUpdate();
-		}
-
-		@Override
-		public boolean getOutputToSide(ForgeDirection side) 
-		{
-			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
-			if(fd == ForgeDirection.EAST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()));
-			else if(fd == ForgeDirection.WEST) return getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation()));
-			if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) 
-				if(getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation())) 
-				|| getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, getRotation()))) return true;
-				else if(fd == ForgeDirection.NORTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()));
-				else if(fd == ForgeDirection.SOUTH) return getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()));
-			return false;
+			super.calcOutput();
+			setOutput(!getOutput());
 		}
 	}
 	
-	public static class PartANDCell extends PartGate
+	public static class PartANDCell extends PartSimpleGate
 	{
 		@Override
 		public void onInputChange(ForgeDirection side) 
 		{
-			updateInput();
+			super.onInputChange(side);
 			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
-			if(fd == ForgeDirection.EAST) scheduleTick();
-			else if(fd != ForgeDirection.WEST) 
-			{
-				getNeighbourOnSide(side.getOpposite()).onInputChange(side);
-				ForgeDirection fd2 = MiscUtils.rotn(ForgeDirection.WEST, getRotation());
-				getNeighbourOnSide(fd2).onInputChange(fd2.getOpposite());
-			}		
+			if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) 
+				getNeighbourOnSide(side.getOpposite()).onInputChange(side);	
 			markForUpdate();
 		}
 
@@ -1209,10 +1240,22 @@ public abstract class CircuitPart implements Cloneable
 			ForgeDirection fd = MiscUtils.rotn(side, -getRotation());
 			if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH)
 				return getInputFromSide(side.getOpposite());
-			else if(fd == ForgeDirection.WEST) return getInputFromSide(side.getOpposite()) 
-				&& (getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, getRotation()))
-				|| getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())));
-			else return false;
+			return super.getOutputToSide(side);
+		}
+
+		@Override
+		protected void calcOutput() 
+		{
+			ForgeDirection f1 = MiscUtils.rotn(ForgeDirection.NORTH, getRotation());
+			ForgeDirection f2 = f1.getOpposite();
+			ForgeDirection f3 = MiscUtils.rotn(ForgeDirection.EAST, getRotation());
+			setOutput((getInputFromSide(f1) || getInputFromSide(f2)) && getInputFromSide(f3));
+		}
+
+		@Override
+		protected boolean hasOutputToSide(ForgeDirection fd) 
+		{
+			return fd == ForgeDirection.WEST;
 		}
 	}
 }
