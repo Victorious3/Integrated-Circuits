@@ -75,6 +75,7 @@ public class DiskDriveUtils
 				fr.drawString(name, 0, 0, 0xFFFFFF);
 				GL11.glPopMatrix();
 			}
+			GL11.glDisable(GL11.GL_LIGHTING);
 		}
 	}
 	

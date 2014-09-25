@@ -62,6 +62,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		GL11.glPopMatrix();
 		
 		DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
+		GL11.glDisable(GL11.GL_LIGHTING);
 	}
 	
 	@Override
