@@ -10,6 +10,7 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -154,28 +155,6 @@ public class ClientProxy extends CommonProxy
 		}
 	}
 	
-	public static class ModelHalo extends ModelBase
-	{
-		public static ModelHalo instance = new ModelHalo();
-		
-		public ModelRenderer halo;
-		
-		public ModelHalo()
-		{
-			textureWidth = 256;
-			textureHeight = 128;
-			
-			halo = new ModelRenderer(this);
-			halo.addBox(-64, 0, -64, 128, 0, 128);
-		}
-		
-		public void render(float scale)
-		{
-			Minecraft.getMinecraft().renderEngine.bindTexture(haloLocation);
-			halo.render(scale);
-		}
-	}
-	
 	private float partialTicks;
 	private long tickCounter;
 	
@@ -224,7 +203,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glRotated(pitch, 0, 0, 1);	
 			GL11.glTranslated(0, headOffset, 0);
 			
-			if(renderType == 2)
+			if(renderType == 1)
 			{
 				//Le halo
 				GL11.glPushMatrix();
@@ -234,12 +213,31 @@ public class ClientProxy extends CommonProxy
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				GL11.glColor4f(1F, 1F, 1F, 1F);
+				
+				mc.renderEngine.bindTexture(haloLocation);
+				
 				float scale = 1 / 128F;
 				GL11.glTranslated(0, -player.height - player.eyeHeight - 5 * scale + (player.isSneaking() ? 0.0625 : 0), 0);
+				
 				GL11.glRotated(25, 1, 0, -1);
 				GL11.glTranslatef(-32 * scale, -8 * scale, -20 * scale);
-				ModelHalo.instance.halo.rotateAngleY = (float)Math.toRadians(tickCounter + partialTicks);
-				ModelHalo.instance.render(scale);
+				GL11.glRotatef(tickCounter + partialTicks, 0, 1, 0);
+				
+				Tessellator tes = Tessellator.instance;
+				tes.startDrawingQuads();
+				
+				tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
+				tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
+				tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
+				tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
+				
+				tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
+				tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
+				tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
+				tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);		
+				
+				tes.draw();
+				
 				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glShadeModel(GL11.GL_FLAT);
 				GL11.glDisable(GL11.GL_BLEND);
