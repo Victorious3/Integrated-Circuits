@@ -4,8 +4,6 @@ import java.util.LinkedList;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiContainerCreative;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -20,7 +18,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
@@ -31,7 +29,6 @@ import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -155,120 +152,85 @@ public class ClientProxy extends CommonProxy
 		}
 	}
 	
-	private float partialTicks;
-	private long tickCounter;
-	
 	@SubscribeEvent
-	public void onRenderTick(TickEvent.RenderTickEvent event)
+	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
 	{
-		partialTicks = event.renderTickTime;
-	}
-	
-	@SubscribeEvent
-	public void onClientTick(TickEvent.ClientTickEvent event)
-	{
-		tickCounter++;
-	}
-	
-	@SubscribeEvent
-	public void onLivingRender(RenderLivingEvent.Post event)
-	{
-		if(event.entity instanceof EntityPlayer)
+		EntityPlayer player = event.entityPlayer;
+		String name = player.getCommandSenderName();
+		Minecraft mc = Minecraft.getMinecraft();
+		
+		int renderType = 0;
+		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
+		else if(name.equalsIgnoreCase("thog92")) renderType = 2;
+		if(renderType == 0) return;	
+		if(renderType == 1 && player.inventory.armorItemInSlot(3) != null) return;
+		
+		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
+		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
+		float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * event.partialRenderTick;
+		
+		GL11.glPushMatrix();
+		
+		GL11.glRotatef(yawOffset, 0, -1, 0);
+		GL11.glRotatef(yaw - 270, 0, 1, 0);
+		GL11.glRotatef(pitch, 0, 0, 1);	
+		GL11.glTranslated(0, -player.eyeHeight + (player.isSneaking() ? 0.0625 : 0), 0);
+		
+		if(renderType == 2)
 		{
-			EntityPlayer player = (EntityPlayer)event.entity;
-			String name = player.getCommandSenderName();
-			Minecraft mc = Minecraft.getMinecraft();
-			
-			int renderType = 0;
-			if(name.equalsIgnoreCase("victorious3")) renderType = 1;
-			else if(name.equalsIgnoreCase("thog92")) renderType = 2;
-			if(renderType == 0) return;
-			
-			if(mc.thePlayer.getCommandSenderName().equals(name) 
-				&& (mc.currentScreen instanceof GuiInventory 
-				|| mc.currentScreen instanceof GuiContainerCreative)) return;
-			if(renderType == 1 && player.inventory.armorItemInSlot(3) != null) return;
-			
-			float yaw = interpolateRotation(player.prevRotationYawHead, player.rotationYawHead, partialTicks);
-			float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
-			float headOffset = player.height - player.eyeHeight - 0.266F;
-			if(player.isSneaking()) headOffset -= 0.0625;
-			
+			//Le halo
 			GL11.glPushMatrix();
-			GL11.glTranslated(event.x, event.y, event.z);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glColor4f(1F, 1F, 1F, 1F);
 			
-			GL11.glRotatef(180, 0, 0, 1);
-			GL11.glTranslated(0, -headOffset, 0);
-			GL11.glRotated(yaw + 270, 0, 1, 0);
-			GL11.glRotated(pitch, 0, 0, 1);	
-			GL11.glTranslated(0, headOffset, 0);
+			mc.renderEngine.bindTexture(haloLocation);
 			
-			if(renderType == 2)
-			{
-				//Le halo
-				GL11.glPushMatrix();
-				GL11.glEnable(GL11.GL_BLEND);
-				GL11.glShadeModel(GL11.GL_SMOOTH);
-				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				GL11.glColor4f(1F, 1F, 1F, 1F);
-				
-				mc.renderEngine.bindTexture(haloLocation);
-				
-				float scale = 1 / 128F;
-				GL11.glTranslated(0, -player.height - player.eyeHeight - 5 * scale + (player.isSneaking() ? 0.0625 : 0), 0);
-				
-				GL11.glRotated(25, 1, 0, -1);
-				GL11.glTranslatef(-32 * scale, -8 * scale, -20 * scale);
-				GL11.glRotatef(tickCounter + partialTicks, 0, 1, 0);
-				
-				Tessellator tes = Tessellator.instance;
-				tes.startDrawingQuads();
-				
-				tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
-				tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
-				tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
-				tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
-				
-				tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
-				tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
-				tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
-				tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);		
-				
-				tes.draw();
-				
-				GL11.glEnable(GL11.GL_LIGHTING);
-				GL11.glShadeModel(GL11.GL_FLAT);
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glPopMatrix();
-			}
-			else if(renderType == 1)
-			{
-				//Le crown
-				GL11.glPushMatrix();
-				float scale = 1 / 64F;
-				GL11.glTranslated(0, -player.height - player.eyeHeight - 14 * scale + (player.isSneaking() ? 0.0625 : 0), 0);
-				GL11.glTranslated(15 * scale, -2 * scale, 15 * scale);
-				
-				float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
-				GL11.glTranslatef(-f1, 0, -f1);
-				GL11.glRotated(-25, 1, 0, -1);
-				GL11.glTranslatef(f1, 0, f1);
-				
-				ModelCrown.instance.render(scale);
-				GL11.glPopMatrix();
-			}
+			GL11.glRotated(30, 1, 0, -1);
+			GL11.glTranslatef(-0.1F, -0.5F, -0.1F);
+			GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
 			
+			Tessellator tes = Tessellator.instance;
+			tes.startDrawingQuads();
+			
+			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
+			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
+			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
+			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
+			
+			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
+			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
+			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
+			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);		
+			
+			tes.draw();
+			
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glShadeModel(GL11.GL_FLAT);
+			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glPopMatrix();
 		}
+		else if(renderType == 1)
+		{
+			//Le crown
+			GL11.glPushMatrix();
+			float scale = 1 / 64F;
+			
+			GL11.glTranslated(15 * scale, -0.66, 15 * scale);			
+			float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
+			GL11.glTranslatef(-f1, 0, -f1);
+			GL11.glRotated(-25, 1, 0, -1);
+			GL11.glTranslatef(f1, 0, f1);
+			
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			ModelCrown.instance.render(scale);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glPopMatrix();
+		}
+		
+		GL11.glPopMatrix();
 	}
-	
-	private float interpolateRotation(float f1, float f2, float p1)
-    {
-		float f3;
-		for(f3 = f2 - f1; f3 < -180.0F; f3 += 360.0F);
-		while(f3 >= 180.0F) f3 -= 360.0F;
-		return f1 + p1 * f3;
-    }
 }
