@@ -203,7 +203,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glRotated(pitch, 0, 0, 1);	
 			GL11.glTranslated(0, headOffset, 0);
 			
-			if(renderType == 1)
+			if(renderType == 2)
 			{
 				//Le halo
 				GL11.glPushMatrix();
