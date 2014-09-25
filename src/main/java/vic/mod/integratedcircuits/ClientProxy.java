@@ -8,6 +8,7 @@ import net.minecraft.client.gui.inventory.GuiContainerCreative;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -101,7 +102,10 @@ public class ClientProxy extends CommonProxy
 		TileEntityAssembler.fboArray.clear();
 	}
 	
+	//Don't even look at what's coming now. Not related at all.
+	
 	private static ResourceLocation crownLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/crown.png");
+	private static ResourceLocation haloLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/halo.png");
 	
 	public static class ModelCrown extends ModelBase
 	{
@@ -141,14 +145,50 @@ public class ClientProxy extends CommonProxy
 			crown2.addBox(f2, 0, f1, 0, i2, i1);
 			crown2.rotateAngleY = (float) Math.toRadians(75);
 		}
+		
+		public void render(float scale)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(crownLocation);
+			crown1.render(scale);
+			crown2.render(scale);
+		}
+	}
+	
+	public static class ModelHalo extends ModelBase
+	{
+		public static ModelHalo instance = new ModelHalo();
+		
+		public ModelRenderer halo;
+		
+		public ModelHalo()
+		{
+			textureWidth = 256;
+			textureHeight = 128;
+			
+			halo = new ModelRenderer(this);
+			halo.addBox(-64, 0, -64, 128, 0, 128);
+		}
+		
+		public void render(float scale)
+		{
+			Minecraft.getMinecraft().renderEngine.bindTexture(haloLocation);
+			halo.render(scale);
+		}
 	}
 	
 	private float partialTicks;
+	private long tickCounter;
 	
 	@SubscribeEvent
 	public void onRenderTick(TickEvent.RenderTickEvent event)
 	{
 		partialTicks = event.renderTickTime;
+	}
+	
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event)
+	{
+		tickCounter++;
 	}
 	
 	@SubscribeEvent
@@ -159,35 +199,69 @@ public class ClientProxy extends CommonProxy
 			EntityPlayer player = (EntityPlayer)event.entity;
 			String name = player.getCommandSenderName();
 			Minecraft mc = Minecraft.getMinecraft();
-			if(!name.equalsIgnoreCase("victorious3") 
-				|| (mc.thePlayer.getCommandSenderName().equalsIgnoreCase("victorious3") 
-				&& mc.currentScreen instanceof GuiContainerCreative 
-				|| mc.currentScreen instanceof GuiInventory)
-				|| player.inventory.armorItemInSlot(3) != null) return;
 			
-            float yaw = interpolateRotation(player.prevRotationYawHead, player.rotationYawHead, partialTicks);
+			int renderType = 0;
+			if(name.equalsIgnoreCase("victorious3")) renderType = 1;
+			else if(name.equalsIgnoreCase("thog92")) renderType = 2;
+			if(renderType == 0) return;
+			
+			if(mc.thePlayer.getCommandSenderName().equals(name) 
+				&& (mc.currentScreen instanceof GuiInventory 
+				|| mc.currentScreen instanceof GuiContainerCreative)) return;
+			if(renderType == 1 && player.inventory.armorItemInSlot(3) != null) return;
+			
+			float yaw = interpolateRotation(player.prevRotationYawHead, player.rotationYawHead, partialTicks);
 			float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partialTicks;
 			float headOffset = player.height - player.eyeHeight - 0.266F;
 			if(player.isSneaking()) headOffset -= 0.0625;
 			
-			mc.renderEngine.bindTexture(crownLocation);
 			GL11.glPushMatrix();
 			GL11.glTranslated(event.x, event.y, event.z);
-			float scale = 1 / 64F;
+			
 			GL11.glRotatef(180, 0, 0, 1);
 			GL11.glTranslated(0, -headOffset, 0);
 			GL11.glRotated(yaw + 270, 0, 1, 0);
-			GL11.glRotated(pitch, 0, 0, 1);
+			GL11.glRotated(pitch, 0, 0, 1);	
 			GL11.glTranslated(0, headOffset, 0);
-			GL11.glTranslated(0, -player.height - player.eyeHeight - 14 * scale + (player.isSneaking() ? 0.0625 : 0), 0);
-			GL11.glTranslated(15 * scale, -2 * scale, 15 * scale);
-			float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
-			GL11.glTranslatef(-f1, 0, -f1);
-			GL11.glRotated(-25, 1, 0, -1);
-			GL11.glTranslatef(f1, 0, f1);
-			ModelCrown.instance = new ModelCrown();
-			ModelCrown.instance.crown1.render(scale);
-			ModelCrown.instance.crown2.render(scale);
+			
+			if(renderType == 2)
+			{
+				//Le halo
+				GL11.glPushMatrix();
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GL11.glColor4f(1F, 1F, 1F, 1F);
+				float scale = 1 / 128F;
+				GL11.glTranslated(0, -player.height - player.eyeHeight - 5 * scale + (player.isSneaking() ? 0.0625 : 0), 0);
+				GL11.glRotated(25, 1, 0, -1);
+				GL11.glTranslatef(-32 * scale, -8 * scale, -20 * scale);
+				ModelHalo.instance.halo.rotateAngleY = (float)Math.toRadians(tickCounter + partialTicks);
+				ModelHalo.instance.render(scale);
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glShadeModel(GL11.GL_FLAT);
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glPopMatrix();
+			}
+			else if(renderType == 1)
+			{
+				//Le crown
+				GL11.glPushMatrix();
+				float scale = 1 / 64F;
+				GL11.glTranslated(0, -player.height - player.eyeHeight - 14 * scale + (player.isSneaking() ? 0.0625 : 0), 0);
+				GL11.glTranslated(15 * scale, -2 * scale, 15 * scale);
+				
+				float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
+				GL11.glTranslatef(-f1, 0, -f1);
+				GL11.glRotated(-25, 1, 0, -1);
+				GL11.glTranslatef(f1, 0, f1);
+				
+				ModelCrown.instance.render(scale);
+				GL11.glPopMatrix();
+			}
+			
 			GL11.glPopMatrix();
 		}
 	}
