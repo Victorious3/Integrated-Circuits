@@ -1,6 +1,8 @@
 package vic.mod.integratedcircuits.util;
 
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
@@ -31,5 +33,13 @@ public class RenderUtils
 		float blue = (float)(rbg >> 8 & 255) / 255.0F;
 		float green = (float)(rbg & 255) / 255.0F;
 		GL11.glColor4f(red, blue, green, 1F);
+	}
+	
+	public static void resetBrightness(TileEntity te)
+	{
+		int i = te.getWorldObj().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord, 0);
+	    int j = i % 65536;
+	    int k = i / 65536;
+	    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
 	}
 }

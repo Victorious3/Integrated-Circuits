@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -29,6 +30,8 @@ import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -36,6 +39,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ClientProxy extends CommonProxy
 {
 	public static PartCircuitRenderer renderer;
+	public static int clientTicks;
 
 	@Override
 	public void initialize() 
@@ -153,6 +157,16 @@ public class ClientProxy extends CommonProxy
 	}
 	
 	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event)
+	{
+		if(event.phase == Phase.END)
+		{
+			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+			if(gui == null || !gui.doesGuiPauseGame()) clientTicks++;
+		}
+	}
+	
+	@SubscribeEvent
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
 	{
 		EntityPlayer player = event.entityPlayer;
@@ -194,18 +208,11 @@ public class ClientProxy extends CommonProxy
 			GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
 			
 			Tessellator tes = Tessellator.instance;
-			tes.startDrawingQuads();
-			
+			tes.startDrawingQuads();	
 			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
 			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
 			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
-			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
-			
-			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
-			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
-			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
-			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);		
-			
+			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);	
 			tes.draw();
 			
 			GL11.glEnable(GL11.GL_LIGHTING);

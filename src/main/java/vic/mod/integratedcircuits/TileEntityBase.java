@@ -48,6 +48,7 @@ public abstract class TileEntityBase extends TileEntity implements IInventory
 		if(id == 0)
 		{
 			playersUsing = par;
+			worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 			return true;
 		}
 		return false;
@@ -56,15 +57,13 @@ public abstract class TileEntityBase extends TileEntity implements IInventory
 	@Override
 	public void openInventory() 
 	{
-		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
-		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, ++playersUsing);
+		if(!worldObj.isRemote) worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, ++playersUsing);
 	}
 
 	@Override
 	public void closeInventory() 
 	{
-		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
-		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, --playersUsing);
+		if(!worldObj.isRemote) worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 0, --playersUsing);
 	}
 	
 	@Override
