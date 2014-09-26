@@ -1,15 +1,13 @@
 package vic.mod.integratedcircuits;
 
-import java.util.LinkedList;
-
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
-
-import org.lwjgl.opengl.GL11;
-
+import net.minecraftforge.common.util.Constants.NBT;
+import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -19,65 +17,9 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@SideOnly(Side.CLIENT)
 	public Framebuffer circuitFBO;
 	
-	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
-	@SideOnly(Side.CLIENT)
-	public static LinkedList<Framebuffer> fboArray;
-	
-	public int[][][] matrix;
+	public int[][] matrix;
+	public int size;
 	public ItemStack[] contents = new ItemStack[11];
-	
-	@SideOnly(Side.CLIENT)
-	public void updateFramebuffer()
-	{
-//		if(matrix == null) return;
-		if(circuitFBO == null)
-		{
-			circuitFBO = new Framebuffer(64, 64, false);
-			fboArray.add(circuitFBO);
-		}
-		circuitFBO.framebufferClear();
-		circuitFBO.bindFramebuffer(false);
-		
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glViewport(0, 0, 64, 64);
-		GL11.glOrtho(0, 64, 64, 0, -1, 1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-        
-		GL11.glColor3f(0, 0.3F, 0);
-		
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2i(0, 0);
-		GL11.glVertex2i(0, 20);
-		GL11.glVertex2i(20, 20);
-		GL11.glVertex2i(20, 0);
-		GL11.glEnd();
-		
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2i(20, 20);
-		GL11.glVertex2i(20, 45);
-		GL11.glVertex2i(45, 45);
-		GL11.glVertex2i(45, 20);
-		GL11.glEnd();
-		
-		GL11.glLineWidth(1F);
-		GL11.glColor3f(0, 0.8F, 0);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex2i(1, 1);
-		GL11.glVertex2i(15, 30);
-		GL11.glEnd();
-		
-		GL11.glBegin(GL11.GL_POINTS);
-		GL11.glVertex2i(25, 25);
-		GL11.glEnd();
-		
-		GL11.glBegin(GL11.GL_POINTS);
-		GL11.glVertex2i(63, 63);
-		GL11.glEnd();
-		
-		circuitFBO.unbindFramebuffer();
-	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound)
@@ -88,6 +30,11 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			if(compound.getCompoundTag("stack_" + i).hasNoTags())
 				contents[i] = null;
 			else contents[i] = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("stack_" + i));
+		}
+		if(worldObj.isRemote) 
+		{
+			loadMatrix();
+			TileEntityAssemblerRenderer.updateFramebuffer(this);
 		}
 	}
 
@@ -100,11 +47,34 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			compound.setTag("stack_" + i, contents[i] != null ? contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
 		}
 	}
+	
+	public void loadMatrix()
+	{
+		if(getDisk() == null) matrix = null;
+		else
+		{
+			ItemStack stack = getDisk();
+			if(stack.getTagCompound() != null && stack.getTagCompound().hasKey("circuit"))
+			{
+				NBTTagCompound comp = stack.getTagCompound();
+				size = comp.getInteger("size");
+				matrix = new int[size][size];
+				NBTTagCompound circuit = comp.getCompoundTag("circuit");
+				
+				NBTTagList idlist = circuit.getTagList("id", NBT.TAG_INT_ARRAY);
+				for(int i = 0; i < idlist.tagCount(); i++)
+				{
+					matrix[i] = idlist.func_150306_c(i);
+				}
+			}
+			else matrix = null;
+		}
+	}
 
 	@Override
 	public void updateEntity() 
 	{
-		if(worldObj.isRemote && circuitFBO == null) updateFramebuffer();
+		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.updateFramebuffer(this);
 	}
 
 	@Override
@@ -114,7 +84,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		if(worldObj.isRemote && circuitFBO != null) 
 		{
 			circuitFBO.deleteFramebuffer();
-			fboArray.remove(circuitFBO);
+			TileEntityAssemblerRenderer.fboArray.remove(circuitFBO);
 		}	
 	}
 

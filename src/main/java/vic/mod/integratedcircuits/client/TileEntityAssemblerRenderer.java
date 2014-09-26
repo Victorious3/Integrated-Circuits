@@ -1,10 +1,13 @@
 package vic.mod.integratedcircuits.client;
 
+import java.util.LinkedList;
+
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -16,6 +19,8 @@ import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.util.RenderUtils;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 {
@@ -23,6 +28,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 	
 	private ResourceLocation safetyRegulationsTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_safety.png");
 	private ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
+
+	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
+	@SideOnly(Side.CLIENT)
+	public static LinkedList<Framebuffer> fboArray;
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
 	{		
@@ -47,10 +56,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		{
 			te.circuitFBO.bindFramebufferTexture();
 			tes.startDrawingQuads();
-			tes.addVertexWithUV(0, 9 / 16F, 0, 0, 0);
-			tes.addVertexWithUV(0, 9 / 16F, 1, 0, 1);
-			tes.addVertexWithUV(1, 9 / 16F, 1, 1, 1);
-			tes.addVertexWithUV(1, 9 / 16F, 0, 1, 0);
+			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.005F, 3 / 16F, 1, 0);
+			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.005F, 13 / 16F, 1, 1);
+			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.005F, 13 / 16F, 0, 1);
+			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.005F, 3 / 16F, 0, 0);
 			tes.draw();
 		}
 
@@ -70,33 +79,16 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
 			GL11.glRotatef(45, 0, 1, 0);
 			ModelLaser.instance = new ModelLaser();
-			
-			GL11.glPushMatrix();
-			GL11.glTranslatef(0, 0, -0.5F);
-			GL11.glRotatef(-90, 0, 1, 0);
-			ModelLaser.instance.render(1 / 64F, -30, 0, true, partialTicks, te);
-			GL11.glPopMatrix();
-			
-			GL11.glPushMatrix();
-			GL11.glRotatef(90, 0, 1, 0);
-			GL11.glTranslatef(0, 0, -0.5F);
-			GL11.glRotatef(-90, 0, 1, 0);
-			ModelLaser.instance.render(1 / 64F, -30, 0, true, partialTicks, te);
-			GL11.glPopMatrix();
-			
-			GL11.glPushMatrix();
-			GL11.glRotatef(180, 0, 1, 0);
-			GL11.glTranslatef(0, 0, -0.5F);
-			GL11.glRotatef(-90, 0, 1, 0);
-			ModelLaser.instance.render(1 / 64F, -30, 0, true, partialTicks, te);
-			GL11.glPopMatrix();
-			
-			GL11.glPushMatrix();
-			GL11.glRotatef(270, 0, 1, 0);
-			GL11.glTranslatef(0, 0, -0.5F);
-			GL11.glRotatef(-90, 0, 1, 0);
-			ModelLaser.instance.render(1 / 64F, -30, 0, true, partialTicks, te);
-			GL11.glPopMatrix();	
+			for(int i = 0; i < 4; i++)
+			{
+				GL11.glPushMatrix();
+				GL11.glRotatef(90 * i, 0, 1, 0);
+				GL11.glTranslatef(0, 0, -0.5F);
+				GL11.glRotatef(-90, 0, 1, 0);
+				float rot = (float)(Math.sin((float)ClientProxy.clientTicks * 0.5 + partialTicks * 0.5) * -30);
+				ModelLaser.instance.render(1 / 64F, 0, rot, true, partialTicks, te);
+				GL11.glPopMatrix();
+			}
 		GL11.glPopMatrix();
 		
 		GL11.glPopMatrix();
@@ -125,7 +117,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			base = new ModelRenderer(this);
 			base.addBox(0, -4, -4, 2, 8, 8);
 			stick = new ModelRenderer(this);
-			stick.addBox(0, -22, -1, 1, 22, 2);
+			stick.addBox(0, -24, -1, 1, 24, 2);
 			head1 = new ModelRenderer(this);
 			head1.addBox(2, -2, -2, 10, 4, 4);
 			head2 = new ModelRenderer(this);
@@ -183,5 +175,42 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			RenderUtils.resetBrightness(te);
 		}
+	}
+	
+	public static void updateFramebuffer(TileEntityAssembler te)
+	{
+		if(te.circuitFBO == null)
+		{
+			te.circuitFBO = new Framebuffer(68, 68, false);
+			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
+		}
+		te.circuitFBO.framebufferClear();
+		if(te.matrix == null) return;
+		te.circuitFBO.bindFramebuffer(false);
+		
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glViewport(0, 0, te.size, te.size);
+		GL11.glOrtho(0, te.size, te.size, 0, -1, 1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+        
+		GL11.glColor3f(0, 0.3F, 0);
+		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glVertex2i(0, 0);
+		GL11.glVertex2i(0, te.size);
+		GL11.glVertex2i(te.size, te.size);
+		GL11.glVertex2i(te.size, 0);
+		GL11.glEnd();
+		
+		GL11.glLineWidth(1F);
+		GL11.glColor3f(0, 0.8F, 0);
+		GL11.glBegin(GL11.GL_POINTS);
+		for(int x = 0; x < te.size; x++)
+			for(int y = 0; y < te.size; y++)
+				if(te.matrix[x][y] > 0) GL11.glVertex2i(x, y + 1);
+		GL11.glEnd();
+		
+		te.circuitFBO.unbindFramebuffer();
 	}
 }

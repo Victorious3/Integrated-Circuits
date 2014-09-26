@@ -50,7 +50,7 @@ public class ClientProxy extends CommonProxy
 	
 	public void registerRenderers()
 	{
-		TileEntityAssembler.fboArray = new LinkedList<Framebuffer>();
+		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemCircuit, new ItemCircuitRenderer());
@@ -97,11 +97,11 @@ public class ClientProxy extends CommonProxy
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload event)
 	{
-		for(Framebuffer buf : TileEntityAssembler.fboArray)
+		for(Framebuffer buf : TileEntityAssemblerRenderer.fboArray)
 		{
 			buf.deleteFramebuffer();
 		}
-		TileEntityAssembler.fboArray.clear();
+		TileEntityAssemblerRenderer.fboArray.clear();
 	}
 	
 	//Don't even look at what's coming now. Not related at all.
@@ -188,7 +188,7 @@ public class ClientProxy extends CommonProxy
 		GL11.glRotatef(yawOffset, 0, -1, 0);
 		GL11.glRotatef(yaw - 270, 0, 1, 0);
 		GL11.glRotatef(pitch, 0, 0, 1);	
-		GL11.glTranslated(0, -player.eyeHeight + (player.isSneaking() ? 0.0625 : 0), 0);
+		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
 		
 		if(renderType == 2)
 		{
@@ -204,7 +204,7 @@ public class ClientProxy extends CommonProxy
 			mc.renderEngine.bindTexture(haloLocation);
 			
 			GL11.glRotated(30, 1, 0, -1);
-			GL11.glTranslatef(-0.1F, -0.5F, -0.1F);
+			GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
 			GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
 			
 			Tessellator tes = Tessellator.instance;
@@ -226,7 +226,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glPushMatrix();
 			float scale = 1 / 64F;
 			
-			GL11.glTranslated(15 * scale, -0.66, 15 * scale);			
+			GL11.glTranslated(15 * scale, -0.78, 15 * scale);			
 			float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
 			GL11.glTranslatef(-f1, 0, -f1);
 			GL11.glRotated(-25, 1, 0, -1);

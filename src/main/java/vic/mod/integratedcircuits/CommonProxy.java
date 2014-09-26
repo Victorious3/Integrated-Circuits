@@ -52,7 +52,7 @@ public class CommonProxy
 				drive.setDisk(null);
 				event.entityPlayer.setCurrentItemOrArmor(0, floppy);
 			}
-			else if(stack.getItem() != null && stack.getItem() == IntegratedCircuits.itemFloppyDisk)
+			else if(stack.getItem() != null && stack.getItem() == IntegratedCircuits.itemFloppyDisk && drive.getDisk() == null)
 			{
 				drive.setDisk(stack);
 				event.entityPlayer.setCurrentItemOrArmor(0, null);
