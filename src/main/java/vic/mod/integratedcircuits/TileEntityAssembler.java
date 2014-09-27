@@ -9,6 +9,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.util.MiscUtils;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -31,7 +32,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 				contents[i] = null;
 			else contents[i] = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("stack_" + i));
 		}
-		if(worldObj.isRemote) 
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 		{
 			loadMatrix();
 			TileEntityAssemblerRenderer.updateFramebuffer(this);

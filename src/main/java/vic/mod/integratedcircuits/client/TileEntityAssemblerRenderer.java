@@ -51,18 +51,19 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		tes.addVertexWithUV(1, 8 / 16F, 1, 1, 1);
 		tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 		tes.draw();
-		
+
 		if(te.circuitFBO != null)
 		{
+			float scale = te.size / 68F;
 			te.circuitFBO.bindFramebufferTexture();
 			tes.startDrawingQuads();
-			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.005F, 3 / 16F, 1, 0);
-			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.005F, 13 / 16F, 1, 1);
-			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.005F, 13 / 16F, 0, 1);
-			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.005F, 3 / 16F, 0, 0);
+			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 3 / 16F, scale, 0);
+			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 13 / 16F, scale, scale);
+			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 13 / 16F, 0, scale);
+			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 3 / 16F, 0, 0);
 			tes.draw();
 		}
-
+		
 		GL11.glRotatef(180, 0, 0, 1);
 		GL11.glTranslatef(-1.005F, -1, 0);
 		this.bindTexture(safetyRegulationsTex);
@@ -78,15 +79,41 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			GL11.glColor3f(0, 0, 0);
 			GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
 			GL11.glRotatef(45, 0, 1, 0);
-			ModelLaser.instance = new ModelLaser();
+			
+			int x1 = 5;
+			int y1 = 5;
+			
 			for(int i = 0; i < 4; i++)
 			{
 				GL11.glPushMatrix();
 				GL11.glRotatef(90 * i, 0, 1, 0);
 				GL11.glTranslatef(0, 0, -0.5F);
 				GL11.glRotatef(-90, 0, 1, 0);
-				float rot = (float)(Math.sin((float)ClientProxy.clientTicks * 0.5 + partialTicks * 0.5) * -30);
-				ModelLaser.instance.render(1 / 64F, 0, rot, true, partialTicks, te);
+				float aZ = 0, aY = 0, w2 = 0, w3 = 0;
+				if(te.matrix != null)
+				{
+					int x2 = x1;
+					int y2 = y1;
+					
+					if(i == 3 || i == 1) 
+					{
+						x2 = y1;
+						y2 = x1;
+					}
+					
+					if(i == 3 || i == 0) x2 = te.size - x2;
+					if(i == 1 || i == 0) y2 = te.size - y2;
+					
+					float w1 = (10 / 16F * (x2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
+					float h1 = (10 / 16F * (y2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
+					aZ = (float)Math.atan(w1 / h1);
+					w2 = (float)(w1 / Math.sin(aZ));
+					aZ = (float)Math.toDegrees(aZ) - 45F;
+					aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F)));
+					//TODO Not precise.
+					w3 = (float)Math.sin(Math.toRadians(aY)) * w2;
+				}
+				ModelLaser.instance.render(1 / 64F, -aY, aZ, true, (int)Math.ceil(w3 * 128F), partialTicks, te);
 				GL11.glPopMatrix();
 			}
 		GL11.glPopMatrix();
@@ -110,6 +137,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		public ModelRenderer stick;
 		public ModelRenderer head1;
 		public ModelRenderer head2;
+		public ModelRenderer laser;
 		public ModelRenderer[] torus;
 		
 		public ModelLaser()
@@ -122,6 +150,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			head1.addBox(2, -2, -2, 10, 4, 4);
 			head2 = new ModelRenderer(this);
 			head2.addBox(12, -1, -1, 3, 2, 2);
+			laser = new ModelRenderer(this);
 			
 			torus = new ModelRenderer[4];
 			for(int i = 0; i < 4; i++)
@@ -131,48 +160,49 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			}
 		}
 		
-		public void render(float scale, float h1, float h2, boolean spinning, float partialTicks, TileEntity te)
+		public void render(float scale, float h1, float h2, boolean spinning, int length, float partialTicks, TileEntity te)
 		{
-			h1 = (float)Math.toRadians(h1);
-			h2 = (float)Math.toRadians(h2);
-			
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glPushMatrix();
 			GL11.glColor3f(0.1F, 0.1F, 0.1F);
-			base.rotateAngleZ = h1;
-			base.rotateAngleY = h2;
-			base.render(scale);
-			
 			stick.render(scale);
 			
+			GL11.glRotatef(h2, 0, 1, 0);
+			GL11.glRotatef(h1, 0, 0, 1);
+			base.render(scale);
 			float rot = (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4);
 			
 			GL11.glColor3f(0.2F, 0.2F, 0.2F);
-			head1.rotateAngleZ = h1;
 			head1.rotateAngleX = rot;
-			head1.rotateAngleY = h2;
 			head1.render(scale);
 			
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
 			if(spinning) GL11.glColor3f(1, 0, 0);
 			else GL11.glColor3f(0.4F, 0, 0);
-			head2.rotateAngleZ = h1;
 			head2.rotateAngleX = rot;
-			head2.rotateAngleY = h2;	
 			head2.render(scale);
+			
+			if(length > 0)
+			{
+				GL11.glDisable(GL11.GL_LIGHTING);
+				//TODO Maybe a little bit of bloom around there? Have to figure out how to do shaders.
+				boxList.remove(laser);
+				laser = new ModelRenderer(this);
+				laser.addBox(15F, -0.5F, -0.5F, length, 1, 1);
+				laser.render(scale);
+				GL11.glEnable(GL11.GL_LIGHTING);
+			}
 			
 			int enabled = ClientProxy.clientTicks % 40 / 10;
 			for(int i = 0; i < 4; i++)
 			{
-				torus[i].rotateAngleZ = h1;
 				torus[i].rotateAngleX = rot;
-				torus[i].rotateAngleY = h2;
-				
 				if(i == enabled && spinning) GL11.glColor3f(1, 0, 0);
 				else GL11.glColor3f(0.4F, 0, 0);
-				
 				torus[i].render(scale);
 			}
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glPopMatrix();
 			RenderUtils.resetBrightness(te);
 		}
 	}
