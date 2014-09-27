@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import vic.mod.integratedcircuits.net.AbstractPacket;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
@@ -8,7 +9,7 @@ import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
 import vic.mod.integratedcircuits.net.PacketPCBLoad;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
-import vic.mod.integratedcircuits.util.MiscUtils;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 import codechicken.multipart.MultiPartRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -38,7 +39,7 @@ public class IntegratedCircuits
 	@Instance(modID)
 	public static IntegratedCircuits instance;
     
-	@SidedProxy(clientSide = "vic.mod.integratedcircuits.ClientProxy", serverSide = "vic.mod.integratedcircuits.CommonProxy")
+	@SidedProxy(clientSide = "vic.mod.integratedcircuits.proxy.ClientProxy", serverSide = "vic.mod.integratedcircuits.proxy.CommonProxy")
 	public static CommonProxy proxy;
 
     @EventHandler
@@ -46,15 +47,15 @@ public class IntegratedCircuits
     {
     	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
     	
-    	MiscUtils.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
-    	MiscUtils.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
-    	MiscUtils.registerPacket(PacketPCBClear.class, null, 2);
-    	MiscUtils.registerPacket(PacketPCBChangeName.class, null, 3);
-    	MiscUtils.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
-    	MiscUtils.registerPacket(PacketPCBChangeInput.class, null, 5);
-    	MiscUtils.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
+    	AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
+    	AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
+    	AbstractPacket.registerPacket(PacketPCBClear.class, null, 2);
+    	AbstractPacket.registerPacket(PacketPCBChangeName.class, null, 3);
+    	AbstractPacket.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
+    	AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
+    	AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
     	
-    	MiscUtils.registerPacket(PacketAssemblerStart.class, Side.SERVER, 7);
+    	AbstractPacket.registerPacket(PacketAssemblerStart.class, Side.SERVER, 7);
     	
     	itemCircuit = new ItemCircuit();
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);

@@ -11,9 +11,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.IntegratedCircuits;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -23,12 +20,6 @@ public class MiscUtils
 	public static EntityPlayer thePlayer() 
 	{
 		return Minecraft.getMinecraft().thePlayer;
-	}
-
-	public static <T extends IMessage & IMessageHandler<T, IMessage>> void registerPacket(Class<T> clazz, Side side, int id)
-	{
-		if(side == null || side == Side.CLIENT) IntegratedCircuits.networkWrapper.registerMessage(clazz, clazz, id, Side.CLIENT);
-		if(side == null || side == Side.SERVER) IntegratedCircuits.networkWrapper.registerMessage(clazz, clazz, id, Side.SERVER);
 	}
 
 	private static ForgeDirection[] order = new ForgeDirection[]{NORTH, EAST, SOUTH, WEST};

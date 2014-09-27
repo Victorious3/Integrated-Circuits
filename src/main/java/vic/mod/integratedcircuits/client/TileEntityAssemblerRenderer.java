@@ -11,13 +11,14 @@ import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.ClientProxy;
 import vic.mod.integratedcircuits.DiskDriveUtils;
 import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -80,8 +81,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
 			GL11.glRotatef(45, 0, 1, 0);
 			
-			int x1 = 5;
-			int y1 = 5;
+			int x1 = 68;
+			int y1 = 68;
 			
 			for(int i = 0; i < 4; i++)
 			{
@@ -110,10 +111,9 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 					w2 = (float)(w1 / Math.sin(aZ));
 					aZ = (float)Math.toDegrees(aZ) - 45F;
 					aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F)));
-					//TODO Not precise.
 					w3 = (float)Math.sin(Math.toRadians(aY)) * w2;
 				}
-				ModelLaser.instance.render(1 / 64F, -aY, aZ, true, (int)Math.ceil(w3 * 128F), partialTicks, te);
+				ModelLaser.instance.render(1 / 64F, -aY, aZ, true, (int)Math.ceil(w3 * 64F), partialTicks, te);
 				GL11.glPopMatrix();
 			}
 		GL11.glPopMatrix();
@@ -177,19 +177,26 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			head1.render(scale);
 			
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			ShaderHelper.bindShader(ShaderHelper.SHADER_BLOOM);
+			int tickTime = ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLOOM, "time");
+			ARBShaderObjects.glUniform1fARB(tickTime, ClientProxy.clientTicks + partialTicks);
+			
 			if(spinning) GL11.glColor3f(1, 0, 0);
 			else GL11.glColor3f(0.4F, 0, 0);
+			
 			head2.rotateAngleX = rot;
 			head2.render(scale);
 			
 			if(length > 0)
 			{
 				GL11.glDisable(GL11.GL_LIGHTING);
-				//TODO Maybe a little bit of bloom around there? Have to figure out how to do shaders.
+				GL11.glEnable(GL11.GL_BLEND);
 				boxList.remove(laser);
 				laser = new ModelRenderer(this);
 				laser.addBox(15F, -0.5F, -0.5F, length, 1, 1);
 				laser.render(scale);
+				GL11.glDisable(GL11.GL_BLEND);
 				GL11.glEnable(GL11.GL_LIGHTING);
 			}
 			
@@ -201,8 +208,11 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 				else GL11.glColor3f(0.4F, 0, 0);
 				torus[i].render(scale);
 			}
+			
+			ShaderHelper.releaseShader();	
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glPopMatrix();
+			GL11.glShadeModel(GL11.GL_FLAT);
 			RenderUtils.resetBrightness(te);
 		}
 	}

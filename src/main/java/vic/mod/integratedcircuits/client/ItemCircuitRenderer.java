@@ -2,7 +2,7 @@ package vic.mod.integratedcircuits.client;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
-import vic.mod.integratedcircuits.ClientProxy;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;

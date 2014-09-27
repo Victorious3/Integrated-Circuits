@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.proxy;
 
 import java.util.LinkedList;
 
@@ -24,8 +24,14 @@ import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.DiskDriveUtils;
+import vic.mod.integratedcircuits.IDiskDrive;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.ItemCircuitRenderer;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
+import vic.mod.integratedcircuits.client.ShaderHelper;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -50,6 +56,7 @@ public class ClientProxy extends CommonProxy
 	
 	public void registerRenderers()
 	{
+		ShaderHelper.loadShaders();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());

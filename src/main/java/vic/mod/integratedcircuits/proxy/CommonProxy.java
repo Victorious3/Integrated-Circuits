@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.proxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -8,6 +8,10 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
+import vic.mod.integratedcircuits.DiskDriveUtils;
+import vic.mod.integratedcircuits.GuiHandler;
+import vic.mod.integratedcircuits.IDiskDrive;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
