@@ -11,7 +11,6 @@ import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
-import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.DiskDriveUtils;
@@ -84,6 +83,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			int x1 = 68;
 			int y1 = 68;
 			
+			float[] calculated = new float[12];
+			
 			for(int i = 0; i < 4; i++)
 			{
 				GL11.glPushMatrix();
@@ -112,10 +113,31 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 					aZ = (float)Math.toDegrees(aZ) - 45F;
 					aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F)));
 					w3 = (float)Math.sin(Math.toRadians(aY)) * w2;
+					
+					calculated[i * 3] = aZ;
+					calculated[i * 3 + 1] = aY;
+					calculated[i * 3 + 2] = w3;
 				}
 				ModelLaser.instance.render(1 / 64F, -aY, aZ, true, (int)Math.ceil(w3 * 64F), partialTicks, te);
 				GL11.glPopMatrix();
 			}
+			
+			for(int i = 0; i < 4; i++)
+			{
+				if(te.matrix != null)
+				{
+					GL11.glPushMatrix();
+					GL11.glRotatef(90 * i, 0, 1, 0);
+					GL11.glTranslatef(0, 0, -0.5F);
+					GL11.glRotatef(-90, 0, 1, 0);
+					float aZ = calculated[i * 3];
+					float aY = calculated[i * 3 + 1];
+					float w3 = calculated[i * 3 + 2];
+					ModelLaser.instance.renderLaser(1 / 64F, -aY, aZ, 40, partialTicks, te);
+					GL11.glPopMatrix();
+				}
+			}
+			
 		GL11.glPopMatrix();
 		
 		GL11.glPopMatrix();
@@ -137,7 +159,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		public ModelRenderer stick;
 		public ModelRenderer head1;
 		public ModelRenderer head2;
-		public ModelRenderer laser;
 		public ModelRenderer[] torus;
 		
 		public ModelLaser()
@@ -150,7 +171,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			head1.addBox(2, -2, -2, 10, 4, 4);
 			head2 = new ModelRenderer(this);
 			head2.addBox(12, -1, -1, 3, 2, 2);
-			laser = new ModelRenderer(this);
 			
 			torus = new ModelRenderer[4];
 			for(int i = 0; i < 4; i++)
@@ -160,7 +180,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			}
 		}
 		
-		public void render(float scale, float h1, float h2, boolean spinning, int length, float partialTicks, TileEntity te)
+		public void render(float scale, float h1, float h2, boolean spinning, float length, float partialTicks, TileEntity te)
 		{
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glPushMatrix();
@@ -177,28 +197,14 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			head1.render(scale);
 			
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			ShaderHelper.bindShader(ShaderHelper.SHADER_BLOOM);
-			int tickTime = ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLOOM, "time");
-			ARBShaderObjects.glUniform1fARB(tickTime, ClientProxy.clientTicks + partialTicks);
+//			int tickTime = ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLOOM, "time");
+//			ARBShaderObjects.glUniform1fARB(tickTime, ClientProxy.clientTicks + partialTicks);
 			
 			if(spinning) GL11.glColor3f(1, 0, 0);
 			else GL11.glColor3f(0.4F, 0, 0);
 			
 			head2.rotateAngleX = rot;
 			head2.render(scale);
-			
-			if(length > 0)
-			{
-				GL11.glDisable(GL11.GL_LIGHTING);
-				GL11.glEnable(GL11.GL_BLEND);
-				boxList.remove(laser);
-				laser = new ModelRenderer(this);
-				laser.addBox(15F, -0.5F, -0.5F, length, 1, 1);
-				laser.render(scale);
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glEnable(GL11.GL_LIGHTING);
-			}
 			
 			int enabled = ClientProxy.clientTicks % 40 / 10;
 			for(int i = 0; i < 4; i++)
@@ -209,10 +215,56 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 				torus[i].render(scale);
 			}
 			
-			ShaderHelper.releaseShader();	
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glPopMatrix();
+			RenderUtils.resetBrightness(te);
+		}
+		
+		public void renderLaser(float scale, float h1, float h2, float length, float partialTicks, TileEntity te)
+		{
+			if(length < 0) return;
+			
+			GL11.glPushMatrix();
+			GL11.glRotatef(h2, 0, 1, 0);
+			GL11.glRotatef(h1, 0, 0, 1);
+			
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+			
+			Tessellator tes = Tessellator.instance;
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glScalef(scale, scale, scale);
+			
+			for(int i = 0; i < 4; i++)
+			{
+				tes.startDrawing(GL11.GL_QUAD_STRIP);
+				tes.setColorRGBA_F(1, 0, 0, 1);
+				tes.addVertex(0 + length, 0, 0);
+				tes.addVertex(0, 0, 0);
+				
+				tes.setColorRGBA_F(1, 0, 0, 0.1F);
+				tes.addVertex(0 + length, 0.5, 0.5);
+				tes.addVertex(0, 0.5, 0.5);
+				
+				tes.setColorRGBA_F(1, 0, 0, 0);
+				tes.addVertex(0 + length, 0, 0);
+				tes.addVertex(0, 1, 1);
+				tes.draw();
+				GL11.glRotatef(90, 1, 0, 0);
+			}
+			
+			GL11.glScalef(1 / scale, 1 / scale, 1 / scale);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			
+			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glShadeModel(GL11.GL_FLAT);
+			
+			GL11.glPopMatrix();
+			
 			RenderUtils.resetBrightness(te);
 		}
 	}
