@@ -112,15 +112,21 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 					w2 = (float)(w1 / Math.sin(aZ));
 					aZ = (float)Math.toDegrees(aZ) - 45F;
 					aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F)));
-					w3 = (float)Math.sin(Math.toRadians(aY)) * w2;
-					
+					w3 = w2 / (float)Math.sin(Math.toRadians(90F - aY));
 					calculated[i * 3] = aZ;
 					calculated[i * 3 + 1] = aY;
 					calculated[i * 3 + 2] = w3;
 				}
-				ModelLaser.instance.render(1 / 64F, -aY, aZ, true, (int)Math.ceil(w3 * 64F), partialTicks, te);
+				ModelLaser.instance.render(1 / 64F, -aY, aZ, true, 0, partialTicks, te);
 				GL11.glPopMatrix();
 			}
+			
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glDisable(GL11.GL_LIGHTING);
 			
 			for(int i = 0; i < 4; i++)
 			{
@@ -133,10 +139,17 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 					float aZ = calculated[i * 3];
 					float aY = calculated[i * 3 + 1];
 					float w3 = calculated[i * 3 + 2];
-					ModelLaser.instance.renderLaser(1 / 64F, -aY, aZ, 40, partialTicks, te);
+					ModelLaser.instance.renderLaser(1 / 128F, -aY, aZ, w3, partialTicks, te);
 					GL11.glPopMatrix();
 				}
 			}
+			
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glShadeModel(GL11.GL_FLAT);
 			
 		GL11.glPopMatrix();
 		
@@ -197,8 +210,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			head1.render(scale);
 			
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-//			int tickTime = ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLOOM, "time");
-//			ARBShaderObjects.glUniform1fARB(tickTime, ClientProxy.clientTicks + partialTicks);
 			
 			if(spinning) GL11.glColor3f(1, 0, 0);
 			else GL11.glColor3f(0.4F, 0, 0);
@@ -223,48 +234,30 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		public void renderLaser(float scale, float h1, float h2, float length, float partialTicks, TileEntity te)
 		{
 			if(length < 0) return;
-			
-			GL11.glPushMatrix();
 			GL11.glRotatef(h2, 0, 1, 0);
 			GL11.glRotatef(h1, 0, 0, 1);
 			
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+//			int tickTime = ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLOOM, "time");
+//			ARBShaderObjects.glUniform1fARB(tickTime, ClientProxy.clientTicks + partialTicks);
 			
 			Tessellator tes = Tessellator.instance;
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glScalef(scale, scale, scale);
 			
 			for(int i = 0; i < 4; i++)
 			{
-				tes.startDrawing(GL11.GL_QUAD_STRIP);
+				tes.startDrawing(GL11.GL_QUADS);
 				tes.setColorRGBA_F(1, 0, 0, 1);
-				tes.addVertex(0 + length, 0, 0);
-				tes.addVertex(0, 0, 0);
-				
-				tes.setColorRGBA_F(1, 0, 0, 0.1F);
-				tes.addVertex(0 + length, 0.5, 0.5);
-				tes.addVertex(0, 0.5, 0.5);
-				
-				tes.setColorRGBA_F(1, 0, 0, 0);
-				tes.addVertex(0 + length, 0, 0);
-				tes.addVertex(0, 1, 1);
+				tes.addVertex(30, 0, 0);
+				tes.addVertex(length / scale, 0, 0);	
+				tes.setColorRGBA_F(0, 0, 0, 1);
+				tes.addVertex(length / scale, 0.5, 0.5);
+				tes.addVertex(30, 0.5, 0.5);		
 				tes.draw();
 				GL11.glRotatef(90, 1, 0, 0);
 			}
 			
-			GL11.glScalef(1 / scale, 1 / scale, 1 / scale);
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glShadeModel(GL11.GL_FLAT);
-			
-			GL11.glPopMatrix();
-			
+			GL11.glScalef(1 / scale, 1 / scale, 1 / scale);		
 			RenderUtils.resetBrightness(te);
 		}
 	}
