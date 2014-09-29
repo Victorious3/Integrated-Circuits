@@ -6,7 +6,6 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -22,19 +21,20 @@ import vic.mod.integratedcircuits.util.RenderUtils;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
+public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRenderer
 {
 	private static ModelFloppy model = new ModelFloppy(-7, -7, -9, 12, 2, 1);
 	
 	private ResourceLocation safetyRegulationsTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_safety.png");
 	private ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
-
+	
 	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
 	@SideOnly(Side.CLIENT)
+	@Deprecated
 	public static LinkedList<Framebuffer> fboArray;
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
-	{		
+	{	
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
@@ -42,133 +42,126 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		GL11.glRotatef(-90 * te.rotation, 0, 1, 0);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		
-		GL11.glPushMatrix();
-		Tessellator tes = Tessellator.instance;
-		this.bindTexture(bottomTex);
-		tes.startDrawingQuads();
-		tes.addVertexWithUV(0, 8 / 16F, 0, 0, 0);
-		tes.addVertexWithUV(0, 8 / 16F, 1, 0, 1);
-		tes.addVertexWithUV(1, 8 / 16F, 1, 1, 1);
-		tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
-		tes.draw();
-
-		if(te.circuitFBO != null)
+		if(getCurrentRenderPass() == 0)
 		{
-			float scale = te.size / 68F;
-			te.circuitFBO.bindFramebufferTexture();
+			GL11.glPushMatrix();
+			Tessellator tes = Tessellator.instance;
+			this.bindTexture(bottomTex);
 			tes.startDrawingQuads();
-			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 3 / 16F, scale, 0);
-			tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 13 / 16F, scale, scale);
-			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 13 / 16F, 0, scale);
-			tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 3 / 16F, 0, 0);
+			tes.addVertexWithUV(0, 8 / 16F, 0, 0, 0);
+			tes.addVertexWithUV(0, 8 / 16F, 1, 0, 1);
+			tes.addVertexWithUV(1, 8 / 16F, 1, 1, 1);
+			tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 			tes.draw();
-		}
-		
-		GL11.glRotatef(180, 0, 0, 1);
-		GL11.glTranslatef(-1.005F, -1, 0);
-		this.bindTexture(safetyRegulationsTex);
-		tes.startDrawingQuads();
-		tes.addVertexWithUV(0, 9 / 16F, 1 - 7 / 16F, 0, 0);
-		tes.addVertexWithUV(0, 1 - 3 / 16F, 1 - 7 / 16F, 0, 1);
-		tes.addVertexWithUV(0, 1 - 3 / 16F, 0 + 1 / 16F, 1, 1);
-		tes.addVertexWithUV(0, 9 / 16F, 0 + 1 / 16F, 1, 0);
-		tes.draw();
-		GL11.glPopMatrix();	
-		
-		GL11.glPushMatrix();
-			GL11.glColor3f(0, 0, 0);
-			GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
-			GL11.glRotatef(45, 0, 1, 0);
-			
-			int x1 = 5;
-			int y1 = 12;
-			
-			float[] calculated = new float[12];
-			
-			for(int i = 0; i < 4; i++)
+	
+			if(te.circuitFBO != null)
 			{
-				GL11.glPushMatrix();
-				GL11.glRotatef(90 * i, 0, 1, 0);
-				GL11.glTranslatef(0, 0, -0.5F);
-				GL11.glRotatef(-90, 0, 1, 0);
-				float aZ = 0, aY = 0, w2 = 0, w3 = 0;
-				if(te.matrix != null)
-				{
-					int x2 = x1;
-					int y2 = y1;
-					
-					if(i == 3 || i == 1) 
-					{
-						x2 = y1;
-						y2 = x1;
-					}
-					
-					if(i == 3 || i == 0) x2 = te.size - x2;
-					if(i == 1 || i == 0) y2 = te.size - y2;
-					
-					float w1 = (10 / 16F * (x2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
-					float h1 = (10 / 16F * (y2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
-					aZ = (float)Math.atan(w1 / h1);
-					w2 = (float)(w1 / Math.sin(aZ));
-					aZ = (float)Math.toDegrees(aZ) - 45F;
-					aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F)));
-					w3 = w2 / (float)Math.sin(Math.toRadians(90F - aY));
-					calculated[i * 3] = aZ;
-					calculated[i * 3 + 1] = aY;
-					calculated[i * 3 + 2] = w3;
-				}
-				ModelLaser.instance.render(1 / 64F, -aY, aZ, true, 0, partialTicks, te);
-				GL11.glPopMatrix();
+				float scale = te.size / 68F;
+				te.circuitFBO.bindFramebufferTexture();
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 3 / 16F, scale, 0);
+				tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 13 / 16F, scale, scale);
+				tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 13 / 16F, 0, scale);
+				tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 3 / 16F, 0, 0);
+				tes.draw();
 			}
 			
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);		
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glRotatef(180, 0, 0, 1);
+			GL11.glTranslatef(-1.005F, -1, 0);
+			this.bindTexture(safetyRegulationsTex);
+			tes.startDrawingQuads();
+			tes.addVertexWithUV(0, 9 / 16F, 1 - 7 / 16F, 0, 0);
+			tes.addVertexWithUV(0, 1 - 3 / 16F, 1 - 7 / 16F, 0, 1);
+			tes.addVertexWithUV(0, 1 - 3 / 16F, 0 + 1 / 16F, 1, 1);
+			tes.addVertexWithUV(0, 9 / 16F, 0 + 1 / 16F, 1, 0);
+			tes.draw();
+			GL11.glPopMatrix();
+		}
+		
+		GL11.glPushMatrix();
+		GL11.glColor3f(0, 0, 0);
+		GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
+		GL11.glRotatef(45, 0, 1, 0);
+		
+		int x1 = 5;
+		int y1 = 12;
+		
+		for(int i = 0; i < 4; i++)
+		{
+			GL11.glPushMatrix();
+			GL11.glRotatef(90 * i, 0, 1, 0);
+			GL11.glTranslatef(0, 0, -0.5F);
+			GL11.glRotatef(-90, 0, 1, 0);
+			float aZ = 0, aY = 0, w2 = 0, w3 = 0;
 			
-			// First draw call, without the depth buffer.
-			GL11.glDepthMask(false);
-			renderLasers(calculated, te, partialTicks);
-			GL11.glDepthMask(true);
+			if(te.matrix != null)
+			{
+				int x2 = x1;
+				int y2 = y1;
+				
+				if(i == 3 || i == 1) 
+				{
+					x2 = y1;
+					y2 = x1;
+				}
+				
+				if(i == 3 || i == 0) x2 = te.size - x2;
+				if(i == 1 || i == 0) y2 = te.size - y2;
+				
+				float w1 = (10 / 16F * (x2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
+				float h1 = (10 / 16F * (y2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
+				aZ = (float)Math.atan(w1 / h1);
+				w2 = (float)(w1 / Math.sin(aZ));
+				aZ = (float)Math.toDegrees(aZ) - 45F;
+				aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F)));
+				w3 = w2 / (float)Math.sin(Math.toRadians(90F - aY));
+			}
 			
-			// Second draw call, only to the depth buffer.
-			GL11.glColorMask(false, false, false, false);
-			renderLasers(calculated, te, partialTicks);
-			GL11.glColorMask(true, true, true, true);
-			
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glDepthMask(true);
-			GL11.glEnable(GL11.GL_ALPHA_TEST);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GL11.glShadeModel(GL11.GL_FLAT);
-			
+			if(getCurrentRenderPass() > 0) renderLasers(1 / 64F, -aY, aZ, w3, te, partialTicks);
+			else ModelLaser.instance.render(1 / 64F, -aY, aZ, true, 0, partialTicks, te);
+			GL11.glPopMatrix();
+		}		
 		GL11.glPopMatrix();
 		
+		if(getCurrentRenderPass() == 0) addToRenderQueue(te.xCoord, te.yCoord, te.zCoord);
+		
 		GL11.glPopMatrix();
-		DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
+		if(getCurrentRenderPass() == 0) DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
 	
-	private void renderLasers(float[] params, TileEntityAssembler te, float partialTicks)
+	private void renderLasers(float scale, float aZ, float aY, float length, TileEntityAssembler te, float partialTicks)
 	{
-		for(int i = 0; i < 4; i++)
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+		
+		GL11.glPushMatrix();
+		if(length > 0) 
 		{
-			if(te.matrix != null)
+			GL11.glRotatef(aY, 0, 1, 0);
+			GL11.glRotatef(aZ, 0, 0, 1);
+			
+			Tessellator tes = Tessellator.instance;
+			GL11.glScalef(scale, scale, scale);	
+			for(int j = 0; j < 4; j++)
 			{
-				GL11.glPushMatrix();
-				GL11.glRotatef(90 * i, 0, 1, 0);
-				GL11.glTranslatef(0, 0, -0.5F);
-				GL11.glRotatef(-90, 0, 1, 0);
-				float aZ = params[i * 3];
-				float aY = params[i * 3 + 1];
-				float w3 = params[i * 3 + 2];
-				ModelLaser.instance.renderLaser(1 / 128F, -aY, aZ, w3, partialTicks, te);
-				GL11.glPopMatrix();
+				tes.startDrawing(GL11.GL_QUADS);
+				tes.setColorRGBA_F(1, 0, 0, 1);
+				tes.addVertex(0, 0, 0);
+				tes.addVertex(length / scale, 0, 0);	
+				tes.setColorRGBA_F(0, 0, 0, 1);
+				tes.addVertex(length / scale, 0.5, 0.5);
+				tes.addVertex(0, 0.5, 0.5);		
+				tes.draw();
+				GL11.glRotatef(90, 1, 0, 0);
 			}
+			GL11.glScalef(1 / scale, 1 / scale, 1 / scale);
 		}
+		GL11.glPopMatrix();
+		
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 	
 	@Override
@@ -243,38 +236,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			GL11.glPopMatrix();
 			RenderUtils.resetBrightness(te);
 		}
-		
-		public void renderLaser(float scale, float h1, float h2, float length, float partialTicks, TileEntity te)
-		{
-			if(length < 0) return;
-			GL11.glRotatef(h2, 0, 1, 0);
-			GL11.glRotatef(h1, 0, 0, 1);
-			
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-//			int tickTime = ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLOOM, "time");
-//			ARBShaderObjects.glUniform1fARB(tickTime, ClientProxy.clientTicks + partialTicks);
-			
-			Tessellator tes = Tessellator.instance;
-			GL11.glScalef(scale, scale, scale);
-			
-			for(int i = 0; i < 4; i++)
-			{
-				tes.startDrawing(GL11.GL_QUADS);
-				tes.setColorRGBA_F(1, 0, 0, 1);
-				tes.addVertex(30, 0, 0);
-				tes.addVertex(length / scale, 0, 0);	
-				tes.setColorRGBA_F(0, 0, 0, 1);
-				tes.addVertex(length / scale, 0.5, 0.5);
-				tes.addVertex(30, 0.5, 0.5);		
-				tes.draw();
-				GL11.glRotatef(90, 1, 0, 0);
-			}
-			
-			GL11.glScalef(1 / scale, 1 / scale, 1 / scale);		
-			RenderUtils.resetBrightness(te);
-		}
 	}
 	
+	//FIXME Away with you!
+	@Deprecated
 	public static void updateFramebuffer(TileEntityAssembler te)
 	{
 		if(te.circuitFBO == null)

@@ -31,6 +31,7 @@ import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.ItemCircuitRenderer;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
+import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
 import vic.mod.integratedcircuits.client.ShaderHelper;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
@@ -45,6 +46,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ClientProxy extends CommonProxy
 {
 	public static PartCircuitRenderer renderer;
+	public static SemiTransparentRenderer stRenderer;
 	public static int clientTicks;
 
 	@Override
@@ -57,6 +59,7 @@ public class ClientProxy extends CommonProxy
 	public void registerRenderers()
 	{
 		ShaderHelper.loadShaders();
+		stRenderer = new SemiTransparentRenderer();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
