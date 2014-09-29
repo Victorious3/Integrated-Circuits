@@ -80,8 +80,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
 			GL11.glRotatef(45, 0, 1, 0);
 			
-			int x1 = 68;
-			int y1 = 68;
+			int x1 = 5;
+			int y1 = 12;
 			
 			float[] calculated = new float[12];
 			
@@ -123,31 +123,25 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 			
 			GL11.glShadeModel(GL11.GL_SMOOTH);
 			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);		
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			
-			for(int i = 0; i < 4; i++)
-			{
-				if(te.matrix != null)
-				{
-					GL11.glPushMatrix();
-					GL11.glRotatef(90 * i, 0, 1, 0);
-					GL11.glTranslatef(0, 0, -0.5F);
-					GL11.glRotatef(-90, 0, 1, 0);
-					float aZ = calculated[i * 3];
-					float aY = calculated[i * 3 + 1];
-					float w3 = calculated[i * 3 + 2];
-					ModelLaser.instance.renderLaser(1 / 128F, -aY, aZ, w3, partialTicks, te);
-					GL11.glPopMatrix();
-				}
-			}
+			// First draw call, without the depth buffer.
+			GL11.glDepthMask(false);
+			renderLasers(calculated, te, partialTicks);
+			GL11.glDepthMask(true);
+			
+			// Second draw call, only to the depth buffer.
+			GL11.glColorMask(false, false, false, false);
+			renderLasers(calculated, te, partialTicks);
+			GL11.glColorMask(true, true, true, true);
 			
 			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glEnable(GL11.GL_CULL_FACE);
 			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glDepthMask(true);
+			GL11.glEnable(GL11.GL_ALPHA_TEST);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GL11.glShadeModel(GL11.GL_FLAT);
 			
@@ -156,6 +150,25 @@ public class TileEntityAssemblerRenderer extends TileEntitySpecialRenderer
 		GL11.glPopMatrix();
 		DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
 		GL11.glDisable(GL11.GL_LIGHTING);
+	}
+	
+	private void renderLasers(float[] params, TileEntityAssembler te, float partialTicks)
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			if(te.matrix != null)
+			{
+				GL11.glPushMatrix();
+				GL11.glRotatef(90 * i, 0, 1, 0);
+				GL11.glTranslatef(0, 0, -0.5F);
+				GL11.glRotatef(-90, 0, 1, 0);
+				float aZ = params[i * 3];
+				float aY = params[i * 3 + 1];
+				float w3 = params[i * 3 + 2];
+				ModelLaser.instance.renderLaser(1 / 128F, -aY, aZ, w3, partialTicks, te);
+				GL11.glPopMatrix();
+			}
+		}
 	}
 	
 	@Override
