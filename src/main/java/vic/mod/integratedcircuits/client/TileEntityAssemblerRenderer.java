@@ -1,13 +1,11 @@
 package vic.mod.integratedcircuits.client;
 
-import java.util.LinkedList;
 import java.util.Random;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -19,8 +17,6 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRenderer
 {
@@ -28,11 +24,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	
 	private ResourceLocation safetyRegulationsTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_safety.png");
 	private ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
-	
-	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
-	@SideOnly(Side.CLIENT)
-	@Deprecated
-	public static LinkedList<Framebuffer> fboArray;
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
 	{	
@@ -54,18 +45,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(1, 8 / 16F, 1, 1, 1);
 			tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 			tes.draw();
-	
-			if(te.circuitFBO != null)
-			{
-				float scale = te.size / 68F;
-				te.circuitFBO.bindFramebufferTexture();
-				tes.startDrawingQuads();
-				tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 3 / 16F, scale, 0);
-				tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 13 / 16F, scale, scale);
-				tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 13 / 16F, 0, scale);
-				tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 3 / 16F, 0, 0);
-				tes.draw();
-			}
 			
 			GL11.glRotatef(180, 0, 0, 1);
 			GL11.glTranslatef(-1.005F, -1, 0);
@@ -84,8 +63,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
 		GL11.glRotatef(45, 0, 1, 0);
 		
-		int x1 = 5;
-		int y1 = 12;
+		float x1 = 17;
+		float y1 = 17;
+		x1 += 0.5F;
+		y1 += 0.5F;
 		
 		for(int i = 0; i < 4; i++)
 		{
@@ -97,8 +78,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			
 			if(te.matrix != null)
 			{
-				int x2 = x1;
-				int y2 = y1;
+				float x2 = x1;
+				float y2 = y1;
 				
 				if(i == 3 || i == 1) 
 				{
@@ -242,44 +223,5 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			GL11.glPopMatrix();
 			RenderUtils.resetBrightness(te);
 		}
-	}
-	
-	//FIXME Away with you!
-	@Deprecated
-	public static void updateFramebuffer(TileEntityAssembler te)
-	{
-		if(te.circuitFBO == null)
-		{
-			te.circuitFBO = new Framebuffer(68, 68, false);
-			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
-		}
-		te.circuitFBO.framebufferClear();
-		if(te.matrix == null) return;
-		te.circuitFBO.bindFramebuffer(false);
-		
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glViewport(0, 0, te.size, te.size);
-		GL11.glOrtho(0, te.size, te.size, 0, -1, 1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-        
-		GL11.glColor3f(0, 0.3F, 0);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2i(0, 0);
-		GL11.glVertex2i(0, te.size);
-		GL11.glVertex2i(te.size, te.size);
-		GL11.glVertex2i(te.size, 0);
-		GL11.glEnd();
-		
-		GL11.glLineWidth(1F);
-		GL11.glColor3f(0, 0.8F, 0);
-		GL11.glBegin(GL11.GL_POINTS);
-		for(int x = 0; x < te.size; x++)
-			for(int y = 0; y < te.size; y++)
-				if(te.matrix[x][y] > 0) GL11.glVertex2i(x, y + 1);
-		GL11.glEnd();
-		
-		te.circuitFBO.unbindFramebuffer();
 	}
 }

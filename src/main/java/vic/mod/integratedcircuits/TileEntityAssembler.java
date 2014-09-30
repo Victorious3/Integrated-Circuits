@@ -1,23 +1,17 @@
 package vic.mod.integratedcircuits;
 
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
-import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory
 {
-	@SideOnly(Side.CLIENT)
-	public Framebuffer circuitFBO;
-	
 	public int[][] matrix;
 	public int size;
 	public ItemStack[] contents = new ItemStack[11];
@@ -35,7 +29,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 		{
 			loadMatrix();
-			TileEntityAssemblerRenderer.updateFramebuffer(this);
 		}
 	}
 
@@ -70,23 +63,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			}
 			else matrix = null;
 		}
-	}
-
-	@Override
-	public void updateEntity() 
-	{
-		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.updateFramebuffer(this);
-	}
-
-	@Override
-	public void invalidate() 
-	{
-		super.invalidate();
-		if(worldObj.isRemote && circuitFBO != null) 
-		{
-			circuitFBO.deleteFramebuffer();
-			TileEntityAssemblerRenderer.fboArray.remove(circuitFBO);
-		}	
 	}
 
 	@Override
