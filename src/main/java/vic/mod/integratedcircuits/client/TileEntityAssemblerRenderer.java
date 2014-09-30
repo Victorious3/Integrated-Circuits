@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits.client;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -130,6 +131,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
 	
+	private Random rand = new Random();
+	
 	private void renderLasers(float scale, float aZ, float aY, float length, TileEntityAssembler te, float partialTicks)
 	{
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -142,17 +145,20 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			GL11.glRotatef(aY, 0, 1, 0);
 			GL11.glRotatef(aZ, 0, 0, 1);
 			
+			double offset = Math.abs(rand.nextGaussian());
+			
 			Tessellator tes = Tessellator.instance;
 			GL11.glScalef(scale, scale, scale);	
 			for(int j = 0; j < 4; j++)
 			{
+				float color = (float)(0.75 + offset);
 				tes.startDrawing(GL11.GL_QUADS);
-				tes.setColorRGBA_F(1, 0, 0, 1);
+				tes.setColorRGBA_F(color, 0, 0, 1);
 				tes.addVertex(0, 0, 0);
 				tes.addVertex(length / scale, 0, 0);	
 				tes.setColorRGBA_F(0, 0, 0, 1);
 				tes.addVertex(length / scale, 0.5, 0.5);
-				tes.addVertex(0, 0.5, 0.5);		
+				tes.addVertex(0, 0.5, 0.5);
 				tes.draw();
 				GL11.glRotatef(90, 1, 0, 0);
 			}
