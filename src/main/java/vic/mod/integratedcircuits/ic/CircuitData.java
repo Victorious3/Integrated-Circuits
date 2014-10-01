@@ -52,7 +52,7 @@ public class CircuitData implements Cloneable
 	public void setup()
 	{
 		int o = size / 2 - 8;
-		int cid = 23;
+		int cid = CircuitPart.getIdFromClass(CircuitPart.PartIOBit.class);
 		
 		for(int i = 0; i < 16; i++)
 		{
