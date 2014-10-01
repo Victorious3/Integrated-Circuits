@@ -49,7 +49,6 @@ public class DiskDriveUtils
 			
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);
-			GL11.glEnable(GL11.GL_LIGHTING);
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glColor3f(0.05F, 0.05F, 0.05F);
 			model.floppy.rotateAngleY = (float)Math.toRadians(-90 * rotation);
@@ -70,12 +69,11 @@ public class DiskDriveUtils
 				float scale = 1 / 128F;
 				GL11.glScalef(scale, scale, scale);
 				GL11.glTranslated(32, 110, -8.005);
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				GL11.glDisable(GL11.GL_LIGHTING);
 				fr.drawString(name, 0, 0, 0xFFFFFF);
+				GL11.glEnable(GL11.GL_LIGHTING);
 				GL11.glPopMatrix();
 			}
-			GL11.glDisable(GL11.GL_LIGHTING);
 		}
 	}
 	

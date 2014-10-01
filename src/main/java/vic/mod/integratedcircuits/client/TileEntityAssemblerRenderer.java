@@ -28,7 +28,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
 	{	
-		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
@@ -58,7 +57,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				GL11.glTranslatef(-0.5F, 0, -0.5F);
 				
 				GL11.glTranslatef(-1 + 3 / 16F, 0, -1 + 3 / 16F);
-				GL11.glTranslatef(1, 8 / 16F + 0.0005F, 1);
+				GL11.glTranslatef(1, 8 / 16F, 1);
 				float s = 10 / 16F / te.size;
 				GL11.glScalef(s, 1 / 80F, s);
 				Tessellator verts = te.verts;
@@ -118,7 +117,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				aZ = (float)Math.atan(w1 / h1);
 				w2 = (float)(w1 / Math.sin(aZ));
 				aZ = (float)Math.toDegrees(aZ) - 45F;
-				aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F)));
+				aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F - 2 / 80F)));
 				w3 = w2 / (float)Math.sin(Math.toRadians(90F - aY));
 			}
 			
@@ -127,10 +126,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			GL11.glPopMatrix();
 		}
 		
+		GL11.glColor3f(1, 1, 1);
 		GL11.glPopMatrix();	
 		if(getCurrentRenderPass() == 0) addToRenderQueue(te.xCoord, te.yCoord, te.zCoord);	
 		GL11.glPopMatrix();
-		GL11.glEnable(GL11.GL_LIGHTING);
 		
 		if(getCurrentRenderPass() == 0) DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
 	}

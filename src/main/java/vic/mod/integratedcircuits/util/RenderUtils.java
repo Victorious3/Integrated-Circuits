@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits.util;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
@@ -16,6 +17,43 @@ public class RenderUtils
 		GL11.glTranslatef(-w / 2F, -h / 2F, 0);
 		gui.drawTexturedModalRect(0, 0, u, v, w, h);
 		GL11.glTranslated(-x, -y, 0);
+	}
+	
+	public static void addBox(Tessellator tes, double x1, double y1, double z1, double w, double h, double d)
+	{
+		double x2 = x1 + w;
+		double y2 = y1 + h;
+		double z2 = z1 + d;
+		
+		tes.addVertex(x1, y2, z1);
+		tes.addVertex(x1, y2, z2);
+		tes.addVertex(x2, y2, z2);
+		tes.addVertex(x2, y2, z1);
+		
+		tes.addVertex(x2, y1, z1);
+		tes.addVertex(x2, y1, z2);
+		tes.addVertex(x1, y1, z2);
+		tes.addVertex(x1, y1, z1);
+		
+		tes.addVertex(x1, y1, z1);
+		tes.addVertex(x1, y2, z1);
+		tes.addVertex(x2, y2, z1);
+		tes.addVertex(x2, y1, z1);
+		
+		tes.addVertex(x2, y1, z2);
+		tes.addVertex(x2, y2, z2);
+		tes.addVertex(x1, y2, z2);
+		tes.addVertex(x1, y1, z2);
+		
+		tes.addVertex(x2, y1, z1);
+		tes.addVertex(x2, y2, z1);
+		tes.addVertex(x2, y2, z2);
+		tes.addVertex(x2, y1, z2);
+		
+		tes.addVertex(x1, y1, z2);
+		tes.addVertex(x1, y2, z2);
+		tes.addVertex(x1, y2, z1);
+		tes.addVertex(x1, y1, z1);
 	}
 	
 	public static void applyColorIRGBA(int rbga)
