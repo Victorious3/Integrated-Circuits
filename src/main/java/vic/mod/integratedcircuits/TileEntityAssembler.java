@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
+import vic.mod.integratedcircuits.client.LaserHelper;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
@@ -23,6 +24,13 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@SideOnly(Side.CLIENT)
 	public Tessellator verts;
 	
+	@SideOnly(Side.CLIENT)
+	public LaserHelper laserHelper;
+	
+	public TileEntityAssembler() 
+	{
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) laserHelper = new LaserHelper(this);
+	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound compound)

@@ -16,6 +16,7 @@ import vic.mod.integratedcircuits.DiskDriveUtils;
 import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.client.LaserHelper.Laser;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
@@ -33,10 +34,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 		GL11.glRotatef(-90 * te.rotation, 0, 1, 0);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
-		GL11.glColor3f(1, 1, 1);
 		
 		if(getCurrentRenderPass() == 0)
 		{
+			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glPushMatrix();
 			Tessellator tes = Tessellator.instance;
 			this.bindTexture(bottomTex);
@@ -79,55 +80,33 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(0, 9 / 16F, 0 + 1 / 16F, 1, 0);
 			tes.draw();
 			GL11.glPopMatrix();
+			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
 		GL11.glRotatef(45, 0, 1, 0);
-		
-		float x1 = 17;
-		float y1 = 17;
-		x1 += 0.5F;
-		y1 += 0.5F;
+
+		LaserHelper laserHelper = te.laserHelper;
+		if(getCurrentRenderPass() == 0) laserHelper.reload();
 		
 		for(int i = 0; i < 4; i++)
 		{
+			Laser laser = laserHelper.getLaser(i);
+			if(laser == null) continue;
+			if(getCurrentRenderPass() == 0) laser.setAim(i * 2, i * 3);
+			
 			GL11.glPushMatrix();
 			GL11.glRotatef(90 * i, 0, 1, 0);
 			GL11.glTranslatef(0, 0, -0.5F);
 			GL11.glRotatef(-90, 0, 1, 0);
-			float aZ = 0, aY = 0, w2 = 0, w3 = 0;
-			
-			if(te.matrix != null)
-			{
-				float x2 = x1;
-				float y2 = y1;
-				
-				if(i == 3 || i == 1) 
-				{
-					x2 = y1;
-					y2 = x1;
-				}
-				
-				if(i == 3 || i == 0) x2 = te.size - x2;
-				if(i == 1 || i == 0) y2 = te.size - y2;
-				
-				float w1 = (10 / 16F * (x2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
-				float h1 = (10 / 16F * (y2 / (float)te.size)) + (3 / 16F - (0.5F - (float)Math.sin(Math.PI / 4D) * 0.5F));
-				aZ = (float)Math.atan(w1 / h1);
-				w2 = (float)(w1 / Math.sin(aZ));
-				aZ = (float)Math.toDegrees(aZ) - 45F;
-				aY = 90F - (float)Math.toDegrees(Math.atan(w2 / (6 / 16F - 2 / 80F)));
-				w3 = w2 / (float)Math.sin(Math.toRadians(90F - aY));
-			}
-			
-			if(getCurrentRenderPass() > 0) renderLasers(1 / 64F, -aY, aZ, w3, te, partialTicks);
-			else ModelLaser.instance.render(1 / 64F, -aY, aZ, true, 0, partialTicks, te);
+
+			if(getCurrentRenderPass() > 0) renderLasers(1 / 64F, -laser.aY, laser.aZ, laser.length, te, partialTicks);
+			else ModelLaser.instance.render(1 / 64F, -laser.aY, laser.aZ, true, partialTicks, te);
 			GL11.glPopMatrix();
 		}
 		
-		GL11.glColor3f(1, 1, 1);
-		GL11.glPopMatrix();	
+		GL11.glPopMatrix();
 		if(getCurrentRenderPass() == 0) addToRenderQueue(te.xCoord, te.yCoord, te.zCoord);	
 		GL11.glPopMatrix();
 		
@@ -167,6 +146,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			}
 			GL11.glScalef(1 / scale, 1 / scale, 1 / scale);
 		}
+		RenderUtils.resetBrightness(te);
+		
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -207,7 +188,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			}
 		}
 		
-		public void render(float scale, float h1, float h2, boolean spinning, float length, float partialTicks, TileEntity te)
+		public void render(float scale, float h1, float h2, boolean spinning, float partialTicks, TileEntity te)
 		{
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glPushMatrix();
