@@ -1,7 +1,9 @@
 package vic.mod.integratedcircuits.client;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MathHelper;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -54,10 +56,12 @@ public class LaserHelper
 	public static class Laser
 	{
 		private int x, y, id;
-		public float lastAY, lastAZ, aY, aZ, length;
-		private float speed = 1F;
+		public float iY, iZ, length;
+		private float rotSpeed = 0.4F, laserSpeed = 75F;
+		private float lastAY, lastAZ, aY, aZ, rotTimeAZ, rotTimeAY;
 		private TileEntityAssembler te;
 		public boolean isActive = true;
+		private int lastModified = ClientProxy.clientTicks;
 		
 		private Laser(TileEntityAssembler te, int id)
 		{
@@ -65,11 +69,13 @@ public class LaserHelper
 			this.id = id;
 		}
 		
-		public void reload()
+		private void reload()
 		{
-			float w2 = 0, w3 = 0;
+			float w2 = 0;
 			lastAY = aY;
 			lastAZ = aZ;
+			iY = aY;
+			iZ = aZ;
 			
 			if(te.matrix != null)
 			{
@@ -97,22 +103,41 @@ public class LaserHelper
 			{
 				aY = 0;
 				aZ = 0;
-				length = 0;
-				lastAY = aY;
-				lastAZ = aZ;
-			}
+			}		
+		}
+		
+		public float getInterpolated(float partialTicks, float f1, float f2, float speed)
+		{
+			float dif = f2 - f1;
+			float dif2 = MathHelper.clamp_float((ClientProxy.clientTicks + partialTicks - lastModified) / speed, 0F, 1F);
+			if(dif2 >= 1F) return f2;
+			return f1 + dif * dif2;
 		}
 		
 		public void setAim(int x, int y)
 		{
+			if(!isActive || ClientProxy.clientTicks < lastModified + laserSpeed) return;
 			this.x = x;
 			this.y = y;
+			this.isActive = false;
+			lastModified = ClientProxy.clientTicks;
 			reload();
+			rotTimeAZ = Math.abs(lastAZ - aZ) * rotSpeed;
+			rotTimeAY = Math.abs(lastAY - aY) * rotSpeed;
 		}
 		
 		public void update(float partialTicks)
 		{
-			
+			if(!isActive)
+			{
+				iZ = getInterpolated(partialTicks, lastAZ, aZ, rotTimeAZ);
+				iY = getInterpolated(partialTicks, lastAY, aY, rotTimeAY);
+				if(iZ == aZ && iY == aY) 
+				{
+					isActive = true;
+					lastModified = ClientProxy.clientTicks;
+				}
+			}
 		}
 	}
 }

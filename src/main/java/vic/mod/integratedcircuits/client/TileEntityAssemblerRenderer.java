@@ -87,22 +87,27 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		GL11.glTranslatef(0.5F, 14 / 16F, 0.5F);
 		GL11.glRotatef(45, 0, 1, 0);
 
-		LaserHelper laserHelper = te.laserHelper;
-		if(getCurrentRenderPass() == 0) laserHelper.reload();
-		
+		LaserHelper laserHelper = te.laserHelper;		
 		for(int i = 0; i < 4; i++)
 		{
 			Laser laser = laserHelper.getLaser(i);
 			if(laser == null) continue;
-			if(getCurrentRenderPass() == 0) laser.setAim(i * 2, i * 3);
+			if(getCurrentRenderPass() == 0 && te.matrix != null) 
+			{
+				laser.setAim(rand.nextInt(te.size), rand.nextInt(te.size));
+				laser.update(partialTicks);
+			}
 			
 			GL11.glPushMatrix();
 			GL11.glRotatef(90 * i, 0, 1, 0);
 			GL11.glTranslatef(0, 0, -0.5F);
 			GL11.glRotatef(-90, 0, 1, 0);
 
-			if(getCurrentRenderPass() > 0) renderLasers(1 / 64F, -laser.aY, laser.aZ, laser.length, te, partialTicks);
-			else ModelLaser.instance.render(1 / 64F, -laser.aY, laser.aZ, true, partialTicks, te);
+			if(getCurrentRenderPass() > 0)
+			{
+				if(laser.isActive) renderLaser(1 / 64F, -laser.iY, laser.iZ, laser.length, te, partialTicks);
+			}
+			else ModelLaser.instance.render(1 / 64F, -laser.iY, laser.iZ, laser.isActive, partialTicks, te);
 			GL11.glPopMatrix();
 		}
 		
@@ -115,7 +120,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	
 	private Random rand = new Random();
 	
-	private void renderLasers(float scale, float aZ, float aY, float length, TileEntityAssembler te, float partialTicks)
+	private void renderLaser(float scale, float aZ, float aY, float length, TileEntityAssembler te, float partialTicks)
 	{
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -201,7 +206,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			float rot = (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4);
 			
 			GL11.glColor3f(0.2F, 0.2F, 0.2F);
-			head1.rotateAngleX = rot;
+			if(spinning) head1.rotateAngleX = rot;
 			head1.render(scale);
 			
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
@@ -209,13 +214,13 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			if(spinning) GL11.glColor3f(1, 0, 0);
 			else GL11.glColor3f(0.4F, 0, 0);
 			
-			head2.rotateAngleX = rot;
+			if(spinning) head2.rotateAngleX = rot;
 			head2.render(scale);
 			
 			int enabled = ClientProxy.clientTicks % 40 / 10;
 			for(int i = 0; i < 4; i++)
 			{
-				torus[i].rotateAngleX = rot;
+				if(spinning) torus[i].rotateAngleX = rot;
 				if(i == enabled && spinning) GL11.glColor3f(1, 0, 0);
 				else GL11.glColor3f(0.4F, 0, 0);
 				torus[i].render(scale);
