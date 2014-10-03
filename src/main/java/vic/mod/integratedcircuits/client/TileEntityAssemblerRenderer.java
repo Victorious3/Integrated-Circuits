@@ -93,10 +93,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			Laser laser = laserHelper.getLaser(i);
 			if(laser == null) continue;
 			if(getCurrentRenderPass() == 0 && te.matrix != null) 
-			{
-				laser.setAim(rand.nextInt(te.size), rand.nextInt(te.size));
 				laser.update(partialTicks);
-			}
 			
 			GL11.glPushMatrix();
 			GL11.glRotatef(90 * i, 0, 1, 0);

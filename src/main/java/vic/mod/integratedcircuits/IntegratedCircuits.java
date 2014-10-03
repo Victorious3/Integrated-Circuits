@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits;
 
 import vic.mod.integratedcircuits.net.AbstractPacket;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
+import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
@@ -56,6 +57,7 @@ public class IntegratedCircuits
     	AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
     	
     	AbstractPacket.registerPacket(PacketAssemblerStart.class, Side.SERVER, 7);
+    	AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 8);
     	
     	itemCircuit = new ItemCircuit();
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);

@@ -16,10 +16,14 @@ import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 public class CommonProxy 
 {
+	public static int serverTicks;
+	
 	public void initialize()
 	{
 		MinecraftForge.EVENT_BUS.register(this);
@@ -30,6 +34,12 @@ public class CommonProxy
 	public void registerNetwork()
 	{
 		NetworkRegistry.INSTANCE.registerGuiHandler(IntegratedCircuits.instance, new GuiHandler());
+	}
+	
+	@SubscribeEvent
+	public void onServerTick(TickEvent.ServerTickEvent event)
+	{
+		if(event.phase == Phase.END) serverTicks++;
 	}
 	
 	@SubscribeEvent

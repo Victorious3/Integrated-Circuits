@@ -2,12 +2,12 @@ package vic.mod.integratedcircuits.client;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 
-@SideOnly(Side.CLIENT)
 public class LaserHelper 
 {
 	private Laser[] lasers = new Laser[4];
@@ -61,12 +61,14 @@ public class LaserHelper
 		private float lastAY, lastAZ, aY, aZ, rotTimeAZ, rotTimeAY;
 		private TileEntityAssembler te;
 		public boolean isActive = true;
-		private int lastModified = ClientProxy.clientTicks;
+		private int lastModified;
 		
 		private Laser(TileEntityAssembler te, int id)
 		{
 			this.te = te;
 			this.id = id;
+			if(te.getWorldObj().isRemote) lastModified = ClientProxy.clientTicks;
+			else lastModified = CommonProxy.serverTicks;
 		}
 		
 		private void reload()
@@ -116,11 +118,20 @@ public class LaserHelper
 		
 		public void setAim(int x, int y)
 		{
-			if(!isActive || ClientProxy.clientTicks < lastModified + laserSpeed) return;
+			if(!te.getWorldObj().isRemote)
+			{
+				if(!isActive || CommonProxy.serverTicks < lastModified + laserSpeed) return;
+				IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(x, y, id, te.xCoord, te.yCoord, te.zCoord));
+			}
+			
 			this.x = x;
 			this.y = y;
 			this.isActive = false;
-			lastModified = ClientProxy.clientTicks;
+			
+			if(te.getWorldObj().isRemote)
+				lastModified = ClientProxy.clientTicks;
+			else lastModified = CommonProxy.serverTicks;
+			
 			reload();
 			rotTimeAZ = Math.abs(lastAZ - aZ) * rotSpeed;
 			rotTimeAY = Math.abs(lastAY - aY) * rotSpeed;
@@ -130,12 +141,23 @@ public class LaserHelper
 		{
 			if(!isActive)
 			{
-				iZ = getInterpolated(partialTicks, lastAZ, aZ, rotTimeAZ);
-				iY = getInterpolated(partialTicks, lastAY, aY, rotTimeAY);
-				if(iZ == aZ && iY == aY) 
+				if(te.getWorldObj().isRemote)
 				{
-					isActive = true;
-					lastModified = ClientProxy.clientTicks;
+					iZ = getInterpolated(partialTicks, lastAZ, aZ, rotTimeAZ);
+					iY = getInterpolated(partialTicks, lastAY, aY, rotTimeAY);
+					if(iZ == aZ && iY == aY) 
+					{
+						isActive = true;
+						lastModified = ClientProxy.clientTicks;
+					}
+				}
+				else
+				{
+					if(CommonProxy.serverTicks - lastModified > rotTimeAY && CommonProxy.serverTicks - lastModified > rotTimeAZ)
+					{
+						isActive = true;
+						lastModified = CommonProxy.serverTicks;
+					}
 				}
 			}
 		}

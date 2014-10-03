@@ -1,5 +1,7 @@
 package vic.mod.integratedcircuits;
 
+import java.util.Random;
+
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -8,6 +10,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.client.LaserHelper;
+import vic.mod.integratedcircuits.client.LaserHelper.Laser;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
@@ -24,14 +27,25 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@SideOnly(Side.CLIENT)
 	public Tessellator verts;
 	
-	@SideOnly(Side.CLIENT)
 	public LaserHelper laserHelper;
-	
-	public TileEntityAssembler() 
+
+	@Override
+	public void updateEntity() 
 	{
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) laserHelper = new LaserHelper(this);
+		if(laserHelper == null) laserHelper = new LaserHelper(this);
+		if(!worldObj.isRemote && matrix != null)
+		{
+			for(int i = 0; i < 4; i++)
+			{
+				Laser laser = laserHelper.getLaser(i);
+				if(laser == null) continue;
+				Random rand = new Random();
+				laser.update(0);
+				laser.setAim(rand.nextInt(size), rand.nextInt(size));
+			}
+		}
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound compound)
 	{
@@ -42,7 +56,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 				contents[i] = null;
 			else contents[i] = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("stack_" + i));
 		}
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) loadMatrix();
+		loadMatrix();
 	}
 
 	@Override
@@ -77,15 +91,19 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			}
 			else matrix = null;
 		}
-		verts = new Tessellator();
-		verts.startDrawingQuads();
 		
-		verts.setColorRGBA_F(0, 0.2F, 0, 1);
-		RenderUtils.addBox(verts, 0, 0, 0, size, 2, size);
-		
-		for(int x = 0; x < size; x++)
-			for(int y = 0; y < size; y++)
-				loadGateAt(x, y);
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+		{
+			verts = new Tessellator();
+			verts.startDrawingQuads();
+			
+			verts.setColorRGBA_F(0, 0.2F, 0, 1);
+			RenderUtils.addBox(verts, 0, 0, 0, size, 2, size);
+			
+			for(int x = 0; x < size; x++)
+				for(int y = 0; y < size; y++)
+					loadGateAt(x, y);
+		}
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -206,6 +224,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		setInventorySlotContents(0, stack);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		loadMatrix();
 	}
 
 	@Override
