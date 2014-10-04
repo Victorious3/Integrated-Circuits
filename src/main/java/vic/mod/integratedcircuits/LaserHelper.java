@@ -1,10 +1,8 @@
-package vic.mod.integratedcircuits.client;
+package vic.mod.integratedcircuits;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
@@ -72,7 +70,6 @@ public class LaserHelper
 		private TileEntityAssembler te;
 		public boolean isActive = true, isDone = false;
 		private int lastModified;
-		private ForgeDirection direction;
 		
 		private Laser(TileEntityAssembler te, int id)
 		{
@@ -82,16 +79,7 @@ public class LaserHelper
 				lastModified = ClientProxy.clientTicks;
 			else lastModified = CommonProxy.serverTicks;
 			
-			switch (id) {
-			case 0:
-				direction = ForgeDirection.WEST; break;
-			case 1:
-				direction = ForgeDirection.SOUTH; break;
-			case 2:
-				direction = ForgeDirection.EAST; break;
-			default:
-				direction = ForgeDirection.NORTH; break;
-			}
+			reset();
 		}
 		
 		private void reload()
@@ -139,55 +127,42 @@ public class LaserHelper
 			return f1 + dif * dif2;
 		}
 		
-		public void reset()
-		{
-			if(te.refMatrix != null)
-			{
-				switch (id) {
-				case 0:
-					x = te.size - 1;
-					y = te.size - 1;
-					break;
-				case 1:
-					x = te.size - 1;
-					break;
-				case 3:
-					y = te.size - 1;
-					break;
-				}
-			}
-			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(x, y, id, te.xCoord, te.yCoord, te.zCoord));
-		}
+		private ForgeDirection direction;
+		private int step, max, turn;
 		
 		public void findNext()
 		{
 			while(!isDone)
-			{
-				boolean b1 = x + 1 >= te.size || te.matrix[x + 1][y] != 0;
-				boolean b2 = y + 1 >= te.size || te.matrix[x][y + 1] != 0;
-				boolean b3 = x - 1 < 0 || te.matrix[x - 1][y] != 0;
-				boolean b4 = y - 1 < 0 || te.matrix[x][y - 1] != 0;	
-				isDone = b1 && b2 && b3 && b4;
-				if(isDone) return;
-				
-				int nX = x;
-				int nY = y;
-				nX += direction.offsetX;
-				nY += direction.offsetZ;
-				
-				if(nX < 0 || nY < 0 || nX >= te.size || nY >= te.size || te.matrix[nX][nY] != 0)
-					direction = MiscUtils.rot(direction);
-				else
+			{	
+				if(te.matrix[x][y] == 0)
 				{
 					te.matrix[x][y] = 1;
-					x = nX;
-					y = nY;
-					
-					if(te.refMatrix[x][y] != 0 && te.matrix[x][y] == 0)
+					if(te.refMatrix[x][y] != 0)
 					{
 						setAim(x, y);
 						return;
+					}	
+				}
+				
+				x += direction.offsetX;
+				y += direction.offsetZ;
+				
+				step--;
+				if(step == 1)
+				{
+					turn++;
+					if(turn == 2)
+					{
+						max--;
+						turn = 0;
+						if(max == 1) 
+						{
+							isDone = true;
+							setAim(x, y);
+						}
 					}
+					step = max;
+					direction = MiscUtils.rot(direction);
 				}
 			}
 		}
@@ -208,6 +183,39 @@ public class LaserHelper
 			reload();
 			rotTimeAZ = Math.abs(lastAZ - aZ) * rotSpeed;
 			rotTimeAY = Math.abs(lastAY - aY) * rotSpeed;
+		}
+		
+		public void reset()
+		{
+			step = te.size;
+			max = te.size;
+			turn = 0;
+			
+			switch (id) {
+			case 0:
+				x = te.size - 1;
+				y = te.size - 1;
+				break;
+			case 1:
+				x = te.size - 1;
+				break;
+			case 3:
+				y = te.size - 1;
+				break;
+			}
+			
+			switch (id) {
+			case 0:
+				direction = ForgeDirection.WEST; break;
+			case 1:
+				direction = ForgeDirection.SOUTH; break;
+			case 2:
+				direction = ForgeDirection.EAST; break;
+			default:
+				direction = ForgeDirection.NORTH; break;
+			}
+			
+			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(x, y, id, te.xCoord, te.yCoord, te.zCoord));
 		}
 		
 		public boolean canUpdate()

@@ -14,9 +14,10 @@ import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.DiskDriveUtils;
 import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
+import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.TileEntityAssembler;
-import vic.mod.integratedcircuits.client.LaserHelper.Laser;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
