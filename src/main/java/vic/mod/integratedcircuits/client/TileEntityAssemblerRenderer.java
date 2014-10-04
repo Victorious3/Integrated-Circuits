@@ -48,7 +48,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 			tes.draw();
 			
-			if(te.matrix != null && te.verts != null)
+			if(te.refMatrix != null && te.verts != null)
 			{
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glPushMatrix();
@@ -92,7 +92,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		{
 			Laser laser = laserHelper.getLaser(i);
 			if(laser == null) continue;
-			if(getCurrentRenderPass() == 0 && te.matrix != null) 
+			if(getCurrentRenderPass() == 0 && te.refMatrix != null) 
 				laser.update(partialTicks);
 			
 			GL11.glPushMatrix();

@@ -1,7 +1,5 @@
 package vic.mod.integratedcircuits;
 
-import java.util.Random;
-
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -20,6 +18,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory
 {
+	public int[][] refMatrix;
 	public int[][] matrix;
 	public int size;
 	public ItemStack[] contents = new ItemStack[11];
@@ -27,21 +26,19 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@SideOnly(Side.CLIENT)
 	public Tessellator verts;
 	
-	public LaserHelper laserHelper;
+	public LaserHelper laserHelper = new LaserHelper(this);
 
 	@Override
 	public void updateEntity() 
 	{
-		if(laserHelper == null) laserHelper = new LaserHelper(this);
-		if(!worldObj.isRemote && matrix != null)
+		if(!worldObj.isRemote && refMatrix != null)
 		{
 			for(int i = 0; i < 4; i++)
 			{
 				Laser laser = laserHelper.getLaser(i);
-				if(laser == null) continue;
-				Random rand = new Random();
+				if(laser == null || laser.isDone) continue;
 				laser.update(0);
-				laser.setAim(rand.nextInt(size), rand.nextInt(size));
+				if(laser.canUpdate()) laser.findNext();
 			}
 		}
 	}
@@ -69,10 +66,9 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		}
 	}
 	
-	@SideOnly(Side.CLIENT)
 	public void loadMatrix()
 	{
-		if(getDisk() == null) matrix = null;
+		if(getDisk() == null) refMatrix = null;
 		else
 		{
 			ItemStack stack = getDisk();
@@ -80,51 +76,49 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			{
 				NBTTagCompound comp = stack.getTagCompound();
 				size = comp.getInteger("size");
+				
+				refMatrix = new int[size][size];
 				matrix = new int[size][size];
+				
 				NBTTagCompound circuit = comp.getCompoundTag("circuit");
 				
 				NBTTagList idlist = circuit.getTagList("id", NBT.TAG_INT_ARRAY);
 				for(int i = 0; i < idlist.tagCount(); i++)
 				{
-					matrix[i] = idlist.func_150306_c(i);
+					refMatrix[i] = idlist.func_150306_c(i);
 				}
 			}
-			else matrix = null;
+			else refMatrix = null;
 		}
-		
 		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 		{
 			verts = new Tessellator();
-			verts.startDrawingQuads();
-			
+			verts.startDrawingQuads();		
 			verts.setColorRGBA_F(0, 0.2F, 0, 1);
 			RenderUtils.addBox(verts, 0, 0, 0, size, 2, size);
-			
-			for(int x = 0; x < size; x++)
-				for(int y = 0; y < size; y++)
-					loadGateAt(x, y);
 		}
+		else laserHelper.reset();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	/** Will draw a single gate to the vertex buffer **/
 	public void loadGateAt(int x, int y)
 	{
-		if(matrix == null) return;
-		int id = matrix[x][y];
+		if(refMatrix == null) return;
+		int id = refMatrix[x][y];
 		int wireID = CircuitPart.getIdFromClass(CircuitPart.PartWire.class);
 		int ioID = CircuitPart.getIdFromClass(CircuitPart.PartIOBit.class);
 		if(id == wireID)
 		{
 			verts.setColorRGBA_F(0, 0.6F, 0, 1);
 			RenderUtils.addBox(verts, x + 6 / 16F, 2, y + 6 / 16F, 4 / 16F, 0.5, 4 / 16F);
-			if(x - 1 >= 0 && matrix[x - 1][y] != 0)
+			if(x - 1 >= 0 && refMatrix[x - 1][y] != 0)
 				RenderUtils.addBox(verts, x, 2, y + 6 / 16F, 6 / 16F, 0.5, 4 / 16F);
-			if(x + 1 < size && matrix[x + 1][y] != 0)
+			if(x + 1 < size && refMatrix[x + 1][y] != 0)
 				RenderUtils.addBox(verts, x + 10 / 16F, 2, y + 6 / 16F, 6 / 16F, 0.5, 4 / 16F);
-			if(y - 1 >= 0 && matrix[x][y - 1] != 0)
+			if(y - 1 >= 0 && refMatrix[x][y - 1] != 0)
 				RenderUtils.addBox(verts, x + 6 / 16F, 2, y, 4 / 16F, 0.5, 6 / 16F);
-			if(y + 1 < size && matrix[x][y + 1] != 0)
+			if(y + 1 < size && refMatrix[x][y + 1] != 0)
 				RenderUtils.addBox(verts, x + 6 / 16F, 2, y + 10 / 16F, 4 / 16F, 0.5, 6 / 16F);
 		}
 		else if(id != 0)

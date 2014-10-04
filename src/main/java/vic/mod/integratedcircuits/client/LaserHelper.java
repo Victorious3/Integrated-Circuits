@@ -2,11 +2,15 @@ package vic.mod.integratedcircuits.client;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
+import vic.mod.integratedcircuits.util.MiscUtils;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
 
 public class LaserHelper 
 {
@@ -53,22 +57,41 @@ public class LaserHelper
 			if(laser != null) laser.reload();
 	}
 	
+	public void reset()
+	{
+		for(Laser laser : lasers)
+			if(laser != null) laser.reset();
+	}
+	
 	public static class Laser
 	{
-		private int x, y, id;
+		public int x, y, id;
 		public float iY, iZ, length;
-		private float rotSpeed = 0.4F, laserSpeed = 75F;
+		private float rotSpeed = 0.4F, laserSpeed = 5F; //75F
 		private float lastAY, lastAZ, aY, aZ, rotTimeAZ, rotTimeAY;
 		private TileEntityAssembler te;
-		public boolean isActive = true;
+		public boolean isActive = true, isDone = false;
 		private int lastModified;
+		private ForgeDirection direction;
 		
 		private Laser(TileEntityAssembler te, int id)
 		{
 			this.te = te;
 			this.id = id;
-			if(te.getWorldObj().isRemote) lastModified = ClientProxy.clientTicks;
+			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) 
+				lastModified = ClientProxy.clientTicks;
 			else lastModified = CommonProxy.serverTicks;
+			
+			switch (id) {
+			case 0:
+				direction = ForgeDirection.WEST; break;
+			case 1:
+				direction = ForgeDirection.SOUTH; break;
+			case 2:
+				direction = ForgeDirection.EAST; break;
+			default:
+				direction = ForgeDirection.NORTH; break;
+			}
 		}
 		
 		private void reload()
@@ -79,7 +102,7 @@ public class LaserHelper
 			iY = aY;
 			iZ = aZ;
 			
-			if(te.matrix != null)
+			if(te.refMatrix != null)
 			{
 				float x2 = x + 0.5F;
 				float y2 = y + 0.5F;
@@ -116,13 +139,63 @@ public class LaserHelper
 			return f1 + dif * dif2;
 		}
 		
+		public void reset()
+		{
+			if(te.refMatrix != null)
+			{
+				switch (id) {
+				case 0:
+					x = te.size - 1;
+					y = te.size - 1;
+					break;
+				case 1:
+					x = te.size - 1;
+					break;
+				case 3:
+					y = te.size - 1;
+					break;
+				}
+			}
+			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(x, y, id, te.xCoord, te.yCoord, te.zCoord));
+		}
+		
+		public void findNext()
+		{
+			while(!isDone)
+			{
+				boolean b1 = x + 1 >= te.size || te.matrix[x + 1][y] != 0;
+				boolean b2 = y + 1 >= te.size || te.matrix[x][y + 1] != 0;
+				boolean b3 = x - 1 < 0 || te.matrix[x - 1][y] != 0;
+				boolean b4 = y - 1 < 0 || te.matrix[x][y - 1] != 0;	
+				isDone = b1 && b2 && b3 && b4;
+				if(isDone) return;
+				
+				int nX = x;
+				int nY = y;
+				nX += direction.offsetX;
+				nY += direction.offsetZ;
+				
+				if(nX < 0 || nY < 0 || nX >= te.size || nY >= te.size || te.matrix[nX][nY] != 0)
+					direction = MiscUtils.rot(direction);
+				else
+				{
+					te.matrix[x][y] = 1;
+					x = nX;
+					y = nY;
+					
+					if(te.refMatrix[x][y] != 0 && te.matrix[x][y] == 0)
+					{
+						setAim(x, y);
+						return;
+					}
+				}
+			}
+		}
+		
 		public void setAim(int x, int y)
 		{
-			if(!te.getWorldObj().isRemote)
-			{
-				if(!isActive || CommonProxy.serverTicks < lastModified + laserSpeed) return;
+			if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
 				IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(x, y, id, te.xCoord, te.yCoord, te.zCoord));
-			}
 			
 			this.x = x;
 			this.y = y;
@@ -135,6 +208,11 @@ public class LaserHelper
 			reload();
 			rotTimeAZ = Math.abs(lastAZ - aZ) * rotSpeed;
 			rotTimeAY = Math.abs(lastAY - aY) * rotSpeed;
+		}
+		
+		public boolean canUpdate()
+		{
+			return isActive && CommonProxy.serverTicks >= lastModified + laserSpeed;
 		}
 		
 		public void update(float partialTicks)
