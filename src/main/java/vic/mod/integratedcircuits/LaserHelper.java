@@ -61,6 +61,12 @@ public class LaserHelper
 			if(laser != null) laser.reset();
 	}
 	
+	public void start()
+	{
+		for(Laser laser : lasers)
+			if(laser != null) laser.start();
+	}
+	
 	public static class Laser
 	{
 		public int x, y, id;
@@ -68,7 +74,7 @@ public class LaserHelper
 		private float rotSpeed = 0.4F, laserSpeed = 5F; //75F
 		private float lastAY, lastAZ, aY, aZ, rotTimeAZ, rotTimeAY;
 		private TileEntityAssembler te;
-		public boolean isActive = true, isDone = false;
+		public boolean isActive = true, isRunning = false;
 		private int lastModified;
 		
 		private Laser(TileEntityAssembler te, int id)
@@ -132,7 +138,7 @@ public class LaserHelper
 		
 		public void findNext()
 		{
-			while(!isDone)
+			while(isRunning)
 			{	
 				if(te.matrix[x][y] == 0)
 				{
@@ -157,8 +163,8 @@ public class LaserHelper
 						turn = 0;
 						if(max == 1) 
 						{
-							isDone = true;
-							setAim(x, y);
+							isRunning = false;
+							reset();
 						}
 					}
 					step = max;
@@ -167,10 +173,16 @@ public class LaserHelper
 			}
 		}
 		
+		public void start()
+		{
+			reset();
+			isRunning = true;
+		}
+		
 		public void setAim(int x, int y)
 		{
 			if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
-				IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(x, y, id, te.xCoord, te.yCoord, te.zCoord));
+				IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord));
 			
 			this.x = x;
 			this.y = y;
@@ -190,6 +202,9 @@ public class LaserHelper
 			step = te.size;
 			max = te.size;
 			turn = 0;
+			
+			x = 0;
+			y = 0;
 			
 			switch (id) {
 			case 0:
@@ -215,7 +230,8 @@ public class LaserHelper
 				direction = ForgeDirection.NORTH; break;
 			}
 			
-			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(x, y, id, te.xCoord, te.yCoord, te.zCoord));
+			reload();
+			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord));
 		}
 		
 		public boolean canUpdate()

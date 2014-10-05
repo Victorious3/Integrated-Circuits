@@ -11,7 +11,6 @@ import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -35,7 +34,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			for(int i = 0; i < 4; i++)
 			{
 				Laser laser = laserHelper.getLaser(i);
-				if(laser == null || laser.isDone) continue;
+				if(laser == null) continue;
 				laser.update(0);
 				if(laser.canUpdate()) laser.findNext();
 			}
@@ -67,8 +66,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	
 	public void loadMatrix()
 	{
-		if(getDisk() == null) refMatrix = null;
-		else
+		if(getDisk() != null)
 		{
 			ItemStack stack = getDisk();
 			if(stack.getTagCompound() != null && stack.getTagCompound().hasKey("circuit"))
@@ -89,14 +87,15 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			}
 			else refMatrix = null;
 		}
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-		{
-			verts = new Tessellator();
-			verts.startDrawingQuads();		
-			verts.setColorRGBA_F(0, 0.2F, 0, 1);
-			RenderUtils.addBox(verts, 0, 0, 0, size, 2, size);
-		}
-		else laserHelper.reset();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void prepareRender()
+	{
+		verts = new Tessellator();
+		verts.startDrawingQuads();
+		verts.setColorRGBA_F(0, 0.2F, 0, 1);
+		RenderUtils.addBox(verts, 0, 0, 0, size, 2, size);
 	}
 	
 	@SideOnly(Side.CLIENT)

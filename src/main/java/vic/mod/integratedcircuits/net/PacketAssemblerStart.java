@@ -38,6 +38,9 @@ public class PacketAssemblerStart extends PacketTileEntity<PacketAssemblerStart>
 			
 			circuit.stackTagCompound = icomp;
 			te.setInventorySlotContents(1, circuit);
+			
+			te.laserHelper.reset();
+			te.laserHelper.start();
 		}
 	}
 }

@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.DiskDriveUtils;
 import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
-import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
+import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
@@ -103,9 +103,9 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 
 			if(getCurrentRenderPass() > 0)
 			{
-				if(laser.isActive) renderLaser(1 / 64F, -laser.iY, laser.iZ, laser.length, te, partialTicks);
+				if(laser.isActive && laser.isRunning) renderLaser(1 / 64F, -laser.iY, laser.iZ, laser.length, te, partialTicks);
 			}
-			else ModelLaser.instance.render(1 / 64F, -laser.iY, laser.iZ, laser.isActive, partialTicks, te);
+			else ModelLaser.instance.render(1 / 64F, -laser.iY, laser.iZ, laser.isActive && laser.isRunning, partialTicks, te);
 			GL11.glPopMatrix();
 		}
 		
