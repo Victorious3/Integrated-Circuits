@@ -52,7 +52,7 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 		Laser laser = te.laserHelper.getLaser(id);
 		if(laser.x >= 0 && laser.y >= 0 && laser.x < te.size && laser.y < te.size)
 			te.loadGateAt(laser.x, laser.y);
-		laser.setAim(x, y);
 		laser.isRunning = isRunning;
+		laser.setAim(x, y);
 	}
 }

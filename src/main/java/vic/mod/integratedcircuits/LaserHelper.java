@@ -63,6 +63,7 @@ public class LaserHelper
 	
 	public void start()
 	{
+		te.matrix = new int[te.size][te.size];
 		for(Laser laser : lasers)
 			if(laser != null) laser.start();
 	}
@@ -95,8 +96,8 @@ public class LaserHelper
 			lastAZ = aZ;
 			iY = aY;
 			iZ = aZ;
-			
-			if(te.refMatrix != null)
+						
+			if(te.refMatrix != null && isRunning)
 			{
 				float x2 = x + 0.5F;
 				float y2 = y + 0.5F;
@@ -175,8 +176,8 @@ public class LaserHelper
 		
 		public void start()
 		{
-			reset();
 			isRunning = true;
+			reset();	
 		}
 		
 		public void setAim(int x, int y)
@@ -188,7 +189,7 @@ public class LaserHelper
 			this.y = y;
 			this.isActive = false;
 			
-			if(te.getWorldObj().isRemote)
+			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 				lastModified = ClientProxy.clientTicks;
 			else lastModified = CommonProxy.serverTicks;
 			
@@ -229,6 +230,10 @@ public class LaserHelper
 			default:
 				direction = ForgeDirection.NORTH; break;
 			}
+			
+			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+				lastModified = ClientProxy.clientTicks;
+			else lastModified = CommonProxy.serverTicks;
 			
 			reload();
 			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord));
