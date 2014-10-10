@@ -14,6 +14,7 @@ public class LaserHelper
 {
 	private Laser[] lasers = new Laser[4];
 	private TileEntityAssembler te;
+	private boolean isRunning;
 	
 	public LaserHelper(TileEntityAssembler te)
 	{
@@ -57,15 +58,44 @@ public class LaserHelper
 	
 	public void reset()
 	{
+		isRunning = false;
 		for(Laser laser : lasers)
-			if(laser != null) laser.reset();
+		{
+			if(laser != null) 
+			{
+				laser.isRunning = false;
+				laser.reset();
+			}
+		}
 	}
 	
 	public void start()
 	{
 		te.matrix = new int[te.size][te.size];
+		isRunning = true;
 		for(Laser laser : lasers)
-			if(laser != null) laser.start();
+			if(laser != null) laser.start();		
+	}
+	
+	public void update()
+	{
+		if(isRunning)
+		{
+			boolean b = false;
+			for(int i = 0; i < 4; i++)
+			{
+				Laser laser = getLaser(i);
+				if(laser == null) continue;
+				laser.update(0);
+				if(laser.isRunning) b = true; 
+				if(laser.canUpdate()) laser.findNext();
+			}
+			if(!b)
+			{
+				isRunning = false;
+				te.onCircuitFinished();
+			}
+		}
 	}
 	
 	public static class Laser
@@ -96,7 +126,7 @@ public class LaserHelper
 			lastAZ = aZ;
 			iY = aY;
 			iZ = aZ;
-						
+			
 			if(te.refMatrix != null && isRunning)
 			{
 				float x2 = x + 0.5F;

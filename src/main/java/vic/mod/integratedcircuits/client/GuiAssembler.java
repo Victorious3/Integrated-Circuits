@@ -36,7 +36,6 @@ public class GuiAssembler extends GuiContainer
 	{
 		if(button.id == 0)
 		{
-			te.prepareRender();
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord));
 		}		
 	}

@@ -57,7 +57,7 @@ public class IntegratedCircuits
     	AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
     	AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
     	
-    	AbstractPacket.registerPacket(PacketAssemblerStart.class, Side.SERVER, 7);
+    	AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
     	AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 8);
     	
     	itemCircuit = new ItemCircuit();

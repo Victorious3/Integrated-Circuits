@@ -7,10 +7,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
-import vic.mod.integratedcircuits.LaserHelper.Laser;
+import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -18,8 +19,10 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 {
 	public int[][] refMatrix;
 	public int[][] matrix;
+	public CircuitData cdata;
 	public int size;
 	public ItemStack[] contents = new ItemStack[11];
+	public String name;
 	
 	@SideOnly(Side.CLIENT)
 	public Tessellator verts;
@@ -30,15 +33,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void updateEntity() 
 	{
 		if(!worldObj.isRemote && refMatrix != null)
-		{
-			for(int i = 0; i < 4; i++)
-			{
-				Laser laser = laserHelper.getLaser(i);
-				if(laser == null) continue;
-				laser.update(0);
-				if(laser.canUpdate()) laser.findNext();
-			}
-		}
+			laserHelper.update();
 	}
 
 	@Override
@@ -51,7 +46,12 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 				contents[i] = null;
 			else contents[i] = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("stack_" + i));
 		}
-		loadMatrix();
+		if(compound.hasKey("circuit")) loadMatrix(compound);
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && getStackInSlot(1) != null) 
+		{
+			prepareRender();
+			updateRender();
+		}
 	}
 
 	@Override
@@ -62,31 +62,69 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		{
 			compound.setTag("stack_" + i, contents[i] != null ? contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
 		}
+		if(refMatrix != null) saveMatrix(compound);
 	}
 	
-	public void loadMatrix()
+	private void loadMatrix(NBTTagCompound compound)
+	{
+		NBTTagCompound circuit = compound.getCompoundTag("circuit");
+		cdata = CircuitData.readFromNBT(circuit);
+		size = cdata.getSize();
+		name = compound.getString("name");
+		
+		refMatrix = new int[size][size];
+		matrix = new int[size][size];
+				
+		NBTTagList idlist = circuit.getTagList("id", NBT.TAG_INT_ARRAY);
+		for(int i = 0; i < idlist.tagCount(); i++)
+			refMatrix[i] = idlist.func_150306_c(i);
+		
+		int[] temp = compound.getIntArray("tmp");
+		for(int i = 0; i < temp.length; i++)
+			matrix[i / size][i % size] = temp[i];
+	}
+	
+	private void saveMatrix(NBTTagCompound compound)
+	{
+		NBTTagCompound circuit = new NBTTagCompound();
+		cdata.writeToNBT(circuit);
+		compound.setTag("circuit", circuit);
+		compound.setString("name", name);
+		
+		int[] temp = new int[size * size];
+		for(int x = 0; x < size; x++)
+			for(int y = 0; y < size; y++)
+				temp[x + y * size] = matrix[x][y];
+		compound.setIntArray("tmp", temp);
+	}
+	
+	public void loadMatrixFromDisk()
 	{
 		if(getDisk() != null)
 		{
 			ItemStack stack = getDisk();
-			if(stack.getTagCompound() != null && stack.getTagCompound().hasKey("circuit"))
+			NBTTagCompound comp = stack.getTagCompound();
+			if(comp != null && comp.hasKey("circuit"))
 			{
-				NBTTagCompound comp = stack.getTagCompound();
-				size = comp.getInteger("size");
-				
-				refMatrix = new int[size][size];
-				matrix = new int[size][size];
-				
-				NBTTagCompound circuit = comp.getCompoundTag("circuit");
-				
-				NBTTagList idlist = circuit.getTagList("id", NBT.TAG_INT_ARRAY);
-				for(int i = 0; i < idlist.tagCount(); i++)
-				{
-					refMatrix[i] = idlist.func_150306_c(i);
-				}
+				loadMatrix(comp);
+				name = comp.getString("name");
 			}
 			else refMatrix = null;
 		}
+	}
+	
+	public void onCircuitFinished()
+	{
+		if(getStackInSlot(1) == null)
+		{
+			contents[1] = new ItemStack(IntegratedCircuits.itemPCB, 1, 1);
+			NBTTagCompound comp = new NBTTagCompound();
+			comp.setTag("circuit", cdata.writeToNBT(new NBTTagCompound()));
+			comp.setString("name", name);
+			comp.setInteger("size", size);
+			contents[1].setTagCompound(comp);
+		}
+		markDirty();
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -96,6 +134,17 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		verts.startDrawingQuads();
 		verts.setColorRGBA_F(0, 0.2F, 0, 1);
 		RenderUtils.addBox(verts, 0, 0, 0, size, 2, size);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void updateRender()
+	{
+		if(refMatrix != null)
+		{
+			for(int x = 0; x < size; x++)
+				for(int y = 0; y < size; y++)
+					if(matrix[x][y] != 0) loadGateAt(x, y);
+		}
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -216,7 +265,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		setInventorySlotContents(0, stack);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		loadMatrix();
+		loadMatrixFromDisk();
 	}
 
 	@Override
