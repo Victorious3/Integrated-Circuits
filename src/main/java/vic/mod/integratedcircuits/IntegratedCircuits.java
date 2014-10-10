@@ -32,6 +32,7 @@ public class IntegratedCircuits
 	
 	public static ItemCircuit itemCircuit;
 	public static ItemFloppyDisk itemFloppyDisk;
+	public static ItemPCB itemPCB;
 	
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
@@ -60,10 +61,12 @@ public class IntegratedCircuits
     	AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 8);
     	
     	itemCircuit = new ItemCircuit();
-    	GameRegistry.registerItem(itemCircuit, partCircuit, modID);
-    	
     	itemFloppyDisk = new ItemFloppyDisk();
-    	GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);
+    	itemPCB = new ItemPCB();
+    	
+    	GameRegistry.registerItem(itemCircuit, partCircuit, modID);  		
+    	GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);	
+    	GameRegistry.registerItem(itemPCB, modID + "_pcb", modID);
     	
     	blockPCBLayout = new BlockPCBLayout();
     	blockAssembler = new BlockAssembler();
