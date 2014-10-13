@@ -2,8 +2,6 @@ package vic.mod.integratedcircuits.client;
 
 import java.util.Random;
 
-import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.TesselatorVertexState;
@@ -18,7 +16,6 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.TileEntityAssembler;
-import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
 public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRenderer
@@ -160,73 +157,5 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks)
 	{
 		this.renderTileEntityAt((TileEntityAssembler)te, x, y, z, partialTicks);
-	}
-	
-	public static class ModelLaser extends ModelBase
-	{
-		public static ModelLaser instance = new ModelLaser();
-		
-		public ModelRenderer base;
-		public ModelRenderer stick;
-		public ModelRenderer head1;
-		public ModelRenderer head2;
-		public ModelRenderer[] torus;
-		
-		public ModelLaser()
-		{
-			base = new ModelRenderer(this);
-			base.addBox(0, -4, -4, 2, 8, 8);
-			stick = new ModelRenderer(this);
-			stick.addBox(0, -24, -1, 1, 24, 2);
-			head1 = new ModelRenderer(this);
-			head1.addBox(2, -2, -2, 10, 4, 4);
-			head2 = new ModelRenderer(this);
-			head2.addBox(12, -1, -1, 3, 2, 2);
-			
-			torus = new ModelRenderer[4];
-			for(int i = 0; i < 4; i++)
-			{
-				torus[i] = new ModelRenderer(this);
-				torus[i].addBox(3 + i * 2, -3, -3, 1, 6, 6);
-			}
-		}
-		
-		public void render(float scale, float h1, float h2, boolean spinning, float partialTicks, TileEntity te)
-		{
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glPushMatrix();
-			GL11.glColor3f(0.1F, 0.1F, 0.1F);
-			stick.render(scale);
-			
-			GL11.glRotatef(h2, 0, 1, 0);
-			GL11.glRotatef(h1, 0, 0, 1);
-			base.render(scale);
-			float rot = (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4);
-			
-			GL11.glColor3f(0.2F, 0.2F, 0.2F);
-			if(spinning) head1.rotateAngleX = rot;
-			head1.render(scale);
-			
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
-			
-			if(spinning) GL11.glColor3f(1, 0, 0);
-			else GL11.glColor3f(0.4F, 0, 0);
-			
-			if(spinning) head2.rotateAngleX = rot;
-			head2.render(scale);
-			
-			int enabled = ClientProxy.clientTicks % 40 / 10;
-			for(int i = 0; i < 4; i++)
-			{
-				if(spinning) torus[i].rotateAngleX = rot;
-				if(i == enabled && spinning) GL11.glColor3f(1, 0, 0);
-				else GL11.glColor3f(0.4F, 0, 0);
-				torus[i].render(scale);
-			}
-			
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glPopMatrix();
-			RenderUtils.resetBrightness(te);
-		}
 	}
 }

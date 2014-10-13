@@ -26,6 +26,7 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.ItemCircuitRenderer;
+import vic.mod.integratedcircuits.client.ItemLaserRenderer;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
 import vic.mod.integratedcircuits.client.ShaderHelper;
@@ -59,6 +60,7 @@ public class ClientProxy extends CommonProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemCircuit, new ItemCircuitRenderer());
+		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemLaser, new ItemLaserRenderer());
 	}
 	
 	@SubscribeEvent

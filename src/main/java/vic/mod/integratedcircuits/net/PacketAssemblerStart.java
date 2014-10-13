@@ -25,8 +25,8 @@ public class PacketAssemblerStart extends PacketTileEntity<PacketAssemblerStart>
 			{
 				te.laserHelper.reset();
 				te.laserHelper.start();
+				IntegratedCircuits.networkWrapper.sendToAll(this);
 			}
-			IntegratedCircuits.networkWrapper.sendToAll(this);
 		}
 		else te.prepareRender();
 	}

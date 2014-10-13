@@ -9,6 +9,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
+import vic.mod.integratedcircuits.net.PacketAssemblerReset;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -197,6 +198,8 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			{
 				ItemStack stack = this.contents[id];
 				contents[id] = null;
+				if(id == 1) 
+					IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerReset(xCoord, yCoord, zCoord));
 				this.markDirty();
 				return stack;
 			}

@@ -102,7 +102,7 @@ public class LaserHelper
 	{
 		public int x, y, id;
 		public float iY, iZ, length;
-		private float rotSpeed = 0.4F, laserSpeed = 5F; //75F
+		private float rotSpeed = 0.05F /*0.4F*/, laserSpeed = 1F; //75F
 		private float lastAY, lastAZ, aY, aZ, rotTimeAZ, rotTimeAY;
 		private TileEntityAssembler te;
 		public boolean isActive = true, isRunning = false;

@@ -40,7 +40,7 @@ public class BlockAssembler extends BlockContainer
 	{
 		return new TileEntityAssembler();
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int meta) 

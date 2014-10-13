@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits;
 
 import vic.mod.integratedcircuits.net.AbstractPacket;
+import vic.mod.integratedcircuits.net.PacketAssemblerReset;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
@@ -33,6 +34,7 @@ public class IntegratedCircuits
 	public static ItemCircuit itemCircuit;
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
+	public static ItemLaser itemLaser;
 	
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
@@ -58,18 +60,22 @@ public class IntegratedCircuits
     	AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
     	
     	AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
-    	AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 8);
+    	AbstractPacket.registerPacket(PacketAssemblerReset.class, Side.CLIENT, 8);
+    	AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
     	
     	itemCircuit = new ItemCircuit();
     	itemFloppyDisk = new ItemFloppyDisk();
     	itemPCB = new ItemPCB();
+    	itemLaser = new ItemLaser();
     	
     	GameRegistry.registerItem(itemCircuit, partCircuit, modID);  		
     	GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);	
     	GameRegistry.registerItem(itemPCB, modID + "_pcb", modID);
+    	GameRegistry.registerItem(itemLaser, modID + "_laser", modID);
     	
     	blockPCBLayout = new BlockPCBLayout();
     	blockAssembler = new BlockAssembler();
+    	
     	GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
     	GameRegistry.registerBlock(blockAssembler, modID + ".assembler");
     	
