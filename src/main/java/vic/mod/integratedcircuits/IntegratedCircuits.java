@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits;
 
 import vic.mod.integratedcircuits.net.AbstractPacket;
+import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
 import vic.mod.integratedcircuits.net.PacketAssemblerReset;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
@@ -62,6 +63,7 @@ public class IntegratedCircuits
     	AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
     	AbstractPacket.registerPacket(PacketAssemblerReset.class, Side.CLIENT, 8);
     	AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
+    	AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
     	
     	itemCircuit = new ItemCircuit();
     	itemFloppyDisk = new ItemFloppyDisk();

@@ -49,10 +49,10 @@ public class ModelLaser extends ModelBase
 		GL11.glRotatef(h2, 0, 1, 0);
 		GL11.glRotatef(h1, 0, 0, 1);
 		base.render(scale);
-		float rot = (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4);
+		float rot = spinning ? (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4) : 0;
 		
 		GL11.glColor3f(0.2F, 0.2F, 0.2F);
-		if(spinning) head1.rotateAngleX = rot;
+		head1.rotateAngleX = rot;
 		head1.render(scale);
 		
 		if(te != null) OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
@@ -60,13 +60,13 @@ public class ModelLaser extends ModelBase
 		if(spinning) GL11.glColor3f(1, 0, 0);
 		else GL11.glColor3f(0.4F, 0, 0);
 		
-		if(spinning) head2.rotateAngleX = rot;
+		head2.rotateAngleX = rot;
 		head2.render(scale);
 		
 		int enabled = ClientProxy.clientTicks % 40 / 10;
 		for(int i = 0; i < 4; i++)
 		{
-			if(spinning) torus[i].rotateAngleX = rot;
+			torus[i].rotateAngleX = rot;
 			if(i == enabled && spinning) GL11.glColor3f(1, 0, 0);
 			else GL11.glColor3f(0.4F, 0, 0);
 			torus[i].render(scale);

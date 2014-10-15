@@ -1,7 +1,10 @@
 package vic.mod.integratedcircuits;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
@@ -9,20 +12,19 @@ import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class LaserHelper 
 {
 	private Laser[] lasers = new Laser[4];
 	private TileEntityAssembler te;
-	private boolean isRunning;
+	public boolean isRunning;
+	private int offset;
 	
-	public LaserHelper(TileEntityAssembler te)
+	public LaserHelper(TileEntityAssembler te, int offset)
 	{
 		this.te = te;
-		createLaser(0);
-		createLaser(1);
-		createLaser(2);
-		createLaser(3);
+		this.offset = offset;
 	}
 	
 	public Laser getLaser(int id)
@@ -30,24 +32,51 @@ public class LaserHelper
 		return lasers[id];
 	}
 	
-	public void createLaser(int id)
+	public void createLaser(int id, ItemStack laser)
 	{
-		lasers[id] = new Laser(te, id);
+		if(laser == null) lasers[id] = null;
+		else lasers[id] = new Laser(te, id);
+		te.contents[offset + id] = laser;
 	}
 	
-	public void removeLaser(int id)
+	@SideOnly(Side.CLIENT)
+	public void refresh(int id)
 	{
-		lasers[id] = null;
-	} 
-	
+		ItemStack stack = te.contents[offset + id];
+		if(stack == null) lasers[id] = null;
+		else lasers[id] = new Laser(te, id);
+	}
+
 	public NBTTagCompound writeToNBT(NBTTagCompound tag)
 	{
+		NBTTagList lasers = new NBTTagList();
+		for(int i = 0; i < 4; i++)
+		{
+			NBTTagCompound comp = new NBTTagCompound();
+			if(getLaser(i) != null)
+			{
+				getLaser(i).writeToNBT(comp);
+				comp.setTag("stack", te.contents[i + offset].writeToNBT(new NBTTagCompound()));
+			}
+			lasers.appendTag(comp);
+		}
+		tag.setTag("lasers", lasers);
+		tag.setBoolean("isRunning", isRunning);
 		return tag;
 	}
 	
 	public void readFromNBT(NBTTagCompound tag)
 	{
-		
+		NBTTagList lasers = tag.getTagList("lasers", NBT.TAG_COMPOUND);
+		for(int i = 0; i < 4; i++)
+		{
+			NBTTagCompound comp = lasers.getCompoundTagAt(i);
+			if(comp.hasNoTags()) continue;
+			ItemStack stack = ItemStack.loadItemStackFromNBT(comp.getCompoundTag("stack"));
+			createLaser(i, stack);
+			getLaser(i).readFromNBT(comp);
+		}
+		isRunning = tag.getBoolean("isRunning");
 	}
 	
 	public void reload()
@@ -102,11 +131,13 @@ public class LaserHelper
 	{
 		public int x, y, id;
 		public float iY, iZ, length;
-		private float rotSpeed = 0.05F /*0.4F*/, laserSpeed = 1F; //75F
+		private float rotSpeed = 0.4F, laserSpeed = 1F; //75F
 		private float lastAY, lastAZ, aY, aZ, rotTimeAZ, rotTimeAY;
 		private TileEntityAssembler te;
 		public boolean isActive = true, isRunning = false;
 		private int lastModified;
+		private ForgeDirection direction;
+		private int step, max, turn;
 		
 		private Laser(TileEntityAssembler te, int id)
 		{
@@ -117,6 +148,31 @@ public class LaserHelper
 			else lastModified = CommonProxy.serverTicks;
 			
 			reset();
+		}
+		
+		public void readFromNBT(NBTTagCompound tag)
+		{
+			isActive = tag.getBoolean("isActive");
+			isRunning = tag.getBoolean("isRunning");
+			x = tag.getInteger("x");
+			y = tag.getInteger("y");
+			step = tag.getInteger("step");
+			max = tag.getInteger("max");
+			turn = tag.getInteger("turn");
+			direction = ForgeDirection.getOrientation(tag.getInteger("direction"));
+		}
+		
+		public NBTTagCompound writeToNBT(NBTTagCompound tag)
+		{
+			tag.setBoolean("isActive", isActive);
+			tag.setBoolean("isRunning", isRunning);
+			tag.setInteger("x", x);
+			tag.setInteger("y", y);
+			tag.setInteger("step", step);
+			tag.setInteger("max", max);
+			tag.setInteger("turn", turn);
+			tag.setInteger("direction", direction.ordinal());
+			return tag;
 		}
 		
 		private void reload()
@@ -163,14 +219,12 @@ public class LaserHelper
 			if(dif2 >= 1F) return f2;
 			return f1 + dif * dif2;
 		}
-		
-		private ForgeDirection direction;
-		private int step, max, turn;
-		
+
+		//FIXME Still not hitting everything!
 		public void findNext()
 		{
 			while(isRunning)
-			{	
+			{
 				if(te.matrix[x][y] == 0)
 				{
 					te.matrix[x][y] = 1;

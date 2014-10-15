@@ -10,7 +10,7 @@ public class ContainerAssembler extends Container
 {
 	public TileEntityAssembler tileentity;
 	
-	public ContainerAssembler(IInventory playerInventory, TileEntityAssembler tileentity)
+	public ContainerAssembler(IInventory playerInventory, final TileEntityAssembler tileentity)
 	{
 		this.tileentity = tileentity;
 		this.tileentity.openInventory();
@@ -38,13 +38,30 @@ public class ContainerAssembler extends Container
 			}
 		});
 		
-		for(int i = 0; i < 9; ++i)
+		for(int i = 0; i < 9; i++)
 			this.addSlotToContainer(new Slot(this.tileentity, i + 2, 8 + i * 18, 108));
+		
+		for(int i = 0; i < 4; i++)
+			this.addSlotToContainer(new Slot(this.tileentity, i + 11, 154, 6 + i * 18)
+			{
+				@Override
+				public boolean isItemValid(ItemStack stack) 
+				{
+					return stack.getItem() == IntegratedCircuits.itemLaser;
+				}
+
+				@Override
+				public void onSlotChanged() 
+				{
+					tileentity.laserHelper.createLaser(this.slotNumber - 11, getStack());
+					super.onSlotChanged();
+				}	
+			});
 		
 		for(int i = 0; i < 3; i++)
 			for(int j = 0; j < 9; j++)
 				this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 140 + i * 18));	
-		for(int i = 0; i < 9; ++i)
+		for(int i = 0; i < 9; i++)
 			this.addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18, 198));
 	}
 

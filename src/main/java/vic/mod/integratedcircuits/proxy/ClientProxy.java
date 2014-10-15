@@ -182,6 +182,7 @@ public class ClientProxy extends CommonProxy
 		
 		GL11.glPushMatrix();
 		
+		GL11.glColor3f(1F, 1F, 1F);
 		GL11.glRotatef(yawOffset, 0, -1, 0);
 		GL11.glRotatef(yaw - 270, 0, 1, 0);
 		GL11.glRotatef(pitch, 0, 0, 1);	

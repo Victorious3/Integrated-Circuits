@@ -22,13 +22,13 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public int[][] matrix;
 	public CircuitData cdata;
 	public int size;
-	public ItemStack[] contents = new ItemStack[11];
+	public ItemStack[] contents = new ItemStack[15];
 	public String name;
 	
 	@SideOnly(Side.CLIENT)
 	public Tessellator verts;
 	
-	public LaserHelper laserHelper = new LaserHelper(this);
+	public LaserHelper laserHelper = new LaserHelper(this, 11);
 
 	@Override
 	public void updateEntity() 
@@ -41,14 +41,16 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void readFromNBT(NBTTagCompound compound)
 	{
 		super.readFromNBT(compound);
-		for(int i = 0; i < contents.length; i++)
+		for(int i = 0; i < 14; i++)
 		{
 			if(compound.getCompoundTag("stack_" + i).hasNoTags())
 				contents[i] = null;
 			else contents[i] = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("stack_" + i));
 		}
 		if(compound.hasKey("circuit")) loadMatrix(compound);
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && getStackInSlot(1) != null) 
+		laserHelper.readFromNBT(compound);
+		
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && (getStackInSlot(1) != null || laserHelper.isRunning)) 
 		{
 			prepareRender();
 			updateRender();
@@ -59,11 +61,13 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void writeToNBT(NBTTagCompound compound)
 	{
 		super.writeToNBT(compound);
-		for(int i = 0; i < contents.length; i++)
+		for(int i = 0; i < 14; i++)
 		{
-			compound.setTag("stack_" + i, contents[i] != null ? contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
+			compound.setTag("stack_" + i, contents[i] != null ? 
+				contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
 		}
 		if(refMatrix != null) saveMatrix(compound);
+		laserHelper.writeToNBT(compound);
 	}
 	
 	private void loadMatrix(NBTTagCompound compound)
