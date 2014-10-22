@@ -1,9 +1,14 @@
 package vic.mod.integratedcircuits;
 
+import java.util.Arrays;
+
 import mrtjp.projectred.core.PartDefs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class IntegratedCircuitsRecipes 
@@ -36,5 +41,28 @@ public class IntegratedCircuitsRecipes
 					'#', PartDefs.INFUSEDSILICON().makeStack()
 		);
 		
+		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(IntegratedCircuits.itemCircuit), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)))
+		{
+			@Override
+			public ItemStack getCraftingResult(InventoryCrafting crafting) 
+			{
+				ItemStack stack = null;
+				for(int i = 0; i < crafting.getSizeInventory(); i++)
+				{
+					ItemStack tmp = crafting.getStackInSlot(i);
+					if(tmp != null && tmp.getItem() == IntegratedCircuits.itemPCB && tmp.hasTagCompound() && tmp.getTagCompound().hasKey("circuit"))
+					{
+						stack = tmp;
+						break;
+					}
+				}
+				if(stack == null) return null;
+				ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit);
+				NBTTagCompound comp = (NBTTagCompound)stack.getTagCompound().copy();
+				comp.removeTag("author");
+				ret.setTagCompound(comp);
+				return ret;
+			}
+		});
 	}
 }

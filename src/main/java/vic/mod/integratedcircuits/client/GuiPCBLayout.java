@@ -518,7 +518,7 @@ public class GuiPCBLayout extends GuiContainer
 			this.selectedChooser.mouseReleased(x, y);
 			this.selectedChooser = null;
 	    }
-		if(button > 0 && drag)
+		if(button != -1 && drag)
 		{
 			int id = CircuitPart.getId(selectedPart);
 			int state = selectedPart.getState();	

@@ -293,6 +293,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
+		//FIXME Currently broken.
 		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
 		if(!isBundeledAtSide(side) && frequency > 0) return;
 		byte oldOut = this.output[side][frequency];

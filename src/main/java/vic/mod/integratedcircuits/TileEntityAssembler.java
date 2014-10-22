@@ -21,7 +21,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public int[][] refMatrix;
 	public int[][] matrix;
 	public CircuitData cdata;
-	public int size;
+	public int size, con, tier;
 	public ItemStack[] contents = new ItemStack[15];
 	public String name;
 	
@@ -76,6 +76,8 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		cdata = CircuitData.readFromNBT(circuit);
 		size = cdata.getSize();
 		name = compound.getString("name");
+		con = compound.getInteger("con");
+		tier = compound.getInteger("tier");
 		
 		refMatrix = new int[size][size];
 		matrix = new int[size][size];
@@ -95,6 +97,8 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		cdata.writeToNBT(circuit);
 		compound.setTag("circuit", circuit);
 		compound.setString("name", name);
+		compound.setInteger("tier", tier);
+		compound.setInteger("con", con);
 		
 		int[] temp = new int[size * size];
 		for(int x = 0; x < size; x++)
@@ -113,6 +117,8 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			{
 				loadMatrix(comp);
 				name = comp.getString("name");
+				con = comp.getInteger("con");
+				tier = comp.getInteger("tier");
 			}
 			else refMatrix = null;
 		}
@@ -127,6 +133,8 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			comp.setTag("circuit", cdata.writeToNBT(new NBTTagCompound()));
 			comp.setString("name", name);
 			comp.setInteger("size", size);
+			comp.setInteger("tier", tier);
+			comp.setInteger("con", con);
 			contents[1].setTagCompound(comp);
 		}
 		markDirty();
