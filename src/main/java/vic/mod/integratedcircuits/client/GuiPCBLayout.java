@@ -21,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.ContainerPCBLayout;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.client.GuiCallback.Action;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDCell;
@@ -57,7 +58,7 @@ import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
-public class GuiPCBLayout extends GuiContainer
+public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 {	
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/pcblayout.png");
 	
@@ -83,6 +84,9 @@ public class GuiPCBLayout extends GuiContainer
 	//Used by the wires
 	private int sx, sy, ex, ey;
 	private boolean drag;
+	
+	//Callbacks
+	private GuiCallback callback = new GuiCallback(this, ey, ex, Action.OK, Action.CANCEL);
 	
 	public GuiPCBLayout(ContainerPCBLayout container) 
 	{
@@ -211,6 +215,7 @@ public class GuiPCBLayout extends GuiContainer
 		else if(button.id == 9) scale(-1);
 		else if(button.id == 10)
 		{
+			callback.display();
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
 		}
 		else if(button.id == 11)
@@ -222,6 +227,12 @@ public class GuiPCBLayout extends GuiContainer
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));
 		else if(button.id == 12)
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(false, te.xCoord, te.yCoord, te.zCoord));
+	}
+	
+	@Override
+	public void onCallback(GuiCallback gui, Action result, int id) 
+	{
+		System.out.println("YO");
 	}
 	
 	public List getButtonList()
