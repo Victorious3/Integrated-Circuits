@@ -36,8 +36,10 @@ public class PacketAssemblerChangeLaser extends PacketTileEntity<PacketAssembler
 	@Override
 	public void process(EntityPlayer player, Side side) 
 	{
+		System.out.println("Creating laser: " + id);
 		TileEntityAssembler te = (TileEntityAssembler)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
-		te.laserHelper.refresh(id);
+		te.laserHelper.createLaser(id, te.contents[te.laserHelper.offset + id]);
+		System.out.println(te.laserHelper.getLaser(id));
 	}
 }

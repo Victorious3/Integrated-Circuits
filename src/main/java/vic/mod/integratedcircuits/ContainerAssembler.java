@@ -53,9 +53,12 @@ public class ContainerAssembler extends Container
 				@Override
 				public void onSlotChanged() 
 				{
-					tileentity.laserHelper.createLaser(this.slotNumber - 11, getStack());
 					super.onSlotChanged();
-				}	
+					if(!tileentity.getWorldObj().isRemote) 
+					{
+						tileentity.laserHelper.createLaser(this.slotNumber - 11, getStack());
+					}
+				}
 			});
 		
 		for(int i = 0; i < 3; i++)

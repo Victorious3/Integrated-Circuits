@@ -76,8 +76,8 @@ public class RenderUtils
 	public static void resetBrightness(TileEntity te)
 	{
 		int i = te.getWorldObj().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord, 0);
-	    int j = i % 65536;
-	    int k = i / 65536;
-	    OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
+		int j = i % 65536;
+		int k = i / 65536;
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
 	}
 }

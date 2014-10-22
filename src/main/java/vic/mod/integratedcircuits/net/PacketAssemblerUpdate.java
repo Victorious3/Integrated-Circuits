@@ -50,6 +50,7 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 		TileEntityAssembler te = (TileEntityAssembler)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
 		Laser laser = te.laserHelper.getLaser(id);
+		if(laser == null) return;
 		if(laser.x >= 0 && laser.y >= 0 && laser.x < te.size && laser.y < te.size)
 			te.loadGateAt(laser.x, laser.y);
 		laser.isRunning = isRunning;

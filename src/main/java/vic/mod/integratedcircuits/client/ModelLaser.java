@@ -3,10 +3,10 @@ package vic.mod.integratedcircuits.client;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
@@ -39,7 +39,7 @@ public class ModelLaser extends ModelBase
 		}
 	}
 	
-	public void render(float scale, float h1, float h2, boolean spinning, float partialTicks, TileEntity te)
+	public void render(float scale, float h1, float h2, boolean active, float spin, float partialTicks, TileEntityAssembler te)
 	{
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glPushMatrix();
@@ -49,25 +49,24 @@ public class ModelLaser extends ModelBase
 		GL11.glRotatef(h2, 0, 1, 0);
 		GL11.glRotatef(h1, 0, 0, 1);
 		base.render(scale);
-		float rot = spinning ? (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4) : 0;
 		
 		GL11.glColor3f(0.2F, 0.2F, 0.2F);
-		head1.rotateAngleX = rot;
+		head1.rotateAngleX = spin;
 		head1.render(scale);
 		
 		if(te != null) OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
 		
-		if(spinning) GL11.glColor3f(1, 0, 0);
+		if(active) GL11.glColor3f(1, 0, 0);
 		else GL11.glColor3f(0.4F, 0, 0);
 		
-		head2.rotateAngleX = rot;
+		head2.rotateAngleX = spin;
 		head2.render(scale);
 		
 		int enabled = ClientProxy.clientTicks % 40 / 10;
 		for(int i = 0; i < 4; i++)
 		{
-			torus[i].rotateAngleX = rot;
-			if(i == enabled && spinning) GL11.glColor3f(1, 0, 0);
+			torus[i].rotateAngleX = spin;
+			if(i == enabled && active) GL11.glColor3f(1, 0, 0);
 			else GL11.glColor3f(0.4F, 0, 0);
 			torus[i].render(scale);
 		}

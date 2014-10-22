@@ -80,6 +80,10 @@ public class GuiPCBLayout extends GuiContainer
 	
 	public CircuitPart selectedPart;
 	
+	//Used by the wires
+	private int sx, sy, ex, ey;
+	private boolean drag;
+	
 	public GuiPCBLayout(ContainerPCBLayout container) 
 	{
 		super(container);
@@ -288,14 +292,37 @@ public class GuiPCBLayout extends GuiContainer
 		double x2 = (int)((x - guiLeft - te.offX * te.scale) / 16F / te.scale);
 		double y2 = (int)((y - guiTop - te.offY * te.scale) / 16F / te.scale);
 		
+		if(selectedPart instanceof PartWire && drag)
+		{
+			ex = (int)x2;
+			ey = (int)y2;
+		}
+		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown && !blockMouseInput)
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				x2 = x2 * 16 + te.offX;
-				y2 = y2 * 16 + te.offY;
-				CircuitPartRenderer.renderPart(selectedPart, x2, y2);
-			}		
+				if(!(selectedPart instanceof PartWire) || !drag)
+				{
+					x2 = x2 * 16 + te.offX;
+					y2 = y2 * 16 + te.offY;
+					CircuitPartRenderer.renderPart(selectedPart, x2, y2);
+				}
+				else
+				{
+					//TODO Make it render like a real wire!
+					x2 = sx; y2 = sy;
+					CircuitPartRenderer.renderPart(selectedPart, x2 * 16 + te.offX, y2 * 16 + te.offY);
+					while(x2 != ex || y2 != ey)
+					{
+						if(y2 < ey) y2++;
+						else if(y2 > ey) y2--;
+						else if(x2 < ex) x2++;
+						else if(x2 > ex) x2--;
+						CircuitPartRenderer.renderPart(selectedPart, x2 * 16 + te.offX, y2 * 16 + te.offY);	
+					}
+				}
+			}
 		}
 		
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
@@ -410,13 +437,23 @@ public class GuiPCBLayout extends GuiContainer
 		int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
 		int w = data.getSize();
 		
+		drag = false;
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
 		{
 			if(selectedPart == null)
+				IntegratedCircuits.networkWrapper.sendToServer(
+					new PacketPCBChangePart(new int[]{x2, y2, 0, 0}, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));
+			else if(selectedPart instanceof PartWire)
 			{
-				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, 0, 0, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));			
+				sx = x2;
+				sy = y2;
+				drag = true;
 			}
-			else IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, CircuitPart.getId(selectedPart), selectedPart.getState(), -1, false, te.xCoord, te.yCoord, te.zCoord));			
+			else
+			{
+				IntegratedCircuits.networkWrapper.sendToServer(
+					new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
+			}
 		}
 		
 		super.mouseClicked(x, y, flag);
@@ -426,7 +463,7 @@ public class GuiPCBLayout extends GuiContainer
 	{
 		int w = te.getCircuitData().getSize();
 		
-		double ow = w * 16 * te.scale;	
+		double ow = w * 16 * te.scale;
 		float oldScale = te.scale;
 		
 		int index = scales.indexOf(te.scale);
@@ -481,6 +518,39 @@ public class GuiPCBLayout extends GuiContainer
 			this.selectedChooser.mouseReleased(x, y);
 			this.selectedChooser = null;
 	    }
+		if(button > 0 && drag)
+		{
+			int id = CircuitPart.getId(selectedPart);
+			int state = selectedPart.getState();	
+			int w = te.getCircuitData().getSize();
+			
+			if(ex >= 0 && ey >= 0 && ex < w && ey < w && !blockMouseInput)
+			{
+				ArrayList<int[]> list = new ArrayList<int[]>();
+				list.add(new int[]{sx, sy});
+				while(sx != ex || sy != ey)
+				{
+					if(sy < ey) sy++;
+					else if(sy > ey) sy--;
+					else if(sx < ex) sx++;
+					else if(sx > ex) sx--;
+					list.add(new int[]{sx, sy});
+				}
+				int[] data = new int[list.size() * 4];
+				for(int i = 0; i < list.size(); i++)
+				{
+					int[] pt = list.get(i);
+					int index = i * 4;
+					data[index] = pt[0];
+					data[index + 1] = pt[1];
+					data[index + 2] = id;
+					data[index + 3] = state;
+				}
+				IntegratedCircuits.networkWrapper.sendToServer(
+					new PacketPCBChangePart(data, -1, false, te.xCoord, te.yCoord, te.zCoord));
+			}
+		}
+		drag = false;
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class ItemLaserRenderer implements IItemRenderer
 			GL11.glScalef(4.5F, 4.5F, 4.5F);
 		else GL11.glScalef(4F, 4F, 4F);
 		
-		ModelLaser.instance.render(1 / 64F, 0, 0, false, 1, null);
+		ModelLaser.instance.render(1 / 64F, 0, 0, false, 0, 1, null);
 		GL11.glPopMatrix();
 	}
 }

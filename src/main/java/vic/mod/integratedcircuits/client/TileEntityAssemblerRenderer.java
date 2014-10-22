@@ -16,6 +16,7 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
 public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRenderer
@@ -102,7 +103,12 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			{
 				if(laser.isActive && laser.isRunning) renderLaser(1 / 64F, -laser.iY, laser.iZ, laser.length, te, partialTicks);
 			}
-			else ModelLaser.instance.render(1 / 64F, -laser.iY, laser.iZ, laser.isActive && laser.isRunning, partialTicks, te);
+			else 
+			{
+				boolean active = laser.isActive && laser.isRunning;
+				if(active) laser.iX = (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4);
+				ModelLaser.instance.render(1 / 64F, -laser.iY, laser.iZ, active, laser.iX, partialTicks, te);
+			}
 			GL11.glPopMatrix();
 		}
 		

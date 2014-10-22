@@ -62,9 +62,9 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 		private static CCModel base = generateModel();
 		
 		static
-        {
-        	for(int i = 0; i < 24; i++) models[i] = ComponentStore.bakeCopy(base, i);
-        }
+		{
+			for(int i = 0; i < 24; i++) models[i] = ComponentStore.bakeCopy(base, i);
+		}
 
 		@Override
 		public void renderModel(Transformation arg0, int arg1)
@@ -90,10 +90,10 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 		private static CCModel bundeled = generateModel(true);
 		
 		static
-        {
-        	for(int i = 0; i < 24; i++) normalModels[i] = ComponentStore.bakeCopy(normal, i);
-        	for(int i = 0; i < 24; i++) bundeledModels[i] = ComponentStore.bakeCopy(bundeled, i);
-        }
+		{
+			for(int i = 0; i < 24; i++) normalModels[i] = ComponentStore.bakeCopy(normal, i);
+			for(int i = 0; i < 24; i++) bundeledModels[i] = ComponentStore.bakeCopy(bundeled, i);
+		}
 		
 		public PinModel(int rotation)
 		{

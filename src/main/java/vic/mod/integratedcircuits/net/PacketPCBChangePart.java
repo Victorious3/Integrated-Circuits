@@ -10,43 +10,43 @@ import cpw.mods.fml.relauncher.Side;
 
 public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 {
-	private int x, y, id, meta, button;
+	private int size;
+	private int[] data;
+	private int button;
 	boolean ctrl;
 	
 	public PacketPCBChangePart(){}
 	
-	public PacketPCBChangePart(int x, int y, int id, int meta, int button, boolean ctrl, int tx, int ty, int tz)
+	public PacketPCBChangePart(int data[], int button, boolean ctrl, int tx, int ty, int tz)
 	{
 		super(tx, ty, tz);
-		this.x = x; this.y = y;
-		this.id = id;
-		this.meta = meta;
 		this.button = button;
 		this.ctrl = ctrl;
+		this.size = data.length;
+		this.data = data;
 	}
 	
 	@Override
 	public void read(PacketBuffer buffer) throws IOException 
 	{
 		super.read(buffer);
-		x = buffer.readInt();
-		y = buffer.readInt();
-		id = buffer.readInt();
-		meta = buffer.readInt();
 		button = buffer.readInt();
 		ctrl = buffer.readBoolean();
+		size = buffer.readInt();
+		data = new int[size];
+		for(int i = 0; i < size; i++)
+			data[i] = buffer.readInt();
 	}
 
 	@Override
 	public void write(PacketBuffer buffer) throws IOException 
 	{
 		super.write(buffer);
-		buffer.writeInt(x);
-		buffer.writeInt(y);
-		buffer.writeInt(id);
-		buffer.writeInt(meta);
 		buffer.writeInt(button);
 		buffer.writeBoolean(ctrl);
+		buffer.writeInt(size);
+		for(int i : data)
+			buffer.writeInt(i);
 	}
 
 	@Override
@@ -56,13 +56,18 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 		if(te != null)
 		{
 			CircuitData cdata = te.getCircuitData();
-			if(button != -1) cdata.getPart(x, y).onClick(button, ctrl);
-			else
-			{
-				cdata.setID(x, y, id);
-				cdata.setMeta(x, y, meta);
-				cdata.getPart(x, y).onPlaced();
-				cdata.markForUpdate(x, y);
+			for(int i = 0; i < size; i += 4)
+			{	
+				int x = data[i];
+				int y = data[i + 1];
+				if(button != -1) cdata.getPart(x, y).onClick(button, ctrl);
+				else
+				{
+					cdata.setID(x, y, data[i + 2]);
+					cdata.setMeta(x, y, data[i + 3]);
+					cdata.getPart(x, y).onPlaced();
+					cdata.markForUpdate(x, y);
+				}
 			}
 		}
 	}

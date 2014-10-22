@@ -6,20 +6,20 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class LaserHelper 
 {
 	private Laser[] lasers = new Laser[4];
 	private TileEntityAssembler te;
 	public boolean isRunning;
-	private int offset;
+	public int offset;
 	
 	public LaserHelper(TileEntityAssembler te, int offset)
 	{
@@ -37,14 +37,8 @@ public class LaserHelper
 		if(laser == null) lasers[id] = null;
 		else lasers[id] = new Laser(te, id);
 		te.contents[offset + id] = laser;
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public void refresh(int id)
-	{
-		ItemStack stack = te.contents[offset + id];
-		if(stack == null) lasers[id] = null;
-		else lasers[id] = new Laser(te, id);
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
+			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id));
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound tag)
@@ -130,7 +124,7 @@ public class LaserHelper
 	public static class Laser
 	{
 		public int x, y, id;
-		public float iY, iZ, length;
+		public float iX, iY, iZ, length;
 		private float rotSpeed = 0.4F, laserSpeed = 1F; //75F
 		private float lastAY, lastAZ, aY, aZ, rotTimeAZ, rotTimeAY;
 		private TileEntityAssembler te;
@@ -143,11 +137,13 @@ public class LaserHelper
 		{
 			this.te = te;
 			this.id = id;
-			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) 
+			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 				lastModified = ClientProxy.clientTicks;
-			else lastModified = CommonProxy.serverTicks;
-			
-			reset();
+			else 
+			{
+				lastModified = CommonProxy.serverTicks;
+				reset();
+			}
 		}
 		
 		public void readFromNBT(NBTTagCompound tag)
@@ -220,7 +216,6 @@ public class LaserHelper
 			return f1 + dif * dif2;
 		}
 
-		//FIXME Still not hitting everything!
 		public void findNext()
 		{
 			while(isRunning)
@@ -239,21 +234,21 @@ public class LaserHelper
 				y += direction.offsetZ;
 				
 				step--;
-				if(step == 1)
+				if(step <= 0)
 				{
 					turn++;
+					step = max;
+					direction = MiscUtils.rot(direction);
 					if(turn == 2)
 					{
 						max--;
 						turn = 0;
-						if(max == 1) 
+						if(max < 0) 
 						{
 							isRunning = false;
 							reset();
 						}
-					}
-					step = max;
-					direction = MiscUtils.rot(direction);
+					}		
 				}
 			}
 		}
@@ -284,8 +279,8 @@ public class LaserHelper
 		
 		public void reset()
 		{
-			step = te.size;
-			max = te.size;
+			step = te.size - 1;
+			max = te.size - 1;
 			turn = 0;
 			
 			x = 0;

@@ -30,15 +30,19 @@ public class BlockPCBLayout extends BlockContainer
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) 
 	{
-		TileEntityPCBLayout te = (TileEntityPCBLayout)world.getTileEntity(x, y, z);
-		int rotation = te.rotation;
-		boolean bool = DiskDriveUtils.canInteractWith(Vec3.createVectorHelper(par7, par8, par9), world, x, y, z);
-		boolean canInteract = rotation == 3 && par6 == 4 
-			|| rotation == 0 && par6 == 2 
-			|| rotation == 1 && par6 == 5 
-			|| rotation == 2 && par6 == 3;
-		if(bool && canInteract) player.openGui(IntegratedCircuits.instance, 0, world, x, y, z);
-		return canInteract;
+		if(!world.isRemote)
+		{
+			TileEntityPCBLayout te = (TileEntityPCBLayout)world.getTileEntity(x, y, z);
+			int rotation = te.rotation;
+			boolean bool = DiskDriveUtils.canInteractWith(Vec3.createVectorHelper(par7, par8, par9), world, x, y, z);
+			boolean canInteract = rotation == 3 && par6 == 4 
+				|| rotation == 0 && par6 == 2 
+				|| rotation == 1 && par6 == 5 
+				|| rotation == 2 && par6 == 3;
+			if(bool && canInteract) player.openGui(IntegratedCircuits.instance, 0, world, x, y, z);
+			return canInteract;
+		}
+		return true;
 	}
 
 	@Override
