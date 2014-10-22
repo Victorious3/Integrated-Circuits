@@ -458,7 +458,30 @@ public class GuiPCBLayout extends GuiContainer
 		
 		super.mouseClicked(x, y, flag);
 	}
-	
+
+	@Override
+	protected void mouseClickMove(int x, int y, int par3, long par4) 
+	{
+		super.mouseClickMove(x, y, par3, par4);
+		
+		if(selectedPart instanceof PartNull)
+		{
+			int x2 = (int)((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
+			int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
+			int w = te.getCircuitData().getSize();
+			boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+			
+			if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
+			{
+				if(!(te.getCircuitData().getPart(x2, y2) instanceof PartNull))
+				{
+					IntegratedCircuits.networkWrapper.sendToServer(
+						new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
+				}
+			}
+		}
+	}
+
 	private void scale(int i)
 	{
 		int w = te.getCircuitData().getSize();

@@ -294,7 +294,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
 		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
-		if(!isBundeledAtSide(side) && frequency > 15) return;
+		if(!isBundeledAtSide(side) && frequency > 0) return;
 		byte oldOut = this.output[side][frequency];
 		byte newOut = (byte)(output ? 15 : 0);
 		this.output[side][frequency] = newOut;
