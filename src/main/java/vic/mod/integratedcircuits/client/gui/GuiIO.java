@@ -1,6 +1,7 @@
-package vic.mod.integratedcircuits.client;
+package vic.mod.integratedcircuits.client.gui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
@@ -12,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
@@ -38,7 +40,7 @@ public class GuiIO extends GuiButton implements IHoverable
 		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
 		this.field_146123_n = x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width && y < this.yPosition + this.height;
 		this.field_146123_n = !parent.blockMouseInput && field_146123_n;
-		if(getHoverState(field_146123_n) == 2) parent.hoveredElement = this;
+		if(getHoverState(field_146123_n) == 2) parent.setCurrentItem(this);
 		
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.xPosition, this.yPosition, 0);
@@ -85,7 +87,7 @@ public class GuiIO extends GuiButton implements IHoverable
 	}
 
 	@Override
-	public ArrayList<String> getHoverInformation() 
+	public List<String> getHoverInformation() 
 	{
 		ArrayList<String> text = new ArrayList<String>();
 		ForgeDirection dir = MiscUtils.getDirection(side);

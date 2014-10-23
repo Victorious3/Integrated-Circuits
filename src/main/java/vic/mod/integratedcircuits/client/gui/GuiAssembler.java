@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits.client;
+package vic.mod.integratedcircuits.client.gui;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;

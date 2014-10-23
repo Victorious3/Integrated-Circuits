@@ -47,54 +47,55 @@ public class IntegratedCircuits
 	@SidedProxy(clientSide = "vic.mod.integratedcircuits.proxy.ClientProxy", serverSide = "vic.mod.integratedcircuits.proxy.CommonProxy")
 	public static CommonProxy proxy;
 
-    @EventHandler
+	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
     {
-    	networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
-    	
-    	AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
-    	AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
-    	AbstractPacket.registerPacket(PacketPCBClear.class, null, 2);
-    	AbstractPacket.registerPacket(PacketPCBChangeName.class, null, 3);
-    	AbstractPacket.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
-    	AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
-    	AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
-    	
-    	AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
-    	AbstractPacket.registerPacket(PacketAssemblerReset.class, Side.CLIENT, 8);
-    	AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
-    	AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
-    	
-    	itemCircuit = new ItemCircuit();
-    	itemFloppyDisk = new ItemFloppyDisk();
-    	itemPCB = new ItemPCB();
-    	itemLaser = new ItemLaser();
-    	
-    	GameRegistry.registerItem(itemCircuit, partCircuit, modID);  		
-    	GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);	
-    	GameRegistry.registerItem(itemPCB, modID + "_pcb", modID);
-    	GameRegistry.registerItem(itemLaser, modID + "_laser", modID);
-    	
-    	blockPCBLayout = new BlockPCBLayout();
-    	blockAssembler = new BlockAssembler();
-    	
-    	GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
-    	GameRegistry.registerBlock(blockAssembler, modID + ".assembler");
-    	
-    	GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
-    	GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
+		Config.initialize(event.getSuggestedConfigurationFile());
+		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
+		
+		AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
+		AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
+		AbstractPacket.registerPacket(PacketPCBClear.class, null, 2);
+		AbstractPacket.registerPacket(PacketPCBChangeName.class, null, 3);
+		AbstractPacket.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
+		AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
+		AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
+		
+		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
+		AbstractPacket.registerPacket(PacketAssemblerReset.class, Side.CLIENT, 8);
+		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
+		AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
+		
+		itemCircuit = new ItemCircuit();
+		itemFloppyDisk = new ItemFloppyDisk();
+		itemPCB = new ItemPCB();
+		itemLaser = new ItemLaser();
+		
+		GameRegistry.registerItem(itemCircuit, partCircuit, modID);  		
+		GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);	
+		GameRegistry.registerItem(itemPCB, modID + "_pcb", modID);
+		GameRegistry.registerItem(itemLaser, modID + "_laser", modID);
+		
+		blockPCBLayout = new BlockPCBLayout();
+		blockAssembler = new BlockAssembler();
+		
+		GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
+		GameRegistry.registerBlock(blockAssembler, modID + ".assembler");
+		
+		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
+		GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
     }
     
-    @EventHandler
-    public void init(FMLInitializationEvent event)
-    {
-    	MultiPartRegistry.registerParts(new PartFactory(), new String[]{partCircuit});
-    	proxy.initialize();
-    }
-    
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent event)
-    {
-    	IntegratedCircuitsRecipes.loadRecipes();
-    }
+	@EventHandler
+	public void init(FMLInitializationEvent event)
+	{
+		MultiPartRegistry.registerParts(new PartFactory(), new String[]{partCircuit});
+		proxy.initialize();
+	}
+
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event)
+	{
+		IntegratedCircuitsRecipes.loadRecipes();
+	}
 }

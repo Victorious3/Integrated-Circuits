@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits.client;
+package vic.mod.integratedcircuits.client.gui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +18,14 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.Config;
 import vic.mod.integratedcircuits.ContainerPCBLayout;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
-import vic.mod.integratedcircuits.client.GuiCallback.Action;
+import vic.mod.integratedcircuits.client.gui.GuiCallback.Action;
+import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
+import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDCell;
@@ -58,7 +62,7 @@ import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
-public class GuiPCBLayout extends GuiContainer implements IGuiCallback
+public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverableHandler
 {	
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/pcblayout.png");
 	
@@ -77,7 +81,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 	//Because of private.
 	public GuiPartChooser selectedChooser;
 	public boolean blockMouseInput = false;
-	public IHoverable hoveredElement;
+	private IHoverable hoveredElement;
 	
 	public CircuitPart selectedPart;
 	
@@ -86,7 +90,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 	private boolean drag;
 	
 	//Callbacks
-	private GuiCallback callback = new GuiCallback(this, ey, ex, Action.OK, Action.CANCEL);
+	private GuiCallback callbackDelete;
+	private GuiCheckBoxExt checkboxDelete;
 	
 	public GuiPCBLayout(ContainerPCBLayout container) 
 	{
@@ -94,12 +99,22 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 		this.xSize = 248;
 		this.ySize = 249;
 		this.te = container.tileentity;
+		
+		callbackDelete = new GuiCallback(this, 150, 100, Action.OK, Action.CANCEL);
+		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage, "Show this message?", callbackDelete);
+		callbackDelete
+			.addControl(new GuiLabel(37, 7, "Are you sure?", 0x333333))
+			.addControl(new GuiLabel(10, 25, 
+				"This will revert all of\n" + 
+				"your progress and\n" + 
+				"clear the current circuit.", 0))
+			.addControl(new GuiLabel(28, 63, "Continue anyways?", 0x333333))
+			.addControl(checkboxDelete);
 	}
 
 	@Override
-	public void initGui() 
+	public void initGui()
 	{
-		this.buttonList.clear();
 		int cx = (this.width - this.xSize) / 2;
 		int cy = (this.height - this.ySize) / 2 - 4;
 		
@@ -207,6 +222,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 		checkW.refresh();
 	}
 	
+	private int cb;
+	
 	@Override
 	protected void actionPerformed(GuiButton button) 
 	{
@@ -215,13 +232,15 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 		else if(button.id == 9) scale(-1);
 		else if(button.id == 10)
 		{
-			callback.display();
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
+			cb = 1;
+			if(checkboxDelete.isChecked()) callbackDelete.display();
+			else onCallback(null, Action.OK, 0);
 		}
 		else if(button.id == 11)
 		{
-			w = w == 18 ? 34 : w == 34 ? 66 : 18;
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
+			cb = 2;
+			if(checkboxDelete.isChecked()) callbackDelete.display();
+			else onCallback(null, Action.OK, 0);
 		}
 		else if(button.id == 13)
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));
@@ -232,7 +251,16 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 	@Override
 	public void onCallback(GuiCallback gui, Action result, int id) 
 	{
-		System.out.println("YO");
+		int w = te.getCircuitData().getSize();
+		if(result == Action.OK)
+		{
+			if(cb == 1) IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
+			else
+			{
+				w = w == 18 ? 34 : w == 34 ? 66 : 18;
+				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
+			}
+		}
 	}
 	
 	public List getButtonList()
@@ -598,5 +626,19 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback
 		{
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeName(nameField.getText(), te.xCoord, te.yCoord, te.zCoord));
 		}		
+	}
+
+	@Override
+	public void onGuiClosed() 
+	{
+		super.onGuiClosed();
+		Config.showConfirmMessage = checkboxDelete.isChecked();
+		Config.save();
+	}
+
+	@Override
+	public void setCurrentItem(IHoverable hoverable) 
+	{
+		this.hoveredElement = hoverable;
 	}
 }

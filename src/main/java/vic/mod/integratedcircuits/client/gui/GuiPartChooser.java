@@ -1,11 +1,13 @@
-package vic.mod.integratedcircuits.client;
+package vic.mod.integratedcircuits.client.gui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.ResourceLocation;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartNull;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
@@ -72,7 +74,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 		
 		if(x > xPosition && y > yPosition && x < xPosition + width && y < yPosition + height)
 		{
-			parent.hoveredElement = this;
+			parent.setCurrentItem(this);
 		}
 	}
 	
@@ -147,7 +149,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 	}
 
 	@Override
-	public ArrayList<String> getHoverInformation() 
+	public List<String> getHoverInformation() 
 	{
 		ArrayList<String> text = new ArrayList<String>();
 		if(current != null) text.add(current.getName());
