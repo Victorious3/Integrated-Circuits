@@ -92,6 +92,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	//Callbacks
 	private GuiCallback callbackDelete;
 	private GuiCheckBoxExt checkboxDelete;
+	private GuiCallback callbackTimer;
+	private GuiLabel labelTimer;
 	
 	public GuiPCBLayout(ContainerPCBLayout container) 
 	{
@@ -110,6 +112,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				"clear the current circuit.", 0))
 			.addControl(new GuiLabel(28, 63, "Continue anyways?", 0x333333))
 			.addControl(checkboxDelete);
+		
+		//FIXME unfinished.
+		callbackTimer = new GuiCallback(this, 150, 50)
+			.addControl(new GuiButtonExt(1, 0, 0, 25, 20, "-1s"))
+			.addControl(new GuiButtonExt(2, 27, 0, 25, 20, "-50ms"))
+			.addControl(new GuiButtonExt(3, 44, 0, 25, 20, "+50ms"))
+			.addControl(new GuiButtonExt(4, 81, 0, 25, 20, "+1s"));
 	}
 
 	@Override
@@ -252,7 +261,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	public void onCallback(GuiCallback gui, Action result, int id) 
 	{
 		int w = te.getCircuitData().getSize();
-		if(result == Action.OK)
+		if(result == Action.OK && gui == callbackDelete)
 		{
 			if(cb == 1) IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
 			else
@@ -480,8 +489,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
 		{
 			if(selectedPart == null)
-				IntegratedCircuits.networkWrapper.sendToServer(
+			{
+				CircuitPart cp = data.getPart(x2, y2);
+				if(cp instanceof PartTimer && ctrlDown) callbackTimer.display();
+				else IntegratedCircuits.networkWrapper.sendToServer(
 					new PacketPCBChangePart(new int[]{x2, y2, 0, 0}, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));
+			}	
 			else if(selectedPart instanceof PartWire)
 			{
 				sx = x2;
