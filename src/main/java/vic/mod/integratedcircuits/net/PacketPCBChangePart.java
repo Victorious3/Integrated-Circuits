@@ -13,9 +13,16 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 	private int size;
 	private int[] data;
 	private int button;
-	boolean ctrl;
+	private boolean ctrl, placed;
 	
 	public PacketPCBChangePart(){}
+	
+	//TODO I do absolutely not like this.
+	public PacketPCBChangePart(int data[], int button, boolean ctrl, boolean placed, int tx, int ty, int tz)
+	{
+		this(data, button, ctrl, tx, ty, tz);
+		this.placed = placed;
+	}
 	
 	public PacketPCBChangePart(int data[], int button, boolean ctrl, int tx, int ty, int tz)
 	{
@@ -32,6 +39,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 		super.read(buffer);
 		button = buffer.readInt();
 		ctrl = buffer.readBoolean();
+		placed = buffer.readBoolean();
 		size = buffer.readInt();
 		data = new int[size];
 		for(int i = 0; i < size; i++)
@@ -44,6 +52,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 		super.write(buffer);
 		buffer.writeInt(button);
 		buffer.writeBoolean(ctrl);
+		buffer.writeBoolean(placed);
 		buffer.writeInt(size);
 		for(int i : data)
 			buffer.writeInt(i);
@@ -65,7 +74,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 				{
 					cdata.setID(x, y, data[i + 2]);
 					cdata.setMeta(x, y, data[i + 3]);
-					cdata.getPart(x, y).onPlaced();
+					if(placed) cdata.getPart(x, y).onPlaced();
 					cdata.markForUpdate(x, y);
 				}
 			}

@@ -28,6 +28,7 @@ import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
+import vic.mod.integratedcircuits.ic.CircuitPart.IConfigurableDelay;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDCell;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartANDGate;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartBufferCell;
@@ -92,8 +93,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	//Callbacks
 	private GuiCallback callbackDelete;
 	private GuiCheckBoxExt checkboxDelete;
-	private GuiCallback callbackTimer;
-	private GuiLabel labelTimer;
+	private GuiCallback callbackTimed;
+	private GuiLabel labelTimed;
+	private CircuitPart timedPart;
 	
 	public GuiPCBLayout(ContainerPCBLayout container) 
 	{
@@ -113,12 +115,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			.addControl(new GuiLabel(28, 63, "Continue anyways?", 0x333333))
 			.addControl(checkboxDelete);
 		
-		//FIXME unfinished.
-		callbackTimer = new GuiCallback(this, 150, 50)
-			.addControl(new GuiButtonExt(1, 0, 0, 25, 20, "-1s"))
-			.addControl(new GuiButtonExt(2, 27, 0, 25, 20, "-50ms"))
-			.addControl(new GuiButtonExt(3, 44, 0, 25, 20, "+50ms"))
-			.addControl(new GuiButtonExt(4, 81, 0, 25, 20, "+1s"));
+		labelTimed = new GuiLabel(17, 9, "", 0);
+		callbackTimed = new GuiCallback(this, 160, 50)
+			.addControl(new GuiButtonExt(1, 5, 25, 36, 20, "-1s"))
+			.addControl(new GuiButtonExt(2, 43, 25, 36, 20, "-50ms"))
+			.addControl(new GuiButtonExt(3, 81, 25, 36, 20, "+50ms"))
+			.addControl(new GuiButtonExt(4, 119, 25, 36, 20, "+1s"))
+			.addControl(labelTimed);
 	}
 
 	@Override
@@ -269,6 +272,22 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				w = w == 18 ? 34 : w == 34 ? 66 : 18;
 				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
 			}
+		}
+		else if(gui == callbackTimed && result == Action.CUSTOM)
+		{
+			IConfigurableDelay conf = (IConfigurableDelay)timedPart;
+			int delay = conf.getConfigurableDelay();
+			switch (id) {
+			case 1 : delay -= 20; break;
+			case 2 : delay -= 1; break;
+			case 3 : delay += 1; break;
+			case 4 : delay += 20; break;
+			}
+			delay = delay < 2 ? 2 : delay > 255 ? 255 : delay;
+			conf.setConfigurableDelay(delay);
+			labelTimed.setText(String.format("Current delay: %s ticks", conf.getConfigurableDelay()));
+			IntegratedCircuits.networkWrapper.sendToServer(
+				new PacketPCBChangePart(new int[]{timedPart.getX(), timedPart.getY(), CircuitPart.getId(timedPart), timedPart.getState()}, -1, false, false, te.xCoord, te.yCoord, te.zCoord));
 		}
 	}
 	
@@ -491,7 +510,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			if(selectedPart == null)
 			{
 				CircuitPart cp = data.getPart(x2, y2);
-				if(cp instanceof PartTimer && ctrlDown) callbackTimer.display();
+				if(cp instanceof IConfigurableDelay && ctrlDown) 
+				{
+					timedPart = cp;
+					labelTimed.setText(String.format("Current delay: %s ticks", ((IConfigurableDelay)timedPart).getConfigurableDelay()));
+					callbackTimed.display();
+				}
 				else IntegratedCircuits.networkWrapper.sendToServer(
 					new PacketPCBChangePart(new int[]{x2, y2, 0, 0}, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));
 			}	

@@ -27,9 +27,9 @@ public class ItemCircuitRenderer implements IItemRenderer
 	{	
 		switch (type) {
 		case ENTITY : renderPart(item, -0.3F, 0F, -0.3F, 0.6F); break;
-        case EQUIPPED : renderPart(item, 0.0F, 0.15F, 0.0F, 1.0F); break;
-        case EQUIPPED_FIRST_PERSON : renderPart(item, 1.0F, -0.2F, -0.4f, 2.0F); break;
-        case INVENTORY : renderPart(item, 0.0F, 0.2F, 0.0F, 1.0F); break;
+		case EQUIPPED : renderPart(item, 0.0F, 0.15F, 0.0F, 1.0F); break;
+		case EQUIPPED_FIRST_PERSON : renderPart(item, 1.0F, -0.2F, -0.4f, 2.0F); break;
+		case INVENTORY : renderPart(item, 0.0F, 0.2F, 0.0F, 1.0F); break;
 		default:
 			break;
 		}

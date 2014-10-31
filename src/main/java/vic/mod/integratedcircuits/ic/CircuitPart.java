@@ -733,13 +733,24 @@ public abstract class CircuitPart implements Cloneable
 	}
 	
 	//TODO The timer should really use the tick method instead of scheduled ticks.
-	public static class PartTimer extends PartDelayedAction
+	public static class PartTimer extends PartDelayedAction implements IConfigurableDelay
 	{
 		@Override
 		protected int getDelay() 
 		{
-			if((getState() & 32768) == 0) return ((getState() & 16711680) >> 16);
+			if((getState() & 32768) == 0) return getConfigurableDelay();
 			else return 2;
+		}
+		
+		public int getConfigurableDelay()
+		{
+			return ((getState() & 16711680) >> 16);
+		}
+		
+		public void setConfigurableDelay(int delay)
+		{
+			setState(getState() & ~16711680);
+			setState(getState() | delay << 16);
 		}
 
 		@Override
@@ -1257,5 +1268,12 @@ public abstract class CircuitPart implements Cloneable
 		{
 			return fd == ForgeDirection.WEST;
 		}
+	}
+	
+	public static interface IConfigurableDelay
+	{
+		public int getConfigurableDelay();
+		
+		public void setConfigurableDelay(int delay);
 	}
 }
