@@ -1,6 +1,5 @@
 package vic.mod.integratedcircuits;
 
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -8,10 +7,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.ic.CircuitData;
-import vic.mod.integratedcircuits.ic.CircuitPart;
-import vic.mod.integratedcircuits.net.PacketAssemblerReset;
 import vic.mod.integratedcircuits.util.MiscUtils;
-import vic.mod.integratedcircuits.util.RenderUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -24,9 +20,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public int size, con, tier;
 	public ItemStack[] contents = new ItemStack[15];
 	public String name;
-	
-	@SideOnly(Side.CLIENT)
-	public Tessellator verts;
 	
 	public LaserHelper laserHelper = new LaserHelper(this, 11);
 
@@ -52,7 +45,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		
 		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && (getStackInSlot(1) != null || laserHelper.isRunning)) 
 		{
-			prepareRender();
 			updateRender();
 		}
 	}
@@ -141,15 +133,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public void prepareRender()
-	{
-		verts = new Tessellator();
-		verts.startDrawingQuads();
-		verts.setColorRGBA_F(0, 0.2F, 0, 1);
-		RenderUtils.addBox(verts, 0, 0, 0, size, 2, size);
-	}
-	
-	@SideOnly(Side.CLIENT)
 	public void updateRender()
 	{
 		if(refMatrix != null)
@@ -164,29 +147,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	/** Will draw a single gate to the vertex buffer **/
 	public void loadGateAt(int x, int y)
 	{
-		if(refMatrix == null) return;
-		int id = refMatrix[x][y];
-		int wireID = CircuitPart.getIdFromClass(CircuitPart.PartWire.class);
-		int ioID = CircuitPart.getIdFromClass(CircuitPart.PartIOBit.class);
-		if(id == wireID)
-		{
-			verts.setColorRGBA_F(0, 0.6F, 0, 1);
-			RenderUtils.addBox(verts, x + 6 / 16F, 2, y + 6 / 16F, 4 / 16F, 0.5, 4 / 16F);
-			if(x - 1 >= 0 && refMatrix[x - 1][y] != 0)
-				RenderUtils.addBox(verts, x, 2, y + 6 / 16F, 6 / 16F, 0.5, 4 / 16F);
-			if(x + 1 < size && refMatrix[x + 1][y] != 0)
-				RenderUtils.addBox(verts, x + 10 / 16F, 2, y + 6 / 16F, 6 / 16F, 0.5, 4 / 16F);
-			if(y - 1 >= 0 && refMatrix[x][y - 1] != 0)
-				RenderUtils.addBox(verts, x + 6 / 16F, 2, y, 4 / 16F, 0.5, 6 / 16F);
-			if(y + 1 < size && refMatrix[x][y + 1] != 0)
-				RenderUtils.addBox(verts, x + 6 / 16F, 2, y + 10 / 16F, 4 / 16F, 0.5, 6 / 16F);
-		}
-		else if(id != 0)
-		{
-			if(id == ioID) verts.setColorRGBA(175, 148, 56, 255);
-			else verts.setColorRGBA_F(0, 0, 0, 1);
-			RenderUtils.addBox(verts, x, 2, y, 1, 0.75, 1);
-		}
+		//FIXME I don't know, 5 FPS might be bad so DO SOMETHING ABOUT THAT!!!
 	}
 
 	@Override
@@ -210,8 +171,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			{
 				ItemStack stack = this.contents[id];
 				contents[id] = null;
-				if(id == 1) 
-					IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerReset(xCoord, yCoord, zCoord));
 				this.markDirty();
 				return stack;
 			}

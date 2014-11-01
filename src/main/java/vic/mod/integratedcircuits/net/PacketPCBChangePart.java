@@ -13,7 +13,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 	private int size;
 	private int[] data;
 	private int button;
-	private boolean ctrl, placed;
+	private boolean ctrl, placed = true;
 	
 	public PacketPCBChangePart(){}
 	

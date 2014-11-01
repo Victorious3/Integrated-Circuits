@@ -4,7 +4,6 @@ import java.util.Random;
 
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
@@ -47,7 +46,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 			tes.draw();
 			
-			if(te.refMatrix != null && te.verts != null)
+			if(te.refMatrix != null)
 			{
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glPushMatrix();
@@ -58,13 +57,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				
 				GL11.glTranslatef(-1 + 3 / 16F, 0, -1 + 3 / 16F);
 				GL11.glTranslatef(1, 8 / 16F, 1);
-				float s = 10 / 16F / te.size;
-				GL11.glScalef(s, 1 / 80F, s);
-				Tessellator verts = te.verts;
-				TesselatorVertexState state = verts.getVertexState(0, 0, 0);
-				verts.draw();
-				verts.startDrawingQuads();
-				verts.setVertexState(state);
+				//TODO Insert render code right here.
 				GL11.glPopMatrix();
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 			}
