@@ -82,13 +82,15 @@ public class CircuitPartRenderer
 			c2 = part.canConnectToSide(ForgeDirection.SOUTH) && n.canConnectToSide(ForgeDirection.NORTH) && !(n instanceof PartNull);
 		}
 		
-		boolean c3 = false; if(part.getX() > 0)
+		boolean c3 = false; 
+		if(part.getX() > 0)
 		{
 			CircuitPart n = part.getNeighbourOnSide(ForgeDirection.WEST);
 			c3 = part.canConnectToSide(ForgeDirection.WEST) && n.canConnectToSide(ForgeDirection.EAST) && !(n instanceof PartNull);
 		}
 		
-		boolean c4 = false; if(part.getX() < part.getData().getSize())
+		boolean c4 = false; 
+		if(part.getX() < part.getData().getSize())
 		{
 			CircuitPart n = part.getNeighbourOnSide(ForgeDirection.EAST);
 			c4 = part.canConnectToSide(ForgeDirection.EAST) && n.canConnectToSide(ForgeDirection.WEST) && !(n instanceof PartNull);

@@ -36,6 +36,7 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -105,6 +106,7 @@ public class ClientProxy extends CommonProxy
 	
 	private static ResourceLocation crownLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/crown.png");
 	private static ResourceLocation haloLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/halo.png");
+	private static ResourceLocation earsLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/ears.png");
 	
 	public static class ModelCrown extends ModelBase
 	{
@@ -153,6 +155,44 @@ public class ClientProxy extends CommonProxy
 		}
 	}
 	
+	public static class ModelDogEars extends ModelBase
+	{
+		public static ModelDogEars instance = new ModelDogEars();
+		
+		public ModelRenderer ear;
+		
+		public ModelDogEars()
+		{
+			this.textureWidth = 16;
+			this.textureHeight = 16;
+			ear = new ModelRenderer(this);
+			ear.addBox(0, 0, 0, 3, 9, 1);
+		}
+		
+		public void render(float pitch, float off)
+		{
+			GL11.glPushMatrix();
+			GL11.glTranslatef(0, -6 / 16F, -5 / 16F);
+			GL11.glTranslatef(1.5F / 16F, 0, 0.5F / 16F);
+			GL11.glRotatef(-pitch, 0, 0, 1);
+			GL11.glRotatef(-5, 1, 0, 0);
+			if(off < 0) GL11.glRotatef(off, 1, 0, 0);
+			GL11.glTranslatef(-1.5F / 16F, 0, -0.5F / 16F);
+			ear.render(1 / 16F);
+			GL11.glPopMatrix();
+			
+			GL11.glPushMatrix();
+			GL11.glTranslatef(0, -6 / 16F, 4 / 16F);
+			GL11.glTranslatef(1.5F / 16F, 0, 0.5F / 16F);
+			GL11.glRotatef(-pitch, 0, 0, 1);
+			GL11.glRotatef(5, 1, 0, 0);
+			if(off > 0) GL11.glRotatef(off, 1, 0, 0);
+			GL11.glTranslatef(-1.5F / 16F, 0, -0.5F / 16F);
+			ear.render(1 / 16F);
+			GL11.glPopMatrix();
+		}
+	}
+	
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event)
 	{
@@ -173,8 +213,10 @@ public class ClientProxy extends CommonProxy
 		int renderType = 0;
 		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
 		else if(name.equalsIgnoreCase("thog92")) renderType = 2;
+		else if(name.equalsIgnoreCase("rx14")) renderType = 3;
+		
 		if(renderType == 0) return;	
-		if(renderType == 1 && player.inventory.armorItemInSlot(3) != null) return;
+		if((renderType == 1 || renderType == 3) && player.inventory.armorItemInSlot(3) != null) return;
 		
 		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
 		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
@@ -235,7 +277,13 @@ public class ClientProxy extends CommonProxy
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			GL11.glPopMatrix();
 		}
-		
+		else if(renderType == 3)
+		{
+			//Le ... dog ears? No that sounds stupid.
+			mc.renderEngine.bindTexture(earsLocation);
+			ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
+			GameData.getBlockRegistry().getObject(name);
+		}
 		GL11.glPopMatrix();
 	}
 }

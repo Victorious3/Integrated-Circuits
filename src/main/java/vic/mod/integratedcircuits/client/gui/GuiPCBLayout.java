@@ -353,7 +353,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		CircuitPartRenderer.renderPCB(te.offX, te.offY, data);
 		
 		GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
 		
 		double x2 = (int)((x - guiLeft - te.offX * te.scale) / 16F / te.scale);
@@ -623,7 +623,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			int state = selectedPart.getState();	
 			int w = te.getCircuitData().getSize();
 			
-			if(ex >= 0 && ey >= 0 && ex < w && ey < w && !blockMouseInput)
+			if(ex > 0 && ey > 0 && ex < w - 1 && ey < w - 1 && !blockMouseInput)
 			{
 				ArrayList<int[]> list = new ArrayList<int[]>();
 				list.add(new int[]{sx, sy});
