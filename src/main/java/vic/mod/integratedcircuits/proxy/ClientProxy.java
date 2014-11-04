@@ -1,5 +1,7 @@
 package vic.mod.integratedcircuits.proxy;
 
+import java.util.LinkedList;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -8,6 +10,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -17,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -58,6 +62,7 @@ public class ClientProxy extends CommonProxy
 	{
 		ShaderHelper.loadShaders();
 		stRenderer = new SemiTransparentRenderer();
+		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemCircuit, new ItemCircuitRenderer());
@@ -100,6 +105,16 @@ public class ClientProxy extends CommonProxy
 		GL11.glDisable(GL11.GL_BLEND);
 		
 		event.setCanceled(true);
+	}
+	
+	@SubscribeEvent
+	public void onWorldUnload(WorldEvent.Unload event)
+	{
+		for(Framebuffer buf : TileEntityAssemblerRenderer.fboArray)
+		{
+			buf.deleteFramebuffer();
+		}
+		TileEntityAssemblerRenderer.fboArray.clear();
 	}
 	
 	//Don't even look at what's coming now. Not related at all.

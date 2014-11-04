@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdate>
@@ -51,8 +52,7 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 		if(te == null) return;
 		Laser laser = te.laserHelper.getLaser(id);
 		if(laser == null) return;
-		if(laser.x >= 0 && laser.y >= 0 && laser.x < te.size && laser.y < te.size)
-			te.loadGateAt(laser.x, laser.y);
+		TileEntityAssemblerRenderer.updateFramebuffer(te);
 		laser.isRunning = isRunning;
 		laser.setAim(x, y);
 	}

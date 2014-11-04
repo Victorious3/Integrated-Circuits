@@ -1,11 +1,13 @@
 package vic.mod.integratedcircuits;
 
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
+import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -15,6 +17,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory
 {
 	public int[][] refMatrix;
+	
+	@SideOnly(Side.CLIENT)
+	public Framebuffer circuitFBO;
+	
 	public int[][] matrix;
 	public CircuitData cdata;
 	public int size, con, tier;
@@ -26,6 +32,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public void updateEntity() 
 	{
+		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.updateFramebuffer(this);
 		if(!worldObj.isRemote && refMatrix != null)
 			laserHelper.update();
 	}
@@ -45,7 +52,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		
 		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && (getStackInSlot(1) != null || laserHelper.isRunning)) 
 		{
-			updateRender();
+			TileEntityAssemblerRenderer.updateFramebuffer(this);
 		}
 	}
 
@@ -131,23 +138,16 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		}
 		markDirty();
 	}
-	
-	@SideOnly(Side.CLIENT)
-	public void updateRender()
+
+	@Override
+	public void invalidate() 
 	{
-		if(refMatrix != null)
+		super.invalidate();
+		if(worldObj.isRemote && circuitFBO != null) 
 		{
-			for(int x = 0; x < size; x++)
-				for(int y = 0; y < size; y++)
-					if(matrix[x][y] != 0) loadGateAt(x, y);
-		}
-	}
-	
-	@SideOnly(Side.CLIENT)
-	/** Will draw a single gate to the vertex buffer **/
-	public void loadGateAt(int x, int y)
-	{
-		//FIXME I don't know, 5 FPS might be bad so DO SOMETHING ABOUT THAT!!!
+			circuitFBO.deleteFramebuffer();
+			TileEntityAssemblerRenderer.fboArray.remove(circuitFBO);
+		}	
 	}
 
 	@Override
