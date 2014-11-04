@@ -15,6 +15,8 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CurcuitRenderWrapper;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
@@ -48,7 +50,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			
 			if(te.refMatrix != null)
 			{
-				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glPushMatrix();
 				
 				GL11.glTranslatef(0.5F, 0, 0.5F);
@@ -57,9 +58,12 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				
 				GL11.glTranslatef(-1 + 3 / 16F, 0, -1 + 3 / 16F);
 				GL11.glTranslatef(1, 8 / 16F, 1);
-				//TODO Insert render code right here.
+				GL11.glScalef(1 / 128F, 1 / 128F, 1 / 128F);
+				
+				te.cdata.setParent(CurcuitRenderWrapper.instance);
+				CircuitPartRenderer.renderPCB(0, 0, te.cdata);
+				
 				GL11.glPopMatrix();
-				GL11.glEnable(GL11.GL_TEXTURE_2D);
 			}
 			
 			GL11.glRotatef(180, 0, 0, 1);
