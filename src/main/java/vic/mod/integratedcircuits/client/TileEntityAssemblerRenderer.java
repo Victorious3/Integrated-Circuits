@@ -17,6 +17,8 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CurcuitRenderWrapper;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
 import cpw.mods.fml.relauncher.Side;
@@ -56,7 +58,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			
 			if(te.circuitFBO != null)
 			{
-				float scale = te.size / 68F;
+				float scale = te.size / 18F;
 				te.circuitFBO.bindFramebufferTexture();
 				tes.startDrawingQuads();
 				tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 3 / 16F, scale, 0);
@@ -167,7 +169,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	{
 		if(te.circuitFBO == null)
 		{
-			te.circuitFBO = new Framebuffer(68, 68, false);
+			te.circuitFBO = new Framebuffer(288, 288, true);
 			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
 		}
 		te.circuitFBO.framebufferClear();
@@ -176,26 +178,15 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glViewport(0, 0, te.size, te.size);
-		GL11.glOrtho(0, te.size, te.size, 0, -1, 1);
+		GL11.glViewport(0, 0, 288, 288);
+		GL11.glOrtho(0, 288, 288, 0, -1, 1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
         
-		GL11.glColor3f(0, 0.3F, 0);
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glVertex2i(0, 0);
-		GL11.glVertex2i(0, te.size);
-		GL11.glVertex2i(te.size, te.size);
-		GL11.glVertex2i(te.size, 0);
-		GL11.glEnd();
-		
-		GL11.glLineWidth(1F);
-		GL11.glColor3f(0, 0.8F, 0);
-		GL11.glBegin(GL11.GL_POINTS);
-		for(int x = 0; x < te.size; x++)
-			for(int y = 0; y < te.size; y++)
-				if(te.matrix[x][y] > 0) GL11.glVertex2i(x, y + 1);
-		GL11.glEnd();
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		te.cdata.setParent(CurcuitRenderWrapper.instance);
+		CircuitPartRenderer.renderPCB(0, 0, te.cdata);
 		
 		te.circuitFBO.unbindFramebuffer();
 	}

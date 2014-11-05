@@ -33,7 +33,6 @@ import vic.mod.integratedcircuits.client.ItemCircuitRenderer;
 import vic.mod.integratedcircuits.client.ItemLaserRenderer;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
-import vic.mod.integratedcircuits.client.ShaderHelper;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -60,7 +59,8 @@ public class ClientProxy extends CommonProxy
 	
 	public void registerRenderers()
 	{
-		ShaderHelper.loadShaders();
+		//TODO shader?
+//		ShaderHelper.loadShaders();
 		stRenderer = new SemiTransparentRenderer();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
@@ -211,7 +211,11 @@ public class ClientProxy extends CommonProxy
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event)
 	{
-		if(event.phase == Phase.END)
+		if(event.phase == Phase.START)
+		{
+			
+		}
+		else
 		{
 			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 			if(gui == null || !gui.doesGuiPauseGame()) clientTicks++;

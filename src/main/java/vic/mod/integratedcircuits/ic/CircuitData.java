@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits.ic;
 
 import io.netty.buffer.ByteBuf;
 
-import java.awt.Point;
 import java.util.LinkedList;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,6 +10,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
 import vic.mod.integratedcircuits.util.MiscUtils;
+import vic.mod.integratedcircuits.util.Vec2;
 
 import com.google.common.primitives.Ints;
 
@@ -19,8 +19,8 @@ public class CircuitData implements Cloneable
 	private int size;
 	private int[][] meta;
 	private CircuitPart[][] parts;
-	private LinkedList<Point> tickSchedule;
-	private LinkedList<Point> updateQueue = new LinkedList<Point>();
+	private LinkedList<Vec2> tickSchedule;
+	private LinkedList<Vec2> updateQueue = new LinkedList<Vec2>();
 	private ICircuit parent;
 	private boolean queueEnabled = true;
 	
@@ -33,7 +33,7 @@ public class CircuitData implements Cloneable
 		clear(size);
 	}
 	
-	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedList<Point> tickSchedule)
+	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedList<Vec2> tickSchedule)
 	{
 		this.parent = parent;
 		this.size = size;
@@ -166,8 +166,8 @@ public class CircuitData implements Cloneable
 			}
 		}
 		this.meta = new int[size][size];
-		tickSchedule = new LinkedList<Point>();
-		updateQueue = new LinkedList<Point>();
+		tickSchedule = new LinkedList<Vec2>();
+		updateQueue = new LinkedList<Vec2>();
 		this.size = size;
 		setup();
 	}
@@ -180,24 +180,24 @@ public class CircuitData implements Cloneable
 	
 	public void scheduleTick(int x, int y)
 	{
-		Point p = new Point(x, y);
+		Vec2 p = new Vec2(x, y);
 		if(!tickSchedule.contains(p)) tickSchedule.add(p);
 	}
 	
 	public void markForUpdate(int x, int y)
 	{
 		if(!queueEnabled) return;
-		Point p = new Point(x, y);
+		Vec2 p = new Vec2(x, y);
 		if(!updateQueue.contains(p)) updateQueue.add(p);
 	}
 	
 	public void updateMatrix()
 	{
-		LinkedList<Point> tmp = (LinkedList<Point>)tickSchedule.clone();
+		LinkedList<Vec2> tmp = (LinkedList<Vec2>)tickSchedule.clone();
 		tickSchedule.clear();
-		for(Point p : tmp)
+		for(Vec2 v : tmp)
 		{
-			getPart(p.x, p.y).onScheduledTick();
+			getPart(v.x, v.y).onScheduledTick();
 		}
 		for(int x = 0; x < size; x++)
 		{
@@ -230,12 +230,12 @@ public class CircuitData implements Cloneable
 		}
 		
 		int size = compound.getInteger("size");
-		LinkedList<Point> scheduledTicks = new LinkedList<Point>();
+		LinkedList<Vec2> scheduledTicks = new LinkedList<Vec2>();
 		
 		int[] scheduledList = compound.getIntArray("scheduled");
 		for(int i = 0; i < scheduledList.length; i += 2)
 		{
-			scheduledTicks.add(new Point(scheduledList[i], scheduledList[i + 1]));
+			scheduledTicks.add(new Vec2(scheduledList[i], scheduledList[i + 1]));
 		}
 		
 		return new CircuitData(size, parent, id, meta, scheduledTicks);
@@ -265,10 +265,10 @@ public class CircuitData implements Cloneable
 		compound.setTag("meta", metalist);
 		
 		LinkedList<Integer> tmp = new LinkedList<Integer>();
-		for(Point p : tickSchedule)
+		for(Vec2 v : tickSchedule)
 		{
-			tmp.add(p.x);
-			tmp.add(p.y);
+			tmp.add(v.x);
+			tmp.add(v.y);
 		}
 		compound.setIntArray("scheduled", Ints.toArray(tmp));
 		
@@ -278,14 +278,12 @@ public class CircuitData implements Cloneable
 	public void writeToStream(ByteBuf buf)
 	{
 		buf.writeInt(updateQueue.size());
-		for(Point p : updateQueue)
+		for(Vec2 v : updateQueue)
 		{
-			int x = (int)p.getX();
-			int y = (int)p.getY();
-			buf.writeByte(x);
-			buf.writeByte(y);
-			buf.writeByte(CircuitPart.getId(parts[x][y]));
-			buf.writeInt(meta[x][y]);
+			buf.writeByte(v.x);
+			buf.writeByte(v.y);
+			buf.writeByte(CircuitPart.getId(parts[v.x][v.y]));
+			buf.writeInt(meta[v.x][v.y]);
 		}
 		updateQueue.clear();
 	}

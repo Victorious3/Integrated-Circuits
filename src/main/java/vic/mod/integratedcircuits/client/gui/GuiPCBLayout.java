@@ -61,6 +61,7 @@ import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
+import vic.mod.integratedcircuits.util.Vec2;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverableHandler
@@ -625,23 +626,23 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			
 			if(ex > 0 && ey > 0 && ex < w - 1 && ey < w - 1 && !blockMouseInput)
 			{
-				ArrayList<int[]> list = new ArrayList<int[]>();
-				list.add(new int[]{sx, sy});
+				ArrayList<Vec2> list = new ArrayList<Vec2>();
+				list.add(new Vec2(sx, sy));
 				while(sx != ex || sy != ey)
 				{
 					if(sy < ey) sy++;
 					else if(sy > ey) sy--;
 					else if(sx < ex) sx++;
 					else if(sx > ex) sx--;
-					list.add(new int[]{sx, sy});
+					list.add(new Vec2(sx, sy));
 				}
 				int[] data = new int[list.size() * 4];
 				for(int i = 0; i < list.size(); i++)
 				{
-					int[] pt = list.get(i);
+					Vec2 pt = list.get(i);
 					int index = i * 4;
-					data[index] = pt[0];
-					data[index + 1] = pt[1];
+					data[index] = pt.x;
+					data[index + 1] = pt.y;
 					data[index + 2] = id;
 					data[index + 3] = state;
 				}
