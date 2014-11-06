@@ -211,11 +211,7 @@ public class ClientProxy extends CommonProxy
 	@SubscribeEvent
 	public void onClientTick(TickEvent.ClientTickEvent event)
 	{
-		if(event.phase == Phase.START)
-		{
-			
-		}
-		else
+		if(event.phase == Phase.END)
 		{
 			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
 			if(gui == null || !gui.doesGuiPauseGame()) clientTicks++;

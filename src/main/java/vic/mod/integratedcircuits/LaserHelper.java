@@ -94,7 +94,7 @@ public class LaserHelper
 	
 	public void start()
 	{
-		te.matrix = new int[te.size][te.size];
+		te.excMatrix = new boolean[te.size][te.size];
 		isRunning = true;
 		for(Laser laser : lasers)
 			if(laser != null) laser.start();		
@@ -220,9 +220,9 @@ public class LaserHelper
 		{
 			while(isRunning)
 			{
-				if(te.matrix[x][y] == 0)
+				if(!te.excMatrix[x][y])
 				{
-					te.matrix[x][y] = 1;
+					te.excMatrix[x][y] = true;
 					if(te.refMatrix[x][y] != 0)
 					{
 						setAim(x, y);

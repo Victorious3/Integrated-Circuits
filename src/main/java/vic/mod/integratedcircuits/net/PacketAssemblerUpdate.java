@@ -52,7 +52,8 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 		if(te == null) return;
 		Laser laser = te.laserHelper.getLaser(id);
 		if(laser == null) return;
-		TileEntityAssemblerRenderer.updateFramebuffer(te);
+		te.excMatrix[laser.x][laser.y] = true;
+		TileEntityAssemblerRenderer.scheduleFramebuffer(te);
 		laser.isRunning = isRunning;
 		laser.setAim(x, y);
 	}

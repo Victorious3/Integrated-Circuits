@@ -21,8 +21,10 @@ import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CurcuitRenderWrapper;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.RenderUtils;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRenderer
 {
@@ -32,8 +34,13 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	private ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
 	
 	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
-	@SideOnly(Side.CLIENT)
 	public static LinkedList<Framebuffer> fboArray;
+	private static LinkedList<TileEntityAssembler> schedule = new LinkedList<TileEntityAssembler>();
+	
+	public TileEntityAssemblerRenderer()
+	{
+		FMLCommonHandler.instance().bus().register(this);
+	}
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
 	{	
@@ -58,13 +65,40 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			
 			if(te.circuitFBO != null)
 			{
-				float scale = te.size / 18F;
-				te.circuitFBO.bindFramebufferTexture();
+				GL11.glDisable(GL11.GL_TEXTURE_2D);			
+				GL11.glColor3f(0, 0.1F, 0);
+				
 				tes.startDrawingQuads();
-				tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 3 / 16F, scale, 0);
-				tes.addVertexWithUV(3 / 16F, 8 / 16F + 0.0005F, 13 / 16F, scale, scale);
-				tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 13 / 16F, 0, scale);
-				tes.addVertexWithUV(13 / 16F, 8 / 16F + 0.0005F, 3 / 16F, 0, 0);
+				tes.addVertex(3 / 16F, 8 / 16F, 3 / 16F);
+				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
+				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
+				tes.addVertex(13 / 16F, 8 / 16F, 3 / 16F);
+				
+				tes.addVertex(3 / 16F, 8 / 16F, 13 / 16F);
+				tes.addVertex(13 / 16F, 8 / 16F, 13 / 16F);
+				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
+				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
+				
+				tes.addVertex(3 / 16F, 8 / 16F, 13 / 16F);
+				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
+				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
+				tes.addVertex(3 / 16F, 8 / 16F, 3 / 16F);
+				
+				tes.addVertex(13 / 16F, 8 / 16F, 3 / 16F);
+				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
+				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
+				tes.addVertex(13 / 16F, 8 / 16F, 13 / 16F);
+				tes.draw();
+				
+				GL11.glColor3f(1, 1, 1);
+				GL11.glEnable(GL11.GL_TEXTURE_2D);		
+				te.circuitFBO.bindFramebufferTexture();
+				
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(3 / 16F, 8 / 16F + 1 / 40F, 3 / 16F, 1, 0);
+				tes.addVertexWithUV(3 / 16F, 8 / 16F + 1 / 40F, 13 / 16F, 1, 1);
+				tes.addVertexWithUV(13 / 16F, 8 / 16F + 1 / 40F, 13 / 16F, 0, 1);
+				tes.addVertexWithUV(13 / 16F, 8 / 16F + 1 / 40F, 3 / 16F, 0, 0);
 				tes.draw();
 			}
 			
@@ -120,7 +154,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	}
 	
 	private Random rand = new Random();
-	
 	private void renderLaser(float scale, float aZ, float aY, float length, TileEntityAssembler te, float partialTicks)
 	{
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -165,29 +198,56 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		this.renderTileEntityAt((TileEntityAssembler)te, x, y, z, partialTicks);
 	}
 	
-	public static void updateFramebuffer(TileEntityAssembler te)
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event)
+	{
+		if(event.phase == Phase.START && schedule.size() > 0)
+		{
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glLoadIdentity();
+			GL11.glViewport(0, 0, 256, 256);
+			GL11.glOrtho(0, 256, 256, 0, -1, 1);
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glLoadIdentity();
+	        
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			
+			for(TileEntityAssembler te : schedule)
+				updateFramebuffer(te);
+			schedule.clear();
+		}
+	}
+	
+	private void updateFramebuffer(TileEntityAssembler te)
 	{
 		if(te.circuitFBO == null)
 		{
-			te.circuitFBO = new Framebuffer(288, 288, true);
+			te.circuitFBO = new Framebuffer(256, 256, true);
 			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
 		}
 		te.circuitFBO.framebufferClear();
-		if(te.matrix == null) return;
+		if(te.excMatrix == null) return;
 		te.circuitFBO.bindFramebuffer(false);
 		
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glViewport(0, 0, 288, 288);
-		GL11.glOrtho(0, 288, 288, 0, -1, 1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-        
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		te.cdata.setParent(CurcuitRenderWrapper.instance);
-		CircuitPartRenderer.renderPCB(0, 0, te.cdata);
-		
+		GL11.glColor3f(0, 0.1F, 0);
+		Tessellator tes = Tessellator.instance;
+		tes.startDrawingQuads();
+		tes.addVertex(0, 0, 0);
+		tes.addVertex(0, 256, 0);
+		tes.addVertex(256, 256, 0);
+		tes.addVertex(256, 0, 0);
+		tes.draw();
+		GL11.glColor3f(1, 1, 1);
+		GL11.glScalef(16 / (float)te.cdata.getSize(), 16 / (float)te.cdata.getSize(), 1);
+		CircuitPartRenderer.renderParts(0, 0, te.cdata, te.excMatrix, te.size > 16 ? 2 : 1);
+
 		te.circuitFBO.unbindFramebuffer();
+	}
+	
+	public static void scheduleFramebuffer(TileEntityAssembler te)
+	{
+		if(!schedule.contains(te)) schedule.add(te);
 	}
 }

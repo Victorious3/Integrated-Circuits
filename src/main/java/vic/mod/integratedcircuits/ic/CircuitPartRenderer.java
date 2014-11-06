@@ -51,19 +51,24 @@ public class CircuitPartRenderer
 		Tessellator tes = Tessellator.instance;
 		GL11.glTranslated(x, y, 0);
 		tes.startDrawingQuads();
-		renderPartPayload(part, 0, 0);
+		renderPartPayload(part, 0, 0, 0);
 		tes.draw();
 		GL11.glTranslated(-x, -y, 0);
 	}
 	
-	private static void renderPartPayload(CircuitPart part, double x, double y)
+	private static void renderPartPayload(CircuitPart part, double x, double y, int type)
 	{
-		if(part instanceof PartWire) renderPartWire((PartWire)part, x, y);
-		else if(part instanceof PartNullCell || part instanceof PartInvertCell || part instanceof PartBufferCell) renderPartCell(part, x, y);
-		else if(part instanceof PartANDCell) renderPartANDCell((PartANDCell)part, x, y);
-		else if(part instanceof PartGate) renderPartGate((PartGate)part, x, y);
-		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, x, y);
-		else if(part instanceof PartIOBit) renderPartIOBit((PartIOBit)part, x, y);
+		if(part instanceof PartWire) renderPartWire((PartWire)part, x, y, type);
+		else if(part instanceof PartIOBit) renderPartIOBit((PartIOBit)part, x, y, type);
+		else if(type == 2 && !(part instanceof PartNull)) 
+		{
+			Tessellator.instance.setColorRGBA_F(0, 0, 0, 1);
+			addQuad(x, y, 0, 15 * 16, 16, 16);
+		}
+		else if(part instanceof PartNullCell || part instanceof PartInvertCell || part instanceof PartBufferCell) renderPartCell(part, x, y, type);
+		else if(part instanceof PartANDCell) renderPartANDCell((PartANDCell)part, x, y, type);
+		else if(part instanceof PartGate) renderPartGate((PartGate)part, x, y, type);
+		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, x, y, type);	
 	}
 
 	private static int checkConnections(CircuitPart part)
@@ -161,7 +166,37 @@ public class CircuitPartRenderer
 		}
 	}
 	
-	public static void renderPCB(double offX, double offY, CircuitData data)
+	public static void renderParts(double offX, double offY, CircuitData data)
+	{
+		Tessellator tes = Tessellator.instance;
+		int w = data.getSize();
+
+		GL11.glTranslated(offX, offY, 0);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
+		tes.startDrawingQuads();
+		for(int x2 = 0; x2 < data.getSize(); x2++)
+			for(int y2 = 0; y2 < data.getSize(); y2++)
+				renderPartPayload(data.getPart(x2, y2), x2 * 16, y2 * 16, 0);
+		tes.draw();
+		GL11.glTranslated(-offX, -offY, 0);
+	}
+	
+	public static void renderParts(double offX, double offY, CircuitData data, boolean[][] exc, int type)
+	{
+		Tessellator tes = Tessellator.instance;
+		int w = data.getSize();
+	
+		GL11.glTranslated(offX, offY, 0);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
+		tes.startDrawingQuads();
+		for(int x2 = 0; x2 < data.getSize(); x2++)
+			for(int y2 = 0; y2 < data.getSize(); y2++)
+				if(exc[x2][y2]) renderPartPayload(data.getPart(x2, y2), x2 * 16, y2 * 16, type);
+		tes.draw();
+		GL11.glTranslated(-offX, -offY, 0);
+	}
+	
+	public static void renderPerfboard(double offX, double offY, CircuitData data)
 	{
 		Tessellator tes = Tessellator.instance;
 		int w = data.getSize();
@@ -181,80 +216,92 @@ public class CircuitPartRenderer
 		addQuad(0, 0, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
 		addQuad(0, data.getSize() * 16 - 16, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
 		tes.draw();
-		
-		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
-		tes.startDrawingQuads();
-		for(int x2 = 0; x2 < data.getSize(); x2++)
-			for(int y2 = 0; y2 < data.getSize(); y2++)
-				renderPartPayload(data.getPart(x2, y2), x2 * 16, y2 * 16);
-		tes.draw();
 		GL11.glTranslated(-offX, -offY, 0);
 	}
 	
-	public static void renderPartIOBit(PartIOBit bit, double x, double y)
+	public static void renderPartIOBit(PartIOBit bit, double x, double y, int type)
 	{
 		int freq = bit.getFrequency();
 		int rot = bit.getRotation();
 		Tessellator tes = Tessellator.instance;
-		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(x, y, 2 * 16, 2 * 16, 16, 16, rot);
-		if(bit.isPowered()) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
-		tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
-		addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
-	}
-
-	public static void renderPartWire(PartWire wire, double x, double y)
-	{
-		int color = wire.getColor();
-		Tessellator tes = Tessellator.instance;
-		switch (color) {
-		case 1:
-			if(wire.getInput()) tes.setColorRGBA_F(1F, 0F, 0F, 1F);
-			else tes.setColorRGBA_F(0.4F, 0F, 0F, 1F);
-			break;
-		case 2:
-			if(wire.getInput()) tes.setColorRGBA_F(1F, 0.4F, 0F, 1F);
-			else tes.setColorRGBA_F(0.4F, 0.2F, 0F, 1F);
-			break;
-		default:
-			if(wire.getInput()) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			break;
-		}	
 		
-		int con = checkConnections(wire);
-		if((con & 12) == 12 && (con & ~12) == 0) addQuad(x, y, 6 * 16, 0, 16, 16);
-		else if((con & 3) == 3 && (con & ~3) == 0) addQuad(x, y, 5 * 16, 0, 16, 16);
-		else 
+		if(type == 2)
 		{
-			if((con & 8) > 0) addQuad(x, y, 2 * 16, 0, 16, 16);
-			if((con & 4) > 0) addQuad(x, y, 4 * 16, 0, 16, 16);
-			if((con & 2) > 0) addQuad(x, y, 1 * 16, 0, 16, 16);
-			if((con & 1) > 0) addQuad(x, y, 3 * 16, 0, 16, 16);
-			addQuad(x, y, 0, 0, 16, 16);
+			tes.setColorRGBA(188, 167, 60, 255);
+			addQuad(x, y, 6 * 16, 3 * 16, 16, 16, rot);
+		}
+		else
+		{
+			tes.setColorRGBA_F(1F, 1F, 1F, 1F);
+			addQuad(x, y, 2 * 16, 2 * 16, 16, 16, rot);
+			if(bit.isPowered() && type == 0) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+			addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
+			if(type == 0)
+			{
+				tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
+				addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
+			}	
 		}
 	}
 
-	public static void renderPartCell(CircuitPart cell, double x, double y) 
+	public static void renderPartWire(PartWire wire, double x, double y, int type)
+	{
+		int color = wire.getColor();
+		Tessellator tes = Tessellator.instance;
+		
+		if(type == 0)
+		{
+			switch (color) {
+			case 1:
+				if(wire.getInput()) tes.setColorRGBA_F(1F, 0F, 0F, 1F);
+				else tes.setColorRGBA_F(0.4F, 0F, 0F, 1F);
+				break;
+			case 2:
+				if(wire.getInput()) tes.setColorRGBA_F(1F, 0.4F, 0F, 1F);
+				else tes.setColorRGBA_F(0.4F, 0.2F, 0F, 1F);
+				break;
+			default:
+				if(wire.getInput()) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+				else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+				break;
+			}
+		}
+		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		
+		int ty = type == 2 ? 3 * 16 : 0;
+		
+		int con = checkConnections(wire);
+		if((con & 12) == 12 && (con & ~12) == 0) addQuad(x, y, 6 * 16, ty, 16, 16);
+		else if((con & 3) == 3 && (con & ~3) == 0) addQuad(x, y, 5 * 16, ty, 16, 16);
+		else 
+		{
+			if((con & 8) > 0) addQuad(x, y, 2 * 16, ty, 16, 16);
+			if((con & 4) > 0) addQuad(x, y, 4 * 16, ty, 16, 16);
+			if((con & 2) > 0) addQuad(x, y, 1 * 16, ty, 16, 16);
+			if((con & 1) > 0) addQuad(x, y, 3 * 16, ty, 16, 16);
+			addQuad(x, y, 0, ty, 16, 16);
+		}
+	}
+
+	public static void renderPartCell(CircuitPart cell, double x, double y, int type) 
 	{
 		Tessellator tes = Tessellator.instance;
 		int rotation = 0;
 		if(cell instanceof PartGate) rotation = ((PartGate)cell).getRotation();
 		
-		if(cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.NORTH, rotation)) 
+		if(type == 0 && (cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.NORTH, rotation)) 
 			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, rotation)) 
 			|| cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.SOUTH, rotation)) 
-			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, rotation))) 
+			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, rotation))))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 		addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
 		
-		if(cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.EAST, rotation)) 
+		if(type == 0 && (cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.EAST, rotation)) 
 			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, rotation)) 
 			|| cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.WEST, rotation)) 
-			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, rotation))) 
+			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.WEST, rotation)))) 
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 		
@@ -263,66 +310,66 @@ public class CircuitPartRenderer
 		else if(cell instanceof PartBufferCell) addQuad(x, y, 6 * 16, 2 * 16, 16, 16, rotation);
 	}
 	
-	public static void renderPartANDCell(PartANDCell cell, double x, double y)
+	public static void renderPartANDCell(PartANDCell cell, double x, double y, int type)
 	{
 		Tessellator tes = Tessellator.instance;
 		int rotation = cell.getRotation();
 		
 		ForgeDirection fd = MiscUtils.rotn(ForgeDirection.NORTH, rotation);
-		if(cell.getOutputToSide(fd) 
+		if(type == 0 && (cell.getOutputToSide(fd) 
 			|| cell.getInputFromSide(fd) 
 			|| cell.getOutputToSide(fd.getOpposite()) 
-			|| cell.getInputFromSide(fd.getOpposite())) 
+			|| cell.getInputFromSide(fd.getOpposite()))) 
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 		addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
 		
 		fd = MiscUtils.rotn(ForgeDirection.WEST, rotation);
-		if(cell.getNeighbourOnSide(fd).getInputFromSide(fd.getOpposite())
-			|| cell.getInputFromSide(fd))
+		if(type == 0 && (cell.getNeighbourOnSide(fd).getInputFromSide(fd.getOpposite())
+			|| cell.getInputFromSide(fd)))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 		addQuad(x, y, 7 * 16, 2 * 16, 16, 16, rotation);
 		
 		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
-		if(cell.getNeighbourOnSide(fd).getInputFromSide(fd.getOpposite())
-			|| cell.getInputFromSide(fd))
+		if(type == 0 && (cell.getNeighbourOnSide(fd).getInputFromSide(fd.getOpposite())
+			|| cell.getInputFromSide(fd)))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 		addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);	
 	}
 	
-	public static void renderPartGate(PartGate gate, double x, double y) 
+	public static void renderPartGate(PartGate gate, double x, double y, int type) 
 	{
 		Tessellator tes = Tessellator.instance;
 		if(gate.canConnectToSide(ForgeDirection.NORTH))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.NORTH).getInputFromSide(ForgeDirection.SOUTH) 
-				|| gate.getInputFromSide(ForgeDirection.NORTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(type == 0 && (gate.getNeighbourOnSide(ForgeDirection.NORTH).getInputFromSide(ForgeDirection.SOUTH) 
+				|| gate.getInputFromSide(ForgeDirection.NORTH))) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 2 * 16, 0, 16, 16);
 		}
 
 		if(gate.canConnectToSide(ForgeDirection.SOUTH))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.SOUTH).getInputFromSide(ForgeDirection.NORTH) 
-				|| gate.getInputFromSide(ForgeDirection.SOUTH)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(type == 0 && (gate.getNeighbourOnSide(ForgeDirection.SOUTH).getInputFromSide(ForgeDirection.NORTH) 
+				|| gate.getInputFromSide(ForgeDirection.SOUTH))) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 4 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.WEST))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.WEST).getInputFromSide(ForgeDirection.EAST) 
-				|| gate.getInputFromSide(ForgeDirection.WEST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(type == 0 && (gate.getNeighbourOnSide(ForgeDirection.WEST).getInputFromSide(ForgeDirection.EAST) 
+				|| gate.getInputFromSide(ForgeDirection.WEST))) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 1 * 16, 0, 16, 16);
 		}
 		
 		if(gate.canConnectToSide(ForgeDirection.EAST))
 		{
-			if(gate.getNeighbourOnSide(ForgeDirection.EAST).getInputFromSide(ForgeDirection.WEST) 
-				|| gate.getInputFromSide(ForgeDirection.EAST)) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			if(type == 0 && (gate.getNeighbourOnSide(ForgeDirection.EAST).getInputFromSide(ForgeDirection.WEST) 
+				|| gate.getInputFromSide(ForgeDirection.EAST))) tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 			addQuad(x, y, 3 * 16, 0, 16, 16);
 		}
@@ -353,7 +400,7 @@ public class CircuitPartRenderer
 		else if(gate instanceof PartPulseFormer) addQuad(x, y, 6 * 16, 16, 16, 16, gate.getRotation());
 	}
 	
-	public static void renderPartTorch(PartTorch torch, double x, double y) 
+	public static void renderPartTorch(PartTorch torch, double x, double y, int type) 
 	{
 		Tessellator.instance.setColorRGBA_F(0F, 1F, 0F, 1F);
 		

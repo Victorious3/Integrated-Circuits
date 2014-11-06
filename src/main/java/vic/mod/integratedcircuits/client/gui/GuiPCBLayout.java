@@ -227,7 +227,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	
 	public void refreshUI()
 	{
-		int w = te.getCircuitData().getSize() - 2;
+		int w = te.getCircuitData().getSize();
 		buttonSize.displayString = w + "x" + w;
 		checkN.refresh();
 		checkE.refresh();
@@ -270,7 +270,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			if(cb == 1) IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
 			else
 			{
-				w = w == 18 ? 34 : w == 34 ? 66 : 18;
+				w = w == 16 ? 32 : w == 32 ? 64 : 16;
 				IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBClear((byte)w, te.xCoord, te.yCoord, te.zCoord));
 			}
 		}
@@ -351,7 +351,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glScissor((int)((guiLeft + 17) * guiScale), k - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));
 		GL11.glScalef(te.scale, te.scale, 1F);
 		
-		CircuitPartRenderer.renderPCB(te.offX, te.offY, data);
+		CircuitPartRenderer.renderPerfboard(te.offX, te.offY, data);
+		CircuitPartRenderer.renderParts(te.offX, te.offY, data);
 		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);

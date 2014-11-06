@@ -29,7 +29,7 @@ public class ItemPCB extends Item
 		NBTTagCompound comp = stack.getTagCompound();
 		if(comp != null && comp.hasKey("name"))
 		{
-			Integer size = comp.getInteger("size") - 2;
+			Integer size = comp.getInteger("size");
 			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE + comp.getString("name"));
 			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);
 		}

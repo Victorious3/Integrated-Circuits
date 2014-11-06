@@ -27,7 +27,7 @@ public class ItemFloppyDisk extends Item
 		if(comp == null || !comp.hasKey("name")) itemInformation.add(ChatFormatting.GRAY + "" + ChatFormatting.ITALIC + "empty");
 		else
 		{
-			Integer size = comp.getInteger("size") - 2;
+			Integer size = comp.getInteger("size");
 			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE + comp.getString("name"));
 			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);
 			itemInformation.add(ChatFormatting.GRAY + "Author: " + ChatFormatting.WHITE + comp.getString("author"));

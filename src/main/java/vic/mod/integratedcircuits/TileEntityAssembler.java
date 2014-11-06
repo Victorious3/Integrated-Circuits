@@ -21,7 +21,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@SideOnly(Side.CLIENT)
 	public Framebuffer circuitFBO;
 	
-	public int[][] matrix;
+	public boolean[][] excMatrix;
 	public CircuitData cdata;
 	public int size, con, tier;
 	public ItemStack[] contents = new ItemStack[15];
@@ -32,7 +32,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public void updateEntity() 
 	{
-		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.updateFramebuffer(this);
+		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.scheduleFramebuffer(this);
 		if(!worldObj.isRemote && refMatrix != null)
 			laserHelper.update();
 	}
@@ -52,7 +52,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		
 		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && (getStackInSlot(1) != null || laserHelper.isRunning)) 
 		{
-			TileEntityAssemblerRenderer.updateFramebuffer(this);
+			TileEntityAssemblerRenderer.scheduleFramebuffer(this);
 		}
 	}
 
@@ -79,15 +79,15 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		tier = compound.getInteger("tier");
 		
 		refMatrix = new int[size][size];
-		matrix = new int[size][size];
+		excMatrix = new boolean[size][size];
 				
 		NBTTagList idlist = circuit.getTagList("id", NBT.TAG_INT_ARRAY);
 		for(int i = 0; i < idlist.tagCount(); i++)
 			refMatrix[i] = idlist.func_150306_c(i);
 		
-		int[] temp = compound.getIntArray("tmp");
+		byte[] temp = compound.getByteArray("tmp");
 		for(int i = 0; i < temp.length; i++)
-			matrix[i / size][i % size] = temp[i];
+			excMatrix[i / size][i % size] = temp[i] != 0;
 	}
 	
 	private void saveMatrix(NBTTagCompound compound)
@@ -98,12 +98,12 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		compound.setString("name", name);
 		compound.setInteger("tier", tier);
 		compound.setInteger("con", con);
-		
-		int[] temp = new int[size * size];
+
+		byte[] temp = new byte[size * size];
 		for(int x = 0; x < size; x++)
 			for(int y = 0; y < size; y++)
-				temp[x + y * size] = matrix[x][y];
-		compound.setIntArray("tmp", temp);
+				temp[x + y * size] = (byte)(excMatrix[x][y] ? 1 : 0);
+		compound.setByteArray("tmp", temp);
 	}
 	
 	public void loadMatrixFromDisk()
