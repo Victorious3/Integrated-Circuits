@@ -23,7 +23,7 @@ public class PacketAssemblerStart extends PacketTileEntity<PacketAssemblerStart>
 		{
 			te.laserHelper.reset();
 			te.laserHelper.start();
-			IntegratedCircuits.networkWrapper.sendToAll(this);
+			IntegratedCircuits.networkWrapper.sendToDimension(this, player.worldObj.provider.dimensionId);
 		}
 		else if(side == Side.CLIENT)
 		{

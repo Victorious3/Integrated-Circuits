@@ -223,7 +223,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		if(worldObj.isRemote) return;
 		if(id > 10 && id < 15) laserHelper.createLaser(id - 11, getStackInSlot(id));
 		else if(id == 1 && getStackInSlot(id) == null) 
-			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerPickItem(xCoord, yCoord, zCoord));
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerPickItem(xCoord, yCoord, zCoord), worldObj.provider.dimensionId);
 	}
 
 	@Override
@@ -266,7 +266,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void setDisk(ItemStack stack) 
 	{
 		setInventorySlotContents(0, stack);
-		if(!worldObj.isRemote) IntegratedCircuits.networkWrapper.sendToAll(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack));
+		if(!worldObj.isRemote) IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
 		loadMatrixFromDisk();
 	}
 

@@ -38,7 +38,7 @@ public class LaserHelper
 		else lasers[id] = new Laser(te, id);
 		te.contents[offset + id] = laser;
 		if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
-			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id));
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id), te.getWorldObj().provider.dimensionId);
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound tag)
@@ -262,7 +262,7 @@ public class LaserHelper
 		public void setAim(int x, int y)
 		{
 			if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
-				IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord));
+				IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
 			
 			this.x = x;
 			this.y = y;
@@ -315,7 +315,7 @@ public class LaserHelper
 			else lastModified = CommonProxy.serverTicks;
 			
 			reload();
-			IntegratedCircuits.networkWrapper.sendToAll(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord));
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
 		}
 		
 		public boolean canUpdate()
