@@ -6,6 +6,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.ICircuit;
+import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import vic.mod.integratedcircuits.util.MiscUtils;
@@ -160,7 +161,6 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void setInventorySlotContents(int id, ItemStack stack) 
 	{
 		if(id == 0) floppyStack = stack;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		markDirty();
 	}
 
@@ -204,6 +204,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void setDisk(ItemStack stack) 
 	{
 		setInventorySlotContents(0, stack);
+		IntegratedCircuits.networkWrapper.sendToAll(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack));
 	}
 
 	@Override

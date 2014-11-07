@@ -241,7 +241,7 @@ public class CircuitPartRenderer
 			{
 				tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
 				addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
-			}	
+			}
 		}
 	}
 

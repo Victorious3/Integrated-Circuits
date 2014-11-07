@@ -49,16 +49,6 @@ public class ContainerAssembler extends Container
 				{
 					return stack.getItem() == IntegratedCircuits.itemLaser;
 				}
-
-				@Override
-				public void onSlotChanged() 
-				{
-					super.onSlotChanged();
-					if(!tileentity.getWorldObj().isRemote) 
-					{
-						tileentity.laserHelper.createLaser(this.slotNumber - 11, getStack());
-					}
-				}
 			});
 		
 		for(int i = 0; i < 3; i++)

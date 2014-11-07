@@ -63,7 +63,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 			tes.draw();
 			
-			if(te.circuitFBO != null)
+			if(te.circuitFBO != null && te.isOccupied)
 			{
 				GL11.glDisable(GL11.GL_TEXTURE_2D);			
 				GL11.glColor3f(0, 0.1F, 0);
