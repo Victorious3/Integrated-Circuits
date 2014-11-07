@@ -226,8 +226,9 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			te.circuitFBO = new Framebuffer(256, 256, true);
 			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
 		}
+		if(te.excMatrix == null || te.cdata == null) return;
+		
 		te.circuitFBO.framebufferClear();
-		if(te.excMatrix == null) return;
 		te.circuitFBO.bindFramebuffer(false);
 		
 		te.cdata.setParent(CurcuitRenderWrapper.instance);

@@ -37,7 +37,7 @@ public class LaserHelper
 		if(laser == null) lasers[id] = null;
 		else lasers[id] = new Laser(te, id);
 		te.contents[offset + id] = laser;
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && te.getWorldObj() != null)
 			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id), te.getWorldObj().provider.dimensionId);
 	}
 
@@ -315,7 +315,8 @@ public class LaserHelper
 			else lastModified = CommonProxy.serverTicks;
 			
 			reload();
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
+			if(te.getWorldObj() != null) 
+				IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
 		}
 		
 		public boolean canUpdate()

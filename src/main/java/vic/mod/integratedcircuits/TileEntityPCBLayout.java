@@ -204,7 +204,8 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void setDisk(ItemStack stack) 
 	{
 		setInventorySlotContents(0, stack);
-		IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
+		if(!worldObj.isRemote) 
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
 	}
 
 	@Override
