@@ -1,10 +1,10 @@
 package vic.mod.integratedcircuits.client;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import mrtjp.projectred.integration.ComponentStore;
-import mrtjp.projectred.integration.ComponentStore.ComponentModel;
-import mrtjp.projectred.integration.RenderGate.GateRenderer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -16,31 +16,35 @@ import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.PartCircuit;
+import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
+import codechicken.lib.render.Vertex5;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
 
-public class PartCircuitRenderer extends GateRenderer<PartCircuit>
+/** https://github.com/MrTJP/ProjectRed/ **/
+public class PartCircuitRenderer
 {
+	private List<ComponentModel> models = new LinkedList<ComponentModel>();
 	PinModel[] pinModels = new PinModel[]{new PinModel(0), new PinModel(1), new PinModel(2), new PinModel(3)};
-			
+	
 	public PartCircuitRenderer()
 	{
+		models.add(new BaseModel());
 		models.add(new ChipModel());
 		models.addAll(Arrays.asList(pinModels));	
 	}
 	
-	@Override
 	public void prepare(PartCircuit part) 
 	{
 		pinModels[2].isBundeled = (part.state & 1) != 0;
 		pinModels[3].isBundeled = (part.state & 2) != 0;
 		pinModels[0].isBundeled = (part.state & 4) != 0;
 		pinModels[1].isBundeled = (part.state & 8) != 0;
-		super.prepare(part);
 	}
 	
 	public void prepareInv(ItemStack stack)
@@ -55,6 +59,60 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 		name = comp.getString("name");
 		tier = comp.getByte("tier");
 	}
+	
+	/** https://github.com/MrTJP/ProjectRed/blob/master/src/mrtjp/projectred/integration/ComponentStore.java **/
+	public static CCModel bakeCopy(CCModel base, int orient)
+	{
+		CCModel m = base.copy();
+		if(orient >= 24)
+		{
+			for(int i = 0; i < m.verts.length; i += 4)
+			{
+				Vertex5 vtmp = m.verts[i+1];
+				Vector3 ntmp = m.normals()[i+1];
+				m.verts[i+1] = m.verts[i+3];
+				m.normals()[i+1] = m.normals()[i+3];
+				m.verts[i+3] = vtmp;
+				m.normals()[i+3] = ntmp;
+			}
+		}
+		
+		Transformation t = Rotation.sideOrientation(orient % 24 >> 2, orient & 3);
+        if(orient >= 24) t = new Scale(-1, 1, 1).with(t);
+		
+		m.apply(t.at(Vector3.center)).computeLighting(LightModel.standardLightModel);
+		return m;
+	}
+	
+	public static abstract class ComponentModel
+	{
+		public abstract void renderModel(Transformation t, int orient);
+	}
+	
+	public static class BaseModel extends ComponentModel
+	{
+		public static CCModel[] models = new CCModel[24];
+		private static CCModel base = generateModel();
+		
+		static
+		{
+			for(int i = 0; i < 24; i++) models[i] = bakeCopy(base, i);
+		}
+
+		@Override
+		public void renderModel(Transformation t, int orient)
+		{
+			models[orient%24].render(t, new IconTransformation(iconBase));
+		}
+		
+		private static CCModel generateModel()
+		{
+			CCModel m1 = CCModel.quadModel(24);
+			m1.generateBlock(0, 0.0002, 0.0002, 0.0002, 0.9998, 2 / 16D - 0.0002, 0.9998);
+			m1.computeNormals();
+			return m1;
+		}
+	}
 
 	public static class ChipModel extends ComponentModel
 	{
@@ -63,7 +121,7 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 		
 		static
 		{
-			for(int i = 0; i < 24; i++) models[i] = ComponentStore.bakeCopy(base, i);
+			for(int i = 0; i < 24; i++) models[i] = bakeCopy(base, i);
 		}
 
 		@Override
@@ -129,35 +187,36 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 	private byte tier;
 	private String name = "NO_NAME";
 
-	@Override
 	public void prepareDynamic(PartCircuit part, float frame) 
 	{
-		super.prepareDynamic(part, frame);
 		tier = part.tier;
 		name = part.name;
 	}
+	
+	public void renderStatic(Transformation t, int orient)
+	{
+		for(ComponentModel m : models) m.renderModel(t, orient);
+	}
 
-	@Override
 	public void renderDynamic(Transformation t)
 	{
-		super.renderDynamic(t);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glPushMatrix();
 		t.glApply();
-		new Rotation(Math.toRadians(90), 1, 0, 0).glApply();
-		new Rotation(Math.toRadians(180), 0, 0, 1).glApply();
-		new Translation(-13 / 16D, -5 / 16D, -5.005 / 16D).glApply();
+		GL11.glRotatef(90, 1, 0, 0);
+		GL11.glRotatef(180, 0, 0, 1);
+		GL11.glTranslated(-13 / 16D, -5 / 16D, -5.005 / 16D);
 		
 		FontRenderer fr = RenderManager.instance.getFontRenderer();
 		if(fr == null) return;
 		
 		GL11.glPushMatrix();
-		new Scale(1 / 64D).glApply();;
+		GL11.glScaled(1 / 64D, 1 / 64D, 1 / 64D);
 		fr.drawString("T" + tier, 0, 0, 0xFFFFFF);
 		GL11.glPopMatrix();
 		
-		new Translation(0, -4 / 16D, 0).glApply();	
-		new Scale(1 / 64D).glApply();
+		GL11.glTranslated(0, -4 / 16D, 0);
+		GL11.glScaled(1 / 64D, 1 / 64D, 1 / 64D);
 		
 		int w = fr.getStringWidth(name);
 		int mw = 42;
@@ -169,12 +228,12 @@ public class PartCircuitRenderer extends GateRenderer<PartCircuit>
 
 	public static IIcon iconIC;
 	public static IIcon iconGold;
+	public static IIcon iconBase;
 	
-	@Override
 	public void registerIcons(IIconRegister arg0) 
 	{
-		super.registerIcons(arg0);
 		iconIC = arg0.registerIcon(IntegratedCircuits.modID + ":ic");
+		iconBase = arg0.registerIcon(IntegratedCircuits.modID + ":ic_base");
 		iconGold = arg0.registerIcon("gold_block");
 	}
 }

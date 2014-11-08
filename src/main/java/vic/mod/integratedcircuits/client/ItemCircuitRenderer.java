@@ -41,7 +41,6 @@ public class ItemCircuitRenderer implements IItemRenderer
 		CCRenderState.reset();
 		CCRenderState.setDynamic();
 		CCRenderState.pullLightmap();
-		ClientProxy.renderer.prepareInv();
 		ClientProxy.renderer.prepareInv(stack);
 		CCRenderState.startDrawing();
 		ClientProxy.renderer.renderStatic(new Scale(scale).with(new Translation(x, y, z)), 0);
