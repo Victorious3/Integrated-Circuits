@@ -13,6 +13,7 @@ import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
 import vic.mod.integratedcircuits.net.PacketPCBLoad;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
+import vic.mod.integratedcircuits.part.PartFactory;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import codechicken.multipart.MultiPartRegistry;
 import cpw.mods.fml.common.Mod;

@@ -15,7 +15,7 @@ import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.PartCircuit;
+import vic.mod.integratedcircuits.part.PartCircuit;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.Vertex5;
@@ -68,17 +68,17 @@ public class PartCircuitRenderer
 		{
 			for(int i = 0; i < m.verts.length; i += 4)
 			{
-				Vertex5 vtmp = m.verts[i+1];
-				Vector3 ntmp = m.normals()[i+1];
-				m.verts[i+1] = m.verts[i+3];
+				Vertex5 vtmp = m.verts[i + 1];
+				Vector3 ntmp = m.normals()[i + 1];
+				m.verts[i + 1] = m.verts[i + 3];
 				m.normals()[i+1] = m.normals()[i+3];
-				m.verts[i+3] = vtmp;
-				m.normals()[i+3] = ntmp;
+				m.verts[i + 3] = vtmp;
+				m.normals()[i + 3] = ntmp;
 			}
 		}
 		
 		Transformation t = Rotation.sideOrientation(orient % 24 >> 2, orient & 3);
-        if(orient >= 24) t = new Scale(-1, 1, 1).with(t);
+		if(orient >= 24) t = new Scale(-1, 1, 1).with(t);
 		
 		m.apply(t.at(Vector3.center)).computeLighting(LightModel.standardLightModel);
 		return m;

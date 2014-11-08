@@ -1,5 +1,6 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.part;
 
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
 

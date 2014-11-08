@@ -1,30 +1,24 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.part;
 
-import java.util.Random;
-
-import mrtjp.projectred.integration.BundledGateLogic;
-import mrtjp.projectred.integration.BundledGatePart;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.MiscUtils;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartCircuit extends BundledGatePart implements ICircuit
+public class PartCircuit extends GatePart implements ICircuit
 {
-	public byte tier;
+	public byte tier, orientation, state;
 	public String name;
 	public byte[][] output = new byte[4][16];
 	public byte[][] input = new byte[4][16];
@@ -37,13 +31,9 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		return IntegratedCircuits.partCircuit;
 	}
 	
-	@Override
     public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
     {
-		subID = (byte)meta;
-		setSide(side ^ 1);
-		setRotation(Rotation.getSidedRotation(player, side));
-		logic = new CircuitLogic(this);
+		super.preparePlacement(player, pos, side, meta);
 		
 		ItemStack stack = player.getCurrentEquippedItem();
 		NBTTagCompound comp = stack.stackTagCompound;
@@ -52,9 +42,10 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		state = comp.getByte("con");
 		tier = comp.getByte("tier");
 		name = comp.getString("name");
-		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
+//		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
     }
-	
+
+    /*
 	@Override
 	public void load(NBTTagCompound tag) 
 	{
@@ -119,20 +110,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		packet.writeByte(tier);
 		packet.writeString(name);
 		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(Random rand) 
-	{
-		
-	}
-	
-	@Override
-	public int getLightValue() 
-	{
-		return 0;
-	}
+	}*/
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -157,7 +135,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		{
 			TextureUtils.bindAtlas(0);
 			ClientProxy.renderer.prepareDynamic(this, frame);
-			ClientProxy.renderer.renderDynamic(this.rotationT().with(pos.translation()));
+//			ClientProxy.renderer.renderDynamic(this.rotationT().with(pos.translation()));
 		}	
 	}
 
@@ -166,9 +144,9 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	{
 		if(!world().isRemote)
 		{
-			((CircuitLogic)logic).calcInput();
-			circuitData.updateInput();
-			circuitData.updateOutput();
+//			((CircuitLogic)logic).calcInput();
+//			circuitData.updateInput();
+//			circuitData.updateOutput();
 		}
 	}
 	
@@ -178,7 +156,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		onAdded();
 	}
 	
-	public class CircuitLogic extends BundledGateLogic
+	/*public class CircuitLogic extends BundledGateLogic
 	{	
 		public CircuitLogic(BundledGatePart gate) 
 		{
@@ -269,7 +247,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	private boolean isBundeledAtSide(int s)
 	{
 		return ((state >> MiscUtils.rotn(s, 2, 4)) & 1) != 0;
-	}
+	}*/
 	
 	@Override
 	public CircuitData getCircuitData() 
@@ -293,7 +271,7 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
+		/*int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
 		if(!isBundeledAtSide(side) && frequency > 0) return;
 		byte oldOut = this.output[side][frequency];
 		byte newOut = (byte)(output ? 15 : 0);
@@ -302,6 +280,6 @@ public class PartCircuit extends BundledGatePart implements ICircuit
 		{
 			tile().markDirty();
 			notifyNeighbors(15);
-		}	
+		}*/
 	}
 }
