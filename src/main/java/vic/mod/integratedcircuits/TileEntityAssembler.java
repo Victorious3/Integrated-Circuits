@@ -9,7 +9,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.ic.CircuitData;
-import vic.mod.integratedcircuits.net.PacketAssemblerPickItem;
+import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -222,8 +222,8 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		if(worldObj.isRemote) return;
 		if(id > 10 && id < 15) laserHelper.createLaser(id - 11, getStackInSlot(id));
-		else if(id == 1 && getStackInSlot(id) == null) 
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerPickItem(xCoord, yCoord, zCoord), worldObj.provider.dimensionId);
+		else if(id == 1) 
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeItem(xCoord, yCoord, zCoord, getStackInSlot(id) != null), worldObj.provider.dimensionId);
 	}
 
 	@Override

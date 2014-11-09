@@ -17,8 +17,12 @@ buildscript {
 
 repositories {
     maven {
-        name "chickenbones"
-        url "http://chickenbones.net/maven/"
+        name "bluepower"
+        url "http://maven.bluepowermod.com/"    
+    }
+    maven {
+        name "projectred"
+        url "http://projectredwiki.com/maven/"
     }
 }
 
@@ -44,14 +48,11 @@ minecraft {
 }
 
 dependencies {
-    compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
-    compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
-    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
-//    compile files(config.pr.file)
+    compile "com.bluepowermod:BluePower:${config.bluepower.version}:deobf"
+    compile "mrtjp:ProjectRed:${config.mc.version}-${config.projectred.version}:dev"
 }
 
-processResources
-{
+processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
 

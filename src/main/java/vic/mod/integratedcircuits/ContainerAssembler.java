@@ -34,7 +34,7 @@ public class ContainerAssembler extends Container
 			@Override
 			public boolean isItemValid(ItemStack stack) 
 			{
-				return false;
+				return stack.getItem() == IntegratedCircuits.itemPCB && stack.getItemDamage() == 0;
 			}
 		});
 		

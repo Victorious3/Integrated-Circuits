@@ -1,13 +1,11 @@
 package vic.mod.integratedcircuits;
 
-import mrtjp.projectred.core.TItemGlassSound;
-import mrtjp.projectred.core.libmc.WireLib;
+import mrtjp.core.world.PlacementLib;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.part.GatePart;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
@@ -19,7 +17,7 @@ import codechicken.multipart.TMultiPart;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemCircuit extends JItemMultiPart implements TItemGlassSound
+public class ItemCircuit extends JItemMultiPart
 {
 	public ItemCircuit()
 	{
@@ -31,7 +29,8 @@ public class ItemCircuit extends JItemMultiPart implements TItemGlassSound
 	@Override
 	public TMultiPart newPart(ItemStack arg0, EntityPlayer arg1, World arg2, BlockCoord arg3, int arg4, Vector3 arg5) 
 	{
-		if(WireLib.canPlaceWireOnSide(arg2, arg3.x, arg3.y, arg3.z, ForgeDirection.getOrientation(arg4), false)) return null;
+		BlockCoord bc = arg3.copy().offset(arg4 ^ 1);
+		if(!PlacementLib.canPlaceWireOnSide(arg2, bc.x, bc.y, bc.z, arg4)) return null;
 		GatePart part = (GatePart)MultiPartRegistry.createPart(IntegratedCircuits.partCircuit, false);
 		part.preparePlacement(arg1, arg3, arg4, arg0.getItemDamage());
 		return part;

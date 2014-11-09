@@ -1,5 +1,7 @@
 package vic.mod.integratedcircuits.part;
 
+import java.util.Arrays;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -9,6 +11,8 @@ import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.MiscUtils;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
@@ -18,7 +22,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartCircuit extends GatePart implements ICircuit
 {
-	public byte tier, orientation, state;
+	public byte tier, con;
 	public String name;
 	public byte[][] output = new byte[4][16];
 	public byte[][] input = new byte[4][16];
@@ -39,26 +43,17 @@ public class PartCircuit extends GatePart implements ICircuit
 		NBTTagCompound comp = stack.stackTagCompound;
 		if(comp == null) return;
 		
-		state = comp.getByte("con");
+		con = comp.getByte("con");
 		tier = comp.getByte("tier");
 		name = comp.getString("name");
-//		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
+		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
     }
 
-    /*
 	@Override
 	public void load(NBTTagCompound tag) 
 	{
-		orientation = tag.getByte("orient");
-		subID = tag.getByte("subID");
-		shape = tag.getByte("shape");
-		connMap = tag.getShort("connMap") & 0xFFFF;
-		schedTime = tag.getLong("schedTime");
-		state = tag.getByte("state");
-		logic = new CircuitLogic(this);
-		logic.load(tag);
-		
-		//My part
+		super.load(tag);
+		con = tag.getByte("con");
 		tier = tag.getByte("tier");
 		name = tag.getString("name");
 		circuitData = CircuitData.readFromNBT(tag.getCompoundTag("circuit"), this);
@@ -68,7 +63,7 @@ public class PartCircuit extends GatePart implements ICircuit
 	public void save(NBTTagCompound tag) 
 	{
 		super.save(tag);
-		
+		tag.setByte("con", con);
 		tag.setShort("tier", tier);
 		tag.setString("name", name);
 		tag.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
@@ -77,40 +72,34 @@ public class PartCircuit extends GatePart implements ICircuit
 	@Override
 	public void readDesc(MCDataInput packet) 
 	{
-		orientation = packet.readByte();
-		subID = packet.readByte();
-		shape = packet.readByte();
-		state = packet.readByte();
-		if(logic == null) logic = new CircuitLogic(this);
-		logic.readDesc(packet);
-		
-		//My part
+		super.readDesc(packet);
+		con = packet.readByte();
 		tier = packet.readByte();
 		name = packet.readString();
 		circuitData = CircuitData.readFromNBT(packet.readNBTTagCompound(), this);
 	}
 	
 	@Override
-	public ItemStack getItem() 
+	public Iterable<ItemStack> getDrops() 
 	{
 		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuit);
 		NBTTagCompound comp = new NBTTagCompound();
 		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
-		comp.setInteger("con", state);
+		comp.setInteger("con", con);
 		comp.setString("name", name);
 		stack.stackTagCompound = comp;
-		return stack;
+		return Arrays.asList(stack);
 	}
 
 	@Override
 	public void writeDesc(MCDataOutput packet) 
 	{
 		super.writeDesc(packet);
-		
+		packet.writeByte(con);
 		packet.writeByte(tier);
 		packet.writeString(name);
 		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
-	}*/
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -121,7 +110,7 @@ public class PartCircuit extends GatePart implements ICircuit
 			TextureUtils.bindAtlas(0);
 			CCRenderState.setBrightness(world(), x(), y(), z());
 			ClientProxy.renderer.prepare(this);
-			ClientProxy.renderer.renderStatic(pos.translation(), orientation & 0xFF);
+			ClientProxy.renderer.renderStatic(pos.translation(), orientation & 255);
 			return true;
 		}	
 		else return false;
@@ -135,7 +124,7 @@ public class PartCircuit extends GatePart implements ICircuit
 		{
 			TextureUtils.bindAtlas(0);
 			ClientProxy.renderer.prepareDynamic(this, frame);
-//			ClientProxy.renderer.renderDynamic(this.rotationT().with(pos.translation()));
+			ClientProxy.renderer.renderDynamic(this.getRotationTransformation().with(pos.translation()));
 		}	
 	}
 
@@ -144,9 +133,8 @@ public class PartCircuit extends GatePart implements ICircuit
 	{
 		if(!world().isRemote)
 		{
-//			((CircuitLogic)logic).calcInput();
-//			circuitData.updateInput();
-//			circuitData.updateOutput();
+			circuitData.updateInput();
+			circuitData.updateOutput();
 		}
 	}
 	
@@ -155,99 +143,11 @@ public class PartCircuit extends GatePart implements ICircuit
 	{
 		onAdded();
 	}
-	
-	/*public class CircuitLogic extends BundledGateLogic
-	{	
-		public CircuitLogic(BundledGatePart gate) 
-		{
-			super(gate);
-		}
-
-		@Override
-		public boolean canConnectBundled(BundledGatePart gate, int r) 
-		{
-			return isBundeledAtSide(r);
-		}
-
-		@Override
-		public boolean canConnect(int shape, int r) 
-		{
-			return !isBundeledAtSide(r);
-		}
-
-		@Override
-		public int getOutput(BundledGatePart gate, int r)
-		{
-			return isBundeledAtSide(r) ? 0 : output[r][0];
-		}
-
-		@Override
-		public int outputMask(int shape) 
-		{
-			return 0xF;
-		}
-
-		@Override
-		public int inputMask(int shape)
-		{
-			return 0xF;
-		}
-
-		@Override
-		public void onChange(BundledGatePart gate) 
-		{
-			calcInput();
-			circuitData.updateInput();
-		}
-		
-		private void calcInput()
-		{
-			int in = getInput(gate, 15);
-			for(int i = 0; i < 4; i++)
-			{
-				if(!isBundeledAtSide(i)) input[i][0] = (byte)((in >> i & 1) > 0 ? 15 : 0);
-			}
-			for(int i = 0; i < 4; i++)
-			{
-				if(!isBundeledAtSide(i)) continue;
-				byte[] bin = getBundledInput(i);
-				if(bin == null) bin = new byte[16];
-				input[i] = bin;
-			}
-		}
-
-		@Override
-		public byte[] getBundledOutput(BundledGatePart gate, int r) 
-		{
-			return isBundeledAtSide(r) ? output[r] : null;
-		}
-
-		@Override
-		public void onTick(BundledGatePart gate) 
-		{
-			if(gate.world().isRemote) return;
-			circuitData.setQueueEnabled(false);
-			circuitData.updateMatrix();
-			tile().markDirty();
-		}
-
-		@Override
-		public void read(MCDataInput packet, int switch_key) 
-		{
-			super.read(packet, switch_key);
-		}
-	}
-	
-	@Override
-	public byte[] getBundledSignal(int r) 
-	{
-		return getLogic().getBundledOutput(this, toInternal(r));
-	}
 
 	private boolean isBundeledAtSide(int s)
 	{
-		return ((state >> MiscUtils.rotn(s, 2, 4)) & 1) != 0;
-	}*/
+		return ((con >> s) & 1) != 0;
+	}
 	
 	@Override
 	public CircuitData getCircuitData() 
@@ -255,6 +155,12 @@ public class PartCircuit extends GatePart implements ICircuit
 		return circuitData;
 	}
 	
+	@Override
+	public boolean canConnectRedstoneImpl(int arg0) 
+	{
+		return !isBundeledAtSide(arg0);
+	}
+
 	@Override
 	public void setCircuitData(CircuitData data) 
 	{
@@ -271,7 +177,7 @@ public class PartCircuit extends GatePart implements ICircuit
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		/*int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
+		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
 		if(!isBundeledAtSide(side) && frequency > 0) return;
 		byte oldOut = this.output[side][frequency];
 		byte newOut = (byte)(output ? 15 : 0);
@@ -279,7 +185,7 @@ public class PartCircuit extends GatePart implements ICircuit
 		if(oldOut != newOut)
 		{
 			tile().markDirty();
-			notifyNeighbors(15);
-		}*/
+			tile().notifyTileChange();
+		}
 	}
 }

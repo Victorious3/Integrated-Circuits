@@ -41,10 +41,10 @@ public class PartCircuitRenderer
 	
 	public void prepare(PartCircuit part) 
 	{
-		pinModels[2].isBundeled = (part.state & 1) != 0;
-		pinModels[3].isBundeled = (part.state & 2) != 0;
-		pinModels[0].isBundeled = (part.state & 4) != 0;
-		pinModels[1].isBundeled = (part.state & 8) != 0;
+		pinModels[2].isBundeled = (part.con & 1) != 0;
+		pinModels[3].isBundeled = (part.con & 2) != 0;
+		pinModels[0].isBundeled = (part.con & 4) != 0;
+		pinModels[1].isBundeled = (part.con & 8) != 0;
 	}
 	
 	public void prepareInv(ItemStack stack)
@@ -102,7 +102,7 @@ public class PartCircuitRenderer
 		@Override
 		public void renderModel(Transformation t, int orient)
 		{
-			models[orient%24].render(t, new IconTransformation(iconBase));
+			models[orient % 24].render(t, new IconTransformation(iconBase));
 		}
 		
 		private static CCModel generateModel()
