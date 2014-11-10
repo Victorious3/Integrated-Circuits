@@ -9,8 +9,8 @@ import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
-import vic.mod.integratedcircuits.util.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -19,11 +19,13 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
+import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 
@@ -94,6 +96,11 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		return orientation >> 2;
 	}
 	
+	public int getSideRel(int side)
+	{
+		return getRotationRel(Rotation.rotationTo(getSide(), side));
+	}
+	
 	public void setSide(int s)
 	{
 		orientation = (byte)(orientation & 3 | s << 2);
@@ -102,6 +109,16 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	public int getRotation()
 	{
 		return orientation & 3;
+	}
+	
+	public int getRotationAbs(int rel)
+	{
+		return (rel + getRotation() + 2) % 4;
+	}
+	
+	public int getRotationRel(int abs)
+	{
+		return (abs + 6 - getRotation()) % 4;
 	}
 	
 	public void setRotation(int r)
@@ -167,13 +184,30 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public void onNeighborChanged() 
 	{
-		super.onNeighborChanged();
+		if(!world().isRemote) updateRedstoneInput();
 	}
-
-	@Override
-	public void onPartChanged(TMultiPart part) 
+	
+	public void updateRedstoneInput()
 	{
-		super.onPartChanged(part);
+		System.out.print(new BlockCoord(tile()) + " - ");
+		for(int i = 0; i < 4; i++)
+		{
+			int r = getRotationAbs(i);
+			BlockCoord crd = new BlockCoord(tile());
+			crd.offset(Rotation.rotateSide(getSide(), r));
+			TileEntity te = world().getTileEntity(crd.x, crd.y, crd.z);
+			if(te == null) continue;
+			if(te instanceof TileMultipart)
+			{
+				TileMultipart tm = (TileMultipart)te;
+				TMultiPart tp = tm.partMap(getSide());
+				if(tp instanceof IRedstonePart)
+					System.out.print(((IRedstonePart)tp).weakPowerLevel(Rotation.rotateSide(getSide(), (r + 2) % 4)));
+			}
+//			else if(world().isBlockProvidingPowerTo(arg0, arg1, arg2, arg3))
+//				System.out.print(world().getBlockPowerInput(crd.x, crd.y, crd.z));
+		}
+		System.out.println();
 	}
 
 	//ProjectRed
@@ -199,7 +233,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public boolean connectStraight(IConnectable arg0, int arg1, int arg2) 
 	{
-		int side = MiscUtils.rotn(arg1, -getRotation(), 4);
+		int side = getRotationRel(arg1);
 		if(arg0 instanceof IRedwireEmitter && canConnectRedstoneImpl(side)) return true;
 		if(arg0 instanceof IBundledEmitter) return canConnectBundledImpl(side);
 		return false;
@@ -217,19 +251,11 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	public final boolean canConnectRedstone(int arg0) 
 	{
 		if((arg0 & 6) == (getSide() & 6)) return false;
-		return canConnectRedstoneImpl(MiscUtils.rotn(Rotation.rotationTo(getSide(), arg0), -getRotation(), 4));
+		return canConnectRedstoneImpl(getRotationRel(getSideRel(arg0)));
 	}
 
 	public abstract boolean canConnectRedstoneImpl(int arg0);
-
-	public boolean canConnectBundled(int arg0) 
-	{
-		if((arg0 & 6) == (getSide() & 6)) return false;
-		return canConnectBundledImpl(MiscUtils.rotn(Rotation.rotationTo(getSide(), arg0), -getRotation(), 4));
-	}
-	
 	public abstract boolean canConnectBundledImpl(int arg0);
-	
 	
 	@Override
 	public int strongPowerLevel(int arg0) 

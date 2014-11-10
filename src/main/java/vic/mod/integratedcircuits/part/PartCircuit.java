@@ -144,7 +144,7 @@ public class PartCircuit extends GatePart implements ICircuit
 
 	private boolean isBundeledAtSide(int s)
 	{
-		return ((con >> s) & 1) != 0;
+		return ((con >> ((s + 2) % 4)) & 1) != 0;
 	}
 	
 	@Override
