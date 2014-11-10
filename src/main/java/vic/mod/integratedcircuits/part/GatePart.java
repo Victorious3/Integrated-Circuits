@@ -23,6 +23,7 @@ import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
+import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
@@ -180,36 +181,73 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		}
 		return false;
 	}
-	
+
+	@Override
+	public void onAdded() 
+	{
+		if(!world().isRemote) updateRedstoneInput();
+	}
+
 	@Override
 	public void onNeighborChanged() 
 	{
 		if(!world().isRemote) updateRedstoneInput();
 	}
-	
-	public void updateRedstoneInput()
+
+	@Override
+	public void onPartChanged(TMultiPart part) 
 	{
-		System.out.print(new BlockCoord(tile()) + " - ");
-		for(int i = 0; i < 4; i++)
-		{
-			int r = getRotationAbs(i);
-			BlockCoord crd = new BlockCoord(tile());
-			crd.offset(Rotation.rotateSide(getSide(), r));
-			TileEntity te = world().getTileEntity(crd.x, crd.y, crd.z);
-			if(te == null) continue;
-			if(te instanceof TileMultipart)
-			{
-				TileMultipart tm = (TileMultipart)te;
-				TMultiPart tp = tm.partMap(getSide());
-				if(tp instanceof IRedstonePart)
-					System.out.print(((IRedstonePart)tp).weakPowerLevel(Rotation.rotateSide(getSide(), (r + 2) % 4)));
-			}
-//			else if(world().isBlockProvidingPowerTo(arg0, arg1, arg2, arg3))
-//				System.out.print(world().getBlockPowerInput(crd.x, crd.y, crd.z));
-		}
-		System.out.println();
+		if(!world().isRemote) updateRedstoneInput();
 	}
 
+	public void updateRedstoneInput()
+	{
+		for(int i = 0; i < 4; i++)
+		{	
+			input[i][0] = (byte)updateRedstoneInput(i);
+		}
+	}
+	
+	private int updateRedstoneInput(int side)
+	{
+		int r = getRotationAbs(side);
+		int abs = Rotation.rotateSide(getSide(), r);
+		int power = 0;
+		
+		if(((abs ^ 1) & 6) != ((getSide() ^ 1) & 6))
+		{
+			BlockCoord pos = new BlockCoord(tile()).offset(abs).offset(getSide());
+			TileEntity t = world().getTileEntity(pos.x, pos.y, pos.z);
+			if(t != null && t instanceof TileMultipart) 
+				power = updatePartSignal(((TileMultipart)t).partMap(abs ^ 1), Rotation.rotationTo(abs ^ 1, getSide() ^ 1));
+			if(power > 0) return power / 17;
+		}
+		
+		power = RedstoneInteractions.getPowerTo(this, abs);
+		if(power > 0) return power;
+		
+		TMultiPart tp = tile().partMap(abs);
+		if((abs & 6) != (getSide() & 6))
+		{
+			power = updatePartSignal(tp, Rotation.rotationTo(abs, getSide()));
+			if(power > 0) return power / 17;
+		}
+		
+		if(tp instanceof IRedstonePart)
+		{
+			IRedstonePart rp = (IRedstonePart)tp;
+			power = Math.max(rp.strongPowerLevel(getSide()), rp.weakPowerLevel(getSide())) << 4;
+			if(power > 0) return power;
+		}
+		return power;
+	}
+	
+	private int updatePartSignal(TMultiPart part, int r)
+	{
+		if(part instanceof IRedwireEmitter) return ((IRedwireEmitter)part).getRedwireSignal(r);
+		return 0;
+	}
+	
 	//ProjectRed
 	
 	@Override

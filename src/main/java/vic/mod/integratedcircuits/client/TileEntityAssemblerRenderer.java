@@ -226,12 +226,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			te.circuitFBO = new Framebuffer(256, 256, true);
 			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
 		}
-		if(te.excMatrix == null || te.cdata == null) return;
 		
 		te.circuitFBO.framebufferClear();
 		te.circuitFBO.bindFramebuffer(false);
 		
-		te.cdata.setParent(CurcuitRenderWrapper.instance);
 		GL11.glColor3f(0, 0.1F, 0);
 		Tessellator tes = Tessellator.instance;
 		tes.startDrawingQuads();
@@ -241,8 +239,13 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		tes.addVertex(256, 0, 0);
 		tes.draw();
 		GL11.glColor3f(1, 1, 1);
-		GL11.glScalef(16 / (float)te.cdata.getSize(), 16 / (float)te.cdata.getSize(), 1);
-		CircuitPartRenderer.renderParts(0, 0, te.cdata, te.excMatrix, te.size > 16 ? 2 : 1);
+		
+		if(te.excMatrix != null && te.cdata != null)
+		{
+			GL11.glScalef(16 / (float)te.cdata.getSize(), 16 / (float)te.cdata.getSize(), 1);
+			te.cdata.setParent(CurcuitRenderWrapper.instance);
+			CircuitPartRenderer.renderParts(0, 0, te.cdata, te.excMatrix, te.size > 16 ? 2 : 1);
+		}
 
 		te.circuitFBO.unbindFramebuffer();
 	}

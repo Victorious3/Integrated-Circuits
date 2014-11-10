@@ -125,16 +125,6 @@ public class PartCircuit extends GatePart implements ICircuit
 			ClientProxy.renderer.renderDynamic(this.getRotationTransformation().with(pos.translation()));
 		}	
 	}
-
-	@Override
-	public void onAdded() 
-	{
-		if(!world().isRemote)
-		{
-//			circuitData.updateInput();
-//			circuitData.updateOutput();
-		}
-	}
 	
 	@Override
 	public void onWorldJoin() 
@@ -153,6 +143,20 @@ public class PartCircuit extends GatePart implements ICircuit
 		return circuitData;
 	}
 	
+	@Override
+	public void onAdded() 
+	{
+		super.onAdded();
+		circuitData.updateOutput();
+	}
+
+	@Override
+	public void updateRedstoneInput() 
+	{
+		super.updateRedstoneInput();
+		circuitData.updateInput();
+	}
+
 	@Override
 	public boolean canConnectRedstoneImpl(int arg0) 
 	{

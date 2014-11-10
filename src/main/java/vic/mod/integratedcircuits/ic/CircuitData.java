@@ -51,23 +51,23 @@ public class CircuitData implements Cloneable
 	
 	public void setup()
 	{
-		int o = size / 2 - 8;
+		int o = supportsBundled() ? size / 2 - 8 : 1;
 		int cid = CircuitPart.getIdFromClass(CircuitPart.PartIOBit.class);
 		
-		for(int i = 0; i < 16; i++)
+		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
 		{
-			setID(i + o, 0, cid);
-			setID(size - 1, i + o, cid);
+			setID(size - 1 - (i + o), 0, cid);
+			setID(size - 1, size - 1 - (i + o), cid);
 			setID(i + o, size - 1, cid);
 			setID(0, i + o, cid);
 			
-			PartIOBit io1 = (PartIOBit)getPart(i + o, 0);
-			PartIOBit io2 = (PartIOBit)getPart(size - 1, i + o);
+			PartIOBit io1 = (PartIOBit)getPart(size - 1 - (i + o), 0);
+			PartIOBit io2 = (PartIOBit)getPart(size - 1, size - 1 - (i + o));
 			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
 			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
 			
-			io1.setFrequency(15 - i);
-			io2.setFrequency(15 - i);
+			io1.setFrequency(i);
+			io2.setFrequency(i);
 			io3.setFrequency(i);
 			io4.setFrequency(i);
 			
@@ -81,12 +81,12 @@ public class CircuitData implements Cloneable
 	/** Syncs the circuit's IO bits with the suspected input **/
 	public void updateInput()
 	{
-		int o = size / 2 - 8;
+		int o = supportsBundled() ? size / 2 - 8 : 1;
 		
-		for(int i = 0; i < 16; i++)
+		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
 		{		
-			PartIOBit io1 = (PartIOBit)getPart(i + o, 0);
-			PartIOBit io2 = (PartIOBit)getPart(size - 1, i + o);
+			PartIOBit io1 = (PartIOBit)getPart(size - 1 - (i + o), 0);
+			PartIOBit io2 = (PartIOBit)getPart(size - 1, size - 1 - (i + o));
 			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
 			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
 			
@@ -100,12 +100,12 @@ public class CircuitData implements Cloneable
 	/** Syncs the circuit's IO bits with the suspected output **/
 	public void updateOutput()
 	{
-		int o = size / 2 - 8;
+		int o = supportsBundled() ? size / 2 - 8 : 1;
 		
-		for(int i = 0; i < 16; i++)
+		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
 		{		
-			PartIOBit io1 = (PartIOBit)getPart(i + o, 0);
-			PartIOBit io2 = (PartIOBit)getPart(size - 1, i + o);
+			PartIOBit io1 = (PartIOBit)getPart(size - 1 - (i + o), 0);
+			PartIOBit io2 = (PartIOBit)getPart(size - 1, size - 1 - (i + o));
 			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
 			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
 			
@@ -114,6 +114,11 @@ public class CircuitData implements Cloneable
 			io3.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
 			io4.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
 		}
+	}
+	
+	public boolean supportsBundled()
+	{
+		return size > 16;
 	}
 	
 	public int getMeta(int x, int y)

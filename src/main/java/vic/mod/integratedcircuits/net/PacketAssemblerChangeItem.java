@@ -39,8 +39,8 @@ public class PacketAssemblerChangeItem extends PacketTileEntity<PacketAssemblerC
 	{
 		TileEntityAssembler te = (TileEntityAssembler)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
-		TileEntityAssemblerRenderer.scheduleFramebuffer(te);
 		te.excMatrix = null;
+		TileEntityAssemblerRenderer.scheduleFramebuffer(te);
 		te.isOccupied = occupied;
 	}
 }
