@@ -2,8 +2,10 @@ package vic.mod.integratedcircuits.part;
 
 import java.util.Arrays;
 
+import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
+import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -22,11 +24,19 @@ import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
+import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.InterfaceList;
 
-public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart
+@InterfaceList(value = {
+	@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),
+	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core"),
+})
+public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, IBundledEmitter
 {
 	public byte orientation;
 	private Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
+	public byte[][] output = new byte[4][16];
+	public byte[][] input = new byte[4][16];
 	
 	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
     {
@@ -147,36 +157,61 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 				getWriteStream(0).writeByte(orientation);
 				tile().markDirty();
 				tile().notifyPartChange(this);
+				tile().notifyNeighborChange(getSide());
 			}
 			return true;
 		}
 		return false;
 	}
+	
+	@Override
+	public void onNeighborChanged() 
+	{
+		super.onNeighborChanged();
+	}
 
+	@Override
+	public void onPartChanged(TMultiPart part) 
+	{
+		super.onPartChanged(part);
+	}
+
+	//ProjectRed
+	
 	@Override
 	public boolean canConnectCorner(int arg0) 
 	{
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean connectCorner(IConnectable arg0, int arg1, int arg2) 
 	{
-		return true;
+		return connectStraight(arg0, arg1, arg2);
 	}
 
 	@Override
 	public boolean connectInternal(IConnectable arg0, int arg1) 
 	{
-		return true;
+		return connectStraight(arg0, arg1, 0);
 	}
 
 	@Override
 	public boolean connectStraight(IConnectable arg0, int arg1, int arg2) 
 	{
 		int side = MiscUtils.rotn(arg1, -getRotation(), 4);
-		return canConnectRedstoneImpl(side);
+		if(arg0 instanceof IRedwireEmitter && canConnectRedstoneImpl(side)) return true;
+		if(arg0 instanceof IBundledEmitter) return canConnectBundledImpl(side);
+		return false;
 	}
+	
+	@Override
+	public byte[] getBundledSignal(int arg0) 
+	{
+		return null;
+	}
+	
+	//---
 
 	@Override
 	public final boolean canConnectRedstone(int arg0) 
@@ -184,9 +219,18 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		if((arg0 & 6) == (getSide() & 6)) return false;
 		return canConnectRedstoneImpl(MiscUtils.rotn(Rotation.rotationTo(getSide(), arg0), -getRotation(), 4));
 	}
-	
+
 	public abstract boolean canConnectRedstoneImpl(int arg0);
 
+	public boolean canConnectBundled(int arg0) 
+	{
+		if((arg0 & 6) == (getSide() & 6)) return false;
+		return canConnectBundledImpl(MiscUtils.rotn(Rotation.rotationTo(getSide(), arg0), -getRotation(), 4));
+	}
+	
+	public abstract boolean canConnectBundledImpl(int arg0);
+	
+	
 	@Override
 	public int strongPowerLevel(int arg0) 
 	{

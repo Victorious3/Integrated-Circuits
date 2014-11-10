@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import mrtjp.projectred.integration.ComponentStore;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -149,8 +148,8 @@ public class PartCircuitRenderer
 		
 		static
 		{
-			for(int i = 0; i < 24; i++) normalModels[i] = ComponentStore.bakeCopy(normal, i);
-			for(int i = 0; i < 24; i++) bundeledModels[i] = ComponentStore.bakeCopy(bundeled, i);
+			for(int i = 0; i < 24; i++) normalModels[i] = bakeCopy(normal, i);
+			for(int i = 0; i < 24; i++) bundeledModels[i] = bakeCopy(bundeled, i);
 		}
 		
 		public PinModel(int rotation)

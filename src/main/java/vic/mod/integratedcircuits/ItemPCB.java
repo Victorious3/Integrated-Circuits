@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits;
 
 import java.util.List;
 
-import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -20,7 +19,7 @@ public class ItemPCB extends Item
 	public ItemPCB()
 	{
 		setUnlocalizedName(IntegratedCircuits.modID + ".pcb");
-		setCreativeTab(ProjectRedIntegration.tabIntegration());
+		setCreativeTab(IntegratedCircuits.creativeTab);
 	}
 	
 	@Override

@@ -1,5 +1,7 @@
 package vic.mod.integratedcircuits;
 
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import vic.mod.integratedcircuits.net.AbstractPacket;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
@@ -28,7 +30,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "integratedcircuits", dependencies = "required-after:ProjRed|Transmission; required-after:ProjRed|Integration;")
+@Mod(modid = "integratedcircuits", dependencies = "required-after:ForgeMultipart;")
 public class IntegratedCircuits
 {
 	public static final String modID = "integratedcircuits";
@@ -42,6 +44,8 @@ public class IntegratedCircuits
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
 	public static SimpleNetworkWrapper networkWrapper;
+	
+	public static CreativeTabs creativeTab;
 	
 	@Instance(modID)
 	public static IntegratedCircuits instance;
@@ -70,6 +74,15 @@ public class IntegratedCircuits
 		
 		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 12);
 		
+		creativeTab = new CreativeTabs(modID + ".ctab") 
+		{
+			@Override
+			public Item getTabIconItem() 
+			{
+				return itemCircuit;
+			}
+		};
+
 		itemCircuit = new ItemCircuit();
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();

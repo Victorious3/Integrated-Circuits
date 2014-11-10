@@ -24,8 +24,6 @@ public class PartCircuit extends GatePart implements ICircuit
 {
 	public byte tier, con;
 	public String name;
-	public byte[][] output = new byte[4][16];
-	public byte[][] input = new byte[4][16];
 	
 	public CircuitData circuitData;
 	
@@ -80,6 +78,16 @@ public class PartCircuit extends GatePart implements ICircuit
 	}
 	
 	@Override
+	public void writeDesc(MCDataOutput packet) 
+	{
+		super.writeDesc(packet);
+		packet.writeByte(con);
+		packet.writeByte(tier);
+		packet.writeString(name);
+		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
+	}
+	
+	@Override
 	public Iterable<ItemStack> getDrops() 
 	{
 		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuit);
@@ -89,16 +97,6 @@ public class PartCircuit extends GatePart implements ICircuit
 		comp.setString("name", name);
 		stack.stackTagCompound = comp;
 		return Arrays.asList(stack);
-	}
-
-	@Override
-	public void writeDesc(MCDataOutput packet) 
-	{
-		super.writeDesc(packet);
-		packet.writeByte(con);
-		packet.writeByte(tier);
-		packet.writeString(name);
-		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
 	}
 
 	@Override
@@ -133,8 +131,8 @@ public class PartCircuit extends GatePart implements ICircuit
 	{
 		if(!world().isRemote)
 		{
-			circuitData.updateInput();
-			circuitData.updateOutput();
+//			circuitData.updateInput();
+//			circuitData.updateOutput();
 		}
 	}
 	
@@ -159,6 +157,12 @@ public class PartCircuit extends GatePart implements ICircuit
 	public boolean canConnectRedstoneImpl(int arg0) 
 	{
 		return !isBundeledAtSide(arg0);
+	}
+	
+	@Override
+	public boolean canConnectBundledImpl(int arg0) 
+	{
+		return isBundeledAtSide(arg0);
 	}
 
 	@Override
@@ -186,6 +190,7 @@ public class PartCircuit extends GatePart implements ICircuit
 		{
 			tile().markDirty();
 			tile().notifyTileChange();
+			tile().notifyNeighborChange(getSide());
 		}
 	}
 }

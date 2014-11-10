@@ -1,6 +1,5 @@
 package vic.mod.integratedcircuits;
 
-import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -24,7 +23,7 @@ public class BlockPCBLayout extends BlockContainer
 	{
 		super(Material.iron);
 		setBlockName(IntegratedCircuits.modID + ".pcblayoutcad");
-		setCreativeTab(ProjectRedIntegration.tabIntegration());
+		setCreativeTab(IntegratedCircuits.creativeTab);
 	}
 
 	@Override

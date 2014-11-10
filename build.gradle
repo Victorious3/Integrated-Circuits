@@ -9,6 +9,7 @@ buildscript {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+        
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
@@ -17,12 +18,24 @@ buildscript {
 
 repositories {
     maven {
+        name "chickenbones"
+        url "http://chickenbones.net/maven/"
+    }
+    maven {
         name "bluepower"
         url "http://maven.bluepowermod.com/"    
     }
     maven {
         name "projectred"
         url "http://projectredwiki.com/maven/"
+    }
+    ivy {
+        name "redlogic"
+        artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/redlogic/[module]-[revision].[ext]"
+    }
+    ivy {
+        name "immibis-core"
+        artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/[module]-[revision].[ext]"
     }
 }
 
@@ -38,7 +51,7 @@ configFile.withReader {
 
 apply plugin: 'forge'
 
-version = "${config.mod.version}"
+version = "${config.mc.version}-${config.mod.version}"
 group = "vic.mod.integratedcircuits"
 archivesBaseName = "integratedcircuits"
 
@@ -48,8 +61,20 @@ minecraft {
 }
 
 dependencies {
+    compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
+    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
+    compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
+    compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
+    
+    compile("mrtjp:ProjectRed:${config.mc.version}-${config.projectred.version}:dev") {
+        exclude group: "cofh"
+        exclude group: "thermalexpansion"
+        exclude group: "tconstruct"
+    }
+    
     compile "com.bluepowermod:BluePower:${config.bluepower.version}:deobf"
-    compile "mrtjp:ProjectRed:${config.mc.version}-${config.projectred.version}:dev"
+    compile name: "redlogic", version: "${config.redlogic.version}", ext: "jar"
+    compile name: "immibis-core", version: "${config.imc.version}", ext: "jar"
 }
 
 processResources {

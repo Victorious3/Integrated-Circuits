@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits;
 
 import java.util.List;
 
-import mrtjp.projectred.ProjectRedIntegration;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,7 +13,7 @@ public class ItemFloppyDisk extends Item
 {
 	public ItemFloppyDisk()
 	{
-		setCreativeTab(ProjectRedIntegration.tabIntegration());
+		setCreativeTab(IntegratedCircuits.creativeTab);
 		setUnlocalizedName(IntegratedCircuits.modID + ".floppy");
 		setTextureName(IntegratedCircuits.modID + ":floppy");
 		setMaxStackSize(1);

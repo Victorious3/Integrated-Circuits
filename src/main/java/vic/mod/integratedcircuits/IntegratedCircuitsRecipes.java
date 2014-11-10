@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits;
 
 import java.util.Arrays;
 
-import mrtjp.projectred.core.PartDefs;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -21,7 +20,7 @@ public class IntegratedCircuitsRecipes
 			"rrr",
 					'i', Items.iron_ingot,
 					'#', Blocks.glass_pane,
-					'r', PartDefs.REDINGOT().makeStack()
+					'r', Items.redstone
 		);
 		
 		GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.blockAssembler), 
@@ -30,7 +29,7 @@ public class IntegratedCircuitsRecipes
 			"rrr",
 					'd', Items.diamond,
 					'#', Blocks.glass_pane,
-					'r', PartDefs.REDINGOT().makeStack()
+					'r', Items.redstone
 		);
 		
 		GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.itemFloppyDisk),
@@ -38,7 +37,7 @@ public class IntegratedCircuitsRecipes
 			"i#i",
 			"iii",
 					'i', Items.iron_ingot,
-					'#', PartDefs.INFUSEDSILICON().makeStack()
+					'#', Items.redstone
 		);
 		
 		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(IntegratedCircuits.itemCircuit), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)))
