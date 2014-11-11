@@ -56,7 +56,7 @@ public class PartCircuitRenderer
 		pinModels[0].isBundeled = (con & 4) != 0;
 		pinModels[1].isBundeled = (con & 8) != 0;
 		name = comp.getString("name");
-		tier = comp.getByte("tier");
+		tier = (byte) (comp.getInteger("size") / 16);
 	}
 	
 	/** https://github.com/MrTJP/ProjectRed/blob/master/src/mrtjp/projectred/integration/ComponentStore.java **/

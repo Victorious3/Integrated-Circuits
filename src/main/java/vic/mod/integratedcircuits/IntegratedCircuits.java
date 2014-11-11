@@ -18,6 +18,7 @@ import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import vic.mod.integratedcircuits.part.PartFactory;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import codechicken.multipart.MultiPartRegistry;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -33,6 +34,9 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(modid = "integratedcircuits", dependencies = "required-after:ForgeMultipart;")
 public class IntegratedCircuits
 {
+	public static boolean isPRLoaded = false;
+	public static boolean isAWLoaded = false;
+	
 	public static final String modID = "integratedcircuits";
 	public static final String partCircuit = modID + "_circuit";
 	
@@ -106,6 +110,8 @@ public class IntegratedCircuits
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
+		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
+		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
 		MultiPartRegistry.registerParts(new PartFactory(), new String[]{partCircuit});
 		proxy.initialize();
 	}

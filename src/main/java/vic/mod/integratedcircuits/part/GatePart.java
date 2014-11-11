@@ -5,12 +5,15 @@ import java.util.Arrays;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.api.IScrewdriver;
+import mrtjp.projectred.transmission.APIImpl_Transmission;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.util.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -166,46 +169,138 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
 	{
-		if(item != null && item.getItem() instanceof IScrewdriver)
+		if(item != null)
 		{
-			if(!world().isRemote)
+			if(item.getItem().getUnlocalizedName().equals("item.projectred.core.screwdriver"))
 			{
-				((IScrewdriver)item.getItem()).damageScrewdriver(world(), player);
-				setRotation((getRotation() + 1) % 4);
-				getWriteStream(0).writeByte(orientation);
-				tile().markDirty();
-				tile().notifyPartChange(this);
-				tile().notifyNeighborChange(getSide());
+				if(!world().isRemote)
+				{
+					((IScrewdriver)item.getItem()).damageScrewdriver(world(), player);
+					rotate();
+				}
+				return true;
 			}
-			return true;
+			String name = item.getItem().getUnlocalizedName();
+			if(name.equals("item.redlogic.screwdriver") || name.equals("item.bluepower:screwdriver"))
+			{
+				if(!world().isRemote) rotate();
+				return true;
+			}
 		}
 		return false;
+	}
+	
+	public void rotate()
+	{
+		setRotation((getRotation() + 1) % 4);
+		getWriteStream(0).writeByte(orientation);
+		tile().markDirty();
+		tile().notifyPartChange(this);
+		tile().notifyNeighborChange(getSide());
 	}
 
 	@Override
 	public void onAdded() 
 	{
-		if(!world().isRemote) updateRedstoneInput();
+		tile().notifyPartChange(this);
+		tile().notifyNeighborChange(getSide());
+		if(!world().isRemote) updateInput();
 	}
+
+	@Override
+	public void onRemoved()
+	{
+		tile().notifyPartChange(this);
+		tile().notifyNeighborChange(getSide());
+	}
+
+	@Override
+	public void onMoved() 
+	{
+		tile().notifyPartChange(this);
+		tile().notifyNeighborChange(getSide());
+	}
+	
+	public abstract ItemStack getItem();
 
 	@Override
 	public void onNeighborChanged() 
 	{
-		if(!world().isRemote) updateRedstoneInput();
+		if(!world().isRemote) 
+		{
+			BlockCoord pos = new BlockCoord(tile()).offset(getSide());
+			if(!MiscUtils.canPlaceGateOnSide(world(), pos.x, pos.y, pos.z, getSide() ^ 1))
+			{
+				TileMultipart.dropItem(getItem(), world(), Vector3.fromTileEntityCenter(tile()));
+				tile().remPart(this);
+			}
+			else updateInput();
+		}
 	}
 
 	@Override
 	public void onPartChanged(TMultiPart part) 
 	{
-		if(!world().isRemote) updateRedstoneInput();
+		if(!world().isRemote) updateInput();
 	}
 
-	public void updateRedstoneInput()
+	public void updateInput()
 	{
 		for(int i = 0; i < 4; i++)
-		{	
-			input[i][0] = (byte)updateRedstoneInput(i);
+		{
+			if(canConnectRedstoneImpl(i)) input[i][0] = (byte)updateRedstoneInput(i);
+			else if(IntegratedCircuits.isPRLoaded && canConnectBundledImpl(i)) input[i] = updatedBundledInput(i);
 		}
+	}
+	
+	public byte getRedstoneInput(int side)
+	{
+		return input[side][0];
+	}
+	
+	public byte[] getBundledInput(int side)
+	{
+		return input[side];
+	}
+	
+	private byte[] updatedBundledInput(int side)
+	{
+		int r = getRotationAbs(side);
+		int abs = Rotation.rotateSide(getSide(), r);
+		byte[] power = null;
+		
+		if(((abs ^ 1) & 6) != ((getSide() ^ 1) & 6))
+		{
+			BlockCoord pos = new BlockCoord(tile()).offset(abs).offset(getSide());
+			TileEntity t = world().getTileEntity(pos.x, pos.y, pos.z);
+			if(t != null && t instanceof TileMultipart) 
+				power = updateBundledPartSignal(((TileMultipart)t).partMap(abs ^ 1), Rotation.rotationTo(abs ^ 1, getSide() ^ 1));
+			if(power != null) return power;
+		}
+		
+		BlockCoord pos = new BlockCoord(tile()).offset(abs);
+		TileEntity t = world().getTileEntity(pos.x, pos.y, pos.z);
+		if (t instanceof IBundledEmitter)
+			power = updateBundledPartSignal(t, abs ^ 1);
+		else if (t instanceof TileMultipart)
+			power = updateBundledPartSignal(((TileMultipart)t).partMap(getSide()), (r + 2) % 4);
+		else power = APIImpl_Transmission.getBundledSignal(world(), pos, abs ^ 1);
+		if(power != null) return power;
+		
+		if((abs & 6) != (getSide() & 6))
+		{
+			TMultiPart tp = tile().partMap(abs);
+			power = updateBundledPartSignal(tp, Rotation.rotationTo(abs, getSide()));
+			if(power != null) return power;
+		}
+		
+		return new byte[16];
+	}
+	
+	private byte[] updateBundledPartSignal(Object part, int r)
+	{
+		if(part instanceof IBundledEmitter) return ((IBundledEmitter)part).getBundledSignal(r);
+		return null;
 	}
 	
 	private int updateRedstoneInput(int side)
@@ -244,6 +339,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	
 	private int updatePartSignal(TMultiPart part, int r)
 	{
+		if(!IntegratedCircuits.isPRLoaded) return 0;
 		if(part instanceof IRedwireEmitter) return ((IRedwireEmitter)part).getRedwireSignal(r);
 		return 0;
 	}
@@ -280,7 +376,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public byte[] getBundledSignal(int arg0) 
 	{
-		return null;
+		int rot = getRotationRel(arg0);
+		if(!canConnectBundledImpl(rot)) return null;
+		return output[rot];
 	}
 	
 	//---
@@ -289,7 +387,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	public final boolean canConnectRedstone(int arg0) 
 	{
 		if((arg0 & 6) == (getSide() & 6)) return false;
-		return canConnectRedstoneImpl(getRotationRel(getSideRel(arg0)));
+		return canConnectRedstoneImpl(getSideRel(arg0));
 	}
 
 	public abstract boolean canConnectRedstoneImpl(int arg0);
@@ -298,7 +396,10 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public int strongPowerLevel(int arg0) 
 	{
-		return 0;
+		if((arg0 & 6) == (getSide() & 6)) return 0;
+		int rot = getSideRel(arg0);
+		if(!canConnectRedstoneImpl(getRotationRel(arg0))) return 0;
+		return output[rot][0];
 	}
 
 	@Override

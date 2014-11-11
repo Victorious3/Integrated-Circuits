@@ -4,12 +4,14 @@ import static net.minecraftforge.common.util.ForgeDirection.EAST;
 import static net.minecraftforge.common.util.ForgeDirection.NORTH;
 import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
 import static net.minecraftforge.common.util.ForgeDirection.WEST;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -79,5 +81,13 @@ public class MiscUtils
 		}
 		def.offset(0.5, 0.5, 0.5);	
 		return def;
+	}
+
+	public static boolean canPlaceGateOnSide(World world, int x, int y, int z, int side)
+	{
+		if(!world.blockExists(x, y, z)) return false;
+		Block block = world.getBlock(x, y, z);
+		if(block == null) return false;
+		return block.isSideSolid(world, x, y, z, ForgeDirection.getOrientation(side));
 	}
 }

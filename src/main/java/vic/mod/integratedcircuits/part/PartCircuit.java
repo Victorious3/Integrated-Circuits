@@ -5,6 +5,7 @@ import java.util.Arrays;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitData;
@@ -42,9 +43,10 @@ public class PartCircuit extends GatePart implements ICircuit
 		if(comp == null) return;
 		
 		con = comp.getByte("con");
-		tier = comp.getByte("tier");
+		tier = (byte)(comp.getInteger("size") / 16);
 		name = comp.getString("name");
 		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
+		circuitData.setQueueEnabled(false);
     }
 
 	@Override
@@ -55,6 +57,7 @@ public class PartCircuit extends GatePart implements ICircuit
 		tier = tag.getByte("tier");
 		name = tag.getString("name");
 		circuitData = CircuitData.readFromNBT(tag.getCompoundTag("circuit"), this);
+		circuitData.setQueueEnabled(false);
 	}
 	
 	@Override
@@ -62,7 +65,7 @@ public class PartCircuit extends GatePart implements ICircuit
 	{
 		super.save(tag);
 		tag.setByte("con", con);
-		tag.setShort("tier", tier);
+		tag.setByte("tier", tier);
 		tag.setString("name", name);
 		tag.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
 	}
@@ -75,6 +78,7 @@ public class PartCircuit extends GatePart implements ICircuit
 		tier = packet.readByte();
 		name = packet.readString();
 		circuitData = CircuitData.readFromNBT(packet.readNBTTagCompound(), this);
+		circuitData.setQueueEnabled(false);
 	}
 	
 	@Override
@@ -87,8 +91,7 @@ public class PartCircuit extends GatePart implements ICircuit
 		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
 	}
 	
-	@Override
-	public Iterable<ItemStack> getDrops() 
+	public ItemStack getItem()
 	{
 		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuit);
 		NBTTagCompound comp = new NBTTagCompound();
@@ -96,7 +99,19 @@ public class PartCircuit extends GatePart implements ICircuit
 		comp.setInteger("con", con);
 		comp.setString("name", name);
 		stack.stackTagCompound = comp;
-		return Arrays.asList(stack);
+		return stack;
+	}
+	
+	@Override
+	public Iterable<ItemStack> getDrops() 
+	{
+		return Arrays.asList(getItem());
+	}
+
+	@Override
+	public ItemStack pickItem(MovingObjectPosition hit) 
+	{
+		return getItem();
 	}
 
 	@Override
@@ -125,16 +140,10 @@ public class PartCircuit extends GatePart implements ICircuit
 			ClientProxy.renderer.renderDynamic(this.getRotationTransformation().with(pos.translation()));
 		}	
 	}
-	
-	@Override
-	public void onWorldJoin() 
-	{
-		onAdded();
-	}
 
 	private boolean isBundeledAtSide(int s)
 	{
-		return ((con >> ((s + 2) % 4)) & 1) != 0;
+		return ((con >> (s + 2) % 4) & 1) != 0;
 	}
 	
 	@Override
@@ -151,9 +160,9 @@ public class PartCircuit extends GatePart implements ICircuit
 	}
 
 	@Override
-	public void updateRedstoneInput() 
+	public void updateInput() 
 	{
-		super.updateRedstoneInput();
+		super.updateInput();
 		circuitData.updateInput();
 	}
 
@@ -176,24 +185,30 @@ public class PartCircuit extends GatePart implements ICircuit
 	}
 
 	@Override
+	public void update() 
+	{
+		if(!world().isRemote) circuitData.updateMatrix();
+	}
+
+	@Override
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
-		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
-		return input[side][frequency] != 0 && !(output[side][frequency] != 0);
+		int side = (MiscUtils.getSide(dir) + 2) % 4;
+		boolean in = input[side][frequency] != 0 && !(output[side][frequency] != 0);
+		return in;
 	}
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		int side = MiscUtils.getSide(MiscUtils.rotn(dir, 2));
+		int side = (MiscUtils.getSide(dir) + 2) % 4;
 		if(!isBundeledAtSide(side) && frequency > 0) return;
 		byte oldOut = this.output[side][frequency];
 		byte newOut = (byte)(output ? 15 : 0);
 		this.output[side][frequency] = newOut;
 		if(oldOut != newOut)
 		{
-			tile().markDirty();
-			tile().notifyTileChange();
+			tile().notifyPartChange(this);
 			tile().notifyNeighborChange(getSide());
 		}
 	}

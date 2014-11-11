@@ -1,6 +1,9 @@
 package vic.mod.integratedcircuits.proxy;
 
+import java.lang.reflect.Field;
+import java.util.BitSet;
 import java.util.LinkedList;
+import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -229,9 +232,28 @@ public class ClientProxy extends CommonProxy
 		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
 		else if(name.equalsIgnoreCase("thog92")) renderType = 2;
 		else if(name.equalsIgnoreCase("rx14")) renderType = 3;
-		
 		if(renderType == 0) return;	
-		if((renderType == 1 || renderType == 3) && player.inventory.armorItemInSlot(3) != null) return;
+		
+		boolean hideArmor = player.inventory.armorItemInSlot(3) != null;
+		
+		//Test if AW is hiding the headgear
+		if(IntegratedCircuits.isAWLoaded)
+		{
+			try {
+				Object epRenderCache = Class.forName("riskyken.armourersWorkshop.client.render.EquipmentPlayerRenderCache").getDeclaredField("INSTANCE").get(null);
+				Field f = epRenderCache.getClass().getDeclaredField("skinMap");
+				f.setAccessible(true);
+				Map skinMap = (Map)f.get(epRenderCache);
+				if(skinMap.containsKey(player.getPersistentID()))
+				{
+					Object skinInfo = skinMap.get(player.getPersistentID());
+					BitSet armourOverride = (BitSet)skinInfo.getClass().getMethod("getArmourOverride").invoke(skinInfo);
+					if(armourOverride.get(0)) hideArmor = false;
+				}	
+			} catch (Exception e) {}
+		}
+		
+		if((renderType == 1 || renderType == 3) && hideArmor) return;
 		
 		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
 		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;

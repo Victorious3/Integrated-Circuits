@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits.ic;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,8 +20,8 @@ public class CircuitData implements Cloneable
 	private int size;
 	private int[][] meta;
 	private CircuitPart[][] parts;
-	private LinkedList<Vec2> tickSchedule;
-	private LinkedList<Vec2> updateQueue = new LinkedList<Vec2>();
+	private LinkedHashSet<Vec2> tickSchedule;
+	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	private ICircuit parent;
 	private boolean queueEnabled = true;
 	
@@ -33,7 +34,7 @@ public class CircuitData implements Cloneable
 		clear(size);
 	}
 	
-	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedList<Vec2> tickSchedule)
+	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule)
 	{
 		this.parent = parent;
 		this.size = size;
@@ -171,8 +172,8 @@ public class CircuitData implements Cloneable
 			}
 		}
 		this.meta = new int[size][size];
-		tickSchedule = new LinkedList<Vec2>();
-		updateQueue = new LinkedList<Vec2>();
+		tickSchedule = new LinkedHashSet<Vec2>();
+		updateQueue = new LinkedHashSet<Vec2>();
 		this.size = size;
 		setup();
 	}
@@ -186,19 +187,19 @@ public class CircuitData implements Cloneable
 	public void scheduleTick(int x, int y)
 	{
 		Vec2 p = new Vec2(x, y);
-		if(!tickSchedule.contains(p)) tickSchedule.add(p);
+		tickSchedule.add(p);
 	}
 	
 	public void markForUpdate(int x, int y)
 	{
 		if(!queueEnabled) return;
 		Vec2 p = new Vec2(x, y);
-		if(!updateQueue.contains(p)) updateQueue.add(p);
+		updateQueue.add(p);
 	}
 	
 	public void updateMatrix()
 	{
-		LinkedList<Vec2> tmp = (LinkedList<Vec2>)tickSchedule.clone();
+		LinkedHashSet<Vec2> tmp = (LinkedHashSet<Vec2>)tickSchedule.clone();
 		tickSchedule.clear();
 		for(Vec2 v : tmp)
 		{
@@ -235,7 +236,7 @@ public class CircuitData implements Cloneable
 		}
 		
 		int size = compound.getInteger("size");
-		LinkedList<Vec2> scheduledTicks = new LinkedList<Vec2>();
+		LinkedHashSet<Vec2> scheduledTicks = new LinkedHashSet<Vec2>();
 		
 		int[] scheduledList = compound.getIntArray("scheduled");
 		for(int i = 0; i < scheduledList.length; i += 2)
