@@ -307,6 +307,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	{
 		int r = getRotationAbs(side);
 		int abs = Rotation.rotateSide(getSide(), r);
+		if(strongPowerLevel(abs) != 0) return 0;
 		int power = 0;
 		
 		if(((abs ^ 1) & 6) != ((getSide() ^ 1) & 6))
@@ -398,7 +399,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	{
 		if((arg0 & 6) == (getSide() & 6)) return 0;
 		int rot = getSideRel(arg0);
-		if(!canConnectRedstoneImpl(getRotationRel(arg0))) return 0;
+		if(!canConnectRedstoneImpl(rot)) return 0;
 		return output[rot][0];
 	}
 

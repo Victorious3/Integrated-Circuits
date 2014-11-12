@@ -14,6 +14,7 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.RenderUtils;
 
@@ -49,7 +50,7 @@ public class GuiIO extends GuiButton implements IHoverable
 		GL11.glTranslatef(-4F, -4F, -0F);
 		
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		isActive = (te.getCircuitData().getProperties().getConnections() >> side & 1) != 0 || color == 0;
+		isActive = te.getCircuitData().getProperties().getModeAtSide(side) != CircuitProperties.SIMPLE || color == 0;
 		boolean isPowered = isActive && te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
 		
 		if(isActive)
@@ -60,18 +61,20 @@ public class GuiIO extends GuiButton implements IHoverable
 		}
 
 		GL11.glColor3f(0F, 0F, 0F);
-		if(isActive) RenderUtils.applyColorIRGB(MapColor.getMapColorForBlockColored(color).colorValue);
+		if(isActive) 
+		{
+			int c2 = 0;
+			if(te.getCircuitData().getProperties().getModeAtSide(side) == CircuitProperties.ANALOG)
+				c2 = (color * 17) << 20;
+			else c2 = MapColor.getMapColorForBlockColored(color).colorValue;
+			RenderUtils.applyColorIRGB(c2);
+		}
 		drawTexturedModalRect(0, 0, 4 * 8, (getHoverState(field_146123_n) == 2 || isPowered ? 30 : 31) * 8, 8, 8);
 		
 		if(isPowered) GL11.glColor3f(0F, 1F, 0F);
 		else GL11.glColor3f(0F, 0.4F, 0F);
 		drawTexturedModalRect(0, 0, 5 * 8, 30 * 8, 8, 8);
 		GL11.glPopMatrix();
-		
-		if(getHoverState(field_146123_n) == 2)
-		{
-			ArrayList<String> text = new ArrayList<String>();
-		}
 	}
 
 	@Override
@@ -91,12 +94,14 @@ public class GuiIO extends GuiButton implements IHoverable
 	{
 		ArrayList<String> text = new ArrayList<String>();
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		text.add("F: 0x" + Integer.toHexString(color));
+		if(te.getCircuitData().getProperties().getModeAtSide(side) == CircuitProperties.ANALOG)
+			text.add("S: "  + color);
+		else text.add("F: 0x" + Integer.toHexString(color));
 		if(isActive)
 		{
 			text.add("I: " + (te.getInputFromSide(dir, color) ? "HIGH" : "LOW"));
 			text.add("O: " + (te.getOutputToSide(dir, color) ? "HIGH" : "LOW"));
-		}	
+		}
 		return text;
 	}
 }

@@ -14,6 +14,7 @@ import net.minecraft.util.IIcon;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.part.PartCircuit;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
@@ -40,11 +41,11 @@ public class PartCircuitRenderer
 	
 	public void prepare(PartCircuit part) 
 	{
-		int con = part.getCircuitData().getProperties().getConnections();
-		pinModels[2].isBundeled = (con & 1) != 0;
-		pinModels[3].isBundeled = (con & 2) != 0;
-		pinModels[0].isBundeled = (con & 4) != 0;
-		pinModels[1].isBundeled = (con & 8) != 0;
+		CircuitProperties prop = part.getCircuitData().getProperties();
+		pinModels[2].isBundeled = prop.getModeAtSide(0) == CircuitProperties.BUNDLED;
+		pinModels[3].isBundeled = prop.getModeAtSide(1) == CircuitProperties.BUNDLED;
+		pinModels[0].isBundeled = prop.getModeAtSide(2) == CircuitProperties.BUNDLED;
+		pinModels[1].isBundeled = prop.getModeAtSide(3) == CircuitProperties.BUNDLED;
 	}
 	
 	public void prepareInv(ItemStack stack)
@@ -53,10 +54,10 @@ public class PartCircuitRenderer
 		if(comp == null) return;
 		NBTTagCompound comp2 = comp.getCompoundTag("circuit").getCompoundTag("properties");
 		byte con = comp2.getByte("con");
-		pinModels[2].isBundeled = (con & 1) != 0;
-		pinModels[3].isBundeled = (con & 2) != 0;
-		pinModels[0].isBundeled = (con & 4) != 0;
-		pinModels[1].isBundeled = (con & 8) != 0;
+		pinModels[2].isBundeled = (con & 3) == CircuitProperties.BUNDLED;
+		pinModels[3].isBundeled = (con & 12) >> 2 == CircuitProperties.BUNDLED;
+		pinModels[0].isBundeled = (con & 48) >> 4 == CircuitProperties.BUNDLED;
+		pinModels[1].isBundeled = (con & 192) >> 6 == CircuitProperties.BUNDLED;
 		name = comp2.getString("name");
 		tier = (byte) (comp.getCompoundTag("circuit").getInteger("size") / 16);
 	}

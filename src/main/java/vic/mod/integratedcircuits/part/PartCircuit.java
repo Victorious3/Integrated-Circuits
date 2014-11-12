@@ -9,6 +9,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitData;
+import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.util.MiscUtils;
@@ -24,6 +25,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class PartCircuit extends GatePart implements ICircuit
 {
 	public CircuitData circuitData;
+	private boolean update;
 	
 	@Override
 	public String getType() 
@@ -121,9 +123,9 @@ public class PartCircuit extends GatePart implements ICircuit
 		}	
 	}
 
-	private boolean isBundeledAtSide(int s)
+	private int getModeAtSide(int s)
 	{
-		return ((circuitData.getProperties().getConnections() >> (s + 2) % 4) & 1) != 0;
+		return circuitData.getProperties().getModeAtSide((s + 2) % 4);
 	}
 	
 	@Override
@@ -143,19 +145,56 @@ public class PartCircuit extends GatePart implements ICircuit
 	public void updateInput() 
 	{
 		super.updateInput();
+		scheduleTick(0);
+	}
+
+	@Override
+	public void scheduledTick() 
+	{	
+		update = false;
+		System.out.println("update...");
 		circuitData.updateInput();
+		if(update)
+		{
+			System.out.println("update!");
+			tile().notifyPartChange(this);
+			tile().notifyNeighborChange(getSide());
+		}
+	}
+
+	@Override
+	public int strongPowerLevel(int arg0) 
+	{
+		if((arg0 & 6) == (getSide() & 6)) return 0;
+		int rot = getSideRel(arg0);
+		int o = 0;
+		
+		if(!canConnectRedstoneImpl(rot)) return 0;
+		if(getModeAtSide(rot) == CircuitProperties.ANALOG)
+		{
+			byte[] out = output[rot];
+			for(int i = 15; i >= 0; i--)
+				if(out[i] != 0) 
+				{
+					o = i;
+					break;
+				}
+		}
+		else o = output[rot][0];
+		System.out.println(rot + " " + input[rot][0] + " " + o);
+		return o;
 	}
 
 	@Override
 	public boolean canConnectRedstoneImpl(int arg0) 
 	{
-		return !isBundeledAtSide(arg0);
+		return getModeAtSide(arg0) != CircuitProperties.BUNDLED;
 	}
 	
 	@Override
 	public boolean canConnectBundledImpl(int arg0) 
 	{
-		return isBundeledAtSide(arg0);
+		return getModeAtSide(arg0) == CircuitProperties.BUNDLED;
 	}
 
 	@Override
@@ -174,22 +213,20 @@ public class PartCircuit extends GatePart implements ICircuit
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
-		boolean in = input[side][frequency] != 0 && !(output[side][frequency] != 0);
-		return in;
+		if(getModeAtSide(side) == CircuitProperties.ANALOG)
+			return input[side][0] == frequency && output[side][0] == 0;
+		return input[side][frequency] != 0 && output[side][frequency] == 0;
 	}
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
-		if(!isBundeledAtSide(side) && frequency > 0) return;
-		byte oldOut = this.output[side][frequency];
-		byte newOut = (byte)(output ? 15 : 0);
-		this.output[side][frequency] = newOut;
-		if(oldOut != newOut)
-		{
-			tile().notifyPartChange(this);
-			tile().notifyNeighborChange(getSide());
-		}
+		int mode = getModeAtSide(side);
+		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;
+		else if(mode == CircuitProperties.ANALOG && this.input[side][0] != 0) return;
+		this.output[side][frequency] = (byte)(output ? 15 : 0);
+		System.out.println(mode + " " + side + " " + output + " " + frequency);
+		update = true;
 	}
 }

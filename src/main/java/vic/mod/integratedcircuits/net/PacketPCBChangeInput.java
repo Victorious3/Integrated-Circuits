@@ -59,7 +59,8 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 		if(te == null) return;
 		if(input) te.i = io;
 		else te.o = io;
-		te.getCircuitData().getProperties().setConnections(con);
+		if(te.getCircuitData().supportsBundled()) te.getCircuitData().getProperties().setCon(con);
+		else  te.getCircuitData().getProperties().setCon(0);
 		if(input && side == Side.SERVER)
 		{
 			te.getCircuitData().updateInput();

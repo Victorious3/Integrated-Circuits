@@ -5,6 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.CircuitData;
+import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
@@ -49,7 +50,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 			if(updateIO)
 			{
 				updateIO = false;
-				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, circuitData.getProperties().getConnections(), xCoord, yCoord, zCoord), 
+				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord), 
 					new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
 			markDirty();
@@ -93,24 +94,27 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	@SideOnly(Side.CLIENT)
 	public void setInputFromSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		boolean im = (circuitData.getProperties().getConnections() >> MiscUtils.getSide(dir) & 1) != 0;
-		if(im || frequency == 0)
+		int im = circuitData.getProperties().getModeAtSide(MiscUtils.getSide(dir));
+		if(im != CircuitProperties.SIMPLE || frequency == 0)
 		{
 			int[] i = this.i.clone();
+			if(im == CircuitProperties.ANALOG) i[MiscUtils.getSide(dir)] = 0;
 			if(output) i[MiscUtils.getSide(dir)] |= 1 << frequency;
-			else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
-			
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, circuitData.getProperties().getConnections(), xCoord, yCoord, zCoord));
+			else
+			{
+				if(im == CircuitProperties.ANALOG) i[MiscUtils.getSide(dir)] = 1;
+				else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
+			}
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord));
 		}
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public void setInputMode(boolean b, int side)
+	public void setInputMode(int side, int mode)
 	{
-		i[side] = 0;
-		int con = circuitData.getProperties().getConnections();
-		if(b) con |= 1 << side;
-		else con &= ~(1 << side);
+		int con = circuitData.getProperties().setModeAtSide(side, mode);
+		int i[] = this.i.clone();
+		i[side] = mode == CircuitProperties.ANALOG ? 1 : 0;
 		IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
 	}
 
@@ -120,12 +124,6 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		if(output) o[MiscUtils.getSide(dir)] |= 1 << frequency;
 		else o[MiscUtils.getSide(dir)] &= ~(1 << frequency);
 		updateIO = true;
-	}
-	
-	public void clearIO()
-	{
-		i = new int[4];
-		o = new int[4];
 	}
 
 	@Override

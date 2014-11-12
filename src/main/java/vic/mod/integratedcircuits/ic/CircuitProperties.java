@@ -7,6 +7,10 @@ public class CircuitProperties
 	private String name, author;
 	private int con;
 	
+	public static final int SIMPLE = 0;
+	public static final int BUNDLED = 1;
+	public static final int ANALOG = 2;
+	
 	public void setName(String name)
 	{
 		this.name = name;
@@ -17,7 +21,7 @@ public class CircuitProperties
 		this.author = author;
 	}
 	
-	public void setConnections(int con)
+	public void setCon(int con)
 	{
 		this.con = con;
 	}
@@ -32,8 +36,21 @@ public class CircuitProperties
 		return author != null ? author : "unknown";
 	}
 	
-	public int getConnections()
+	public int getCon()
 	{
+		return con;
+	}
+	
+	public int getModeAtSide(int side)
+	{
+		return con >> (side * 2) & 3;
+	}
+	
+	public int setModeAtSide(int side, int mode)
+	{
+		int con = this.con;
+		con &= ~(3 << (side * 2));
+		con |= mode << (side * 2);
 		return con;
 	}
 	

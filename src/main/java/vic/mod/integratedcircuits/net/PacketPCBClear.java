@@ -8,6 +8,7 @@ import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
+import vic.mod.integratedcircuits.ic.CircuitProperties;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
@@ -43,8 +44,14 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear>
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te != null)
 		{
-			te.clearIO();
 			te.getCircuitData().clear(size);
+			if(!te.getCircuitData().supportsBundled()) te.getCircuitData().getProperties().setCon(0);
+			
+			te.i = new int[4];
+			te.o = new int[4];
+			for(int i = 0; i < 4; i++)
+				if(te.getCircuitData().getProperties().getModeAtSide(i) == CircuitProperties.ANALOG) te.i[i] = 1;
+			
 			if(side == side.SERVER)
 				IntegratedCircuits.networkWrapper.sendToAllAround(this, 
 					new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));

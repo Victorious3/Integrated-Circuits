@@ -75,10 +75,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	private GuiButtonExt buttonPlus;
 	private GuiButtonExt buttonMinus;
 	private GuiButtonExt buttonSize;
-	private GuiIOCheckBox checkN;
-	private GuiIOCheckBox checkE;
-	private GuiIOCheckBox checkS;
-	private GuiIOCheckBox checkW;
+	private GuiIOMode checkN;
+	private GuiIOMode checkE;
+	private GuiIOMode checkS;
+	private GuiIOMode checkW;
 	
 	//Because of private.
 	public GuiPartChooser selectedChooser;
@@ -146,10 +146,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
 		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
 		
-		checkN = new GuiIOCheckBox(65, cx + 26, cy + 35, this, 0);
-		checkE = new GuiIOCheckBox(66, cx + 206, cy + 57, this, 1);
-		checkS = new GuiIOCheckBox(67, cx + 26, cy + 237, this, 2);
-		checkW = new GuiIOCheckBox(68, cx + 4, cy + 57, this, 3);
+		checkN = new GuiIOMode(65, cx + 26, cy + 35, this, 0);
+		checkE = new GuiIOMode(66, cx + 206, cy + 57, this, 1);
+		checkS = new GuiIOMode(67, cx + 26, cy + 237, this, 2);
+		checkW = new GuiIOMode(68, cx + 4, cy + 57, this, 3);
 		
 		this.buttonList.add(checkN);
 		this.buttonList.add(checkE);

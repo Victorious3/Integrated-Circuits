@@ -183,6 +183,7 @@ public class CircuitData implements Cloneable
 		updateQueue = new LinkedHashSet<Vec2>();
 		this.size = size;
 		setup();
+		if(!supportsBundled()) prop.setCon(0);
 	}
 	
 	public CircuitPart getPart(int x, int y)
