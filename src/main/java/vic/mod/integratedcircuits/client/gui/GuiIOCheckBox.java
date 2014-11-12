@@ -41,7 +41,7 @@ public class GuiIOCheckBox extends GuiCheckBox implements IHoverable
 
 	public void refresh()
 	{
-		setIsChecked((parent.te.con >> side & 1) != 0);
+		setIsChecked((parent.te.getCircuitData().getProperties().getConnections() >> side & 1) != 0);
 	}
 
 	@Override

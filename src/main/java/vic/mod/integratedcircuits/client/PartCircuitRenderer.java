@@ -40,23 +40,25 @@ public class PartCircuitRenderer
 	
 	public void prepare(PartCircuit part) 
 	{
-		pinModels[2].isBundeled = (part.con & 1) != 0;
-		pinModels[3].isBundeled = (part.con & 2) != 0;
-		pinModels[0].isBundeled = (part.con & 4) != 0;
-		pinModels[1].isBundeled = (part.con & 8) != 0;
+		int con = part.getCircuitData().getProperties().getConnections();
+		pinModels[2].isBundeled = (con & 1) != 0;
+		pinModels[3].isBundeled = (con & 2) != 0;
+		pinModels[0].isBundeled = (con & 4) != 0;
+		pinModels[1].isBundeled = (con & 8) != 0;
 	}
 	
 	public void prepareInv(ItemStack stack)
 	{
 		NBTTagCompound comp = stack.getTagCompound();	
 		if(comp == null) return;
-		byte con = comp.getByte("con");
+		NBTTagCompound comp2 = comp.getCompoundTag("circuit").getCompoundTag("properties");
+		byte con = comp2.getByte("con");
 		pinModels[2].isBundeled = (con & 1) != 0;
 		pinModels[3].isBundeled = (con & 2) != 0;
 		pinModels[0].isBundeled = (con & 4) != 0;
 		pinModels[1].isBundeled = (con & 8) != 0;
-		name = comp.getString("name");
-		tier = (byte) (comp.getInteger("size") / 16);
+		name = comp2.getString("name");
+		tier = (byte) (comp.getCompoundTag("circuit").getInteger("size") / 16);
 	}
 	
 	/** https://github.com/MrTJP/ProjectRed/blob/master/src/mrtjp/projectred/integration/ComponentStore.java **/
@@ -188,8 +190,8 @@ public class PartCircuitRenderer
 
 	public void prepareDynamic(PartCircuit part, float frame) 
 	{
-		tier = part.tier;
-		name = part.name;
+		tier = (byte)(part.circuitData.getSize() / 16);
+		name = part.circuitData.getProperties().getName();
 	}
 	
 	public void renderStatic(Transformation t, int orient)

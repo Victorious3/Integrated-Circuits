@@ -51,11 +51,9 @@ public class PacketPCBIO extends PacketTileEntity<PacketPCBIO>
 				{
 					NBTTagCompound comp = floppy.getTagCompound();
 					if(comp == null) comp = new NBTTagCompound();
-					comp.setString("name", te.name);
+					te.getCircuitData().getProperties().setAuthor(player.getCommandSenderName());
 					comp.setInteger("size", te.getCircuitData().getSize());
 					comp.setTag("circuit", te.getCircuitData().writeToNBT(new NBTTagCompound()));
-					comp.setInteger("con", te.con);
-					comp.setString("author", player.getCommandSenderName());
 					floppy.setTagCompound(comp);
 					te.setInventorySlotContents(0, floppy);
 				}
@@ -67,17 +65,11 @@ public class PacketPCBIO extends PacketTileEntity<PacketPCBIO>
 				{
 					NBTTagCompound comp = floppy.getTagCompound();
 					if(comp == null) return;
-					String name = comp.getString("name");
-					if(comp.hasKey("circuit")) 
-					{
+					if(comp.hasKey("circuit"))
 						te.setCircuitData(CircuitData.readFromNBT((NBTTagCompound)comp.getCompoundTag("circuit").copy(), te));
-						te.con = comp.getInteger("con");
-					}
 					else te.getCircuitData().clear(te.getCircuitData().getSize());
-					IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeName(name, xCoord, yCoord, zCoord), 
-						new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 					IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBLoad(te.getCircuitData(), xCoord, yCoord, zCoord), 
-						new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+						new TargetPoint(te.getWorldObj().provider.dimensionId, xCoord, yCoord, zCoord, 8));
 				}
 			}
 		}

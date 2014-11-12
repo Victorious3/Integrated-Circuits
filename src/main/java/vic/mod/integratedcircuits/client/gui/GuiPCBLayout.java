@@ -157,7 +157,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(checkW);
 		
 		nameField = new GuiTextField(fontRendererObj, cx + 154, cy + 15, 50, 10);
-		nameField.setText(te.name);
+		nameField.setText(te.getCircuitData().getProperties().getName());
 		nameField.setMaxStringLength(7);
 		nameField.setCanLoseFocus(true);
 		nameField.setFocused(false);
@@ -233,6 +233,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		checkE.refresh();
 		checkS.refresh();
 		checkW.refresh();
+		nameField.setText(te.getCircuitData().getProperties().getName());
 	}
 	
 	private int cb;

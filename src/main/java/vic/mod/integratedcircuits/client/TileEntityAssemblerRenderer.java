@@ -52,7 +52,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		
 		if(getCurrentRenderPass() == 0)
 		{
-			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glPushMatrix();
 			Tessellator tes = Tessellator.instance;
 			this.bindTexture(bottomTex);
@@ -112,7 +111,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(0, 9 / 16F, 0 + 1 / 16F, 1, 0);
 			tes.draw();
 			GL11.glPopMatrix();
-			GL11.glEnable(GL11.GL_LIGHTING);
 		}
 		
 		GL11.glPushMatrix();

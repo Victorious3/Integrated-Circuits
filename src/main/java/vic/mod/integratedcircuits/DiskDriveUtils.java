@@ -45,7 +45,9 @@ public class DiskDriveUtils
 		if(drive.getDisk() != null)
 		{
 			ItemStack floppy = drive.getDisk();
-			String name = floppy.getTagCompound() != null && floppy.getTagCompound().hasKey("name") ? floppy.getTagCompound().getString("name") : null;
+			String name = floppy.getTagCompound() != null 
+				&& floppy.getTagCompound().hasKey("circuit") 
+				? floppy.getTagCompound().getCompoundTag("circuit").getCompoundTag("properties").getString("name") : null;
 			
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);

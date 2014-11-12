@@ -23,9 +23,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartCircuit extends GatePart implements ICircuit
 {
-	public byte tier, con;
-	public String name;
-	
 	public CircuitData circuitData;
 	
 	@Override
@@ -42,9 +39,6 @@ public class PartCircuit extends GatePart implements ICircuit
 		NBTTagCompound comp = stack.stackTagCompound;
 		if(comp == null) return;
 		
-		con = comp.getByte("con");
-		tier = (byte)(comp.getInteger("size") / 16);
-		name = comp.getString("name");
 		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
 		circuitData.setQueueEnabled(false);
     }
@@ -53,9 +47,6 @@ public class PartCircuit extends GatePart implements ICircuit
 	public void load(NBTTagCompound tag) 
 	{
 		super.load(tag);
-		con = tag.getByte("con");
-		tier = tag.getByte("tier");
-		name = tag.getString("name");
 		circuitData = CircuitData.readFromNBT(tag.getCompoundTag("circuit"), this);
 		circuitData.setQueueEnabled(false);
 	}
@@ -64,9 +55,6 @@ public class PartCircuit extends GatePart implements ICircuit
 	public void save(NBTTagCompound tag) 
 	{
 		super.save(tag);
-		tag.setByte("con", con);
-		tag.setByte("tier", tier);
-		tag.setString("name", name);
 		tag.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
 	}
 
@@ -74,9 +62,6 @@ public class PartCircuit extends GatePart implements ICircuit
 	public void readDesc(MCDataInput packet) 
 	{
 		super.readDesc(packet);
-		con = packet.readByte();
-		tier = packet.readByte();
-		name = packet.readString();
 		circuitData = CircuitData.readFromNBT(packet.readNBTTagCompound(), this);
 		circuitData.setQueueEnabled(false);
 	}
@@ -85,9 +70,6 @@ public class PartCircuit extends GatePart implements ICircuit
 	public void writeDesc(MCDataOutput packet) 
 	{
 		super.writeDesc(packet);
-		packet.writeByte(con);
-		packet.writeByte(tier);
-		packet.writeString(name);
 		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
 	}
 	
@@ -96,8 +78,6 @@ public class PartCircuit extends GatePart implements ICircuit
 		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuit);
 		NBTTagCompound comp = new NBTTagCompound();
 		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
-		comp.setInteger("con", con);
-		comp.setString("name", name);
 		stack.stackTagCompound = comp;
 		return stack;
 	}
@@ -143,7 +123,7 @@ public class PartCircuit extends GatePart implements ICircuit
 
 	private boolean isBundeledAtSide(int s)
 	{
-		return ((con >> (s + 2) % 4) & 1) != 0;
+		return ((circuitData.getProperties().getConnections() >> (s + 2) % 4) & 1) != 0;
 	}
 	
 	@Override

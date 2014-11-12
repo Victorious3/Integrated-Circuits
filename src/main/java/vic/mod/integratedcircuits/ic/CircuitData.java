@@ -24,6 +24,7 @@ public class CircuitData implements Cloneable
 	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	private ICircuit parent;
 	private boolean queueEnabled = true;
+	private CircuitProperties prop = new CircuitProperties();
 	
 	private CircuitData(){};
 	
@@ -34,9 +35,10 @@ public class CircuitData implements Cloneable
 		clear(size);
 	}
 	
-	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule)
+	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule, CircuitProperties prop)
 	{
 		this.parent = parent;
+		this.prop = prop;
 		this.size = size;
 		this.parts = new CircuitPart[size][size];
 		for(int x = 0; x < size; x++)
@@ -115,6 +117,11 @@ public class CircuitData implements Cloneable
 			io3.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
 			io4.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
 		}
+	}
+	
+	public CircuitProperties getProperties()
+	{
+		return prop;
 	}
 	
 	public boolean supportsBundled()
@@ -235,6 +242,8 @@ public class CircuitData implements Cloneable
 			meta[i] = metalist.func_150306_c(i);
 		}
 		
+		CircuitProperties prop = CircuitProperties.readFromNBT(compound.getCompoundTag("properties"));
+		
 		int size = compound.getInteger("size");
 		LinkedHashSet<Vec2> scheduledTicks = new LinkedHashSet<Vec2>();
 		
@@ -244,7 +253,7 @@ public class CircuitData implements Cloneable
 			scheduledTicks.add(new Vec2(scheduledList[i], scheduledList[i + 1]));
 		}
 		
-		return new CircuitData(size, parent, id, meta, scheduledTicks);
+		return new CircuitData(size, parent, id, meta, scheduledTicks, prop);
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound compound)
@@ -269,6 +278,7 @@ public class CircuitData implements Cloneable
 		compound.setInteger("size", size);
 		compound.setTag("id", idlist);
 		compound.setTag("meta", metalist);
+		compound.setTag("properties", prop.writeToNBT(new NBTTagCompound()));
 		
 		LinkedList<Integer> tmp = new LinkedList<Integer>();
 		for(Vec2 v : tickSchedule)
@@ -323,7 +333,7 @@ public class CircuitData implements Cloneable
 		CircuitData data = new CircuitData();
 		data.size = 3;
 		data.parts = new CircuitPart[3][3];
-		//TODO How about a loop here?
+		
 		data.parts[0][0] = CircuitPart.getPart(0, 0, 0, data);
 		data.parts[1][0] = CircuitPart.getPart(1, 0, 0, data);
 		data.parts[2][0] = CircuitPart.getPart(0, 0, 0, data);
@@ -333,6 +343,7 @@ public class CircuitData implements Cloneable
 		data.parts[0][2] = CircuitPart.getPart(0, 0, 0, data);
 		data.parts[1][2] = CircuitPart.getPart(1, 0, 0, data);
 		data.parts[2][2] = CircuitPart.getPart(0, 0, 0, data);
+		
 		data.meta = new int[][]{new int[]{0, 0, 0}, new int[]{0, state, 0}, new int[]{0, 0, 0}};
 		data.parent = parent;
 		return data;

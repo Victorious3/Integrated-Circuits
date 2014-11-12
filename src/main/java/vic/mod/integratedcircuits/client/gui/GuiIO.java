@@ -49,7 +49,7 @@ public class GuiIO extends GuiButton implements IHoverable
 		GL11.glTranslatef(-4F, -4F, -0F);
 		
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		isActive = (te.con >> side & 1) != 0 || color == 0;
+		isActive = (te.getCircuitData().getProperties().getConnections() >> side & 1) != 0 || color == 0;
 		boolean isPowered = isActive && te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
 		
 		if(isActive)

@@ -2,10 +2,12 @@ package vic.mod.integratedcircuits.net;
 
 import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
@@ -57,12 +59,14 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 		if(te == null) return;
 		if(input) te.i = io;
 		else te.o = io;
-		te.con = con;
+		te.getCircuitData().getProperties().setConnections(con);
 		if(input && side == Side.SERVER)
 		{
 			te.getCircuitData().updateInput();
 			IntegratedCircuits.networkWrapper.sendToAllAround(this, 
 				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
-		}	
+		}
+		if(side == Side.CLIENT && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
+			((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshUI();
 	}
 }

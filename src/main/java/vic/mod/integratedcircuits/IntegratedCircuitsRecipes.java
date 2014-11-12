@@ -58,7 +58,6 @@ public class IntegratedCircuitsRecipes
 				if(stack == null) return null;
 				ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit);
 				NBTTagCompound comp = (NBTTagCompound)stack.getTagCompound().copy();
-				comp.removeTag("author");
 				ret.setTagCompound(comp);
 				return ret;
 			}

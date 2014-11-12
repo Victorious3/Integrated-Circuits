@@ -40,7 +40,7 @@ public class ItemCircuit extends JItemMultiPart
 	public String getItemStackDisplayName(ItemStack stack) 
 	{
 		if(stack.getTagCompound() == null) I18n.format(getUnlocalizedName() + ".name", stack.getTagCompound().getString("INVALID!"));
-		return I18n.format(getUnlocalizedName() + ".name", stack.getTagCompound().getString("name"));
+		return I18n.format(getUnlocalizedName() + ".name", stack.getTagCompound().getCompoundTag("circuit").getCompoundTag("properties").getString("name"));
 	}
 
 	@Override

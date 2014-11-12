@@ -26,10 +26,11 @@ public class ItemPCB extends Item
 	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par4) 
 	{
 		NBTTagCompound comp = stack.getTagCompound();
-		if(comp != null && comp.hasKey("name"))
+		if(comp != null && comp.hasKey("circuit"))
 		{
+			comp = comp.getCompoundTag("circuit");
 			Integer size = comp.getInteger("size");
-			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE + comp.getString("name"));
+			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("name"));
 			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);
 		}
 	}

@@ -16,7 +16,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDiskDrive
 {
-	public String name = "NO_NAME";
 	private ItemStack floppyStack;
 	private CircuitData circuitData;
 	
@@ -27,7 +26,6 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	
 	public int[] i = new int[4];
 	public int[] o = new int[4];
-	public int con = 15;
 	private boolean updateIO;
 	
 	public void setup(int size)
@@ -46,13 +44,13 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 			if(getCircuitData().checkUpdate())
 			{
 				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), 
-					new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+					new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
 			if(updateIO)
 			{
 				updateIO = false;
-				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, con, xCoord, yCoord, zCoord), 
-					new TargetPoint(worldObj.getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, circuitData.getProperties().getConnections(), xCoord, yCoord, zCoord), 
+					new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
 			markDirty();
 		}
@@ -65,10 +63,8 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		circuitData = CircuitData.readFromNBT(compound.getCompoundTag("circuit"), this);
 		i = compound.getIntArray("in");
 		o = compound.getIntArray("out");
-		con = compound.getInteger("con");
 		NBTTagCompound stackCompound = compound.getCompoundTag("floppyStack");
 		floppyStack = ItemStack.loadItemStackFromNBT(stackCompound);
-		name = compound.getString("name");
 	}
 
 	@Override
@@ -78,11 +74,9 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		compound.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
 		compound.setIntArray("in", i);
 		compound.setIntArray("out", o);
-		compound.setInteger("con", con);
 		NBTTagCompound stackCompound = new NBTTagCompound();
 		if(floppyStack != null) floppyStack.writeToNBT(stackCompound);
 		compound.setTag("floppyStack", stackCompound);
-		compound.setString("name", name);
 	}
 
 	@Override
@@ -99,14 +93,14 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	@SideOnly(Side.CLIENT)
 	public void setInputFromSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		boolean im = (con >> MiscUtils.getSide(dir) & 1) != 0;
+		boolean im = (circuitData.getProperties().getConnections() >> MiscUtils.getSide(dir) & 1) != 0;
 		if(im || frequency == 0)
 		{
 			int[] i = this.i.clone();
 			if(output) i[MiscUtils.getSide(dir)] |= 1 << frequency;
 			else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
 			
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, circuitData.getProperties().getConnections(), xCoord, yCoord, zCoord));
 		}
 	}
 	
@@ -114,6 +108,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void setInputMode(boolean b, int side)
 	{
 		i[side] = 0;
+		int con = circuitData.getProperties().getConnections();
 		if(b) con |= 1 << side;
 		else con &= ~(1 << side);
 		IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
