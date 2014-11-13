@@ -137,8 +137,12 @@ public class PartCircuit extends GatePart implements ICircuit
 	@Override
 	public void onAdded() 
 	{
-		super.onAdded();
-		circuitData.updateOutput();
+		if(!world().isRemote)
+		{
+			super.updateInput();
+			circuitData.updateInput();
+			circuitData.updateOutput();
+		}
 	}
 
 	@Override
@@ -150,16 +154,8 @@ public class PartCircuit extends GatePart implements ICircuit
 
 	@Override
 	public void scheduledTick() 
-	{	
-		update = false;
-		System.out.println("update...");
+	{
 		circuitData.updateInput();
-		if(update)
-		{
-			System.out.println("update!");
-			tile().notifyPartChange(this);
-			tile().notifyNeighborChange(getSide());
-		}
 	}
 
 	@Override
@@ -167,22 +163,14 @@ public class PartCircuit extends GatePart implements ICircuit
 	{
 		if((arg0 & 6) == (getSide() & 6)) return 0;
 		int rot = getSideRel(arg0);
-		int o = 0;
-		
 		if(!canConnectRedstoneImpl(rot)) return 0;
 		if(getModeAtSide(rot) == CircuitProperties.ANALOG)
 		{
 			byte[] out = output[rot];
 			for(int i = 15; i >= 0; i--)
-				if(out[i] != 0) 
-				{
-					o = i;
-					break;
-				}
+				if(out[i] != 0) return i;
 		}
-		else o = output[rot][0];
-		System.out.println(rot + " " + input[rot][0] + " " + o);
-		return o;
+		return output[rot][0];
 	}
 
 	@Override
@@ -225,8 +213,8 @@ public class PartCircuit extends GatePart implements ICircuit
 		int mode = getModeAtSide(side);
 		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;
 		else if(mode == CircuitProperties.ANALOG && this.input[side][0] != 0) return;
-		this.output[side][frequency] = (byte)(output ? 15 : 0);
-		System.out.println(mode + " " + side + " " + output + " " + frequency);
-		update = true;
+		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
+		tile().notifyPartChange(this);
+		tile().notifyNeighborChange(getSide());
 	}
 }

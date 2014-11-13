@@ -202,9 +202,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public void onAdded() 
 	{
+		if(!world().isRemote) updateInput();
 		tile().notifyPartChange(this);
 		tile().notifyNeighborChange(getSide());
-		if(!world().isRemote) updateInput();
 	}
 
 	@Override

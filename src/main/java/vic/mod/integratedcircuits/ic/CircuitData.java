@@ -9,8 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
-import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.Vec2;
 
 import com.google.common.primitives.Ints;
@@ -87,7 +87,7 @@ public class CircuitData implements Cloneable
 		int o = supportsBundled() ? size / 2 - 8 : 1;
 		
 		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
-		{		
+		{	
 			PartIOBit io1 = (PartIOBit)getPart(size - 1 - (i + o), 0);
 			PartIOBit io2 = (PartIOBit)getPart(size - 1, size - 1 - (i + o));
 			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
@@ -112,10 +112,10 @@ public class CircuitData implements Cloneable
 			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
 			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
 			
-			io1.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
-			io2.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
-			io3.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
-			io4.onInputChange(MiscUtils.getDirection(io1.getRotation()).getOpposite());
+			io1.onInputChange(ForgeDirection.SOUTH);
+			io2.onInputChange(ForgeDirection.WEST);
+			io3.onInputChange(ForgeDirection.NORTH);
+			io4.onInputChange(ForgeDirection.EAST);
 		}
 	}
 	
