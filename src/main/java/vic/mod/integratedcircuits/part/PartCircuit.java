@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits.part;
 
 import java.util.Arrays;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +19,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -171,6 +173,22 @@ public class PartCircuit extends GatePart implements ICircuit
 				if(out[i] != 0) return i;
 		}
 		return output[rot][0];
+	}
+	
+	@Override
+	public int updateRedstoneInput(int side) 
+	{
+		int in = super.updateRedstoneInput(side);
+		if(in != 0) return in;
+		int r = getRotationAbs(side);
+		if(getModeAtSide(side) != CircuitProperties.ANALOG) return 0;
+		int abs = Rotation.rotateSide(getSide(), r);
+
+		BlockCoord pos = new BlockCoord(tile()).offset(abs);
+		Block b = world().getBlock(pos.x, pos.y, pos.z);
+		if(b != null && b.hasComparatorInputOverride())
+			in = b.getComparatorInputOverride(world(), pos.x, pos.y, pos.z, abs ^ 1);
+		return in;
 	}
 
 	@Override

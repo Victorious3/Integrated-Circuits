@@ -263,7 +263,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		return input[side];
 	}
 	
-	private byte[] updatedBundledInput(int side)
+	public byte[] updatedBundledInput(int side)
 	{
 		int r = getRotationAbs(side);
 		int abs = Rotation.rotateSide(getSide(), r);
@@ -303,7 +303,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		return null;
 	}
 	
-	private int updateRedstoneInput(int side)
+	public int updateRedstoneInput(int side)
 	{
 		int r = getRotationAbs(side);
 		int abs = Rotation.rotateSide(getSide(), r);
