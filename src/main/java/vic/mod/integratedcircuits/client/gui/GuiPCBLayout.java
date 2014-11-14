@@ -106,7 +106,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.te = container.tileentity;
 		
 		callbackDelete = new GuiCallback(this, 150, 100, Action.OK, Action.CANCEL);
-		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage, "Show this message?", callbackDelete);
+		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage.getBoolean(), "Show this message?", callbackDelete);
 		callbackDelete
 			.addControl(new GuiLabel(37, 7, "Are you sure?", 0x333333))
 			.addControl(new GuiLabel(10, 25, 
@@ -248,13 +248,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		{
 			cb = 1;
 			if(checkboxDelete.isChecked()) callbackDelete.display();
-			else onCallback(null, Action.OK, 0);
+			else onCallback(callbackDelete, Action.OK, 0);
 		}
 		else if(button.id == 11)
 		{
 			cb = 2;
 			if(checkboxDelete.isChecked()) callbackDelete.display();
-			else onCallback(null, Action.OK, 0);
+			else onCallback(callbackDelete, Action.OK, 0);
 		}
 		else if(button.id == 13)
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));
@@ -380,17 +380,55 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				}
 				else
 				{
-					//TODO Make it render like a real wire!
+					PartWire wire = (PartWire)selectedPart;
+					GL11.glTranslated(te.offX, te.offY, 0);
+					switch (wire.getColor()) {
+					case 1: GL11.glColor3f(0.4F, 0F, 0F); break;
+					case 2: GL11.glColor3f(0.4F, 0.2F, 0F); break;
+					default: GL11.glColor3f(0F, 0.4F, 0F); break;
+					}
+					
 					x2 = sx; y2 = sy;
-					CircuitPartRenderer.renderPart(selectedPart, x2 * 16 + te.offX, y2 * 16 + te.offY);
+					
+					Tessellator.instance.startDrawingQuads();
+					CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
+					if(ey > sy) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 4 * 16, 0, 16, 16);
+					else if(ey < sy) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 2 * 16, 0, 16, 16);
+					else if(ex > sx) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
+					else if(ex < sx) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
+					
 					while(x2 != ex || y2 != ey)
 					{
 						if(y2 < ey) y2++;
-						else if(y2 > ey) y2--;
-						else if(x2 < ex) x2++;
-						else if(x2 > ex) x2--;
-						CircuitPartRenderer.renderPart(selectedPart, x2 * 16 + te.offX, y2 * 16 + te.offY);	
+						else if(y2 > ey) y2--; 
+						else if(x2 < ex)
+						{
+							x2++;
+						}
+						else if(x2 > ex) 
+						{
+							x2--;
+						}
+						if(y2 != ey) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 6 * 16, 0, 16, 16);
+						else if(y2 == ey && x2 == sx) 
+						{
+							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
+							if(ey > sy) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 2 * 16, 0, 16, 16);
+							else if(ey < sy) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 4 * 16, 0, 16, 16);
+							if(ex > sx) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
+							else if(ex < sx) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
+						}
+						else if(x2 != ex) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 5 * 16, 0, 16, 16);
+						else if(x2 == ex) 
+						{
+							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
+							if(ex > sx) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
+							else if(ex < sx) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
+						}
 					}
+					Tessellator.instance.draw();
+					GL11.glColor3f(1, 1, 1);
+					GL11.glTranslated(-te.offX, -te.offY, 0);
 				}
 			}
 		}
@@ -665,14 +703,14 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		if(!oname.equals(nameField.getText()))
 		{
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeName(nameField.getText(), te.xCoord, te.yCoord, te.zCoord));
-		}		
+		}
 	}
 
 	@Override
 	public void onGuiClosed() 
 	{
 		super.onGuiClosed();
-		Config.showConfirmMessage = checkboxDelete.isChecked();
+		Config.showConfirmMessage.set(checkboxDelete.isChecked());
 		Config.save();
 	}
 

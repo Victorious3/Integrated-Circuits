@@ -104,17 +104,17 @@ public class CircuitPartRenderer
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
 	
-	private static void addQuad(double x, double y, double u, double v, double w, double h)
+	public static void addQuad(double x, double y, double u, double v, double w, double h)
 	{
 		addQuad(x, y, u, v, w, h, 0);
 	}
 	
-	private static void addQuad(double x, double y, double u, double v, double w, double h, double rotation)
+	public static void addQuad(double x, double y, double u, double v, double w, double h, double rotation)
 	{
 		addQuad(x, y, u, v, w, h, w, h, 256, 256, rotation);
 	}
 	
-	private static void addQuad(double x, double y, double u, double v, double w, double h, double w2, double h2, double tw, double th, double rotation)
+	public static void addQuad(double x, double y, double u, double v, double w, double h, double w2, double h2, double tw, double th, double rotation)
 	{
 		double d1, d2, d3, d4;
 		double scalew = 1 / tw;
