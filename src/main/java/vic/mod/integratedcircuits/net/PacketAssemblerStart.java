@@ -19,7 +19,7 @@ public class PacketAssemblerStart extends PacketTileEntity<PacketAssemblerStart>
 	{
 		TileEntityAssembler te = (TileEntityAssembler)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
-		if(side == Side.SERVER && te.cdata != null && te.getStackInSlot(1) != null)
+		if(side == Side.SERVER && te.cdata != null && te.laserHelper.getLaserAmount() > 0 && te.getStackInSlot(1) != null)
 		{
 			if(te.getStackInSlot(1).getItemDamage() == 0)
 			{

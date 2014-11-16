@@ -32,6 +32,14 @@ public class LaserHelper
 		return lasers[id];
 	}
 	
+	public int getLaserAmount()
+	{
+		int r = 0;
+		for(int i = 9; i < 4; i++) 
+			if(lasers[i] != null) r++;
+		return r;
+	}
+	
 	public void createLaser(int id, ItemStack laser)
 	{
 		if(laser == null) lasers[id] = null;

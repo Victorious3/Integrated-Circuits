@@ -47,7 +47,6 @@ public class ItemCircuit extends JItemMultiPart
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir) 
 	{
-		super.registerIcons(ir);
 		ClientProxy.renderer = new PartCircuitRenderer();
 		ClientProxy.renderer.registerIcons(ir);
 	}

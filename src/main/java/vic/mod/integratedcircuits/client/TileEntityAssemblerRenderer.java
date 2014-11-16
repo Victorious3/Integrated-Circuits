@@ -3,6 +3,7 @@ package vic.mod.integratedcircuits.client;
 import java.util.LinkedList;
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.Framebuffer;
@@ -43,12 +44,13 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	}
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
-	{	
+	{
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
 		GL11.glRotatef(-90 * te.rotation, 0, 1, 0);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
+		GL11.glEnable(GL11.GL_LIGHTING);
 		
 		if(getCurrentRenderPass() == 0)
 		{
@@ -197,10 +199,11 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	}
 	
 	@SubscribeEvent
-	public void onClientTick(TickEvent.ClientTickEvent event)
+	public void onRenderTick(TickEvent.RenderTickEvent event)
 	{
 		if(event.phase == Phase.START && schedule.size() > 0)
 		{
+			Minecraft.getMinecraft().getFramebuffer().unbindFramebuffer();
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
 			GL11.glViewport(0, 0, 256, 256);
@@ -214,6 +217,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			for(TileEntityAssembler te : schedule)
 				updateFramebuffer(te);
 			schedule.clear();
+			Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
 		}
 	}
 	
@@ -223,12 +227,12 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		{
 			te.circuitFBO = new Framebuffer(256, 256, true);
 			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
-		}
-		
+		}	
 		te.circuitFBO.framebufferClear();
 		te.circuitFBO.bindFramebuffer(false);
 		
 		GL11.glColor3f(0, 0.1F, 0);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		Tessellator tes = Tessellator.instance;
 		tes.startDrawingQuads();
 		tes.addVertex(0, 0, 0);
@@ -236,6 +240,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		tes.addVertex(256, 256, 0);
 		tes.addVertex(256, 0, 0);
 		tes.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glColor3f(1, 1, 1);
 		
 		if(te.excMatrix != null && te.cdata != null)

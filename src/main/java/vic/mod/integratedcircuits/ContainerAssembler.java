@@ -36,6 +36,12 @@ public class ContainerAssembler extends Container
 			{
 				return stack.getItem() == IntegratedCircuits.itemPCB && stack.getItemDamage() == 0;
 			}
+			
+			@Override
+			public int getSlotStackLimit() 
+			{
+				return 1;
+			}
 		});
 		
 		for(int i = 0; i < 9; i++)
@@ -48,6 +54,12 @@ public class ContainerAssembler extends Container
 				public boolean isItemValid(ItemStack stack) 
 				{
 					return stack.getItem() == IntegratedCircuits.itemLaser;
+				}
+
+				@Override
+				public int getSlotStackLimit() 
+				{
+					return 1;
 				}
 			});
 		
@@ -74,12 +86,51 @@ public class ContainerAssembler extends Container
 	@Override
 	public boolean canDragIntoSlot(Slot slot) 
 	{
-		return false;
+		return slot.slotNumber > 1;
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int slot) 
+	public ItemStack transferStackInSlot(EntityPlayer player, int id)
 	{
-		return null;
+		System.out.println(id);
+		Slot slot = getSlot(id);
+		ItemStack stack = slot.getStack();
+		
+		if(slot != null && slot.getHasStack())
+		{
+			ItemStack stack1 = stack.copy();
+			if((id < 11 || id > 15) && stack.getItem() == IntegratedCircuits.itemLaser)
+			{
+				//Good that mergeItemStack doesn't care about the slot properties...
+				for(int i = 11; i < 16; i++)
+				{
+					Slot slot2 = getSlot(i);
+					if(!slot2.getHasStack())
+					{
+						stack.stackSize--;
+						stack1.stackSize = 1;
+						slot2.putStack(stack1);
+						slot2.onSlotChanged();
+						break;
+					}
+				}
+			}
+			else if(id < 15)
+			{
+				if(!mergeItemStack(stack, 15, getInventory().size() - 1, false)) return null;
+			}
+			else if(id >= 15)
+			{
+				if(!mergeItemStack(stack, 2, 10, false)) return null;
+			}
+			
+			if(stack.stackSize == 0)
+				slot.putStack(null);
+			else slot.onSlotChanged();
+			
+			if(stack.stackSize == stack1.stackSize) return null;
+			slot.onPickupFromSlot(player, stack);
+		}
+		return stack;
 	}
 }

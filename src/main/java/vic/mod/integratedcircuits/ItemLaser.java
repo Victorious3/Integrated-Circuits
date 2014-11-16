@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 
 public class ItemLaser extends Item
@@ -8,6 +9,8 @@ public class ItemLaser extends Item
 	{
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setUnlocalizedName(IntegratedCircuits.modID + ".laser");
-		setMaxStackSize(1);
 	}
+
+	@Override 
+	public void registerIcons(IIconRegister p_94581_1_) {}
 }

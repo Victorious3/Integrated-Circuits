@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits.net;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,19 +9,22 @@ import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
+import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
 {
 	private String name;
+	private UUID uuid;
 	
 	public PacketPCBChangeName(){}
 	
-	public PacketPCBChangeName(String name, int xCoord, int yCoord, int zCoord)
+	public PacketPCBChangeName(EntityPlayer sender, String name, int xCoord, int yCoord, int zCoord)
 	{
 		super(xCoord, yCoord, zCoord);
 		this.name = name;
+		uuid = sender.getPersistentID();
 	}
 	
 	@Override
@@ -28,6 +32,9 @@ public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
 	{
 		super.read(buffer);
 		this.name = buffer.readStringFromBuffer(7);
+		long l1 = buffer.readLong();
+		long l2 = buffer.readLong();
+		this.uuid = new UUID(l1, l2);
 	}
 
 	@Override
@@ -35,6 +42,8 @@ public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
 	{
 		super.write(buffer);
 		buffer.writeStringToBuffer(this.name);
+		buffer.writeLong(uuid.getMostSignificantBits());
+		buffer.writeLong(uuid.getLeastSignificantBits());
 	}
 
 	@Override
@@ -47,9 +56,9 @@ public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
 			if(side == Side.SERVER)
 			{
 				IntegratedCircuits.networkWrapper.sendToAllAround(this, 
-					new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+					new TargetPoint(te.getWorldObj().provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
-			else if(Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
+			else if(Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout && !MiscUtils.thePlayer().getPersistentID().equals(uuid))
 				((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshUI();	
 		}
 	}

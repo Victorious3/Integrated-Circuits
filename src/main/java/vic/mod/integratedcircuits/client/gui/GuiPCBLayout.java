@@ -61,6 +61,7 @@ import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
+import vic.mod.integratedcircuits.util.MiscUtils;
 import vic.mod.integratedcircuits.util.Vec2;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
@@ -481,11 +482,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
 		nameField.drawTextBox();
+		GL11.glColor3f(1, 1, 1);
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int x, int y) 
-	{		
+	{
+		GL11.glColor3f(1, 1, 1);
 		CircuitData data = te.getCircuitData();
 		
 		int x2 = (int)((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
@@ -520,6 +523,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			drawHoveringText(hoveredElement.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		fontRendererObj.drawString((int)(te.scale * 100) + "%", 217, 235, 0x333333);
+		GL11.glColor3f(1, 1, 1);
 	}
 
 	@Override
@@ -701,9 +705,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		else super.keyTyped(par1, par2);
 		
 		if(!oname.equals(nameField.getText()))
-		{
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeName(nameField.getText(), te.xCoord, te.yCoord, te.zCoord));
-		}
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeName(MiscUtils.thePlayer(), nameField.getText(), te.xCoord, te.yCoord, te.zCoord));
 	}
 
 	@Override
