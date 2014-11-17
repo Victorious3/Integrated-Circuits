@@ -27,9 +27,9 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public boolean[][] excMatrix;
 	public CircuitData cdata;
 	public int size;
-	public ItemStack[] contents = new ItemStack[15];
+	public ItemStack[] contents = new ItemStack[13];
 	
-	public LaserHelper laserHelper = new LaserHelper(this, 11);
+	public LaserHelper laserHelper = new LaserHelper(this, 9);
 
 	@Override
 	public void updateEntity() 
@@ -43,11 +43,12 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void readFromNBT(NBTTagCompound compound)
 	{
 		super.readFromNBT(compound);
-		for(int i = 0; i < 14; i++)
+		NBTTagList slotList = compound.getTagList("contents", NBT.TAG_COMPOUND);
+		for(int i = 0; i < 13; i++)
 		{
-			if(compound.getCompoundTag("stack_" + i).hasNoTags())
+			if(slotList.getCompoundTagAt(i).hasNoTags())
 				contents[i] = null;
-			else contents[i] = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("stack_" + i));
+			else contents[i] = ItemStack.loadItemStackFromNBT(slotList.getCompoundTagAt(i));
 		}
 		
 		loadMatrix(compound);
@@ -72,11 +73,13 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void writeToNBT(NBTTagCompound compound)
 	{
 		super.writeToNBT(compound);
-		for(int i = 0; i < 14; i++)
+		NBTTagList slotList = new NBTTagList();
+		for(int i = 0; i < 13; i++)
 		{
-			compound.setTag("stack_" + i, contents[i] != null ? 
+			slotList.appendTag(contents[i] != null ? 
 				contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
 		}
+		compound.setTag("contents", slotList);
 		
 		saveMatrix(compound);
 		if(excMatrix != null)
@@ -206,7 +209,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void onSlotChange(int id)
 	{
 		if(worldObj.isRemote) return;
-		if(id > 10 && id < 15) laserHelper.createLaser(id - 11, getStackInSlot(id));
+		if(id > 8 && id < 13) laserHelper.createLaser(id - 9, getStackInSlot(id));
 		else if(id == 1) 
 			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeItem(xCoord, yCoord, zCoord, getStackInSlot(id) != null), worldObj.provider.dimensionId);
 	}

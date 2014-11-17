@@ -2,9 +2,12 @@ package vic.mod.integratedcircuits.ic;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Map;
 
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
@@ -348,5 +351,12 @@ public class CircuitData implements Cloneable
 		data.meta = new int[][]{new int[]{0, 0, 0}, new int[]{0, state, 0}, new int[]{0, 0, 0}};
 		data.parent = parent;
 		return data;
+	}
+	
+	public Map<Item, Integer> calculateCost()
+	{
+		HashMap<Item, Integer> cost = new HashMap<Item, Integer>();
+		//TODO Figure out what a circuit should be made of.
+		return cost;
 	}
 }

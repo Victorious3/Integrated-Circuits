@@ -15,7 +15,7 @@ public class ContainerAssembler extends Container
 		this.tileentity = tileentity;
 		this.tileentity.openInventory();
 		
-		this.addSlotToContainer(new Slot(this.tileentity, 0, 6, 6)
+		this.addSlotToContainer(new Slot(this.tileentity, 0, 8, 8)
 		{
 			@Override
 			public boolean isItemValid(ItemStack stack) 
@@ -29,7 +29,7 @@ public class ContainerAssembler extends Container
 				return false;
 			}
 		});
-		this.addSlotToContainer(new Slot(this.tileentity, 1, 6, 52)
+		this.addSlotToContainer(new Slot(this.tileentity, 1, 8, 113)
 		{
 			@Override
 			public boolean isItemValid(ItemStack stack) 
@@ -44,11 +44,11 @@ public class ContainerAssembler extends Container
 			}
 		});
 		
-		for(int i = 0; i < 9; i++)
-			this.addSlotToContainer(new Slot(this.tileentity, i + 2, 8 + i * 18, 108));
+		for(int i = 0; i < 7; i++)
+			this.addSlotToContainer(new Slot(this.tileentity, i + 2, 40 + i * 18, 113));
 		
 		for(int i = 0; i < 4; i++)
-			this.addSlotToContainer(new Slot(this.tileentity, i + 11, 154, 6 + i * 18)
+			this.addSlotToContainer(new Slot(this.tileentity, i + 9, 148, 12 + i * 18)
 			{
 				@Override
 				public boolean isItemValid(ItemStack stack) 
@@ -98,10 +98,10 @@ public class ContainerAssembler extends Container
 		if(slot != null && slot.getHasStack())
 		{
 			ItemStack stack1 = stack.copy();
-			if((id < 11 || id > 15) && stack.getItem() == IntegratedCircuits.itemLaser)
+			if((id < 9 || id > 13) && stack.getItem() == IntegratedCircuits.itemLaser)
 			{
 				//Good that mergeItemStack doesn't care about the slot properties...
-				for(int i = 11; i < 15; i++)
+				for(int i = 9; i < 13; i++)
 				{
 					Slot slot2 = getSlot(i);
 					if(!slot2.getHasStack())
@@ -114,13 +114,13 @@ public class ContainerAssembler extends Container
 					}
 				}
 			}
-			else if(id < 15)
+			else if(id < 13)
 			{
-				if(!mergeItemStack(stack, 15, getInventory().size() - 1, false)) return null;
+				if(!mergeItemStack(stack, 13, getInventory().size() - 1, false)) return null;
 			}
-			else if(id >= 15)
+			else if(id >= 13)
 			{
-				if(!mergeItemStack(stack, 2, 10, false)) return null;
+				if(!mergeItemStack(stack, 2, 8, false)) return null;
 			}
 			
 			if(stack.stackSize == 0)

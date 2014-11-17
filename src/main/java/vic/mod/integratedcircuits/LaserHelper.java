@@ -56,10 +56,7 @@ public class LaserHelper
 		{
 			NBTTagCompound comp = new NBTTagCompound();
 			if(getLaser(i) != null)
-			{
 				getLaser(i).writeToNBT(comp);
-				comp.setTag("stack", te.contents[i + offset].writeToNBT(new NBTTagCompound()));
-			}
 			lasers.appendTag(comp);
 		}
 		tag.setTag("lasers", lasers);
@@ -74,7 +71,7 @@ public class LaserHelper
 		{
 			NBTTagCompound comp = lasers.getCompoundTagAt(i);
 			if(comp.hasNoTags()) continue;
-			ItemStack stack = ItemStack.loadItemStackFromNBT(comp.getCompoundTag("stack"));
+			ItemStack stack = te.contents[i + offset];
 			createLaser(i, stack);
 			getLaser(i).readFromNBT(comp);
 		}
