@@ -92,7 +92,6 @@ public class ContainerAssembler extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer player, int id)
 	{
-		System.out.println(id);
 		Slot slot = getSlot(id);
 		ItemStack stack = slot.getStack();
 		
@@ -102,7 +101,7 @@ public class ContainerAssembler extends Container
 			if((id < 11 || id > 15) && stack.getItem() == IntegratedCircuits.itemLaser)
 			{
 				//Good that mergeItemStack doesn't care about the slot properties...
-				for(int i = 11; i < 16; i++)
+				for(int i = 11; i < 15; i++)
 				{
 					Slot slot2 = getSlot(i);
 					if(!slot2.getHasStack())

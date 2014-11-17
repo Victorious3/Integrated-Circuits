@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -521,6 +522,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		}
 		if(hoveredElement != null)
 			drawHoveringText(hoveredElement.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
+		RenderHelper.enableGUIStandardItemLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		fontRendererObj.drawString((int)(te.scale * 100) + "%", 217, 235, 0x333333);
 		GL11.glColor3f(1, 1, 1);

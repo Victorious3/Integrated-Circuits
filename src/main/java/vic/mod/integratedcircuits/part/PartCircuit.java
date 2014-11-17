@@ -179,16 +179,40 @@ public class PartCircuit extends GatePart implements ICircuit
 	public int updateRedstoneInput(int side) 
 	{
 		int in = super.updateRedstoneInput(side);
-		if(in != 0) return in;
+		if(in == 0 && getModeAtSide(side) == CircuitProperties.ANALOG)
+			in = updateComparatorInput(side);
+		return in;
+	}
+
+	@Override
+	public void update() 
+	{
+		if(!world().isRemote) 
+		{
+			for(int i = 0; i < 4; i++)
+				if(getModeAtSide(i) == CircuitProperties.ANALOG)
+				{
+					int in = (byte)updateComparatorInput(i);
+					if(in != 0 && in != input[i][0]) 
+					{
+						input[i][0] = (byte)in;
+						scheduleTick(0);
+					}		
+				}
+			circuitData.updateMatrix();
+		}
+	}
+
+	public int updateComparatorInput(int side)
+	{
 		int r = getRotationAbs(side);
-		if(getModeAtSide(side) != CircuitProperties.ANALOG) return 0;
 		int abs = Rotation.rotateSide(getSide(), r);
 
 		BlockCoord pos = new BlockCoord(tile()).offset(abs);
 		Block b = world().getBlock(pos.x, pos.y, pos.z);
 		if(b != null && b.hasComparatorInputOverride())
-			in = b.getComparatorInputOverride(world(), pos.x, pos.y, pos.z, abs ^ 1);
-		return in;
+			return b.getComparatorInputOverride(world(), pos.x, pos.y, pos.z, abs ^ 1);
+		return 0;
 	}
 
 	@Override
@@ -207,12 +231,6 @@ public class PartCircuit extends GatePart implements ICircuit
 	public void setCircuitData(CircuitData data) 
 	{
 		this.circuitData = data;
-	}
-
-	@Override
-	public void update() 
-	{
-		if(!world().isRemote) circuitData.updateMatrix();
 	}
 
 	@Override
