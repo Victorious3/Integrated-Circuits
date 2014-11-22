@@ -2,18 +2,17 @@ package vic.mod.integratedcircuits.ic;
 
 import io.netty.buffer.ByteBuf;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Map;
 
-import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.ic.CircuitPart.PartIOBit;
+import vic.mod.integratedcircuits.ic.parts.PartIOBit;
+import vic.mod.integratedcircuits.ic.parts.PartNull;
+import vic.mod.integratedcircuits.util.CraftingAmount;
 import vic.mod.integratedcircuits.util.Vec2;
 
 import com.google.common.primitives.Ints;
@@ -25,6 +24,7 @@ public class CircuitData implements Cloneable
 	private CircuitPart[][] parts;
 	private LinkedHashSet<Vec2> tickSchedule;
 	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
+	private CraftingAmount cost;
 	private ICircuit parent;
 	private boolean queueEnabled = true;
 	private CircuitProperties prop = new CircuitProperties();
@@ -58,7 +58,7 @@ public class CircuitData implements Cloneable
 	public void setup()
 	{
 		int o = supportsBundled() ? size / 2 - 8 : 1;
-		int cid = CircuitPart.getIdFromClass(CircuitPart.PartIOBit.class);
+		int cid = CircuitPart.getIdFromClass(PartIOBit.class);
 		
 		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
 		{
@@ -353,10 +353,23 @@ public class CircuitData implements Cloneable
 		return data;
 	}
 	
-	public Map<Item, Integer> calculateCost()
+	public CraftingAmount getCost()
 	{
-		HashMap<Item, Integer> cost = new HashMap<Item, Integer>();
-		//TODO Figure out what a circuit should be made of.
+		if(cost == null) calculateCost();
 		return cost;
+	}
+	
+	public void calculateCost()
+	{
+		cost = new CraftingAmount();
+		CraftingAmount amount = new CraftingAmount();
+		for(CircuitPart[] p1 : parts)
+		{
+			for(CircuitPart part : p1)
+			{
+				if(part instanceof PartNull) continue;
+				part.getCraftingCost(amount);
+			}
+		}
 	}
 }
