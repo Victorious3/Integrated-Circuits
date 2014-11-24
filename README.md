@@ -1,3 +1,4 @@
+[![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/job/Vic/Integrated-Circuits.svg?style=flat-square)](http://jenkins.rx14.co.uk/job/Vic/job/integrated-circuits/)
 Integrated-Circuits
 ===================
 
@@ -6,5 +7,3 @@ The use of Project:Red is recommended for bundled wires, not a requirement anymo
 
 Jenkins: [jenkins.rx14.co.uk](http://jenkins.rx14.co.uk)
 *generously served by @RX14*
-
-[![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/Integrated-Circuits.svg?style=flat-square)](http://jenkins.rx14.co.uk/job/integrated-circuits/)
