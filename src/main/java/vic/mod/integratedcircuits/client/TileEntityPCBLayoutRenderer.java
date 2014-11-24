@@ -2,8 +2,8 @@ package vic.mod.integratedcircuits.client;
 
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
-import vic.mod.integratedcircuits.DiskDriveUtils;
-import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
+import vic.mod.integratedcircuits.DiskDrive;
+import vic.mod.integratedcircuits.DiskDrive.ModelFloppy;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 
 public class TileEntityPCBLayoutRenderer extends TileEntitySpecialRenderer
@@ -13,7 +13,7 @@ public class TileEntityPCBLayoutRenderer extends TileEntitySpecialRenderer
 	
 	public void renderTileEntityAt(TileEntityPCBLayout te, double x, double y, double z, float partialTicks) 
 	{
-		DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
+		DiskDrive.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
 	}
 	
 	@Override

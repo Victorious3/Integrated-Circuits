@@ -12,8 +12,8 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
+import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
-import vic.mod.integratedcircuits.util.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
@@ -187,13 +187,13 @@ public class PartCircuit extends GatePart implements ICircuit
 	@Override
 	public void update() 
 	{
-		if(!world().isRemote) 
+		if(!world().isRemote)
 		{
 			for(int i = 0; i < 4; i++)
 				if(getModeAtSide(i) == CircuitProperties.ANALOG)
 				{
 					int in = (byte)updateComparatorInput(i);
-					if(in != 0 && in != input[i][0]) 
+					if(in != input[i][0]) 
 					{
 						input[i][0] = (byte)in;
 						scheduleTick(0);

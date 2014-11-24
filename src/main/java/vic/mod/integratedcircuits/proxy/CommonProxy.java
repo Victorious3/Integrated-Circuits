@@ -8,11 +8,11 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
-import vic.mod.integratedcircuits.DiskDriveUtils;
+import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.GuiHandler;
 import vic.mod.integratedcircuits.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.util.MiscUtils;
+import vic.mod.integratedcircuits.misc.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -55,7 +55,7 @@ public class CommonProxy
 		ItemStack stack = event.entityPlayer.getCurrentEquippedItem();
 		
 		MovingObjectPosition target = MiscUtils.rayTrace(event.entityPlayer, 1F);	
-		AxisAlignedBB box = DiskDriveUtils.getDiskDriveBoundingBox(drive, event.x, event.y, event.z, target.hitVec);
+		AxisAlignedBB box = DiskDrive.getDiskDriveBoundingBox(drive, event.x, event.y, event.z, target.hitVec);
 		if(box == null) return;
 		
 		if(!event.world.isRemote)

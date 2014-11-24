@@ -27,7 +27,7 @@ import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.DiskDriveUtils;
+import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
@@ -86,7 +86,7 @@ public class ClientProxy extends CommonProxy
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		
 		if(tileEntity instanceof IDiskDrive)
-			box = DiskDriveUtils.getDiskDriveBoundingBox((IDiskDrive)tileEntity, x, y, z, event.target.hitVec);	
+			box = DiskDrive.getDiskDriveBoundingBox((IDiskDrive)tileEntity, x, y, z, event.target.hitVec);	
 		if(box == null) return;
 		
 		double xOff = event.player.lastTickPosX + (event.player.posX - event.player.lastTickPosX) * event.partialTicks;

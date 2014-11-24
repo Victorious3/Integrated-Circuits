@@ -6,13 +6,14 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
-import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class LaserHelper 
 {
@@ -38,6 +39,20 @@ public class LaserHelper
 		for(int i = 0; i < 4; i++) 
 			if(lasers[i] != null) r++;
 		return r;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void updateStatus()
+	{
+		isRunning = false;
+		for(Laser laser : lasers)
+		{
+			if(laser != null && laser.isRunning) 
+			{
+				isRunning = true;
+				return;
+			}
+		}
 	}
 	
 	public void createLaser(int id, ItemStack laser)

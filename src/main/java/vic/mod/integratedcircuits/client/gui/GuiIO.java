@@ -15,8 +15,8 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
-import vic.mod.integratedcircuits.util.MiscUtils;
-import vic.mod.integratedcircuits.util.RenderUtils;
+import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.RenderUtils;
 
 public class GuiIO extends GuiButton implements IHoverable
 {

@@ -10,7 +10,7 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
-import vic.mod.integratedcircuits.ic.parts.PartNull;
+import vic.mod.integratedcircuits.ic.part.PartNull;
 
 public class GuiPartChooser extends GuiButton implements IHoverable
 {

@@ -9,7 +9,7 @@ import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
-import vic.mod.integratedcircuits.util.MiscUtils;
+import vic.mod.integratedcircuits.misc.MiscUtils;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 

@@ -40,7 +40,7 @@ public class GuiAssembler extends GuiContainer
 		if(button.id == 0)
 		{
 			IntegratedCircuits.networkWrapper.sendToServer(new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord));
-		}		
+		}
 	}
 
 	@Override
@@ -50,5 +50,6 @@ public class GuiAssembler extends GuiContainer
 		drawDefaultBackground();
 		this.mc.getTextureManager().bindTexture(backgroundTexture);
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
+		GL11.glColor3f(1, 1, 1);
 	}
 }

@@ -10,10 +10,10 @@ import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.ic.parts.PartIOBit;
-import vic.mod.integratedcircuits.ic.parts.PartNull;
-import vic.mod.integratedcircuits.util.CraftingAmount;
-import vic.mod.integratedcircuits.util.Vec2;
+import vic.mod.integratedcircuits.ic.part.PartIOBit;
+import vic.mod.integratedcircuits.ic.part.PartNull;
+import vic.mod.integratedcircuits.misc.CraftingAmount;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 import com.google.common.primitives.Ints;
 

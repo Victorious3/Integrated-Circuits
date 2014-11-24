@@ -31,6 +31,8 @@ public class PacketAssemblerStart extends PacketTileEntity<PacketAssemblerStart>
 		}
 		else if(side == Side.CLIENT)
 		{
+			te.laserHelper.isRunning = true;
+			te.getWorldObj().markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 			te.excMatrix = new boolean[te.size][te.size];
 			te.isOccupied = true;
 		}

@@ -7,8 +7,8 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
-import vic.mod.integratedcircuits.util.RenderUtils;
 
 public class ModelLaser extends ModelBase
 {

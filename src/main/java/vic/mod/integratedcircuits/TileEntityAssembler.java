@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits;
 
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -9,9 +10,9 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.ic.CircuitData;
+import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
-import vic.mod.integratedcircuits.util.MiscUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -248,6 +249,15 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public ItemStack getDisk() 
 	{
 		return getStackInSlot(0);
+	}
+	
+	public void dropContents()
+	{
+		for(ItemStack stack : contents)
+		{
+			if(stack == null) continue;
+			worldObj.spawnEntityInWorld(new EntityItem(worldObj, xCoord, yCoord, zCoord, stack));
+		}
 	}
 
 	@Override

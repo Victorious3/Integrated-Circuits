@@ -12,16 +12,16 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.DiskDriveUtils;
-import vic.mod.integratedcircuits.DiskDriveUtils.ModelFloppy;
+import vic.mod.integratedcircuits.DiskDrive;
+import vic.mod.integratedcircuits.DiskDrive.ModelFloppy;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CurcuitRenderWrapper;
+import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
-import vic.mod.integratedcircuits.util.RenderUtils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -150,7 +150,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		if(getCurrentRenderPass() == 0) addToRenderQueue(te.xCoord, te.yCoord, te.zCoord);	
 		GL11.glPopMatrix();
 		
-		if(getCurrentRenderPass() == 0) DiskDriveUtils.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
+		if(getCurrentRenderPass() == 0) DiskDrive.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
 	}
 	
 	private Random rand = new Random();
