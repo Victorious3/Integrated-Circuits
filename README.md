@@ -1,4 +1,4 @@
-[![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/job/Vic/Integrated-Circuits.svg?style=flat-square)](http://jenkins.rx14.co.uk/job/Vic/job/integrated-circuits/)
+[![Build Status](http://img.shields.io/jenkins/s/http/jenkins.rx14.co.uk/job/Vic/Integrated-Circuits.svg?style=flat-square)](http://jenkins.rx14.co.uk/job/Vic/job/Integrated-Circuits/)
 Integrated-Circuits
 ===================
 
