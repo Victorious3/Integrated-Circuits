@@ -297,6 +297,7 @@ public class CircuitData implements Cloneable
 	
 	public void writeToStream(ByteBuf buf)
 	{
+		//FIXME Just managed to kill the connection with this, 2MB!
 		buf.writeInt(updateQueue.size());
 		for(Vec2 v : updateQueue)
 		{
@@ -362,13 +363,12 @@ public class CircuitData implements Cloneable
 	public void calculateCost()
 	{
 		cost = new CraftingAmount();
-		CraftingAmount amount = new CraftingAmount();
 		for(CircuitPart[] p1 : parts)
 		{
 			for(CircuitPart part : p1)
 			{
 				if(part instanceof PartNull) continue;
-				part.getCraftingCost(amount);
+				part.getCraftingCost(cost);
 			}
 		}
 	}

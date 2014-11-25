@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.misc;
 
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -54,6 +55,15 @@ public class RenderUtils
 		tes.addVertex(x1, y2, z2);
 		tes.addVertex(x1, y2, z1);
 		tes.addVertex(x1, y1, z1);
+	}
+	
+	public static void drawStringWithBorder(FontRenderer fr, String str, int x, int y, int color, int border)
+	{
+		fr.drawString(str, x + 1, y, border);
+		fr.drawString(str, x - 1, y, border);
+		fr.drawString(str, x, y + 1, border);
+		fr.drawString(str, x, y - 1, border);
+		fr.drawString(str, x, y, color);
 	}
 	
 	public static void applyColorIRGBA(int rbga)

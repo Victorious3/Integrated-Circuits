@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class ContainerAssembler extends Container
@@ -68,6 +69,19 @@ public class ContainerAssembler extends Container
 				this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 140 + i * 18));	
 		for(int i = 0; i < 9; i++)
 			this.addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18, 198));
+	}
+	
+	/** Gets the current amount that is available of an item type, crawls the custom inventory **/
+	public int getAmountOf(Item item)
+	{
+		int amount = 0;
+		for(int i = 0; i < 7; i++)
+		{
+			Slot s = getSlot(i + 2);
+			if(s.getHasStack() && s.getStack().getItem() == item) 
+				amount += s.getStack().stackSize;
+		}
+		return amount;
 	}
 
 	@Override

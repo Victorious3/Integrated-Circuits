@@ -340,10 +340,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		double iy = (-(w * 16) + 44 / te.scale) + 16;
 		te.offX = te.offX > mx ? mx : te.offX < ix ? ix : te.offX;
 		te.offY = te.offY > my ? my : te.offY < iy ? iy : te.offY;
-		
-		int j = this.mc.displayWidth;
-		int k = this.mc.displayHeight;
-		
+
 		fontRendererObj.drawString("PCB Layout CAD", guiLeft + 8, guiTop + 12, 0x333333);
 		
 		GL11.glPushMatrix();
@@ -351,7 +348,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
 		
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor((int)((guiLeft + 17) * guiScale), k - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));
+		GL11.glScissor((int)((guiLeft + 17) * guiScale), this.mc.displayHeight - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));
 		GL11.glScalef(te.scale, te.scale, 1F);
 		
 		CircuitPartRenderer.renderPerfboard(te.offX, te.offY, data);

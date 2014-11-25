@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.ISidedInventory;
@@ -9,6 +10,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
+import vic.mod.integratedcircuits.client.gui.GuiAssembler;
+import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
@@ -31,7 +34,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public ItemStack[] contents = new ItemStack[13];
 	
 	public LaserHelper laserHelper = new LaserHelper(this, 9);
-
+	
 	@Override
 	public void updateEntity() 
 	{
@@ -53,9 +56,9 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		}
 		
 		loadMatrix(compound);
-		excMatrix = new boolean[size][size];
 		if(compound.hasKey("tmp"))
 		{
+			excMatrix = new boolean[size][size];
 			byte[] temp = compound.getByteArray("tmp");
 			for(int i = 0; i < temp.length; i++)
 				excMatrix[i / size][i % size] = temp[i] != 0;
@@ -264,8 +267,11 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void setDisk(ItemStack stack) 
 	{
 		setInventorySlotContents(0, stack);
-		if(!worldObj.isRemote) IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
+		if(!worldObj.isRemote) 
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
 		loadMatrixFromDisk();
+		if(worldObj.isRemote && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
+			((GuiAssembler)Minecraft.getMinecraft().currentScreen).refreshUI();
 	}
 
 	@Override
