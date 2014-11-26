@@ -13,7 +13,7 @@ public class GuiCraftingList extends GuiListExt<GuiCraftingListEntry>
 	
 	public GuiCraftingList(GuiAssembler parent, Minecraft mc, int xCoord, int yCoord, int width, int height) 
 	{
-		super(mc, xCoord, yCoord, width, height, 20);
+		super(mc, xCoord, yCoord, width, height, 25);
 		this.parent = parent;
 	}
 	

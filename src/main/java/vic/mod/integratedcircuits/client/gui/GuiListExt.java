@@ -39,7 +39,13 @@ public class GuiListExt<T extends IGuiListEntry> extends GuiListExtended
 	{
 		super.drawSlot(par1, 0, y, par4, tes, par6, par7);
 	}
-	
+
+	@Override
+	public int getListWidth() 
+	{
+		return width - (func_148135_f() > 0 ? 6 : 0);
+	}
+
 	@Override
 	public void drawScreen(int x, int y, float par3)
 	{
@@ -57,7 +63,10 @@ public class GuiListExt<T extends IGuiListEntry> extends GuiListExtended
 	}
 
 	@Override
-	protected void drawContainerBackground(Tessellator tessellator) {}
+	protected void drawContainerBackground(Tessellator tessellator) 
+	{
+//		super.drawContainerBackground(tessellator);
+	}
 
 	@Override
 	public IGuiListEntry getListEntry(int id) 

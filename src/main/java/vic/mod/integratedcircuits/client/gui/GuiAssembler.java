@@ -10,14 +10,17 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.ContainerAssembler;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
-public class GuiAssembler extends GuiContainer
+public class GuiAssembler extends GuiContainer implements IHoverableHandler
 {
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/assembler.png");
 	public TileEntityAssembler te;
 	private GuiCraftingList craftingList;
+	private IHoverable hoverable;
 	public ContainerAssembler container;
 	
 	public GuiAssembler(ContainerAssembler container) 
@@ -76,6 +79,8 @@ public class GuiAssembler extends GuiContainer
 	{
 		GL11.glColor3f(1, 1, 1);
 		drawDefaultBackground();
+		hoverable = null;
+		
 		this.mc.getTextureManager().bindTexture(backgroundTexture);
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 		
@@ -83,5 +88,18 @@ public class GuiAssembler extends GuiContainer
 		
 		craftingList.drawScreen(x, y, par1);
 		GL11.glColor3f(1, 1, 1);
+	}
+
+	@Override
+	protected void drawGuiContainerForegroundLayer(int x, int y) 
+	{
+		if(hoverable != null)
+			drawHoveringText(hoverable.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
+	}
+
+	@Override
+	public void setCurrentItem(IHoverable hoverable) 
+	{
+		this.hoverable = hoverable;
 	}
 }
