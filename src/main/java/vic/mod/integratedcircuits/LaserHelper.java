@@ -61,7 +61,7 @@ public class LaserHelper
 		else lasers[id] = new Laser(te, id);
 		te.contents[offset + id] = laser;
 		if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && te.getWorldObj() != null)
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id), te.getWorldObj().provider.dimensionId);
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id, laser), te.getWorldObj().provider.dimensionId);
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound tag)

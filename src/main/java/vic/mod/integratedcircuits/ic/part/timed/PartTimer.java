@@ -34,13 +34,6 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 		updateInput();
 		if(!getInputFromSide(ForgeDirection.SOUTH)) setDelay(true);
 	}
-
-	@Override
-	public void onClick(int button, boolean ctrl) 
-	{
-		//TODO Insert some gui here.
-		super.onClick(button, ctrl);
-	}
 	
 	@Override
 	public void onInputChange(ForgeDirection side) 

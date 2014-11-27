@@ -41,7 +41,6 @@ public class PacketPCBLoad extends PacketTileEntity<PacketPCBLoad>
 	@Override
 	public void process(EntityPlayer player, Side side) 
 	{
-		//FIXME doesn't refresh the IO
 		TileEntityPCBLayout layout = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(layout != null)
 		{

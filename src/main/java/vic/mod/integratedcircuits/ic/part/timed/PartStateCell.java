@@ -10,13 +10,6 @@ public class PartStateCell extends PartDelayedAction
 {	
 	private static int f1 = 1 << 23;
 	private static int f2 = 1 << 24;
-	
-	@Override
-	public void onClick(int button, boolean ctrl) 
-	{
-		//TODO Insert some gui here too.
-		super.onClick(button, ctrl);
-	}
 
 	@Override
 	protected int getDelay()

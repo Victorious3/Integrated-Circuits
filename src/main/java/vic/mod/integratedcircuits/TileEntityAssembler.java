@@ -175,7 +175,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public ItemStack decrStackSize(int id, int amount) 
 	{
-		ItemStack temp = getStackInSlot(id);
 		ItemStack stack = null;
 		if(contents[id] != null)
 		{
@@ -191,7 +190,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			}
 			this.markDirty();
 		}
-		if(!ItemStack.areItemStacksEqual(temp, contents[id])) onSlotChange(id);
 		return stack;
 	}
 
@@ -271,7 +269,10 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
 		loadMatrixFromDisk();
 		if(worldObj.isRemote && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
+		{
+			cdata.calculateCost();
 			((GuiAssembler)Minecraft.getMinecraft().currentScreen).refreshUI();
+		}
 	}
 
 	@Override
