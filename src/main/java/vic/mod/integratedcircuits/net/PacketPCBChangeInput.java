@@ -68,6 +68,6 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 		}
 		if(side == Side.CLIENT && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
-			((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshUI();
+			((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshIO();
 	}
 }

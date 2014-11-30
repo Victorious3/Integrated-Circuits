@@ -62,6 +62,12 @@ public class ContainerAssembler extends Container
 				{
 					return 1;
 				}
+				
+				@Override
+				public boolean canTakeStack(EntityPlayer player) 
+				{
+					return !tileentity.laserHelper.isRunning;
+				}
 			});
 		
 		for(int i = 0; i < 3; i++)
@@ -109,7 +115,7 @@ public class ContainerAssembler extends Container
 		Slot slot = getSlot(id);
 		ItemStack stack = slot.getStack();
 		
-		if(slot != null && slot.getHasStack())
+		if(slot != null && slot.getHasStack() && slot.canTakeStack(player))
 		{
 			ItemStack stack1 = stack.copy();
 			if((id < 9 || id > 13) && stack.getItem() == IntegratedCircuits.itemLaser)

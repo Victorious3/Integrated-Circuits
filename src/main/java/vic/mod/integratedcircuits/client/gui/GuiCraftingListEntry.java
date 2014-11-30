@@ -38,7 +38,7 @@ public class GuiCraftingListEntry implements IGuiListEntry, IHoverable
 		
 		GuiUtils.drawContinuousTexturedBox(buttonTextures, x + 1, y, 0, 46, listWidth - 2, slotHeight, 200, 20, 2, 3, 2, 2, 0);
 		
-		int needed = (int)Math.ceil(amount.amount);
+		int needed = (int)Math.ceil(amount.amount) * parent.te.request;
 		int current = parent.container.getAmountOf(amount.item);
 		boolean supplied = current >= needed;
 		
@@ -52,7 +52,10 @@ public class GuiCraftingListEntry implements IGuiListEntry, IHoverable
 		int i1 = fr.getStringWidth(s2);
 		if(i1 > listWidth - 45) s2 = s2.substring(0, 5) + "..." + s2.substring(s2.length() - 5, s2.length());
 		
-		fr.drawString(s, x + listWidth - 2 - fr.getStringWidth(s), y + slotHeight - fr.FONT_HEIGHT, 0);
+		fr.setUnicodeFlag(true);
+		fr.drawString(s, x + listWidth - 2 - fr.getStringWidth(s), y + slotHeight - fr.FONT_HEIGHT, 0xFFFFFF);
+		fr.setUnicodeFlag(false);
+		
 		fr.drawStringWithShadow(s2, x + 21, y + slotHeight / 2 - fr.FONT_HEIGHT / 2, 0xFFFFFF);
 		int c1 = 0x00FF00;
 		int c2 = 0xFF0000;

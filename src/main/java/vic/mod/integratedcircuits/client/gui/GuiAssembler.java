@@ -2,7 +2,9 @@ package vic.mod.integratedcircuits.client.gui;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -12,6 +14,7 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
@@ -37,7 +40,11 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	{
 		super.initGui();
 		craftingList = new GuiCraftingList(this, mc, guiLeft + 29, guiTop + 26, 110, 62);
-		this.buttonList.add(new GuiButtonExt(0, guiLeft + 40, guiTop + 90, 100, 20, EnumChatFormatting.LIGHT_PURPLE + "Magic Button!"));
+		
+		this.buttonList.add(new GuiButtonExt(0, guiLeft + 78, guiTop + 95, 10, 10, "+"));
+		this.buttonList.add(new GuiButtonExt(1, guiLeft + 40, guiTop + 95, 10, 10, "-"));
+		this.buttonList.add(new GuiButtonExt(2, guiLeft + 96, guiTop + 93, 30, 14, "Run"));
+		
 		refreshUI();
 	}
 	
@@ -50,8 +57,16 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	@Override
 	protected void actionPerformed(GuiButton button) 
 	{
-		if(button.id == 0)
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord));
+		if(button.id < 2)
+		{
+			if(button.id == 0)
+				te.request++;
+			else if(button.id == 1)
+				te.request--;
+			te.request = (byte)MathHelper.clamp_int(te.request, 1, 64);
+		}
+		else if(button.id == 2)
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord, te.request));
 	}
 	
 	@Override
@@ -67,13 +82,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		if(button != 0 || !craftingList.mouseMovedOrUp(x, y, button))
 			super.mouseMovedOrUp(x, y, button);
 	}
-	
-	@Override
-	public void drawScreen(int x, int y, float par3) 
-	{
-		super.drawScreen(x, y, par3);
-	}
-	
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) 
 	{
@@ -83,9 +92,15 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		
 		this.mc.getTextureManager().bindTexture(backgroundTexture);
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
+
+		fontRendererObj.drawString(String.valueOf(te.request), guiLeft + 60, guiTop + 96, 0);
 		
-		fontRendererObj.drawString("Assembler", guiLeft + 30, guiTop + 12, 0x333333);
-		
+		if(te.cdata != null)
+		{
+			CircuitProperties prop = te.cdata.getProperties();
+			fontRendererObj.drawString(prop.getName() + " (" + te.size + "x" + te.size + ")", guiLeft + 30, guiTop + 12, 0x333333);
+		}
+		else fontRendererObj.drawString(EnumChatFormatting.ITALIC + "-No Circuit-", guiLeft + 30, guiTop + 12, 0x333333);
 		craftingList.drawScreen(x, y, par1);
 		GL11.glColor3f(1, 1, 1);
 	}
@@ -95,6 +110,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	{
 		if(hoverable != null)
 			drawHoveringText(hoverable.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
+		RenderHelper.enableGUIStandardItemLighting();
 	}
 
 	@Override

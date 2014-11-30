@@ -227,14 +227,19 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		super.initGui();
 	}
 	
-	public void refreshUI()
+	public void refreshIO()
 	{
-		int w = te.getCircuitData().getSize();
-		buttonSize.displayString = w + "x" + w;
 		checkN.refresh();
 		checkE.refresh();
 		checkS.refresh();
 		checkW.refresh();
+	}
+	
+	public void refreshUI()
+	{
+		int w = te.getCircuitData().getSize();
+		buttonSize.displayString = w + "x" + w;
+		refreshIO();
 		nameField.setText(te.getCircuitData().getProperties().getName());
 	}
 	

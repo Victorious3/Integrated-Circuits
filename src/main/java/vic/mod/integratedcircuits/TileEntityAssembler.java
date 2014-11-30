@@ -27,10 +27,11 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@SideOnly(Side.CLIENT)
 	public Framebuffer circuitFBO;
 	public boolean isOccupied;
+	public byte request = 1;
 	
 	public boolean[][] excMatrix;
 	public CircuitData cdata;
-	public int size;
+	public int size, queue;
 	public ItemStack[] contents = new ItemStack[13];
 	
 	public LaserHelper laserHelper = new LaserHelper(this, 9);
@@ -145,6 +146,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			comp.setTag("circuit", cdata.writeToNBT(new NBTTagCompound()));
 			comp.setInteger("size", size);
 			contents[1].setTagCompound(comp);
+			queue--;
 		}
 		markDirty();
 	}
@@ -175,6 +177,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	@Override
 	public ItemStack decrStackSize(int id, int amount) 
 	{
+		ItemStack temp = getStackInSlot(id);
 		ItemStack stack = null;
 		if(contents[id] != null)
 		{
@@ -190,6 +193,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			}
 			this.markDirty();
 		}
+		if(!ItemStack.areItemStacksEqual(temp, contents[id])) onSlotChange(id);
 		return stack;
 	}
 

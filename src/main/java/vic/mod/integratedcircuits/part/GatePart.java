@@ -45,10 +45,10 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	public byte[][] input = new byte[4][16];
 	
 	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
-    {
+	{
 		setSide(side ^ 1);
 		setRotation(Rotation.getSidedRotation(player, side));
-    }
+	}
 
 	@Override
 	public void load(NBTTagCompound tag)
@@ -144,9 +144,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	
 	@Override
     public boolean occlusionTest(TMultiPart npart)
-    {
-        return NormalOcclusionTest.apply(this, npart);
-    }
+	{
+		return NormalOcclusionTest.apply(this, npart);
+	}
 	
 	@Override
 	public int getSlotMask() 

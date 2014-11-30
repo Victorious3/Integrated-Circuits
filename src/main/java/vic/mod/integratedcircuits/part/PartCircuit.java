@@ -190,7 +190,7 @@ public class PartCircuit extends GatePart implements ICircuit
 		if(!world().isRemote)
 		{
 			for(int i = 0; i < 4; i++)
-				if(getModeAtSide(i) == CircuitProperties.ANALOG)
+				if(getModeAtSide(i) == CircuitProperties.ANALOG && hasComparatorInput(i))
 				{
 					int in = (byte)updateComparatorInput(i);
 					if(in != input[i][0]) 
@@ -201,6 +201,16 @@ public class PartCircuit extends GatePart implements ICircuit
 				}
 			circuitData.updateMatrix();
 		}
+	}
+	
+	public boolean hasComparatorInput(int side)
+	{
+		int r = getRotationAbs(side);
+		int abs = Rotation.rotateSide(getSide(), r);
+
+		BlockCoord pos = new BlockCoord(tile()).offset(abs);
+		Block b = world().getBlock(pos.x, pos.y, pos.z);
+		return b.hasComparatorInputOverride();
 	}
 
 	public int updateComparatorInput(int side)
