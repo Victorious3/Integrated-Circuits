@@ -44,7 +44,7 @@ public class IntegratedCircuitsRecipes
 					'#', Items.redstone
 		);
 		
-		GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.itemFloppyDisk),
+		GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.itemPCB),
 			"iii",
 			"iii",
 			"iii",
