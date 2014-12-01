@@ -24,7 +24,10 @@ public class CircuitData implements Cloneable
 	private CircuitPart[][] parts;
 	private LinkedHashSet<Vec2> tickSchedule;
 	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
+	
 	private CraftingAmount cost;
+	private int amount = -1;
+	
 	private ICircuit parent;
 	private boolean queueEnabled = true;
 	private CircuitProperties prop = new CircuitProperties();
@@ -353,21 +356,31 @@ public class CircuitData implements Cloneable
 		return data;
 	}
 	
+	/** Cached, recalculate with {@link #calculateCost()} **/
 	public CraftingAmount getCost()
 	{
 		if(cost == null) calculateCost();
 		return cost;
 	}
 	
+	/** Cached, recalculate with {@link #calculateCost()} **/
+	public int getPartAmount()
+	{
+		if(amount == -1) calculateCost();
+		return amount;
+	}
+	
 	public void calculateCost()
 	{
 		cost = new CraftingAmount();
+		amount = 0;
 		for(CircuitPart[] p1 : parts)
 		{
 			for(CircuitPart part : p1)
 			{
 				if(part instanceof PartNull) continue;
 				part.getCraftingCost(cost);
+				amount++;
 			}
 		}
 	}

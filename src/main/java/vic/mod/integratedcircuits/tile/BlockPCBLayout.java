@@ -28,6 +28,7 @@ public class BlockPCBLayout extends BlockContainer
 		super(Material.iron);
 		setBlockName(IntegratedCircuits.modID + ".pcblayoutcad");
 		setCreativeTab(IntegratedCircuits.creativeTab);
+		setHardness(2F);
 	}
 
 	@Override

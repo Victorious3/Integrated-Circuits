@@ -59,5 +59,6 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 		if(!te.laserHelper.isRunning)
 			te.getWorldObj().markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 		laser.setAim(x, y);
+		te.laserHelper.position++;
 	}
 }

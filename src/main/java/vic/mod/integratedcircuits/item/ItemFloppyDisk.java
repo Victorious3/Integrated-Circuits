@@ -2,21 +2,17 @@ package vic.mod.integratedcircuits.item;
 
 import java.util.List;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
-public class ItemFloppyDisk extends Item
+public class ItemFloppyDisk extends ItemBase
 {
 	public ItemFloppyDisk()
 	{
-		setCreativeTab(IntegratedCircuits.creativeTab);
-		setUnlocalizedName(IntegratedCircuits.modID + ".floppy");
-		setTextureName(IntegratedCircuits.modID + ":floppy");
+		super("floppy");
 		setMaxStackSize(1);
 	}
 	

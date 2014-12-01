@@ -33,7 +33,7 @@ public class GuiCraftingListEntry implements IGuiListEntry, IHoverable
 	public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, Tessellator tes, int mouseX, int mouseY, boolean isSelected) 
 	{
 		FontRenderer fr = parent.mc.fontRenderer;
-		if(mouseX >= x && mouseY >= y && mouseX <= x + listWidth && mouseY <= y + slotHeight)
+		if(mouseX >= x && mouseY >= y && mouseX <= x + listWidth && mouseY <= y + slotHeight && !parent.te.laserHelper.isRunning)
 			parent.setCurrentItem(this);
 		
 		GuiUtils.drawContinuousTexturedBox(buttonTextures, x + 1, y, 0, 46, listWidth - 2, slotHeight, 200, 20, 2, 3, 2, 2, 0);

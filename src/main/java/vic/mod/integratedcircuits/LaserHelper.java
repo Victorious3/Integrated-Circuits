@@ -21,11 +21,17 @@ public class LaserHelper
 	private TileEntityAssembler te;
 	public boolean isRunning;
 	public int offset;
+	public int position;
 	
 	public LaserHelper(TileEntityAssembler te, int offset)
 	{
 		this.te = te;
 		this.offset = offset;
+	}
+	
+	public int getPosition()
+	{
+		return position;
 	}
 	
 	public Laser getLaser(int id)
@@ -102,6 +108,7 @@ public class LaserHelper
 	public void reset()
 	{
 		isRunning = false;
+		position = 0;
 		for(Laser laser : lasers)
 		{
 			if(laser != null) 
@@ -236,6 +243,7 @@ public class LaserHelper
 			return f1 + dif * dif2;
 		}
 
+		//TODO There are better ways of doing this...
 		public void findNext()
 		{
 			while(isRunning)
@@ -254,6 +262,8 @@ public class LaserHelper
 				y += direction.offsetZ;
 				
 				step--;
+				te.laserHelper.position++;
+				
 				if(step <= 0)
 				{
 					turn++;

@@ -1,7 +1,16 @@
-#items
-item.integratedcircuits.floppy.name=PCB Blueprint Disk
+# items
+item.integratedcircuits.floppy.name=Circuit Blueprint Disk
 item.integratedcircuits.circuit.name=Integrated Circuit (%s)
+item.integratedcircuits.laser.name=Laser
+item.integratedcircuits.pcb.name=Printed Circuit Board
+item.integratedcircuits.silicon.name=Silicon
+item.integratedcircuits.silicon_drop.name=Silicon Drop
+item.integratedcircuits.coalcompound.name=Sandy Coal Compound
 
-#blocks
+# blocks
 tile.integratedcircuits.pcblayoutcad.name=PCB Layout CAD
 tile.integratedcircuits.assembler.name=Assembler
+
+# GUI
+gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
+gui.integratedcircuits.assembler.statuscode.3=Out of PCBs!

@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import vic.mod.integratedcircuits.item.ItemBase;
 import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
 import vic.mod.integratedcircuits.item.ItemLaser;
@@ -42,6 +43,7 @@ public class IntegratedCircuits
 {
 	public static boolean isPRLoaded = false;
 	public static boolean isAWLoaded = false;
+	public static boolean isBPLoaded = false;
 	
 	public static final String modID = "integratedcircuits";
 	public static final String partCircuit = modID + "_circuit";
@@ -50,6 +52,10 @@ public class IntegratedCircuits
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
 	public static ItemLaser itemLaser;
+	
+	public static ItemBase itemSilicon;
+	public static ItemBase itemSiliconDrop;
+	public static ItemBase itemCoalCompound;
 	
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
@@ -98,10 +104,11 @@ public class IntegratedCircuits
 		itemPCB = new ItemPCB();
 		itemLaser = new ItemLaser();
 		
+		itemSilicon = new ItemBase("silicon");
+		itemSiliconDrop = new ItemBase("silicon_drop");
+		itemCoalCompound = new ItemBase("coalcompound");
+		
 		GameRegistry.registerItem(itemCircuit, partCircuit, modID);  		
-		GameRegistry.registerItem(itemFloppyDisk, modID + "_floppy", modID);	
-		GameRegistry.registerItem(itemPCB, modID + "_pcb", modID);
-		GameRegistry.registerItem(itemLaser, modID + "_laser", modID);
 		
 		blockPCBLayout = new BlockPCBLayout();
 		blockAssembler = new BlockAssembler();
@@ -118,6 +125,8 @@ public class IntegratedCircuits
 	{
 		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
 		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
+		isBPLoaded = Loader.isModLoaded("bluepower");
+		
 		MultiPartRegistry.registerParts(new PartFactory(), new String[]{partCircuit});
 		proxy.initialize();
 	}

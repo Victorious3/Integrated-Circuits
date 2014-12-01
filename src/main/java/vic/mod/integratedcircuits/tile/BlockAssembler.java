@@ -27,6 +27,7 @@ public class BlockAssembler extends BlockContainer
 		super(Material.iron);
 		setBlockName(IntegratedCircuits.modID + ".assembler");
 		setCreativeTab(IntegratedCircuits.creativeTab);
+		setHardness(2F);
 	}
 
 	@Override

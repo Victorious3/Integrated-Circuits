@@ -26,12 +26,19 @@ public class GuiListExt<T extends IGuiListEntry> extends GuiListExtended
 	
 	public boolean mouseClicked(int x, int y, int button) 
 	{
+		if(isMouseInputLocked()) return false;
 		return super.func_148179_a(x + xCoord, y + yCoord, button);
 	}
 
 	public boolean mouseMovedOrUp(int x, int y, int button) 
 	{
+		if(isMouseInputLocked()) return false;
 		return super.func_148181_b(x + xCoord, y + yCoord, button);
+	}
+	
+	public boolean isMouseInputLocked()
+	{
+		return false;
 	}
 	
 	@Override
@@ -57,7 +64,8 @@ public class GuiListExt<T extends IGuiListEntry> extends GuiListExtended
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor((int)(xCoord * guiScale), this.mc.displayHeight - (int)(yCoord * guiScale) - height * guiScale, (int)(width * guiScale), (int)(height * guiScale));
 		GL11.glTranslatef(xCoord, yCoord, 0);
-		super.drawScreen(x - xCoord, y - yCoord, par3);
+		if(!isMouseInputLocked()) super.drawScreen(x - xCoord, y - yCoord, par3);
+		else super.drawScreen(-1, -1, par3);
 		GL11.glTranslatef(-xCoord, -yCoord, 0);
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 	}

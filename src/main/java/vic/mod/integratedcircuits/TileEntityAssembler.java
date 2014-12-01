@@ -15,6 +15,7 @@ import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
+import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -22,16 +23,23 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory
 {
-	public int[][] refMatrix;
+	//TODO change the LaserHelper so that it uses status codes
+	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
+	private static final ItemStack STACK_PCB = new ItemStack(IntegratedCircuits.itemPCB, 1);
 	
+	public int[][] refMatrix;
+	private int statusCode;
+	
+	//Client
 	@SideOnly(Side.CLIENT)
 	public Framebuffer circuitFBO;
 	public boolean isOccupied;
 	public byte request = 1;
 	
+	private byte queue, position;
 	public boolean[][] excMatrix;
 	public CircuitData cdata;
-	public int size, queue;
+	public int size;
 	public ItemStack[] contents = new ItemStack[13];
 	
 	public LaserHelper laserHelper = new LaserHelper(this, 9);
@@ -40,101 +48,113 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public void updateEntity() 
 	{
 		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.scheduleFramebuffer(this);
-		if(!worldObj.isRemote && refMatrix != null)
-			laserHelper.update();
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound compound)
-	{
-		super.readFromNBT(compound);
-		NBTTagList slotList = compound.getTagList("contents", NBT.TAG_COMPOUND);
-		for(int i = 0; i < 13; i++)
-		{
-			if(slotList.getCompoundTagAt(i).hasNoTags())
-				contents[i] = null;
-			else contents[i] = ItemStack.loadItemStackFromNBT(slotList.getCompoundTagAt(i));
-		}
+		if(worldObj.isRemote) return;
 		
-		loadMatrix(compound);
-		if(compound.hasKey("tmp"))
-		{
-			excMatrix = new boolean[size][size];
-			byte[] temp = compound.getByteArray("tmp");
-			for(int i = 0; i < temp.length; i++)
-				excMatrix[i / size][i % size] = temp[i] != 0;
-		}
-		
-		laserHelper.readFromNBT(compound);
-		
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && (getStackInSlot(1) != null || laserHelper.isRunning)) 
-		{
-			isOccupied = true;
-			TileEntityAssemblerRenderer.scheduleFramebuffer(this);
-		}
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound compound)
-	{
-		super.writeToNBT(compound);
-		NBTTagList slotList = new NBTTagList();
-		for(int i = 0; i < 13; i++)
-		{
-			slotList.appendTag(contents[i] != null ? 
-				contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
-		}
-		compound.setTag("contents", slotList);
-		
-		saveMatrix(compound);
-		if(excMatrix != null)
-		{
-			byte[] temp = new byte[size * size];
-			for(int x = 0; x < size; x++)
-				for(int y = 0; y < size; y++)
-					temp[x + y * size] = (byte)(excMatrix[x][y] ? 1 : 0);
-			compound.setByteArray("tmp", temp);
-		}
-		
-		laserHelper.writeToNBT(compound);
-	}
-	
-	private void loadMatrix(NBTTagCompound compound)
-	{
-		if(compound.hasKey("circuit"))
-		{
-			NBTTagCompound circuit = compound.getCompoundTag("circuit");
-			cdata = CircuitData.readFromNBT(circuit);
-			size = cdata.getSize();
-			
-			refMatrix = new int[size][size];
-			
-			NBTTagList idlist = circuit.getTagList("id", NBT.TAG_INT_ARRAY);
-			for(int i = 0; i < idlist.tagCount(); i++)
-				refMatrix[i] = idlist.func_150306_c(i);
-		}
-	}
-	
-	private void saveMatrix(NBTTagCompound compound)
-	{
 		if(refMatrix != null)
+			laserHelper.update();
+		
+		if(statusCode == OUT_OF_PCB && queue != 0) requestCircuitPlayload();
+	}
+	
+	public void updateStatus(int status)
+	{
+		if(statusCode != status)
 		{
-			NBTTagCompound circuit = new NBTTagCompound();
-			cdata.writeToNBT(circuit);
-			compound.setTag("circuit", circuit);
+			statusCode = status;
+			if(!worldObj.isRemote)
+				worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 1, status);
 		}
 	}
 	
-	public void loadMatrixFromDisk()
+	public int getStatus()
 	{
-		if(getDisk() != null)
+		return statusCode;
+	}
+
+	@Override
+	public boolean receiveClientEvent(int id, int par) 
+	{
+		if(id == 1)
 		{
-			ItemStack stack = getDisk();
-			NBTTagCompound comp = stack.getTagCompound();
-			if(comp != null && comp.hasKey("circuit"))
-				loadMatrix(comp);
-			else refMatrix = null;
+			if(worldObj.isRemote) statusCode = par;
+			return true;
 		}
+		else if(id == 2)
+		{
+			if(worldObj.isRemote) position = (byte)par;
+			return true;
+		}
+			
+		return super.receiveClientEvent(id, par);
+	}
+	
+	public void requestCircuit(byte amount)
+	{
+		if(queue != 0) return;
+		setQueueSize(amount);
+		if(!requestCircuitPlayload()) setQueueSize((byte)0);
+		position = 0;
+		worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 2, position);
+	}
+
+	private boolean requestCircuitPlayload()
+	{
+		if(cdata != null && laserHelper.getLaserAmount() > 0)
+		{
+			if(tryFetchItem(STACK_PCB, 1, 1) == null) 
+			{
+				updateStatus(OUT_OF_PCB);
+				return true;
+			}
+			laserHelper.reset();
+			laserHelper.start();
+			updateStatus(RUNNING);
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
+			return true;
+		}
+		return false;
+	}
+	
+	public ItemStack tryFetchItem(ItemStack stack, int from, int to)
+	{
+		for(int i = from; i <= to; i++)
+		{
+			ItemStack stack2 = getStackInSlot(i);
+			if(stack2 == null) continue; 
+			if(stack.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack, stack2))
+			{
+				if(stack2.stackSize >= stack.stackSize)
+				{
+					decrStackSize(i, stack.stackSize);
+					return stack;
+				}
+			}
+		}
+		return null;
+	}
+	
+	public void setQueueSize(byte queue)
+	{
+		this.queue = queue;
+	}
+	
+	public byte getQueueSize()
+	{
+		return queue;
+	}
+	
+	public void clearQueue()
+	{
+		laserHelper.reset();
+		position = 0;
+		queue = 0;
+		updateStatus(IDLE);
+		IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
+	}
+
+	public byte getQueuePosition()
+	{
+		return position;
 	}
 	
 	public void onCircuitFinished()
@@ -146,8 +166,15 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			comp.setTag("circuit", cdata.writeToNBT(new NBTTagCompound()));
 			comp.setInteger("size", size);
 			contents[1].setTagCompound(comp);
-			queue--;
+			worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 2, ++position);
 		}
+		if(position == queue) 
+		{
+			queue = 0;
+			updateStatus(IDLE);
+		}
+		else requestCircuitPlayload();
+		
 		markDirty();
 	}
 
@@ -276,6 +303,107 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		{
 			cdata.calculateCost();
 			((GuiAssembler)Minecraft.getMinecraft().currentScreen).refreshUI();
+		}
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound compound)
+	{
+		super.readFromNBT(compound);
+		NBTTagList slotList = compound.getTagList("contents", NBT.TAG_COMPOUND);
+		for(int i = 0; i < 13; i++)
+		{
+			if(slotList.getCompoundTagAt(i).hasNoTags())
+				contents[i] = null;
+			else contents[i] = ItemStack.loadItemStackFromNBT(slotList.getCompoundTagAt(i));
+		}
+		
+		queue = compound.getByte("queue");
+		position = compound.getByte("positon");
+		statusCode = compound.getInteger("status");
+		
+		loadMatrix(compound);
+		if(compound.hasKey("tmp"))
+		{
+			excMatrix = new boolean[size][size];
+			byte[] temp = compound.getByteArray("tmp");
+			for(int i = 0; i < temp.length; i++)
+				excMatrix[i / size][i % size] = temp[i] != 0;
+		}
+		
+		laserHelper.readFromNBT(compound);
+		
+		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && (getStackInSlot(1) != null || laserHelper.isRunning)) 
+		{
+			isOccupied = true;
+			TileEntityAssemblerRenderer.scheduleFramebuffer(this);
+		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound compound)
+	{
+		super.writeToNBT(compound);
+		NBTTagList slotList = new NBTTagList();
+		for(int i = 0; i < 13; i++)
+		{
+			slotList.appendTag(contents[i] != null ? 
+				contents[i].writeToNBT(new NBTTagCompound()) : new NBTTagCompound());
+		}
+		compound.setTag("contents", slotList);
+		
+		compound.setByte("queue", queue);
+		compound.setByte("positon", position);
+		compound.setInteger("status", statusCode);
+		
+		saveMatrix(compound);
+		if(excMatrix != null)
+		{
+			byte[] temp = new byte[size * size];
+			for(int x = 0; x < size; x++)
+				for(int y = 0; y < size; y++)
+					temp[x + y * size] = (byte)(excMatrix[x][y] ? 1 : 0);
+			compound.setByteArray("tmp", temp);
+		}
+		
+		laserHelper.writeToNBT(compound);
+	}
+	
+	private void loadMatrix(NBTTagCompound compound)
+	{
+		if(compound.hasKey("circuit"))
+		{
+			NBTTagCompound circuit = compound.getCompoundTag("circuit");
+			cdata = CircuitData.readFromNBT(circuit);
+			size = cdata.getSize();
+			
+			refMatrix = new int[size][size];
+			
+			NBTTagList idlist = circuit.getTagList("id", NBT.TAG_INT_ARRAY);
+			for(int i = 0; i < idlist.tagCount(); i++)
+				refMatrix[i] = idlist.func_150306_c(i);
+		}
+	}
+	
+	private void saveMatrix(NBTTagCompound compound)
+	{
+		if(refMatrix != null)
+		{
+			NBTTagCompound circuit = new NBTTagCompound();
+			cdata.writeToNBT(circuit);
+			compound.setTag("circuit", circuit);
+		}
+	}
+	
+	public void loadMatrixFromDisk()
+	{
+		if(getDisk() != null)
+		{
+			ItemStack stack = getDisk();
+			NBTTagCompound comp = stack.getTagCompound();
+			if(comp != null && comp.hasKey("circuit"))
+				loadMatrix(comp);
+			else refMatrix = null;
 		}
 	}
 

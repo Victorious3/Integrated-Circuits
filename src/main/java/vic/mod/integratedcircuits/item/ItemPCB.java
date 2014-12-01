@@ -2,25 +2,23 @@ package vic.mod.integratedcircuits.item;
 
 import java.util.List;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
-public class ItemPCB extends Item
+public class ItemPCB extends ItemBase
 {
 	private static IIcon icon;
 	private static IIcon icon_raw;
 	
 	public ItemPCB()
 	{
-		setUnlocalizedName(IntegratedCircuits.modID + ".pcb");
-		setCreativeTab(IntegratedCircuits.creativeTab);
+		super("pcb");
 	}
 	
 	@Override

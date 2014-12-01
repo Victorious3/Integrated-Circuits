@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits.client.gui;
 
 import net.minecraft.client.Minecraft;
+import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
 
@@ -23,14 +24,11 @@ public class GuiCraftingList extends GuiListExt<GuiCraftingListEntry>
 		entries.clear();
 		for(ItemAmount ia : amount.getCraftingAmount())
 			entries.add(new GuiCraftingListEntry(ia, parent));
-		
-		//TODO
-		/*entries.add(new GuiCraftingListEntry(new ItemAmount(Items.apple, 20), parent));
-		entries.add(new GuiCraftingListEntry(new ItemAmount(Items.bed, 20), parent));
-		entries.add(new GuiCraftingListEntry(new ItemAmount(Items.book, 5), parent));
-		entries.add(new GuiCraftingListEntry(new ItemAmount(Items.baked_potato, 20), parent));
-		entries.add(new GuiCraftingListEntry(new ItemAmount(Items.diamond_helmet, 100), parent));
-		entries.add(new GuiCraftingListEntry(new ItemAmount(Items.leather_helmet, 20), parent));
-		entries.add(new GuiCraftingListEntry(new ItemAmount(Items.blaze_rod, 30), parent));*/
+	}
+
+	@Override
+	public boolean isMouseInputLocked() 
+	{
+		return parent.te.getStatus() != TileEntityAssembler.IDLE;
 	}
 }
