@@ -25,15 +25,6 @@ public class DiskDrive
 		return box;
 	}
 	
-	/** For use inside onBlockActivated. It exists because of some strange forge quirk */
-	public static boolean canInteractWith(Vec3 hitVec, World world, int x, int y, int z)
-	{
-		hitVec = hitVec.addVector(x, y, z);
-		IDiskDrive drive = (IDiskDrive)world.getTileEntity(x, y, z);
-		AxisAlignedBB box = getDiskDriveBoundingBox(drive, x, y, z, hitVec);
-		return box == null;
-	}
-	
 	public static void dropFloppy(IDiskDrive drive, World world, int x, int y, int z)
 	{
 		if(drive.getDisk() != null) world.spawnEntityInWorld(new EntityItem(world, x, y, z, drive.getDisk()));

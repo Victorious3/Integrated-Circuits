@@ -73,6 +73,7 @@ public class MiscUtils
 	
 	public static AxisAlignedBB getRotatedInstance(AxisAlignedBB def, int rotation)
 	{
+		def = def.copy();
 		def.offset(-0.5, -0.5, -0.5);
 		switch (rotation) {
 		case 2 : def = AxisAlignedBB.getBoundingBox(def.minZ, def.minY, def.maxX * -1, def.maxZ, def.maxY, def.minX * -1);

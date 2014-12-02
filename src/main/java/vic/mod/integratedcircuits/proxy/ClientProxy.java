@@ -84,9 +84,11 @@ public class ClientProxy extends CommonProxy
 		AxisAlignedBB box = null;
 		Block block = world.getBlock(x, y, z);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		
+				
 		if(tileEntity instanceof IDiskDrive)
-			box = DiskDrive.getDiskDriveBoundingBox((IDiskDrive)tileEntity, x, y, z, event.target.hitVec);	
+			box = DiskDrive.getDiskDriveBoundingBox((IDiskDrive)tileEntity, x, y, z, event.target.hitVec);
+		if(tileEntity instanceof TileEntityAssembler && box == null)
+			box = getLaserBoundingBox((TileEntityAssembler)tileEntity, x, y, z, event.player, event.partialTicks).getLeft();
 		if(box == null) return;
 		
 		double xOff = event.player.lastTickPosX + (event.player.posX - event.player.lastTickPosX) * event.partialTicks;
