@@ -51,6 +51,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		GL11.glRotatef(-90 * te.rotation, 0, 1, 0);
 		GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glColor3f(1, 1, 1);
 		
 		if(getCurrentRenderPass() == 0)
 		{

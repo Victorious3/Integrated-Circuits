@@ -118,7 +118,7 @@ public class CommonProxy
 	
 	public Pair<AxisAlignedBB, Integer> getLaserBoundingBox(TileEntityAssembler te, int x, int y, int z, EntityPlayer player, float partialTicks)
 	{
-		if(te.getStatus() == te.RUNNING || player.isSneaking()) return new ImmutablePair(null, null);
+		if(te.getStatus() == te.RUNNING || !player.isSneaking()) return new ImmutablePair(null, null);
 		boolean holdsEmpty = player.getHeldItem() == null;
 		boolean holdsLaser = !holdsEmpty ? player.getHeldItem().getItem() == IntegratedCircuits.itemLaser : false;
 		

@@ -17,6 +17,7 @@ import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
+import vic.mod.integratedcircuits.misc.Vec2;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import cpw.mods.fml.client.config.GuiButtonExt;
@@ -26,6 +27,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/assembler.png");
 	public TileEntityAssembler te;
 	private GuiCraftingList craftingList;
+	private GuiStateLabel labelAutomaticPull;
 	private IHoverable hoverable;
 	public ContainerAssembler container;
 	
@@ -48,6 +50,13 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		this.buttonList.add(new GuiButtonExt(1, guiLeft + 33, guiTop + 95, 10, 10, "-"));
 		this.buttonList.add(new GuiButtonExt(2, guiLeft + 89, guiTop + 93, 30, 14, "Run"));
 		this.buttonList.add(new GuiButtonExt(3, guiLeft + 122, guiTop + 93, 14, 14, "x"));
+
+		labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 94, 14, 14, backgroundTexture)
+			.addState(new Vec2(176, 0), new Vec2(176, 14))
+			.addDescription("Single Pull", "Automatic Pull")
+			.setState(te.automaticPull ? 1 : 0);
+		
+		this.buttonList.add(labelAutomaticPull);
 		
 		refreshUI();
 	}
@@ -56,6 +65,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	{
 		if(te.cdata != null)
 			craftingList.setCraftingAmount(te.cdata.getCost());
+		labelAutomaticPull.setState(te.automaticPull ? 1 : 0);
 	}
 
 	@Override
@@ -69,6 +79,8 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 				te.request--;
 			te.request = (byte)MathHelper.clamp_int(te.request, 1, 64);
 		}
+		else if(button.id == 4)
+			te.changeSetting(te.SETTING_PULL, ((GuiStateLabel)button).getState());
 		else IntegratedCircuits.networkWrapper.sendToServer(
 			new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord, (byte)(te.request * (button.id == 2 ? 1 : 0))));
 	}

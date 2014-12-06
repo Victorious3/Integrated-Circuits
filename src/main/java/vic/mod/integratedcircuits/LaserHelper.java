@@ -22,7 +22,7 @@ public class LaserHelper
 	public boolean isRunning;
 	public int offset;
 	public int position;
-	
+
 	public LaserHelper(TileEntityAssembler te, int offset)
 	{
 		this.te = te;

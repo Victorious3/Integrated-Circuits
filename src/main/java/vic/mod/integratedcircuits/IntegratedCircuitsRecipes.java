@@ -60,7 +60,7 @@ public class IntegratedCircuitsRecipes
 		
 		OreDictionary.registerOre("silicon", IntegratedCircuits.itemSilicon);
 		
-		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(IntegratedCircuits.itemSiliconDrop), "silicon"));
+		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(IntegratedCircuits.itemSiliconDrop, 8), "silicon"));
 		
 		if(!(IntegratedCircuits.isPRLoaded && IntegratedCircuits.isBPLoaded))
 		{

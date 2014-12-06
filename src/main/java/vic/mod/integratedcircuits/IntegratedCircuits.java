@@ -10,6 +10,7 @@ import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.net.AbstractPacket;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
+import vic.mod.integratedcircuits.net.PacketAssemblerChangeSetting;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
@@ -71,7 +72,7 @@ public class IntegratedCircuits
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
-    {
+	{
 		Config.initialize(event.getSuggestedConfigurationFile());
 		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
 		
@@ -87,8 +88,9 @@ public class IntegratedCircuits
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
 		AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
 		AbstractPacket.registerPacket(PacketAssemblerChangeItem.class, Side.CLIENT, 11);
+		AbstractPacket.registerPacket(PacketAssemblerChangeSetting.class, null, 12);
 		
-		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 12);
+		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 13);
 		
 		creativeTab = new CreativeTabs(modID + ".ctab") 
 		{
@@ -118,7 +120,7 @@ public class IntegratedCircuits
 		
 		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
-    }
+	}
     
 	@EventHandler
 	public void init(FMLInitializationEvent event)

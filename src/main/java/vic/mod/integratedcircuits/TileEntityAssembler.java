@@ -15,6 +15,7 @@ import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
+import vic.mod.integratedcircuits.net.PacketAssemblerChangeSetting;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -25,10 +26,14 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 {
 	//TODO change the LaserHelper so that it uses status codes
 	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
+	public static final int SETTING_PULL = 0;
 	private static final ItemStack STACK_PCB = new ItemStack(IntegratedCircuits.itemPCB, 1);
 	
 	public int[][] refMatrix;
 	private int statusCode;
+	
+	//Settings
+	public boolean automaticPull;
 	
 	//Client
 	@SideOnly(Side.CLIENT)
@@ -70,6 +75,20 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		return statusCode;
 	}
+	
+	public void changeSettingPayload(int setting, int par)
+	{
+		switch(setting) {
+		case SETTING_PULL : automaticPull = par == 1; break;
+		}
+	}
+	
+	public void changeSetting(int setting, int par)
+	{
+		if(worldObj.isRemote)
+			IntegratedCircuits.networkWrapper.sendToServer(new PacketAssemblerChangeSetting(xCoord, yCoord, zCoord, setting, par));
+		else changeSettingPayload(setting, par);
+	}
 
 	@Override
 	public boolean receiveClientEvent(int id, int par) 
@@ -84,7 +103,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			if(worldObj.isRemote) position = (byte)par;
 			return true;
 		}
-			
+		
 		return super.receiveClientEvent(id, par);
 	}
 	
@@ -101,10 +120,13 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		if(cdata != null && laserHelper.getLaserAmount() > 0)
 		{
-			if(tryFetchItem(STACK_PCB, 1, 1) == null) 
+			if(tryFetchItem(STACK_PCB.copy(), 1, 1) == null) 
 			{
-				updateStatus(OUT_OF_PCB);
-				return true;
+				if(!(automaticPull && tryFetchPCB()))
+				{
+					updateStatus(OUT_OF_PCB);
+					return true;
+				}
 			}
 			laserHelper.reset();
 			laserHelper.start();
@@ -133,6 +155,47 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		return null;
 	}
 	
+	public boolean tryPutItem(ItemStack stack, int from, int to)
+	{
+		if(stack == null) return true;
+		for(int i = from; i <= to; i++)
+		{
+			ItemStack stack2 = getStackInSlot(i);
+			if(stack2 != null && stack.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack, stack2))
+			{
+				if(stack2.getMaxStackSize() >= stack2.stackSize + stack.stackSize)
+				{
+					stack2.stackSize += stack.stackSize;
+					onSlotChange(i);
+					return true;
+				}
+			}
+		}
+		for(int i = from; i <= to; i++)
+		{
+			ItemStack stack2 = getStackInSlot(i);
+			if(stack2 == null)
+			{
+				setInventorySlotContents(i, stack);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean tryFetchPCB()
+	{
+		ItemStack pcb = getStackInSlot(1);
+		if(pcb != null)
+		{
+			if(!tryPutItem(pcb, 2, 9)) return false;
+			setInventorySlotContents(1, null);
+		}
+		pcb = tryFetchItem(STACK_PCB.copy(), 2, 9);
+		if(pcb == null) return false;
+		return true;
+	}
+	
 	public void setQueueSize(byte queue)
 	{
 		this.queue = queue;
@@ -145,11 +208,14 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	
 	public void clearQueue()
 	{
-		laserHelper.reset();
+		if(getStatus() != RUNNING)
+		{
+			laserHelper.reset();
+			updateStatus(IDLE);
+			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
+		}	
 		position = 0;
 		queue = 0;
-		updateStatus(IDLE);
-		IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
 	}
 
 	public byte getQueuePosition()
@@ -168,7 +234,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			contents[1].setTagCompound(comp);
 			worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 2, ++position);
 		}
-		if(position == queue) 
+		if(position == queue || queue == 0) 
 		{
 			queue = 0;
 			updateStatus(IDLE);
@@ -321,6 +387,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		queue = compound.getByte("queue");
 		position = compound.getByte("positon");
 		statusCode = compound.getInteger("status");
+		automaticPull = compound.getBoolean("automaticPull");
 		
 		loadMatrix(compound);
 		if(compound.hasKey("tmp"))
@@ -355,6 +422,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		compound.setByte("queue", queue);
 		compound.setByte("positon", position);
 		compound.setInteger("status", statusCode);
+		compound.setBoolean("automaticPull", automaticPull);
 		
 		saveMatrix(compound);
 		if(excMatrix != null)
