@@ -13,6 +13,8 @@ import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.gui.GuiAssembler;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
+import vic.mod.integratedcircuits.misc.CraftingSupply;
+import vic.mod.integratedcircuits.misc.InventoryUtils;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeSetting;
@@ -24,7 +26,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory
 {
-	//TODO change the LaserHelper so that it uses status codes
+	//TODO Change the LaserHelper so that it uses status codes
+	//TODO Give a feedback of what items are missing 
 	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
 	public static final int SETTING_PULL = 0;
 	private static final ItemStack STACK_PCB = new ItemStack(IntegratedCircuits.itemPCB, 1);
@@ -46,6 +49,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public CircuitData cdata;
 	public int size;
 	public ItemStack[] contents = new ItemStack[13];
+	public CraftingSupply craftingSupply;
 	
 	public LaserHelper laserHelper = new LaserHelper(this, 9);
 	
@@ -120,7 +124,8 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		if(cdata != null && laserHelper.getLaserAmount() > 0)
 		{
-			if(tryFetchItem(STACK_PCB.copy(), 1, 1) == null) 
+			craftingSupply.clear();
+			if(InventoryUtils.tryFetchItem(this, STACK_PCB.copy(), 1, 1) == null) 
 			{
 				if(!(automaticPull && tryFetchPCB()))
 				{
@@ -137,61 +142,15 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		return false;
 	}
 	
-	public ItemStack tryFetchItem(ItemStack stack, int from, int to)
-	{
-		for(int i = from; i <= to; i++)
-		{
-			ItemStack stack2 = getStackInSlot(i);
-			if(stack2 == null) continue; 
-			if(stack.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack, stack2))
-			{
-				if(stack2.stackSize >= stack.stackSize)
-				{
-					decrStackSize(i, stack.stackSize);
-					return stack;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public boolean tryPutItem(ItemStack stack, int from, int to)
-	{
-		if(stack == null) return true;
-		for(int i = from; i <= to; i++)
-		{
-			ItemStack stack2 = getStackInSlot(i);
-			if(stack2 != null && stack.isItemEqual(stack2) && ItemStack.areItemStackTagsEqual(stack, stack2))
-			{
-				if(stack2.getMaxStackSize() >= stack2.stackSize + stack.stackSize)
-				{
-					stack2.stackSize += stack.stackSize;
-					onSlotChange(i);
-					return true;
-				}
-			}
-		}
-		for(int i = from; i <= to; i++)
-		{
-			ItemStack stack2 = getStackInSlot(i);
-			if(stack2 == null)
-			{
-				setInventorySlotContents(i, stack);
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	public boolean tryFetchPCB()
 	{
 		ItemStack pcb = getStackInSlot(1);
 		if(pcb != null)
 		{
-			if(!tryPutItem(pcb, 2, 9)) return false;
+			if(!InventoryUtils.tryPutItem(this, pcb, 2, 9)) return false;
 			setInventorySlotContents(1, null);
 		}
-		pcb = tryFetchItem(STACK_PCB.copy(), 2, 9);
+		pcb = InventoryUtils.tryFetchItem(this, STACK_PCB.copy(), 2, 9);
 		if(pcb == null) return false;
 		return true;
 	}
@@ -305,6 +264,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		markDirty();
 	}
 	
+	@Override
 	public void onSlotChange(int id)
 	{
 		if(worldObj.isRemote) return;
@@ -443,6 +403,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		{
 			NBTTagCompound circuit = compound.getCompoundTag("circuit");
 			cdata = CircuitData.readFromNBT(circuit);
+			craftingSupply = CraftingSupply.readFromNBT(compound, this, cdata.getCost(), 2, 9);
 			size = cdata.getSize();
 			
 			refMatrix = new int[size][size];
@@ -459,6 +420,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		{
 			NBTTagCompound circuit = new NBTTagCompound();
 			cdata.writeToNBT(circuit);
+			craftingSupply.writeToNBT(compound);
 			compound.setTag("circuit", circuit);
 		}
 	}

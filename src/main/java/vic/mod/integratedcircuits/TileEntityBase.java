@@ -71,4 +71,9 @@ public abstract class TileEntityBase extends TileEntity implements IInventory
 	{
 		return player.getDistanceSq(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5) < 64;
 	}
+	
+	public void onSlotChange(int id)
+	{
+		
+	}
 }

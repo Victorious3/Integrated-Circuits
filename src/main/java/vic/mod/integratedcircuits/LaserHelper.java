@@ -6,6 +6,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.ic.CircuitPart;
+import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
@@ -250,6 +252,12 @@ public class LaserHelper
 			{
 				if(!te.excMatrix[x][y])
 				{
+					//Check if the items needed to craft the selected part are supplied
+					CircuitPart part = te.cdata.getPart(x, y);
+					CraftingAmount amount = new CraftingAmount();
+					part.getCraftingCost(amount);
+					if(!te.craftingSupply.request(amount)) return;
+					
 					te.excMatrix[x][y] = true;
 					if(te.refMatrix[x][y] != 0)
 					{
