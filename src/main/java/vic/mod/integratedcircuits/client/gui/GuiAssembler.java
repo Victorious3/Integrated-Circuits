@@ -54,7 +54,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 94, 14, 14, backgroundTexture)
 			.addState(new Vec2(176, 0), new Vec2(176, 14))
 			.addDescription("Single Pull", "Automatic Pull")
-			.setState(te.automaticPull ? 1 : 0);
+			.setState(te.getOptionSet().getInt(te.SETTING_PULL));
 		
 		this.buttonList.add(labelAutomaticPull);
 		
@@ -65,7 +65,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	{
 		if(te.cdata != null)
 			craftingList.setCraftingAmount(te.cdata.getCost());
-		labelAutomaticPull.setState(te.automaticPull ? 1 : 0);
+		labelAutomaticPull.setState(te.getOptionSet().getInt(te.SETTING_PULL));
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 			te.request = (byte)MathHelper.clamp_int(te.request, 1, 64);
 		}
 		else if(button.id == 4)
-			te.changeSetting(te.SETTING_PULL, ((GuiStateLabel)button).getState());
+			te.getOptionSet().changeSetting(te.SETTING_PULL, ((GuiStateLabel)button).getState());
 		else IntegratedCircuits.networkWrapper.sendToServer(
 			new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord, (byte)(te.request * (button.id == 2 ? 1 : 0))));
 	}

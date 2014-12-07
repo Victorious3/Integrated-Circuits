@@ -94,4 +94,9 @@ public class CraftingSupply
 		compound.setTag("supply", list);
 		return compound;
 	}
+	
+	public ItemAmount getInsufficient()
+	{
+		return insufficient;
+	}
 }

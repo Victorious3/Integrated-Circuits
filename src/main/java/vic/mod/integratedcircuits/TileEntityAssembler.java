@@ -14,29 +14,27 @@ import vic.mod.integratedcircuits.client.gui.GuiAssembler;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.misc.CraftingSupply;
+import vic.mod.integratedcircuits.misc.IOptionsProvider;
 import vic.mod.integratedcircuits.misc.InventoryUtils;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
-import vic.mod.integratedcircuits.net.PacketAssemblerChangeSetting;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory
+public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory, IOptionsProvider
 {
 	//TODO Change the LaserHelper so that it uses status codes
 	//TODO Give a feedback of what items are missing 
 	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
 	public static final int SETTING_PULL = 0;
+	
 	private static final ItemStack STACK_PCB = new ItemStack(IntegratedCircuits.itemPCB, 1);
 	
 	public int[][] refMatrix;
 	private int statusCode;
-	
-	//Settings
-	public boolean automaticPull;
 	
 	//Client
 	@SideOnly(Side.CLIENT)
@@ -50,6 +48,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public int size;
 	public ItemStack[] contents = new ItemStack[13];
 	public CraftingSupply craftingSupply;
+	private OptionSet<TileEntityAssembler> optionSet;
 	
 	public LaserHelper laserHelper = new LaserHelper(this, 9);
 	
@@ -80,18 +79,17 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		return statusCode;
 	}
 	
-	public void changeSettingPayload(int setting, int par)
+	@Override
+	public OptionSet getOptionSet() 
 	{
-		switch(setting) {
-		case SETTING_PULL : automaticPull = par == 1; break;
-		}
+		return optionSet;
 	}
-	
-	public void changeSetting(int setting, int par)
+
+	@Override
+	public void onSettingChanged(int setting) 
 	{
-		if(worldObj.isRemote)
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketAssemblerChangeSetting(xCoord, yCoord, zCoord, setting, par));
-		else changeSettingPayload(setting, par);
+		if(worldObj.isRemote && Minecraft.getMinecraft().currentScreen instanceof GuiAssembler)
+			((GuiAssembler)Minecraft.getMinecraft().currentScreen).refreshUI();
 	}
 
 	@Override
@@ -127,7 +125,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			craftingSupply.clear();
 			if(InventoryUtils.tryFetchItem(this, STACK_PCB.copy(), 1, 1) == null) 
 			{
-				if(!(automaticPull && tryFetchPCB()))
+				if(!(optionSet.getBoolean(SETTING_PULL) && tryFetchPCB()))
 				{
 					updateStatus(OUT_OF_PCB);
 					return true;
@@ -337,6 +335,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		super.readFromNBT(compound);
 		NBTTagList slotList = compound.getTagList("contents", NBT.TAG_COMPOUND);
+		System.out.println(compound);
 		for(int i = 0; i < 13; i++)
 		{
 			if(slotList.getCompoundTagAt(i).hasNoTags())
@@ -347,7 +346,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		queue = compound.getByte("queue");
 		position = compound.getByte("positon");
 		statusCode = compound.getInteger("status");
-		automaticPull = compound.getBoolean("automaticPull");
+		optionSet = OptionSet.readFromNBT(compound, this);
 		
 		loadMatrix(compound);
 		if(compound.hasKey("tmp"))
@@ -382,7 +381,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		compound.setByte("queue", queue);
 		compound.setByte("positon", position);
 		compound.setInteger("status", statusCode);
-		compound.setBoolean("automaticPull", automaticPull);
+		optionSet.writeToNBT(compound);
 		
 		saveMatrix(compound);
 		if(excMatrix != null)

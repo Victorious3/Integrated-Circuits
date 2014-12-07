@@ -10,9 +10,9 @@ import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.net.AbstractPacket;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
-import vic.mod.integratedcircuits.net.PacketAssemblerChangeSetting;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
+import vic.mod.integratedcircuits.net.PacketChangeSetting;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
@@ -88,8 +88,8 @@ public class IntegratedCircuits
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
 		AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
 		AbstractPacket.registerPacket(PacketAssemblerChangeItem.class, Side.CLIENT, 11);
-		AbstractPacket.registerPacket(PacketAssemblerChangeSetting.class, null, 12);
 		
+		AbstractPacket.registerPacket(PacketChangeSetting.class, null, 12);
 		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 13);
 		
 		creativeTab = new CreativeTabs(modID + ".ctab") 

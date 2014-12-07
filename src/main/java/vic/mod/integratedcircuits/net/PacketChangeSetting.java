@@ -2,23 +2,21 @@ package vic.mod.integratedcircuits.net;
 
 import java.io.IOException;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.tileentity.TileEntity;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.TileEntityAssembler;
-import vic.mod.integratedcircuits.client.gui.GuiAssembler;
-import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
+import vic.mod.integratedcircuits.misc.IOptionsProvider;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketAssemblerChangeSetting extends PacketTileEntity<PacketAssemblerChangeSetting>
+public class PacketChangeSetting <T extends TileEntity & IOptionsProvider> extends PacketTileEntity
 {
 	private int setting, param;
 	
-	public PacketAssemblerChangeSetting() {}
+	public PacketChangeSetting() {}
 	
-	public PacketAssemblerChangeSetting(int xCoord, int yCoord, int zCoord, int setting, int param)
+	public PacketChangeSetting(int xCoord, int yCoord, int zCoord, int setting, int param)
 	{
 		super(xCoord, yCoord, zCoord);
 		this.setting = setting;
@@ -44,13 +42,12 @@ public class PacketAssemblerChangeSetting extends PacketTileEntity<PacketAssembl
 	@Override
 	public void process(EntityPlayer player, Side side) 
 	{
-		TileEntityAssembler te = (TileEntityAssembler)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		T te = (T) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
 		if(side == Side.SERVER)
 			IntegratedCircuits.networkWrapper.sendToAllAround(this, 
 				new TargetPoint(te.getWorldObj().provider.dimensionId, xCoord, yCoord, zCoord, 8));
-		te.changeSettingPayload(setting, param);
-		if(side == Side.CLIENT && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
-			((GuiAssembler)Minecraft.getMinecraft().currentScreen).refreshUI();	
+		te.getOptionSet().changeSettingPayload(setting, param);
+		te.onSettingChanged(setting);
 	}
 }
