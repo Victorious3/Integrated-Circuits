@@ -48,7 +48,7 @@ group = "vic.mod.integratedcircuits"
 archivesBaseName = "integratedcircuits"
 
 minecraft {
-    version = "${config.mc.version}-${config.forge.version}"
+    version = "${config.mc.version}-latest"
     runDir = "eclipse"
 }
 

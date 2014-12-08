@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits.ic.part;
 
 import net.minecraft.init.Items;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
@@ -40,5 +41,6 @@ public abstract class PartGate extends CircuitPart
 	public void getCraftingCost(CraftingAmount cost) 
 	{
 		cost.add(new ItemAmount(Items.redstone, 0.048));
+		cost.add(new ItemAmount(IntegratedCircuits.itemSiliconDrop, 0.1));
 	}
 }

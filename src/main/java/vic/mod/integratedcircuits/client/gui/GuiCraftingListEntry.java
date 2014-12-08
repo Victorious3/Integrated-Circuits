@@ -10,6 +10,9 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import org.lwjgl.input.Mouse;
+
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.misc.ItemAmount;
 import vic.mod.integratedcircuits.misc.RenderUtils;
@@ -33,7 +36,7 @@ public class GuiCraftingListEntry implements IGuiListEntry, IHoverable
 	public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, Tessellator tes, int mouseX, int mouseY, boolean isSelected) 
 	{
 		FontRenderer fr = parent.mc.fontRenderer;
-		if(mouseX >= x && mouseY >= y && mouseX <= x + listWidth && mouseY <= y + slotHeight && !parent.te.laserHelper.isRunning)
+		if(mouseX >= x && mouseY >= y && mouseX <= x + listWidth && mouseY <= y + slotHeight && !parent.te.laserHelper.isRunning && !Mouse.isButtonDown(0))
 			parent.setCurrentItem(this);
 		
 		GuiUtils.drawContinuousTexturedBox(buttonTextures, x + 1, y, 0, 46, listWidth - 2, slotHeight, 200, 20, 2, 3, 2, 2, 0);

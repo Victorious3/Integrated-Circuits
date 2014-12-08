@@ -4,7 +4,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
@@ -83,11 +82,17 @@ public class RenderUtils
 		GL11.glColor4f(red, blue, green, 1F);
 	}
 	
-	public static void resetBrightness(TileEntity te)
+	private static float lightX, lightY;
+	
+	public static void setBrightness(float lightX, float lightY)
 	{
-		int i = te.getWorldObj().getLightBrightnessForSkyBlocks(te.xCoord, te.yCoord, te.zCoord, 0);
-		int j = i % 65536;
-		int k = i / 65536;
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j, k);
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightX, lightY);
+		lightX = OpenGlHelper.lastBrightnessX;
+		lightY = OpenGlHelper.lastBrightnessY;
+	}
+	
+	public static void resetBrightness()
+	{
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightX, lightY);
 	}
 }

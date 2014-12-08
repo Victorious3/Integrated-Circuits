@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.misc;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -9,15 +10,13 @@ import cpw.mods.fml.common.registry.GameData;
 
 public class CraftingSupply 
 {
-	private CraftingAmount base;
 	private CraftingAmount cache;
 	private TileEntityBase provider;
 	private int from, to;
-	private ItemAmount insufficient;
+	private Item insufficient;
 	
-	public CraftingSupply(CraftingAmount amount, TileEntityBase provider, int from, int to)
+	public CraftingSupply(TileEntityBase provider, int from, int to)
 	{
-		this.base = amount;
 		this.cache = new CraftingAmount();
 		this.provider = provider;
 		this.from = from;
@@ -29,6 +28,7 @@ public class CraftingSupply
 		cache.getCraftingAmount().clear();
 	}
 	
+	//FIXME Screws up with multiple items missing;
 	public boolean request(CraftingAmount amount)
 	{
 		for(ItemAmount ia : amount.getCraftingAmount())
@@ -63,13 +63,13 @@ public class CraftingSupply
 			return true;
 		}
 		
-		insufficient = amount;
+		insufficient = amount.item;
 		return false;
 	}
 	
 	public static CraftingSupply readFromNBT(NBTTagCompound compound, TileEntityBase provider, CraftingAmount base, int from, int to)
 	{
-		CraftingSupply supply = new CraftingSupply(base, provider, from, to);
+		CraftingSupply supply = new CraftingSupply(provider, from, to);
 		NBTTagList list = compound.getTagList("supply", NBT.TAG_COMPOUND);
 		for(int i = 0; i < list.tagCount(); i++)
 		{
@@ -78,6 +78,7 @@ public class CraftingSupply
 			double amount = comp.getDouble("amount");
 			supply.cache.add(new ItemAmount(GameData.getItemRegistry().getRaw(id), amount));
 		}
+		supply.insufficient = GameData.getItemRegistry().getRaw(compound.getString("insufficient"));
 		return supply;
 	}
 
@@ -92,11 +93,17 @@ public class CraftingSupply
 			list.appendTag(comp);
 		}
 		compound.setTag("supply", list);
+		compound.setString("insufficient", GameData.getItemRegistry().getNameForObject(insufficient));
 		return compound;
 	}
 	
-	public ItemAmount getInsufficient()
+	public Item getInsufficient()
 	{
 		return insufficient;
+	}
+	
+	public void changeInsufficient(Item insufficient)
+	{
+		this.insufficient = insufficient;
 	}
 }

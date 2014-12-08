@@ -66,7 +66,7 @@ public class ContainerAssembler extends Container
 				@Override
 				public boolean canTakeStack(EntityPlayer player) 
 				{
-					return !tileentity.laserHelper.isRunning;
+					return tileentity.getStatus() != tileentity.RUNNING;
 				}
 			});
 		

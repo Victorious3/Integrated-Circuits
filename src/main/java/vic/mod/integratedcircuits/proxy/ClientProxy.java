@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.Framebuffer;
@@ -38,6 +37,7 @@ import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
+import vic.mod.integratedcircuits.misc.RenderUtils;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -275,7 +275,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glPushMatrix();
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glShadeModel(GL11.GL_SMOOTH);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+			RenderUtils.setBrightness(240, 240);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GL11.glColor4f(1F, 1F, 1F, 1F);
@@ -298,6 +298,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glShadeModel(GL11.GL_FLAT);
 			GL11.glDisable(GL11.GL_BLEND);
 			GL11.glPopMatrix();
+			RenderUtils.resetBrightness();
 		}
 		else if(renderType == 1)
 		{

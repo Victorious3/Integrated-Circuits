@@ -19,8 +19,10 @@ import vic.mod.integratedcircuits.misc.InventoryUtils;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
+import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -71,6 +73,11 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			statusCode = status;
 			if(!worldObj.isRemote)
 				worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 1, status);
+			if(statusCode == OUT_OF_MATERIALS)
+			{
+				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketAssemblerUpdateInsufficient(xCoord, yCoord, zCoord, craftingSupply.getInsufficient()), 
+					new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
+			}
 		}
 	}
 	
@@ -165,7 +172,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	
 	public void clearQueue()
 	{
-		if(getStatus() != RUNNING)
+		if(getStatus() != RUNNING && getStatus() != OUT_OF_MATERIALS)
 		{
 			laserHelper.reset();
 			updateStatus(IDLE);

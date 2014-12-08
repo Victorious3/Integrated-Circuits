@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -45,6 +44,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks)
 	{
+		if(getCurrentRenderPass() == 0) DiskDrive.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
+		
 		GL11.glPushMatrix();
 		GL11.glTranslated(x, y, z);
 		GL11.glTranslatef(0.5F, 0.5F, 0.5F);
@@ -134,13 +135,13 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			GL11.glTranslatef(0, 0, -0.5F);
 			GL11.glRotatef(-90, 0, 1, 0);
 
+			boolean active = laser.isActive && laser.isRunning;
 			if(getCurrentRenderPass() > 0)
 			{
-				if(laser.isActive && laser.isRunning) renderLaser(1 / 64F, -laser.iY, laser.iZ, laser.length, te, partialTicks);
+				if(active && te.getStatus() == te.RUNNING) renderLaser(1 / 64F, -laser.iY, laser.iZ, laser.length, te, partialTicks);
 			}
 			else 
 			{
-				boolean active = laser.isActive && laser.isRunning;
 				if(active) laser.iX = (float)Math.toRadians((float)ClientProxy.clientTicks * 4 + partialTicks * 4);
 				ModelLaser.instance.render(1 / 64F, -laser.iY, laser.iZ, active, laser.iX, partialTicks, te);
 			}
@@ -150,8 +151,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		GL11.glPopMatrix();
 		if(getCurrentRenderPass() == 0) addToRenderQueue(te.xCoord, te.yCoord, te.zCoord);	
 		GL11.glPopMatrix();
-		
-		if(getCurrentRenderPass() == 0) DiskDrive.renderFloppy(te, model, x, y, z, partialTicks, te.rotation);
 	}
 	
 	private Random rand = new Random();
@@ -159,7 +158,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	{
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+		RenderUtils.setBrightness(240, 240);
 		
 		GL11.glPushMatrix();
 		if(length > 0) 
@@ -186,7 +185,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			}
 			GL11.glScalef(1 / scale, 1 / scale, 1 / scale);
 		}
-		RenderUtils.resetBrightness(te);
+		RenderUtils.resetBrightness();
 		
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_LIGHTING);

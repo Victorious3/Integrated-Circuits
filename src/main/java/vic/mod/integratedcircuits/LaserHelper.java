@@ -256,7 +256,12 @@ public class LaserHelper
 					CircuitPart part = te.cdata.getPart(x, y);
 					CraftingAmount amount = new CraftingAmount();
 					part.getCraftingCost(amount);
-					if(!te.craftingSupply.request(amount)) return;
+					if(!te.craftingSupply.request(amount)) 
+					{
+						te.updateStatus(te.OUT_OF_MATERIALS);
+						return;
+					}
+					else te.updateStatus(te.RUNNING);
 					
 					te.excMatrix[x][y] = true;
 					if(te.refMatrix[x][y] != 0)

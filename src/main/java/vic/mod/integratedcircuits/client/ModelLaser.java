@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits.client;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
 
 import org.lwjgl.opengl.GL11;
 
@@ -54,7 +53,7 @@ public class ModelLaser extends ModelBase
 		head1.rotateAngleX = spin;
 		head1.render(scale);
 		
-		if(te != null) OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240, 240);
+		RenderUtils.setBrightness(240, 240);
 		
 		if(active) GL11.glColor3f(1, 0, 0);
 		else GL11.glColor3f(0.4F, 0, 0);
@@ -73,7 +72,7 @@ public class ModelLaser extends ModelBase
 		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glPopMatrix();
-		if(te != null) RenderUtils.resetBrightness(te);
+		RenderUtils.resetBrightness();
 		GL11.glColor3f(1F, 1F, 1F);
 	}
 }

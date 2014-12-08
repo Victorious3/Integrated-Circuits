@@ -3,7 +3,9 @@ package vic.mod.integratedcircuits.client.gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -30,6 +32,8 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	private GuiStateLabel labelAutomaticPull;
 	private IHoverable hoverable;
 	public ContainerAssembler container;
+	
+	public boolean showBack = false;
 	
 	public GuiAssembler(ContainerAssembler container) 
 	{
@@ -99,6 +103,8 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 			super.mouseMovedOrUp(x, y, button);
 	}
 
+	private boolean renderItemHover;
+	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) 
 	{
@@ -107,7 +113,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		hoverable = null;
 		
 		this.mc.getTextureManager().bindTexture(backgroundTexture);
-		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
+		drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 
 		drawRect(guiLeft + 46, guiTop + 94, guiLeft + 68, guiTop + 106, 0xFFA0A0A0);
 		drawRect(guiLeft + 47, guiTop + 95, guiLeft + 67, guiTop + 105, 0xFF000000);
@@ -122,40 +128,69 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		
 		craftingList.drawScreen(x, y, par1);
 		
+		if(te.getStatus() != te.RUNNING)
+			showBack = x > guiLeft + 128 && y > guiTop + 26 && x <= guiLeft + 140 && y <= guiTop + 38;
+		renderItemHover = false;
+			
 		//When the assembler is running, progress bar
 		if(te.getStatus() != te.IDLE)
 		{
-			float progress = te.laserHelper.getPosition() / (float)te.cdata.getPartAmount();
-			float total = te.getQueuePosition() / (float)te.getQueueSize();
-			int i2 = MathHelper.clamp_int((int)(progress * 100), 0, 100);
-			int i3 = MathHelper.clamp_int((int)(total * 100), 0, 100);
-			
-			drawRect(guiLeft + 29, guiTop + 26, guiLeft + 139, guiTop + 88, 0xBB000000);
-			int i1 = ClientProxy.clientTicks % 30 / 10 + 1;
-			
-			if(te.getStatus() != te.RUNNING) 
+			if(!showBack)
 			{
-				i1 = 3;
-				i2 = 0;
+				float progress = te.laserHelper.getPosition() / (float)te.cdata.getPartAmount();
+				float total = te.getQueuePosition() / (float)te.getQueueSize();
+				int i2 = MathHelper.clamp_int((int)(progress * 100), 0, 100);
+				int i3 = MathHelper.clamp_int((int)(total * 100), 0, 100);
+				
+				drawRect(guiLeft + 29, guiTop + 26, guiLeft + 139, guiTop + 88, 0xEE000000);
+				int i1 = ClientProxy.clientTicks % 30 / 10 + 1;
+				
+				if(te.getStatus() == te.IDLE) 
+				{
+					i1 = 3;
+					i2 = 0;
+				}
+				
+				fontRendererObj.drawString("Processing" + StringUtils.repeat('.', i1), guiLeft + 52, guiTop + 32, 0xFFFFFF);
+				drawRect(guiLeft + 33, guiTop + 49, guiLeft + 135, guiTop + 71, 0xFF000000);
+				
+				drawRect(guiLeft + 34, guiTop + 50, guiLeft + 134, guiTop + 65, 0xFF515151);
+				drawRect(guiLeft + 34, guiTop + 50, guiLeft + 34 + i2, guiTop + 65, 0xFF535C92);
+				drawCenteredString(fontRendererObj, i2 + "%", guiLeft + 84, guiTop + 54, 0xFFFFFF);
+				
+				drawRect(guiLeft + 34, guiTop + 66, guiLeft + 134, guiTop + 70, 0xFF515151);
+				drawRect(guiLeft + 34, guiTop + 66, guiLeft + 34 + i3, guiTop + 70, 0xFF535C92);
 			}
 			
-			fontRendererObj.drawString("Processing" + StringUtils.repeat('.', i1), guiLeft + 52, guiTop + 32, 0xFFFFFF);
-			drawRect(guiLeft + 33, guiTop + 49, guiLeft + 135, guiTop + 71, 0xFF000000);
-			
-			drawRect(guiLeft + 34, guiTop + 50, guiLeft + 134, guiTop + 65, 0xFF515151);
-			drawRect(guiLeft + 34, guiTop + 50, guiLeft + 34 + i2, guiTop + 65, 0xFF535C92);
-			drawCenteredString(fontRendererObj, i2 + "%", guiLeft + 84, guiTop + 54, 0xFFFFFF);
-			
-			drawRect(guiLeft + 34, guiTop + 66, guiLeft + 134, guiTop + 70, 0xFF515151);
-			drawRect(guiLeft + 34, guiTop + 66, guiLeft + 34 + i3, guiTop + 70, 0xFF535C92);
-
 			if(te.getStatus() != te.RUNNING)
 			{
-				int color = (int)((Math.sin((ClientProxy.clientTicks + par1) * 0.5) * 0.2 + 0.2) * 255 + 153);
-				drawCenteredString(fontRendererObj, I18n.format("gui.integratedcircuits.assembler.statuscode." + te.getStatus()), guiLeft + 84, guiTop + 76, color << 16);
+				if(!showBack)
+				{
+					int color = (int)((Math.sin((ClientProxy.clientTicks + par1) * 0.5) * 0.2 + 0.2) * 255 + 153);
+					int i4 = 84;
+					String status = I18n.format("gui.integratedcircuits.assembler.statuscode." + te.getStatus());
+					if(te.getStatus() == te.OUT_OF_MATERIALS)
+					{
+						i4 -= 6;
+						int i5 = i4 + fontRendererObj.getStringWidth(status) / 2;
+						RenderHelper.enableStandardItemLighting();
+						GL11.glColor3f(color / 255F, color / 255F, color / 255F);
+						RenderItem.getInstance().renderWithColor = false;
+						RenderItem.getInstance().renderItemIntoGUI(fontRendererObj, mc.renderEngine, new ItemStack(te.craftingSupply.getInsufficient()), guiLeft + i5, guiTop + 71, true);
+						RenderItem.getInstance().renderWithColor = true;
+						GL11.glColor3f(1, 1, 1);
+						RenderHelper.disableStandardItemLighting();
+						renderItemHover = x > guiLeft + i5 && y > guiTop + 71 && x <= guiLeft + 16 + i5 && y <= guiTop + 71 + 16;
+					}
+					drawCenteredString(fontRendererObj, status, guiLeft + i4, guiTop + 76, color << 16);
+				}
+				this.mc.getTextureManager().bindTexture(backgroundTexture);
+				if(showBack) GL11.glColor3f(0.8F, 0.9F, 1F);
+				else GL11.glColor3f(1, 1, 1);
+				drawTexturedModalRect(guiLeft + 128, guiTop + 26, 190, 0, 12, 12);
+				fontRendererObj.drawString("?", guiLeft + 131, guiTop + 28, 0x333333);
 			}
 		}
-
 		GL11.glColor3f(1, 1, 1);
 	}
 
@@ -164,6 +199,8 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	{
 		if(hoverable != null)
 			drawHoveringText(hoverable.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
+		if(renderItemHover)
+			drawCreativeTabHoveringText(new ItemStack(te.craftingSupply.getInsufficient()).getDisplayName(), x - guiLeft, y - guiTop);
 		RenderHelper.enableGUIStandardItemLighting();
 	}
 

@@ -29,6 +29,6 @@ public class GuiCraftingList extends GuiListExt<GuiCraftingListEntry>
 	@Override
 	public boolean isMouseInputLocked() 
 	{
-		return parent.te.getStatus() != TileEntityAssembler.IDLE;
+		return parent.te.getStatus() != TileEntityAssembler.IDLE && !parent.showBack;
 	}
 }
