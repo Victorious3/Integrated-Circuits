@@ -1,5 +1,7 @@
 package vic.mod.integratedcircuits.misc;
 
+import java.util.Arrays;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import vic.mod.integratedcircuits.IntegratedCircuits;
@@ -41,7 +43,9 @@ public interface IOptionsProvider
 		
 		private void resize(int setting)
 		{
-			if(options == null || (options != null && setting >= options.length)) options = new int[setting + 1];
+			if(options == null) options = new int[setting + 1];
+			else if(options != null && setting >= options.length) 
+				options = Arrays.copyOf(options, setting + 1);
 		}
 		
 		public int getInt(int setting)
