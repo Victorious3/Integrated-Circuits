@@ -43,9 +43,11 @@ configFile.withReader {
 
 apply plugin: 'forge'
 
-version = "${config.mc.version}-${config.mod.version}"
-group = "vic.mod.integratedcircuits"
-archivesBaseName = "integratedcircuits"
+version = "${config.mc.version}-${config.mod.version}"                             //Vic
+group = "vic.mod.integratedcircuits"                                               //Is
+archivesBaseName = "integratedcircuits"                                            //Too
+                                                                                   //Fucking
+if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER" //Lazy
 
 minecraft {
     version = "${config.mc.version}-latest"
