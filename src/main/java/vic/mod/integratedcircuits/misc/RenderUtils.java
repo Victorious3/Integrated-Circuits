@@ -86,8 +86,8 @@ public class RenderUtils
 	
 	public static void setBrightness(float lightX, float lightY)
 	{
-		lightX = OpenGlHelper.lastBrightnessX;
-		lightY = OpenGlHelper.lastBrightnessY;
+		RenderUtils.lightX = OpenGlHelper.lastBrightnessX;
+		RenderUtils.lightY = OpenGlHelper.lastBrightnessY;
 		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, lightX, lightY);
 	}
 	

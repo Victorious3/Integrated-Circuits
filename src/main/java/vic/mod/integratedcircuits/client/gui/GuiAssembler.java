@@ -5,7 +5,6 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -176,7 +175,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 						RenderHelper.enableStandardItemLighting();
 						GL11.glColor3f(color / 255F, color / 255F, color / 255F);
 						RenderItem.getInstance().renderWithColor = false;
-						RenderItem.getInstance().renderItemIntoGUI(fontRendererObj, mc.renderEngine, new ItemStack(te.craftingSupply.getInsufficient()), guiLeft + i5, guiTop + 71, true);
+						RenderItem.getInstance().renderItemIntoGUI(fontRendererObj, mc.renderEngine, te.craftingSupply.getInsufficient().convertToItemStack(1), guiLeft + i5, guiTop + 71, true);
 						RenderItem.getInstance().renderWithColor = true;
 						GL11.glColor3f(1, 1, 1);
 						RenderHelper.disableStandardItemLighting();
@@ -200,7 +199,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		if(hoverable != null)
 			drawHoveringText(hoverable.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
 		if(renderItemHover)
-			drawCreativeTabHoveringText(new ItemStack(te.craftingSupply.getInsufficient()).getDisplayName(), x - guiLeft, y - guiTop);
+			drawCreativeTabHoveringText(te.craftingSupply.getInsufficient().convertToItemStack().getDisplayName(), x - guiLeft, y - guiTop);
 		RenderHelper.enableGUIStandardItemLighting();
 	}
 

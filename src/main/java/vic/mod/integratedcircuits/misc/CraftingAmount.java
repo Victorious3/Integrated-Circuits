@@ -2,8 +2,6 @@ package vic.mod.integratedcircuits.misc;
 
 import java.util.ArrayList;
 
-import net.minecraft.item.Item;
-
 public class CraftingAmount implements Cloneable
 {
 	private ArrayList<ItemAmount> items = new ArrayList<ItemAmount>();
@@ -26,21 +24,17 @@ public class CraftingAmount implements Cloneable
 		return items;
 	}
 	
-	public boolean contains(Item item)
+	public boolean contains(ItemAmount amount)
 	{
 		for(ItemAmount a : items)
-		{
-			if(a.item == item) return true;
-		}
+			if(a.hasEqualItem(amount)) return true;
 		return false;
 	}
 	
-	public ItemAmount get(Item item)
+	public ItemAmount get(ItemAmount amount)
 	{
 		for(ItemAmount a : items)
-		{
-			if(a.item == item) return a;
-		}
+			if(a.hasEqualItem(amount)) return a;
 		return null;
 	}
 }

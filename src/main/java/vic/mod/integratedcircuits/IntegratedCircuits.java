@@ -130,7 +130,7 @@ public class IntegratedCircuits
 		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
 		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
 		isBPLoaded = Loader.isModLoaded("bluepower");
-		
+
 		MultiPartRegistry.registerParts(new PartFactory(), new String[]{partCircuit});
 		proxy.initialize();
 	}

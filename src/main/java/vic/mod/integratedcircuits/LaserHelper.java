@@ -8,12 +8,15 @@ import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
+import vic.mod.integratedcircuits.misc.ItemAmount;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
+import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -245,7 +248,6 @@ public class LaserHelper
 			return f1 + dif * dif2;
 		}
 
-		//TODO There are better ways of doing this...
 		public void findNext()
 		{
 			while(isRunning)
@@ -256,9 +258,14 @@ public class LaserHelper
 					CircuitPart part = te.cdata.getPart(x, y);
 					CraftingAmount amount = new CraftingAmount();
 					part.getCraftingCost(amount);
+					ItemAmount insufficient = te.craftingSupply.getInsufficient();
 					if(!te.craftingSupply.request(amount)) 
 					{
 						te.updateStatus(te.OUT_OF_MATERIALS);
+						ItemAmount insufficient2 = te.craftingSupply.getInsufficient();
+						if(insufficient == null || !insufficient.hasEqualItem(insufficient2))
+							IntegratedCircuits.networkWrapper.sendToAllAround(new PacketAssemblerUpdateInsufficient(te.xCoord, te.yCoord, te.zCoord, te.craftingSupply.getInsufficient()), 
+								new TargetPoint(te.getWorldObj().provider.dimensionId, te.xCoord, te.yCoord, te.zCoord, 8));
 						return;
 					}
 					else te.updateStatus(te.RUNNING);

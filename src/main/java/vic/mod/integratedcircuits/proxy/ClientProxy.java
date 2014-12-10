@@ -115,10 +115,10 @@ public class ClientProxy extends CommonProxy
 	@SubscribeEvent
 	public void onWorldUnload(WorldEvent.Unload event)
 	{
-		for(Framebuffer buf : TileEntityAssemblerRenderer.fboArray)
-		{
-			buf.deleteFramebuffer();
-		}
+		try {
+			for(Framebuffer buf : TileEntityAssemblerRenderer.fboArray)
+				buf.deleteFramebuffer();
+		} catch (RuntimeException e) {}
 		TileEntityAssemblerRenderer.fboArray.clear();
 	}
 	
@@ -260,13 +260,16 @@ public class ClientProxy extends CommonProxy
 		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
 		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
 		float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * event.partialRenderTick;
+		float pitchZ = (float)Math.toDegrees(event.renderer.modelBipedMain.bipedHead.rotateAngleZ);
 		
 		GL11.glPushMatrix();
 		
 		GL11.glColor3f(1F, 1F, 1F);
+		GL11.glRotatef(pitchZ, 0, 0, 1);
 		GL11.glRotatef(yawOffset, 0, -1, 0);
 		GL11.glRotatef(yaw - 270, 0, 1, 0);
-		GL11.glRotatef(pitch, 0, 0, 1);	
+		GL11.glRotatef(pitch, 0, 0, 1);
+		
 		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
 		
 		if(renderType == 2)

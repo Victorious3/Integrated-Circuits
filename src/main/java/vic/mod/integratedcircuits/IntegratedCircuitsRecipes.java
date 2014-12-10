@@ -52,9 +52,9 @@ public class IntegratedCircuitsRecipes
 		);
 
 		//Oredict
-		Item bpSilicon = GameData.getItemRegistry().getObject("bluepower:item.silicon_wafer");
+		Item bpSilicon = GameData.getItemRegistry().getObject("bluepower:silicon_wafer");
 		if(bpSilicon != null) OreDictionary.registerOre("silicon", bpSilicon);
-			
+		
 		Item prSilicon = GameData.getItemRegistry().getObject("ProjRed|Core:projectred.core.part");
 		if(prSilicon != null) OreDictionary.registerOre("silicon", new ItemStack(prSilicon, 1, 12));
 		
@@ -62,7 +62,7 @@ public class IntegratedCircuitsRecipes
 		
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(IntegratedCircuits.itemSiliconDrop, 8), "silicon"));
 		
-		if(!(IntegratedCircuits.isPRLoaded && IntegratedCircuits.isBPLoaded))
+		if(!(IntegratedCircuits.isPRLoaded || IntegratedCircuits.isBPLoaded))
 		{
 			GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.itemCoalCompound),
 				"###",

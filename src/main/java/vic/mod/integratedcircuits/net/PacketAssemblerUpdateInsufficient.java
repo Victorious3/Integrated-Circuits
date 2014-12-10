@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.misc.ItemAmount;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.relauncher.Side;
@@ -16,10 +17,10 @@ public class PacketAssemblerUpdateInsufficient extends PacketTileEntity<PacketAs
 	
 	public PacketAssemblerUpdateInsufficient() {}
 	
-	public PacketAssemblerUpdateInsufficient(int xCoord, int yCoord, int zCoord, Item insufficient)
+	public PacketAssemblerUpdateInsufficient(int xCoord, int yCoord, int zCoord, ItemAmount insufficient)
 	{
 		super(xCoord, yCoord, zCoord);
-		this.insufficient = insufficient;
+		this.insufficient = insufficient.item;
 	}
 	
 	@Override
@@ -30,7 +31,7 @@ public class PacketAssemblerUpdateInsufficient extends PacketTileEntity<PacketAs
 	}
 
 	@Override
-	public void write(PacketBuffer buffer) throws IOException 
+	public void write(PacketBuffer buffer) throws IOException
 	{
 		super.write(buffer);
 		ByteBufUtils.writeUTF8String(buffer, GameData.getItemRegistry().getNameForObject(insufficient));
@@ -41,6 +42,6 @@ public class PacketAssemblerUpdateInsufficient extends PacketTileEntity<PacketAs
 	{
 		TileEntityAssembler te = (TileEntityAssembler)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
-		te.craftingSupply.changeInsufficient(insufficient);
+		te.craftingSupply.changeInsufficient(new ItemAmount(insufficient, 1));
 	}
 }

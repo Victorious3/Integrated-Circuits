@@ -1,19 +1,17 @@
 package vic.mod.integratedcircuits.misc;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.TileEntityBase;
-import cpw.mods.fml.common.registry.GameData;
 
 public class CraftingSupply 
 {
 	private CraftingAmount cache;
 	private TileEntityBase provider;
 	private int from, to;
-	private Item insufficient;
+	private ItemAmount insufficient;
 	
 	public CraftingSupply(TileEntityBase provider, int from, int to)
 	{
@@ -28,9 +26,11 @@ public class CraftingSupply
 		cache.getCraftingAmount().clear();
 	}
 	
-	//FIXME Screws up with multiple items missing;
 	public boolean request(CraftingAmount amount)
 	{
+		if(insufficient != null && !amount.contains(insufficient))
+			return false;
+		insufficient = null;
 		for(ItemAmount ia : amount.getCraftingAmount())
 			if(!isSupplied(ia)) return false;
 		for(ItemAmount ia : amount.getCraftingAmount())
@@ -40,16 +40,16 @@ public class CraftingSupply
 	
 	public void consume(ItemAmount amount)
 	{
-		ItemAmount cached = cache.get(amount.item);
+		ItemAmount cached = cache.get(amount);
 		cached.amount -= amount.amount;
 	}
 	
 	public boolean isSupplied(ItemAmount amount)
 	{
 		ItemAmount cached = null;
-		if(cache.contains(amount.item))
+		if(cache.contains(amount))
 		{
-			cached = cache.get(amount.item);
+			cached = cache.get(amount);
 			if(amount.amount <= cached.amount) return true;
 		}
 		
@@ -63,7 +63,7 @@ public class CraftingSupply
 			return true;
 		}
 		
-		insufficient = amount.item;
+		insufficient = amount;
 		return false;
 	}
 	
@@ -74,11 +74,10 @@ public class CraftingSupply
 		for(int i = 0; i < list.tagCount(); i++)
 		{
 			NBTTagCompound comp = list.getCompoundTagAt(i);
-			String id = comp.getString("id");
-			double amount = comp.getDouble("amount");
-			supply.cache.add(new ItemAmount(GameData.getItemRegistry().getRaw(id), amount));
+			supply.cache.add(ItemAmount.readFromNBT(comp));
 		}
-		supply.insufficient = GameData.getItemRegistry().getRaw(compound.getString("insufficient"));
+		if(compound.hasKey("insufficient"))
+			supply.insufficient = ItemAmount.readFromNBT(compound.getCompoundTag("insufficient"));
 		return supply;
 	}
 
@@ -88,21 +87,20 @@ public class CraftingSupply
 		for(ItemAmount amount : cache.getCraftingAmount())
 		{
 			NBTTagCompound comp = new NBTTagCompound();
-			comp.setString("id", GameData.getItemRegistry().getNameForObject(amount.item));
-			comp.setDouble("amount", amount.amount);
-			list.appendTag(comp);
+			list.appendTag(amount.writeToNBT(comp));
 		}
 		compound.setTag("supply", list);
-		compound.setString("insufficient", GameData.getItemRegistry().getNameForObject(insufficient));
+		if(insufficient != null)
+			compound.setTag("insufficient", insufficient.writeToNBT(new NBTTagCompound()));
 		return compound;
 	}
 	
-	public Item getInsufficient()
+	public ItemAmount getInsufficient()
 	{
 		return insufficient;
 	}
 	
-	public void changeInsufficient(Item insufficient)
+	public void changeInsufficient(ItemAmount insufficient)
 	{
 		this.insufficient = insufficient;
 	}

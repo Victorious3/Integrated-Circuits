@@ -14,3 +14,6 @@ tile.integratedcircuits.assembler.name=Assembler
 # GUI
 gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
 gui.integratedcircuits.assembler.statuscode.3=Out of PCBs!
+
+# misc
+itemGroup.integratedcircuits.ctab=Integrated Circuits
