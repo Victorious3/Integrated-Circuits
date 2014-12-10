@@ -49,7 +49,7 @@ public class PacketAssemblerStart extends PacketTileEntity<PacketAssemblerStart>
 			te.laserHelper.isRunning = true;
 			te.getWorldObj().markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 			te.excMatrix = new boolean[te.size][te.size];
-			te.isOccupied = true;
+			if(amount > 0) te.isOccupied = true;
 			te.setQueueSize(amount);
 		}
 	}

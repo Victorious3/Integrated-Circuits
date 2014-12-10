@@ -140,7 +140,7 @@ public class ContainerAssembler extends Container
 			}
 			else if(id >= 13)
 			{
-				if(!mergeItemStack(stack, 2, 8, false)) return null;
+				if(!mergeItemStack(stack, 2, 9, false)) return null;
 			}
 			
 			if(stack.stackSize == 0)

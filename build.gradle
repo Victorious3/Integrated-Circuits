@@ -67,6 +67,7 @@ dependencies {
     }
 
     compile "com.bluepowermod:BluePower:${config.bluepower.version}:deobf"
+    compile "com.mod-buildcraft:buildcraft:6.2.4:api"
     compile name: "redlogic", version: "${config.redlogic.version}", ext: "jar"
     compile name: "immibis-core", version: "${config.imc.version}", ext: "jar"
 }

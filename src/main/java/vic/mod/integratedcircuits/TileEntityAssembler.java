@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.gui.GuiAssembler;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
@@ -20,16 +21,24 @@ import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
+import buildcraft.api.tiles.IControllable;
+import buildcraft.api.tiles.IHasWork;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory, IOptionsProvider
+@InterfaceList({
+	@Interface(iface = "buildcraft.api.tiles.IControllable", modid = "BuildCraft|Core"),
+	@Interface(iface = "buildcraft.api.tiles.IHasWork", modid = "BuildCraft|Core")
+})
+public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory, IOptionsProvider, IHasWork, IControllable
 {
-	//TODO Change the LaserHelper so that it uses status codes
-	//TODO Give a feedback of what items are missing 
+	//TODO Output a redstone signal when a circuit was finished
 	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
-	public static final int SETTING_PULL = 0;
+	public static final int SETTING_PULL = 0, SETTING_REDSTONE = 1;
+	public static final int RS_ENABLED = 0, RS_INVERTED = 1, RS_DISABLED = 2;
 	
 	private static final ItemStack STACK_PCB = new ItemStack(IntegratedCircuits.itemPCB, 1);
 	
@@ -43,14 +52,17 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	public byte request = 1;
 	
 	private byte queue, position;
+	public int size;
+	private int power = -1;
+	private boolean powerOverride;
+	
 	public boolean[][] excMatrix;
 	public CircuitData cdata;
-	public int size;
+	public LaserHelper laserHelper = new LaserHelper(this, 9);
+	
 	public ItemStack[] contents = new ItemStack[13];
 	public CraftingSupply craftingSupply;
-	private OptionSet<TileEntityAssembler> optionSet;
-	
-	public LaserHelper laserHelper = new LaserHelper(this, 9);
+	private OptionSet<TileEntityAssembler> optionSet = new OptionSet<TileEntityAssembler>(this);
 	
 	@Override
 	public void updateEntity() 
@@ -58,12 +70,49 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.scheduleFramebuffer(this);
 		if(worldObj.isRemote) return;
 		
+		if(power == -1) onNeighborBlockChange();
+		
 		if(refMatrix != null)
 			laserHelper.update();
 		
 		if(statusCode == OUT_OF_PCB && queue != 0) requestCircuitPlayload();
+		else if(statusCode == IDLE && getOptionSet().getBoolean(SETTING_PULL))
+		{
+			if(isPowered() || powerOverride)
+			{
+				ItemStack stack = tryFetchPCB();
+				if(stack != null) setInventorySlotContents(1, stack);
+				requestCircuit((byte)1);
+			}
+		}
 	}
 	
+	private boolean isPowered()
+	{
+		int rs = getOptionSet().getInt(SETTING_REDSTONE);
+		return (rs == RS_ENABLED && power > 0) || (rs == RS_INVERTED && power == 0);
+	}
+
+	public void onNeighborBlockChange()
+	{
+		int nPower = worldObj.getBlockPowerInput(xCoord, yCoord, zCoord);
+		if(nPower != power)
+		{
+			boolean o = power > 0, n = nPower > 0;
+			int rsmode = getOptionSet().getInt(SETTING_REDSTONE);
+			if(o != n && ((n && rsmode == RS_ENABLED) || (!n && rsmode == RS_INVERTED)))
+			{
+				if(getStatus() == IDLE) 
+				{
+					ItemStack stack = tryFetchPCB();
+					if(stack != null) setInventorySlotContents(1, stack);
+					requestCircuit((byte)1);
+				}
+			}
+			power = nPower;
+		}
+	}
+
 	public void updateStatus(int status)
 	{
 		if(statusCode != status)
@@ -125,7 +174,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			craftingSupply.clear();
 			if(InventoryUtils.tryFetchItem(this, STACK_PCB.copy(), 1, 1) == null) 
 			{
-				if(!(optionSet.getBoolean(SETTING_PULL) && tryFetchPCB()))
+				if(!(optionSet.getBoolean(SETTING_PULL) && tryFetchPCB() != null))
 				{
 					updateStatus(OUT_OF_PCB);
 					return true;
@@ -140,17 +189,18 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		return false;
 	}
 	
-	public boolean tryFetchPCB()
+	/** Clears the PCB slot and returns an empty PCB if one was found **/
+	public ItemStack tryFetchPCB()
 	{
 		ItemStack pcb = getStackInSlot(1);
 		if(pcb != null)
 		{
-			if(!InventoryUtils.tryPutItem(this, pcb, 2, 9)) return false;
+			if(STACK_PCB.isItemEqual(pcb)) return pcb;
+			if(!InventoryUtils.tryPutItem(this, pcb, 2, 9)) return null;
 			setInventorySlotContents(1, null);
 		}
 		pcb = InventoryUtils.tryFetchItem(this, STACK_PCB.copy(), 2, 9);
-		if(pcb == null) return false;
-		return true;
+		return pcb;
 	}
 	
 	public void setQueueSize(byte queue)
@@ -165,14 +215,14 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	
 	public void clearQueue()
 	{
+		position = 0;
+		queue = 0;
 		if(getStatus() != RUNNING && getStatus() != OUT_OF_MATERIALS)
 		{
 			laserHelper.reset();
 			updateStatus(IDLE);
 			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
-		}	
-		position = 0;
-		queue = 0;
+		}
 	}
 
 	public byte getQueuePosition()
@@ -290,12 +340,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int id, ItemStack stack) 
-	{
-		return false;
-	}
-
-	@Override
 	public AxisAlignedBB getBoundingBox() 
 	{
 		return MiscUtils.getRotatedInstance(AxisAlignedBB.getBoundingBox(1 / 16F, 1 / 16F, -1 / 16F, 13 / 16F, 3 / 16F, 1 / 16F), rotation);
@@ -342,6 +386,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			else contents[i] = ItemStack.loadItemStackFromNBT(slotList.getCompoundTagAt(i));
 		}
 		
+		powerOverride = compound.getBoolean("powerOverride");
 		queue = compound.getByte("queue");
 		position = compound.getByte("positon");
 		statusCode = compound.getInteger("status");
@@ -377,6 +422,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		}
 		compound.setTag("contents", slotList);
 		
+		compound.setBoolean("powerOverride", powerOverride);
 		compound.setByte("queue", queue);
 		compound.setByte("positon", position);
 		compound.setInteger("status", statusCode);
@@ -435,24 +481,78 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		}
 	}
 
+	private static final int[] accessibleSlots = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+	
 	@Override
 	public int[] getAccessibleSlotsFromSide(int side) 
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if(getConnectionOnSide(side) > -1) return accessibleSlots;
+		return new int[0];
+	}
+	
+	private int getConnectionOnSide(int side)
+	{
+		ForgeDirection dir = ForgeDirection.getOrientation(side);
+		if(dir == ForgeDirection.UP) return -1;
+		else if(dir == ForgeDirection.DOWN) return 0;
+		dir = MiscUtils.rotn(ForgeDirection.getOrientation(side), -rotation);
+		if(dir == ForgeDirection.SOUTH) return 1;
+		else if(dir != ForgeDirection.NORTH) return 0;
+		return -1;
 	}
 
 	@Override
+	public boolean isItemValidForSlot(int id, ItemStack stack) 
+	{
+		if(id < 1 || id > 9) return false;
+		if(id == 1 && getStackInSlot(1) == null && STACK_PCB.isItemEqual(stack)) return true;
+		return id != 1;
+	}
+	
+	@Override
 	public boolean canInsertItem(int slot, ItemStack stack, int side) 
 	{
-		// TODO Auto-generated method stub
-		return false;
+		int con = getConnectionOnSide(side);
+		return con == 0;
 	}
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack stack, int side) 
 	{
-		// TODO Auto-generated method stub
+		int con = getConnectionOnSide(side);
+		boolean isPCB = stack.getItem() == IntegratedCircuits.itemPCB && stack.getItemDamage() == 1;
+		if(con == 0) return slot != 1 && !isPCB;
+		else if(con == 1) return isPCB;
 		return false;
+	}
+
+	@Override
+	public Mode getControlMode() 
+	{
+		if(powerOverride || isPowered()) return Mode.On;
+		return Mode.Off;
+	}
+
+	@Override
+	public void setControlMode(Mode mode) 
+	{
+		if(mode == Mode.On) 
+		{
+			powerOverride = true;
+			getOptionSet().changeSetting(SETTING_PULL, true);
+		}
+		else if(mode == Mode.Off) powerOverride = false;
+	}
+
+	@Override
+	public boolean acceptsControlMode(Mode mode) 
+	{
+		return mode == Mode.Off || mode == Mode.On;
+	}
+
+	@Override
+	public boolean hasWork() 
+	{
+		return getStatus() != IDLE;
 	}
 }

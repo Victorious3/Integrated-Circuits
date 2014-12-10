@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.tile;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -95,6 +96,13 @@ public class BlockAssembler extends BlockContainer
 		bottom = ir.registerIcon(IntegratedCircuits.modID + ":assembler_bottom");
 		top = ir.registerIcon(IntegratedCircuits.modID + ":assembler_top");
 		side = ir.registerIcon(IntegratedCircuits.modID + ":assembler_side");
+	}
+	
+	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) 
+	{
+		TileEntityAssembler te = (TileEntityAssembler)world.getTileEntity(x, y, z);
+		te.onNeighborBlockChange();
 	}
 
 	@Override

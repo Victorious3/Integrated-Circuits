@@ -28,7 +28,10 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/assembler.png");
 	public TileEntityAssembler te;
 	private GuiCraftingList craftingList;
+	
 	private GuiStateLabel labelAutomaticPull;
+	private GuiStateLabel labelRedstoneMode;
+	
 	private IHoverable hoverable;
 	public ContainerAssembler container;
 	
@@ -54,12 +57,15 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		this.buttonList.add(new GuiButtonExt(2, guiLeft + 89, guiTop + 93, 30, 14, "Run"));
 		this.buttonList.add(new GuiButtonExt(3, guiLeft + 122, guiTop + 93, 14, 14, "x"));
 
-		labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 94, 14, 14, backgroundTexture)
+		this.buttonList.add(labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 47, 14, 14, backgroundTexture)
 			.addState(new Vec2(176, 0), new Vec2(176, 14))
 			.addDescription("Single Pull", "Automatic Pull")
-			.setState(te.getOptionSet().getInt(te.SETTING_PULL));
+			.setState(te.getOptionSet().getInt(te.SETTING_PULL)));
 		
-		this.buttonList.add(labelAutomaticPull);
+		this.buttonList.add(labelRedstoneMode = new GuiStateLabel(this, 5, guiLeft + 9, guiTop + 29, 14, 14, backgroundTexture)
+			.addState(new Vec2(176, 28), new Vec2(176, 42), new Vec2(176, 56))
+			.addDescription("Redstone enabled", "Redstone inverted", "Redstone disabled")
+			.setState(te.getOptionSet().getInt(te.SETTING_REDSTONE)));
 		
 		refreshUI();
 	}
@@ -69,6 +75,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		if(te.cdata != null)
 			craftingList.setCraftingAmount(te.cdata.getCost());
 		labelAutomaticPull.setState(te.getOptionSet().getInt(te.SETTING_PULL));
+		labelRedstoneMode.setState(te.getOptionSet().getInt(te.SETTING_REDSTONE));
 	}
 
 	@Override
@@ -84,6 +91,8 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		}
 		else if(button.id == 4)
 			te.getOptionSet().changeSetting(te.SETTING_PULL, ((GuiStateLabel)button).getState());
+		else if(button.id == 5)
+			te.getOptionSet().changeSetting(te.SETTING_REDSTONE, ((GuiStateLabel)button).getState());
 		else IntegratedCircuits.networkWrapper.sendToServer(
 			new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord, (byte)(te.request * (button.id == 2 ? 1 : 0))));
 	}
