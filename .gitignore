@@ -2,7 +2,8 @@
 /*/
 !.gitignore
 !build.gradle
+!gradle.properties
+!README.md
 !/src/
 !/libs/
-!/build.properties
-!README.md
+

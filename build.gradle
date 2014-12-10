@@ -31,45 +31,35 @@ repositories {
     }
 }
 
-// Read properties file
-ext.configFile = file "build.properties"
-
-configFile.withReader {
-    // Load config.  It shall from now be referenced as simply config or project.config
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
-
 apply plugin: 'forge'
 
-version = "${config.mc.version}-${config.mod.version}"                             //Vic
-group = "vic.mod.integratedcircuits"                                               //Is
-archivesBaseName = "integratedcircuits"                                            //Too
-                                                                                   //Fucking
-if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER" //Lazy
+version = "${mcVersion}-${modVersion}"
+group = "vic.mod.integratedcircuits"
+archivesBaseName = "integratedcircuits"
+
+if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER"
 
 minecraft {
-    version = "${config.mc.version}-latest"
+    version = "${mcVersion}-latest"
     runDir = "eclipse"
 }
 
 dependencies {
-    compile "codechicken:CodeChickenLib:${config.mc.version}-${config.ccl.version}:dev"
-    compile "codechicken:CodeChickenCore:${config.mc.version}-${config.ccc.version}:dev"
-    compile "codechicken:ForgeMultipart:${config.mc.version}-${config.fmp.version}:dev"
-    compile "codechicken:NotEnoughItems:${config.mc.version}-${config.nei.version}:dev"
+    compile "codechicken:CodeChickenLib:${mcVersion}-${cclVersion}:dev"
+    compile "codechicken:CodeChickenCore:${mcVersion}-${cccVersion}:dev"
+    compile "codechicken:ForgeMultipart:${mcVersion}-${fmpVersion}:dev"
+    compile "codechicken:NotEnoughItems:${mcVersion}-${neiVersion}:dev"
 
-    compile("mrtjp:ProjectRed:${config.mc.version}-${config.projectred.version}:dev") {
+    compile("mrtjp:ProjectRed:${mcVersion}-${projectredVersion}:dev") {
         exclude group: "cofh"
         exclude group: "thermalexpansion"
         exclude group: "tconstruct"
     }
 
-    compile "com.bluepowermod:BluePower:${config.bluepower.version}:deobf"
-    compile "com.mod-buildcraft:buildcraft:6.2.4:api"
-    compile name: "redlogic", version: "${config.redlogic.version}", ext: "jar"
-    compile name: "immibis-core", version: "${config.imc.version}", ext: "jar"
+    compile "com.bluepowermod:BluePower:${bluepowerVersion}:deobf"
+    compile "com.mod-buildcraft:buildcraft:${buildcraftVersion}:api"
+    compile name: "redlogic", version: "${redlogicVersion}", ext: "jar"
+    compile name: "immibis-core", version: "${mcVersion}", ext: "jar"
 }
 
 processResources {
