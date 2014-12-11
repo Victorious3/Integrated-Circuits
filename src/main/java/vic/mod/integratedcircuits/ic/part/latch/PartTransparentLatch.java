@@ -4,7 +4,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.part.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
-public class PartTranspartentLatch extends PartGate
+public class PartTransparentLatch extends PartGate
 {
 	@Override
 	public void onInputChange(ForgeDirection side) 

@@ -17,7 +17,7 @@ public abstract class Config
 		config = new Configuration(file);
 		config.load();
 		
-		showConfirmMessage = config.get("showConfirmMessage", "GENERAL", true, "Show the CAD's confirm promt.");
+		showConfirmMessage = config.get("GENERAL", "showConfirmMessage", true, "Show the CAD's confirm promt.");
 		
 		config.save();
 	}

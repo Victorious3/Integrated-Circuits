@@ -45,4 +45,10 @@ public class PartWire extends CircuitPart
 	{
 		cost.add(new ItemAmount(Items.redstone, 0.05));
 	}
+
+	@Override
+	public String getName() 
+	{
+		return super.getName() + "." + getColor();
+	}
 }

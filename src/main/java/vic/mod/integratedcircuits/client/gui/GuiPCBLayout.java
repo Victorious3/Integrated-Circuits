@@ -11,6 +11,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -41,7 +42,7 @@ import vic.mod.integratedcircuits.ic.part.cell.PartInvertCell;
 import vic.mod.integratedcircuits.ic.part.cell.PartNullCell;
 import vic.mod.integratedcircuits.ic.part.latch.PartRSLatch;
 import vic.mod.integratedcircuits.ic.part.latch.PartToggleLatch;
-import vic.mod.integratedcircuits.ic.part.latch.PartTranspartentLatch;
+import vic.mod.integratedcircuits.ic.part.latch.PartTransparentLatch;
 import vic.mod.integratedcircuits.ic.part.logic.PartANDGate;
 import vic.mod.integratedcircuits.ic.part.logic.PartBufferGate;
 import vic.mod.integratedcircuits.ic.part.logic.PartNANDGate;
@@ -108,17 +109,14 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.te = container.tileentity;
 		
 		callbackDelete = new GuiCallback(this, 150, 100, Action.OK, Action.CANCEL);
-		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage.getBoolean(), "Show this message?", callbackDelete);
+		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage.getBoolean(), I18n.format("gui.integratedcircuits.cad.callback.show"), callbackDelete);
 		callbackDelete
-			.addControl(new GuiLabel(37, 7, "Are you sure?", 0x333333))
-			.addControl(new GuiLabel(10, 25, 
-				"This will revert all of\n" + 
-				"your progress and\n" + 
-				"clear the current circuit.", 0))
-			.addControl(new GuiLabel(28, 63, "Continue anyways?", 0x333333))
+			.addControl(new GuiLabel(75, 7, I18n.format("gui.integratedcircuits.cad.callback.confirm"), 0x333333, true))
+			.addControl(new GuiLabel(75, 25, I18n.format("gui.integratedcircuits.cad.callback.message").replaceAll("\\\\n", "\n"), 0, true))
+			.addControl(new GuiLabel(75, 63, I18n.format("gui.integratedcircuits.cad.callback.continue"), 0x333333, true))
 			.addControl(checkboxDelete);
-		
-		labelTimed = new GuiLabel(17, 9, "", 0);
+
+		labelTimed = new GuiLabel(80, 9, "", 0, true);
 		callbackTimed = new GuiCallback(this, 160, 50)
 			.addControl(new GuiButtonExt(1, 5, 25, 36, 20, "-1s"))
 			.addControl(new GuiButtonExt(2, 43, 25, 36, 20, "-50ms"))
@@ -199,7 +197,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, CircuitPartRenderer.createEncapsulated(PartToggleLatch.class),
 			new ArrayList<CircuitPart>(Arrays.asList(
 			CircuitPartRenderer.createEncapsulated(PartRSLatch.class),
-			CircuitPartRenderer.createEncapsulated(PartTranspartentLatch.class))), this));
+			CircuitPartRenderer.createEncapsulated(PartTransparentLatch.class))), this));
 		
 		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, CircuitPartRenderer.createEncapsulated(PartANDGate.class),
 			new ArrayList<CircuitPart>(Arrays.asList(
@@ -294,7 +292,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			}
 			delay = delay < 2 ? 2 : delay > 255 ? 255 : delay;
 			conf.setConfigurableDelay(delay);
-			labelTimed.setText(String.format("Current delay: %s ticks", conf.getConfigurableDelay()));
+			labelTimed.setText(I18n.format("gui.integratedcitcuits.cad.callback.delay", conf.getConfigurableDelay()));
 			IntegratedCircuits.networkWrapper.sendToServer(
 				new PacketPCBChangePart(new int[]{timedPart.getX(), timedPart.getY(), CircuitPart.getId(timedPart), timedPart.getState()}, -1, false, false, te.xCoord, te.yCoord, te.zCoord));
 		}
@@ -346,7 +344,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		te.offX = te.offX > mx ? mx : te.offX < ix ? ix : te.offX;
 		te.offY = te.offY > my ? my : te.offY < iy ? iy : te.offY;
 
-		fontRendererObj.drawString("PCB Layout CAD", guiLeft + 8, guiTop + 12, 0x333333);
+		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0x333333);
 		
 		GL11.glPushMatrix();
 		GL11.glTranslated(guiLeft, guiTop, 0);
@@ -506,7 +504,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
 				{
 					ArrayList<String> text = new ArrayList<String>();
-					text.add(part.getName());
+					text.add(part.getLocalizedName());
 					if(part instanceof PartGate) 
 					{
 						int rotation = ((PartGate)part).getRotation();
@@ -515,7 +513,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							rotation == 1 ? ForgeDirection.EAST :
 							rotation == 2 ? ForgeDirection.SOUTH :
 							ForgeDirection.WEST;
-						text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + rot.toString());
+						text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + MiscUtils.getLocalizedDirection(rot));
 					}
 					text.addAll(part.getInformation());
 					drawHoveringText(text, x - guiLeft, y - guiTop, this.fontRendererObj);

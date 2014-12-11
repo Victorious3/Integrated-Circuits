@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 
@@ -57,7 +58,9 @@ public class GuiIOMode extends GuiButton implements IHoverable
 	public List<String> getHoverInformation() 
 	{
 		ArrayList<String> text = new ArrayList<String>();
-		text.add(mode == CircuitProperties.BUNDLED ? "bundled" : mode == CircuitProperties.ANALOG ? "analog" : "simple");
+		String s = "gui.integratedcircuits.cad.mode.";
+		s += mode == CircuitProperties.BUNDLED ? "bundled" : mode == CircuitProperties.ANALOG ? "analog" : "simple";
+		text.add(I18n.format(s));
 		return text;
 	}
 }

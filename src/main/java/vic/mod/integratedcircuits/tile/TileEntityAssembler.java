@@ -86,7 +86,6 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		{
 			if((isPowered() || powerOverride) && output < 0)
 			{
-				System.out.println("Output: " + output);
 				ItemStack stack = tryFetchPCB();
 				if(stack != null) setInventorySlotContents(1, stack);
 				requestCircuit((byte)1);

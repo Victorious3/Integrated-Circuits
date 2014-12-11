@@ -22,7 +22,7 @@ import vic.mod.integratedcircuits.ic.part.cell.PartInvertCell;
 import vic.mod.integratedcircuits.ic.part.cell.PartNullCell;
 import vic.mod.integratedcircuits.ic.part.latch.PartRSLatch;
 import vic.mod.integratedcircuits.ic.part.latch.PartToggleLatch;
-import vic.mod.integratedcircuits.ic.part.latch.PartTranspartentLatch;
+import vic.mod.integratedcircuits.ic.part.latch.PartTransparentLatch;
 import vic.mod.integratedcircuits.ic.part.logic.PartANDGate;
 import vic.mod.integratedcircuits.ic.part.logic.PartBufferGate;
 import vic.mod.integratedcircuits.ic.part.logic.PartNANDGate;
@@ -394,7 +394,7 @@ public class CircuitPartRenderer
 		
 		else if(gate instanceof PartRSLatch) addQuad(x, y, 7 * 16, 16, 16, 16, gate.getRotation());
 		else if(gate instanceof PartToggleLatch) addQuad(x, y, 8 * 16, 16, 16, 16, gate.getRotation());
-		else if(gate instanceof PartTranspartentLatch) addQuad(x, y, 9 * 16, 16, 16, 16, gate.getRotation());
+		else if(gate instanceof PartTransparentLatch) addQuad(x, y, 9 * 16, 16, 16, 16, gate.getRotation());
 		
 		else if(gate instanceof PartRepeater) addQuad(x, y, 16, 16, 16, 16, gate.getRotation());
 		else if(gate instanceof PartPulseFormer) addQuad(x, y, 6 * 16, 16, 16, 16, gate.getRotation());

@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -99,8 +100,8 @@ public class GuiIO extends GuiButton implements IHoverable
 		else text.add("F: 0x" + Integer.toHexString(color));
 		if(isActive)
 		{
-			text.add("I: " + (te.getInputFromSide(dir, color) ? "HIGH" : "LOW"));
-			text.add("O: " + (te.getOutputToSide(dir, color) ? "HIGH" : "LOW"));
+			text.add("I: " + I18n.format("gui.integratedcircuits.cad.mode." + (te.getInputFromSide(dir, color) ? "high" : "low")));
+			text.add("O: " + I18n.format("gui.integratedcircuits.cad.mode." + (te.getOutputToSide(dir, color) ? "high" : "low")));
 		}
 		return text;
 	}

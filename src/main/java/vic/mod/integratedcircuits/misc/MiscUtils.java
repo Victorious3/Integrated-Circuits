@@ -6,6 +6,7 @@ import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
 import static net.minecraftforge.common.util.ForgeDirection.WEST;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.AxisAlignedBB;
@@ -54,6 +55,11 @@ public class MiscUtils
 	public static ForgeDirection rot(ForgeDirection fd)
 	{
 		return rotn(fd, 1);
+	}
+	
+	public static String getLocalizedDirection(ForgeDirection fd)
+	{
+		return I18n.format("fdirection." + fd.name().toLowerCase() + ".name");
 	}
 	
 	/** Borrowed from BetterStorage **/

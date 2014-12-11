@@ -11,9 +11,79 @@ item.integratedcircuits.coalcompound.name=Sandy Coal Compound
 tile.integratedcircuits.pcblayoutcad.name=PCB Layout CAD
 tile.integratedcircuits.assembler.name=Assembler
 
+# parts
+part.integratedcircuits.iobit.name=IOBit
+part.integratedcircuits.torch.name=Torch
+part.integratedcircuits.wire.0.name=Wire
+part.integratedcircuits.wire.1.name=Red Wire
+part.integratedcircuits.wire.2.name=Orange Wire
+
+part.integratedcircuits.nullcell.name=Null Cell
+part.integratedcircuits.buffercell.name=Buffer Cell
+part.integratedcircuits.invertcell.name=Invert Cell
+part.integratedcircuits.andcell.name=AND Cell
+
+part.integratedcircuits.andgate.name=AND Gate
+part.integratedcircuits.orgate.name=OR Gate
+part.integratedcircuits.xorgate.name=XOR Gate
+part.integratedcircuits.buffergate.name=Buffer Gate
+part.integratedcircuits.nandgate.name=NAND Gate
+part.integratedcircuits.norgate.name=NOR Gate
+part.integratedcircuits.xnorgate.name=XNOR Gate
+part.integratedcircuits.notgate.name=NOT Gate
+
+part.integratedcircuits.togglelatch.name=Toggle Latch
+part.integratedcircuits.rslatch.name=RS Latch
+part.integratedcircuits.transparentlatch.name=Transparent Latch
+
+part.integratedcircuits.timer.name=Timer
+part.integratedcircuits.sequencer.name=Sequencer
+part.integratedcircuits.synchronizer.name=Synchronizer
+part.integratedcircuits.statecell.name=State Cell
+part.integratedcircuits.pulseformer.name=Pulse Former
+part.integratedcircuits.randomizer.name=Randomizer
+part.integratedcircuits.repeater.name=Repeater
+part.integratedcircuits.multiplexer.name=Multiplexer
+
 # GUI
+gui.integratedcircuits.callback.ok=OK
+gui.integratedcircuits.callback.cancel=Cancel
+gui.integratedcircuits.callback.yes=Yes
+gui.integratedcircuits.callback.no=No
+
+gui.integratedcircuits.cad.name=PCB Layout CAD
+gui.integratedcircuits.cad.edit=Edit
+gui.integratedcircuits.cad.erase=Erase
+
+gui.integratedcircuits.cad.mode.simple=simple
+gui.integratedcircuits.cad.mode.bundled=bundled
+gui.integratedcircuits.cad.mode.analog=analog
+gui.integratedcircuits.cad.mode.low=LOW
+gui.integratedcircuits.cad.mode.high=HIGH
+
+gui.integratedcircuits.cad.callback.show=Show this message?
+gui.integratedcircuits.cad.callback.confirm=Are you sure?
+gui.integratedcircuits.cad.callback.continue=Continue anyways?
+gui.integratedcircuits.cad.callback.message=This will revert all of\nyour progress and\nclear the current circuit.
+gui.integratedcitcuits.cad.callback.delay=Current delay: %s ticks
+
 gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
 gui.integratedcircuits.assembler.statuscode.3=Out of PCBs!
 
+gui.integratedcircuits.assembler.nocircuit=-No circuit-
+gui.integratedcircuits.assembler.redstone.enabled=Redstone enabled
+gui.integratedcircuits.assembler.redstone.inverted=Redstone inverted
+gui.integratedcircuits.assembler.redstone.disabled=Redstone disabled
+gui.integratedcircuits.assembler.pull.single=Single Pull
+gui.integratedcircuits.assembler.pull.auto=Automatic Pull
+gui.integratedcircuits.assembler.run=Run
+
 # misc
 itemGroup.integratedcircuits.ctab=Integrated Circuits
+
+fdirection.north.name=NORTH
+fdirection.east.name=EAST
+fdirection.south.name=SOUTH
+fdirection.west.name=WEST
+fdirection.up.name=UP
+fdirection.down.name=DOWN

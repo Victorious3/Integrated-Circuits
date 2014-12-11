@@ -54,17 +54,22 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		
 		this.buttonList.add(new GuiButtonExt(0, guiLeft + 71, guiTop + 95, 10, 10, "+"));
 		this.buttonList.add(new GuiButtonExt(1, guiLeft + 33, guiTop + 95, 10, 10, "-"));
-		this.buttonList.add(new GuiButtonExt(2, guiLeft + 89, guiTop + 93, 30, 14, "Run"));
+		this.buttonList.add(new GuiButtonExt(2, guiLeft + 89, guiTop + 93, 30, 14, I18n.format("gui.integratedcircuits.assembler.run")));
 		this.buttonList.add(new GuiButtonExt(3, guiLeft + 122, guiTop + 93, 14, 14, "x"));
 
 		this.buttonList.add(labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 47, 14, 14, backgroundTexture)
 			.addState(new Vec2(176, 0), new Vec2(176, 14))
-			.addDescription("Single Pull", "Automatic Pull")
+			.addDescription(
+				I18n.format("gui.integratedcircuits.assembler.pull.single"), 
+				I18n.format("gui.integratedcircuits.assembler.pull.auto"))
 			.setState(te.getOptionSet().getInt(te.SETTING_PULL)));
 		
 		this.buttonList.add(labelRedstoneMode = new GuiStateLabel(this, 5, guiLeft + 9, guiTop + 29, 14, 14, backgroundTexture)
 			.addState(new Vec2(176, 28), new Vec2(176, 42), new Vec2(176, 56))
-			.addDescription("Redstone enabled", "Redstone inverted", "Redstone disabled")
+			.addDescription(
+				I18n.format("gui.integratedcircuits.assembler.redstone.enabled"), 
+				I18n.format("gui.integratedcircuits.assembler.redstone.inverted"), 
+				I18n.format("gui.integratedcircuits.assembler.redstone.disabled"))
 			.setState(te.getOptionSet().getInt(te.SETTING_REDSTONE)));
 		
 		refreshUI();
@@ -132,7 +137,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 			CircuitProperties prop = te.cdata.getProperties();
 			fontRendererObj.drawString(prop.getName() + " (" + te.size + "x" + te.size + ")", guiLeft + 30, guiTop + 12, 0x333333);
 		}
-		else fontRendererObj.drawString(EnumChatFormatting.ITALIC + "-No Circuit-", guiLeft + 30, guiTop + 12, 0x333333);
+		else fontRendererObj.drawString(EnumChatFormatting.ITALIC + I18n.format("gui.integratedcircuits.assembler.nocircuit"), guiLeft + 30, guiTop + 12, 0x333333);
 		
 		craftingList.drawScreen(x, y, par1);
 		
@@ -153,7 +158,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 				drawRect(guiLeft + 29, guiTop + 26, guiLeft + 139, guiTop + 88, 0xEE000000);
 				int i1 = ClientProxy.clientTicks % 30 / 10 + 1;
 				
-				if(te.getStatus() == te.IDLE) 
+				if(te.getStatus() == te.IDLE || te.getStatus() == te.OUT_OF_PCB) 
 				{
 					i1 = 3;
 					i2 = 0;

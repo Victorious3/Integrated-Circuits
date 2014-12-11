@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
@@ -152,9 +153,9 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 	public List<String> getHoverInformation() 
 	{
 		ArrayList<String> text = new ArrayList<String>();
-		if(current != null) text.add(current.getName());
-		else if(mode == 1) text.add("Edit");
-		else if(mode == 2) text.add("Erase");
+		if(current != null) text.add(current.getLocalizedName());
+		else if(mode == 1) text.add(I18n.format("gui.integratedcircuits.cad.edit"));
+		else if(mode == 2) text.add(I18n.format("gui.integratedcircuits.cad.erase"));
 		return text;
 	}
 }

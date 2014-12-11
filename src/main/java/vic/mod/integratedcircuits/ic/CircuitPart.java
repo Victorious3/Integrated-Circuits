@@ -3,7 +3,9 @@ package vic.mod.integratedcircuits.ic;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.part.PartIOBit;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.part.PartNull;
@@ -16,7 +18,7 @@ import vic.mod.integratedcircuits.ic.part.cell.PartInvertCell;
 import vic.mod.integratedcircuits.ic.part.cell.PartNullCell;
 import vic.mod.integratedcircuits.ic.part.latch.PartRSLatch;
 import vic.mod.integratedcircuits.ic.part.latch.PartToggleLatch;
-import vic.mod.integratedcircuits.ic.part.latch.PartTranspartentLatch;
+import vic.mod.integratedcircuits.ic.part.latch.PartTransparentLatch;
 import vic.mod.integratedcircuits.ic.part.logic.PartANDGate;
 import vic.mod.integratedcircuits.ic.part.logic.PartBufferGate;
 import vic.mod.integratedcircuits.ic.part.logic.PartNANDGate;
@@ -58,7 +60,7 @@ public abstract class CircuitPart implements Cloneable
 		registerPart(15, new PartPulseFormer());
 		registerPart(16, new PartRSLatch());
 		registerPart(17, new PartToggleLatch());
-		registerPart(18, new PartTranspartentLatch());
+		registerPart(18, new PartTransparentLatch());
 		registerPart(19, new PartXORGate());
 		registerPart(20, new PartXNORGate());
 		registerPart(21, new PartSynchronizer());
@@ -157,7 +159,12 @@ public abstract class CircuitPart implements Cloneable
 	
 	public String getName()
 	{
-		return getClass().getSimpleName().substring(4);
+		return getClass().getSimpleName().substring(4).toLowerCase();
+	}
+	
+	public String getLocalizedName()
+	{
+		return I18n.format("part." + IntegratedCircuits.modID + "." + getName() + ".name");
 	}
 	
 	public ArrayList<String> getInformation() 

@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Keyboard;
@@ -55,17 +56,12 @@ public class GuiCallback<E extends GuiScreen & IGuiCallback> extends GuiScreen i
 
 	public static enum Action
 	{
-		YES("Yes"), NO("No"), OK("OK"), CANCEL("Cancel"), CUSTOM("CUSTOM");
+		YES, NO, OK, CANCEL, CUSTOM;
 		
-		private String name;
-		private Action(String name)
-		{
-			this.name = name;
-		}
 		@Override
 		public String toString() 
 		{
-			return name;
+			return I18n.format("gui.integratedcircuits.callback." + name().toLowerCase());
 		}
 	}
 	
@@ -108,13 +104,14 @@ public class GuiCallback<E extends GuiScreen & IGuiCallback> extends GuiScreen i
 	@Override
 	public void drawScreen(int x, int y, float par3) 
 	{
-		parent.drawScreen(-1, -1, par3);
+		parent.drawScreen(Integer.MAX_VALUE / 2, Integer.MAX_VALUE / 2, par3);
 		GL11.glDisable(GL11.GL_LIGHTING);
+		this.zLevel = 500;
 		super.drawDefaultBackground();
 		
 		xOff = width / 2 - guiWidth / 2;
 		yOff = height / 2 - guiHeight / 2;		
-		GL11.glTranslatef(xOff, yOff, 0);
+		GL11.glTranslatef(xOff, yOff, 510);
 		
 		drawRect(3, 3, guiWidth - 3, guiHeight - 3, 0xFFC6C6C6);
 		drawRect(4, 0, guiWidth - 4, 1, 0xFF000000);
@@ -140,7 +137,7 @@ public class GuiCallback<E extends GuiScreen & IGuiCallback> extends GuiScreen i
 		if(hoveredElement != null) 
 			drawHoveringText(hoveredElement.getHoverInformation(), x - xOff, y - yOff, this.fontRendererObj);
 			
-		GL11.glTranslatef(-xOff, -yOff, 0);
+		GL11.glTranslatef(-xOff, -yOff, -510);
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 	

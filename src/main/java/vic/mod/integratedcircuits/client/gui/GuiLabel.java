@@ -12,6 +12,7 @@ public class GuiLabel extends Gui
 	private int size = 6;
 	private boolean shadow;
 	private int color;
+	private boolean centered;
 	
 	public GuiLabel(int x, int y, String text)
 	{
@@ -20,10 +21,16 @@ public class GuiLabel extends Gui
 	
 	public GuiLabel(int x, int y, String text, int color) 
 	{
+		this(x, y, text, color, false);
+	}
+	
+	public GuiLabel(int x, int y, String text, int color, boolean centered) 
+	{
 		this.text = text;
 		this.color = color;
 		this.xCoord = x;
 		this.yCoord = y;
+		this.centered = centered;
 	}
 	
 	public void drawLabel(Minecraft mc, int x, int y)
@@ -33,8 +40,10 @@ public class GuiLabel extends Gui
 		String[] list = text.split("\n");
 		for(int i = 0; i < list.length; i++)
 		{
-			if(shadow) mc.fontRenderer.drawStringWithShadow(list[i], xCoord, yCoord + i * (size + 3), color);
-			else mc.fontRenderer.drawString(list[i], xCoord, yCoord + i * (size + 3), color);
+			int width = mc.fontRenderer.getStringWidth(list[i]);
+			int xOff = centered ? width / 2 : 0;
+			if(shadow) mc.fontRenderer.drawStringWithShadow(list[i], xCoord - xOff, yCoord + i * (size + 3), color);
+			else mc.fontRenderer.drawString(list[i], xCoord - xOff, yCoord + i * (size + 3), color);
 		}
 		GL11.glScalef(1 / scale, 1 / scale, 1);
 	}
@@ -54,6 +63,12 @@ public class GuiLabel extends Gui
 	public GuiLabel setTextColor(int color)
 	{
 		this.color = color;
+		return this;
+	}
+	
+	public GuiLabel setCentered(boolean centered)
+	{
+		this.centered = centered;
 		return this;
 	}
 	
