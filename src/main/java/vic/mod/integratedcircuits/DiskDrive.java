@@ -82,4 +82,13 @@ public class DiskDrive
 			floppy.setRotationPoint(8, 8, 8);
 		}
 	}
+	
+	public interface IDiskDrive 
+	{
+		public AxisAlignedBB getBoundingBox();
+		
+		public ItemStack getDisk();
+		
+		public void setDisk(ItemStack stack);
+	}
 }

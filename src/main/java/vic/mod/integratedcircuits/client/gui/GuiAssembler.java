@@ -14,13 +14,13 @@ import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.ContainerAssembler;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.misc.Vec2;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiAssembler extends GuiContainer implements IHoverableHandler

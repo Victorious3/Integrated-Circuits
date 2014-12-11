@@ -1,9 +1,11 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.tile;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;

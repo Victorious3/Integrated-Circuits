@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.tile;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.shader.Framebuffer;
@@ -10,6 +10,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.gui.GuiAssembler;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;

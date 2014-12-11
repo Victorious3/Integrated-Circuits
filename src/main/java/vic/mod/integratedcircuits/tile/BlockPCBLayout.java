@@ -12,9 +12,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.DiskDrive;
-import vic.mod.integratedcircuits.IDiskDrive;
+import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

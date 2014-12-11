@@ -15,6 +15,7 @@ import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;

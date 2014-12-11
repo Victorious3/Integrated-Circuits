@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 

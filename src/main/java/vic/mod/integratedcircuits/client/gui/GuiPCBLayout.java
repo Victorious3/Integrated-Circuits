@@ -22,7 +22,6 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.Config;
 import vic.mod.integratedcircuits.ContainerPCBLayout;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiCallback.Action;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
@@ -64,6 +63,7 @@ import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
+import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverableHandler

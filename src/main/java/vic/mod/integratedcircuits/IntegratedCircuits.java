@@ -26,6 +26,8 @@ import vic.mod.integratedcircuits.part.PartFactory;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
 import vic.mod.integratedcircuits.tile.BlockPCBLayout;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
+import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import codechicken.multipart.MultiPartRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;

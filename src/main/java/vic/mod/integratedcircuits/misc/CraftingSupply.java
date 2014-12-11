@@ -4,7 +4,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
-import vic.mod.integratedcircuits.TileEntityBase;
+import vic.mod.integratedcircuits.tile.TileEntityBase;
 
 public class CraftingSupply 
 {

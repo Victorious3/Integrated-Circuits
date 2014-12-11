@@ -12,11 +12,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.TileEntityPCBLayout;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.RenderUtils;
+import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 
 public class GuiIO extends GuiButton implements IHoverable
 {

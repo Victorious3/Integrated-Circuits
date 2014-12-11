@@ -1,7 +1,7 @@
 package vic.mod.integratedcircuits.misc;
 
 import net.minecraft.item.ItemStack;
-import vic.mod.integratedcircuits.TileEntityBase;
+import vic.mod.integratedcircuits.tile.TileEntityBase;
 
 public class InventoryUtils 
 {

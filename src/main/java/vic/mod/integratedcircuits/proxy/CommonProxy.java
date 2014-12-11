@@ -14,13 +14,13 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import vic.mod.integratedcircuits.DiskDrive;
-import vic.mod.integratedcircuits.GuiHandler;
-import vic.mod.integratedcircuits.IDiskDrive;
+import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
-import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.client.gui.GuiHandler;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.RayTracer;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;

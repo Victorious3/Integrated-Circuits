@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits;
 
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;

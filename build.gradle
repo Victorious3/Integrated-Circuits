@@ -9,7 +9,6 @@ buildscript {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
-
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
@@ -20,14 +19,6 @@ repositories {
     maven {
         name "rx14"
         url "http://mvn.rx14.co.uk/repo/"
-    }
-    ivy {
-        name "redlogic"
-        artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/redlogic/[module]-[revision].[ext]"
-    }
-    ivy {
-        name "immibis-core"
-        artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/[module]-[revision].[ext]"
     }
 }
 
@@ -58,8 +49,6 @@ dependencies {
 
     compile "com.bluepowermod:BluePower:${bluepowerVersion}:deobf"
     compile "com.mod-buildcraft:buildcraft:${buildcraftVersion}:api"
-    compile name: "redlogic", version: "${redlogicVersion}", ext: "jar"
-    compile name: "immibis-core", version: "${mcVersion}", ext: "jar"
 }
 
 processResources {

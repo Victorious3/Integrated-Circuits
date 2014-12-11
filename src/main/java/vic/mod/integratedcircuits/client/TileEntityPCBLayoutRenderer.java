@@ -4,7 +4,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.ModelFloppy;
-import vic.mod.integratedcircuits.TileEntityPCBLayout;
+import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 
 public class TileEntityPCBLayoutRenderer extends TileEntitySpecialRenderer
 {

@@ -1,9 +1,11 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.client.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import vic.mod.integratedcircuits.client.gui.GuiAssembler;
-import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
+import vic.mod.integratedcircuits.ContainerAssembler;
+import vic.mod.integratedcircuits.ContainerPCBLayout;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
+import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import cpw.mods.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler

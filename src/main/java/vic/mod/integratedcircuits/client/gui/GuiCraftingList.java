@@ -1,9 +1,9 @@
 package vic.mod.integratedcircuits.client.gui;
 
 import net.minecraft.client.Minecraft;
-import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 
 public class GuiCraftingList extends GuiListExt<GuiCraftingListEntry>
 {

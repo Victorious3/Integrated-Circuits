@@ -5,8 +5,8 @@ import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
-import vic.mod.integratedcircuits.TileEntityAssembler;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdate>

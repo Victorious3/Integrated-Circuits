@@ -5,7 +5,7 @@ import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import vic.mod.integratedcircuits.TileEntityAssembler;
+import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketAssemblerChangeLaser extends PacketTileEntity<PacketAssemblerChangeLaser>

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import vic.mod.integratedcircuits.IDiskDrive;
+import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketFloppyDisk extends PacketTileEntity<PacketFloppyDisk>
