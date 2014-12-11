@@ -38,7 +38,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 })
 public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory, IOptionsProvider, IHasWork, IControllable
 {
-	//TODO Output a redstone signal when a circuit was finished
 	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
 	public static final int SETTING_PULL = 0, SETTING_REDSTONE = 1;
 	public static final int RS_ENABLED = 0, RS_INVERTED = 1, RS_DISABLED = 2;
@@ -57,6 +56,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	private byte queue, position;
 	public int size;
 	private int power = -1;
+	private int output = 0;
 	private boolean powerOverride;
 	
 	public boolean[][] excMatrix;
@@ -78,11 +78,15 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		if(refMatrix != null)
 			laserHelper.update();
 		
+		if(output == 0) getWorldObj().notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
+		if(output >= 0) output--;
+		
 		if(statusCode == OUT_OF_PCB && queue != 0) requestCircuitPlayload();
 		else if(statusCode == IDLE && getOptionSet().getBoolean(SETTING_PULL))
 		{
-			if(isPowered() || powerOverride)
+			if((isPowered() || powerOverride) && output < 0)
 			{
+				System.out.println("Output: " + output);
 				ItemStack stack = tryFetchPCB();
 				if(stack != null) setInventorySlotContents(1, stack);
 				requestCircuit((byte)1);
@@ -95,15 +99,20 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		int rs = getOptionSet().getInt(SETTING_REDSTONE);
 		return (rs == RS_ENABLED && power > 0) || (rs == RS_INVERTED && power == 0);
 	}
+	
+	public int isProvidingPower()
+	{
+		return output > 0 && getOptionSet().getInt(SETTING_REDSTONE) != RS_DISABLED ? 15 : 0;
+	}
 
 	public void onNeighborBlockChange()
 	{
-		int nPower = worldObj.getBlockPowerInput(xCoord, yCoord, zCoord);
+		int nPower = worldObj.getStrongestIndirectPower(xCoord, yCoord, zCoord);
 		if(nPower != power)
 		{
 			boolean o = power > 0, n = nPower > 0;
 			int rsmode = getOptionSet().getInt(SETTING_REDSTONE);
-			if(o != n && ((n && rsmode == RS_ENABLED) || (!n && rsmode == RS_INVERTED)))
+			if(o != n && ((n && rsmode == RS_ENABLED) || (!n && rsmode == RS_INVERTED)) && output < 0)
 			{
 				if(getStatus() == IDLE) 
 				{
@@ -243,6 +252,9 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			comp.setInteger("size", size);
 			contents[1].setTagCompound(comp);
 			worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 2, ++position);
+			//Give off a redstone pulse
+			output = 2;
+			worldObj.notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
 		}
 		if(position == queue || queue == 0) 
 		{
@@ -390,6 +402,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		}
 		
 		powerOverride = compound.getBoolean("powerOverride");
+		output = compound.getInteger("output");
 		queue = compound.getByte("queue");
 		position = compound.getByte("positon");
 		statusCode = compound.getInteger("status");
@@ -426,6 +439,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		compound.setTag("contents", slotList);
 		
 		compound.setBoolean("powerOverride", powerOverride);
+		compound.setInteger("output", output);
 		compound.setByte("queue", queue);
 		compound.setByte("positon", position);
 		compound.setInteger("status", statusCode);

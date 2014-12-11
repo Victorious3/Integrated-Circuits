@@ -12,6 +12,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -102,6 +103,37 @@ public class BlockAssembler extends BlockContainer
 	{
 		TileEntityAssembler te = (TileEntityAssembler)world.getTileEntity(x, y, z);
 		te.onNeighborBlockChange();
+	}
+
+	@Override
+	public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int meta) 
+	{
+		return isProvidingStrongPower(world, x, y, z, meta);
+	}
+
+	@Override
+	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int meta) 
+	{
+		TileEntityAssembler te = (TileEntityAssembler)world.getTileEntity(x, y, z);
+		return te.isProvidingPower();
+	}
+
+	@Override
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) 
+	{
+		return true;
+	}
+
+	@Override
+	public boolean canProvidePower() 
+	{
+		return true;
+	}
+
+	@Override
+	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) 
+	{
+		return side != -1;
 	}
 
 	@Override
