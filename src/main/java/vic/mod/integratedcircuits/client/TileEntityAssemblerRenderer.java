@@ -60,6 +60,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			Tessellator tes = Tessellator.instance;
 			this.bindTexture(bottomTex);
 			tes.startDrawingQuads();
+			tes.setNormal(0, 1, 0);
 			tes.addVertexWithUV(0, 8 / 16F, 0, 0, 0);
 			tes.addVertexWithUV(0, 8 / 16F, 1, 0, 1);
 			tes.addVertexWithUV(1, 8 / 16F, 1, 1, 1);
@@ -71,6 +72,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				GL11.glDisable(GL11.GL_TEXTURE_2D);			
 				GL11.glColor3f(0, 0.1F, 0);
 				
+				//TODO Add normals-
 				tes.startDrawingQuads();
 				tes.addVertex(3 / 16F, 8 / 16F, 3 / 16F);
 				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
@@ -109,6 +111,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			GL11.glTranslatef(-1.005F, -1, 0);
 			this.bindTexture(safetyRegulationsTex);
 			tes.startDrawingQuads();
+			tes.setNormal(1, 0, 0);
 			tes.addVertexWithUV(0, 9 / 16F, 1 - 7 / 16F, 0, 0);
 			tes.addVertexWithUV(0, 1 - 3 / 16F, 1 - 7 / 16F, 0, 1);
 			tes.addVertexWithUV(0, 1 - 3 / 16F, 0 + 1 / 16F, 1, 1);

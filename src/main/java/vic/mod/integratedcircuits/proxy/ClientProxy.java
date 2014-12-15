@@ -18,6 +18,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
@@ -122,11 +123,240 @@ public class ClientProxy extends CommonProxy
 		TileEntityAssemblerRenderer.fboArray.clear();
 	}
 	
-	//Don't even look at what's coming now. Not related at all.
+	@SubscribeEvent
+	public void onClientTick(TickEvent.ClientTickEvent event)
+	{
+		if(event.phase == Phase.END)
+		{
+			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+			if(gui == null || !gui.doesGuiPauseGame()) clientTicks++;
+		}
+	}
+	
+	//Don't even look at what's coming now. Not related at all
+	
+	@SubscribeEvent
+	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
+	{
+		EntityPlayer player = event.entityPlayer;
+		String name = player.getCommandSenderName();
+		Minecraft mc = Minecraft.getMinecraft();
+		
+		int renderType = 0;
+		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
+		else if(name.equalsIgnoreCase("thog92")) renderType = 2;
+		else if(name.equalsIgnoreCase("rx14")) renderType = 3;
+		else if(name.equalsIgnoreCase("riskyken")) renderType = 4;
+		if(renderType == 0) return;	
+		
+		boolean hideArmor = player.inventory.armorItemInSlot(3) != null;
+		
+		//Test if AW is hiding the headgear
+		if(IntegratedCircuits.isAWLoaded)
+		{
+			try {
+				Object epRenderCache = Class.forName("riskyken.armourersWorkshop.client.handler.PlayerSkinHandler").getDeclaredField("INSTANCE").get(null);
+				Field f = epRenderCache.getClass().getDeclaredField("skinMap");
+				f.setAccessible(true);
+				Map skinMap = (Map)f.get(epRenderCache);
+				if(skinMap.containsKey(player.getPersistentID()))
+				{
+					Object skinInfo = skinMap.get(player.getPersistentID());
+					Object nakedInfo = skinInfo.getClass().getMethod("getNakedInfo").invoke(skinInfo);
+					BitSet armourOverride = (BitSet)nakedInfo.getClass().getDeclaredField("armourOverride").get(nakedInfo);
+					if(armourOverride.get(0)) hideArmor = false;
+				}	
+			} catch (Exception e) {}
+		}
+		
+		if(renderType != 2 && hideArmor) return;
+		
+		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
+		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
+		float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * event.partialRenderTick;
+		float pitchZ = (float)Math.toDegrees(event.renderer.modelBipedMain.bipedHead.rotateAngleZ);
+		
+		GL11.glPushMatrix();
+		
+		GL11.glColor3f(1F, 1F, 1F);
+		GL11.glRotatef(pitchZ, 0, 0, 1);
+		GL11.glRotatef(yawOffset, 0, -1, 0);
+		GL11.glRotatef(yaw - 270, 0, 1, 0);
+		GL11.glRotatef(pitch, 0, 0, 1);
+		
+		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
+		Tessellator tes = Tessellator.instance;
+		
+		if(renderType == 2)
+		{
+			//Jibril
+			GL11.glPushMatrix();
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			RenderUtils.setBrightness(240, 240);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glColor4f(1F, 1F, 1F, 1F);
+			
+			mc.renderEngine.bindTexture(haloLocation);
+			
+			GL11.glRotated(30, 1, 0, -1);
+			GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
+			GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
+			
+			tes.startDrawingQuads();	
+			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
+			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
+			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
+			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);	
+			tes.draw();
+			
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glShadeModel(GL11.GL_FLAT);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glPopMatrix();
+			RenderUtils.resetBrightness();
+		}
+		else if(renderType == 1)
+		{
+			//Shiro Nai
+			GL11.glPushMatrix();
+			float scale = 1 / 64F;
+			
+			GL11.glTranslated(15 * scale, -0.78, 15 * scale);			
+			float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
+			GL11.glTranslatef(-f1, 0, -f1);
+			GL11.glRotated(-25, 1, 0, -1);
+			GL11.glTranslatef(f1, 0, f1);
+			
+			GL11.glEnable(GL11.GL_CULL_FACE);
+			ModelCrown.instance.render(scale);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glPopMatrix();
+		}
+		else if(renderType == 3)
+		{
+			//Stephanie Dola
+			mc.renderEngine.bindTexture(earsLocation);
+			ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
+			GameData.getBlockRegistry().getObject(name);
+		}
+		else if(renderType == 4) 
+		{
+			//Mami Tomoe
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			renderCurl();
+			GL11.glScalef(1, 1, -1);
+			renderCurl();
+			GL11.glScalef(1, 1, -1);
+			renderHat();
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			
+			mc.renderEngine.bindTexture(flowerLocation);
+			GL11.glPushMatrix();
+			GL11.glTranslatef(0, -9 / 16F, 0);
+			GL11.glTranslatef(2 / 16F, 0, -3.3F / 16F);
+			GL11.glRotatef(80, 1, 0, 0);
+			GL11.glRotatef(30, 0, 0, 1);
+			tes.startDrawingQuads();
+			tes.addVertexWithUV(-2 / 16F, 0, -2 / 16F, 0, 0);
+			tes.addVertexWithUV(-2 / 16F, 0, 2 / 16F, 0, 1);
+			tes.addVertexWithUV(2 / 16F, 0, 2 / 16F, 1, 1);
+			tes.addVertexWithUV(2 / 16F, 0, -2 / 16F, 1, 0);
+			tes.draw();
+			GL11.glPopMatrix();
+			
+			mc.renderEngine.bindTexture(fluffLocation);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glPushMatrix();
+			GL11.glTranslatef(-1 / 16F, -8 / 16F, -5F / 16F);
+			GL11.glRotatef(60, 1, 0, 0);
+			tes.startDrawingQuads();
+			tes.addVertexWithUV(0, -3 / 16F, -3 / 16F, 0, 0);
+			tes.addVertexWithUV(0, 3 / 16F, -3 / 16F, 0, 1);
+			tes.addVertexWithUV(0, 3 / 16F, 3 / 16F, 1, 1);
+			tes.addVertexWithUV(0, -3 / 16F, 3 / 16F, 1, 0);
+			tes.draw();
+			GL11.glPopMatrix();
+			GL11.glEnable(GL11.GL_LIGHTING);
+		}
+		GL11.glPopMatrix();
+	}
 	
 	private static ResourceLocation crownLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/crown.png");
 	private static ResourceLocation haloLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/halo.png");
 	private static ResourceLocation earsLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/ears.png");
+	private static ResourceLocation flowerLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/mami_flower.png");
+	private static ResourceLocation fluffLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/mami_fluff.png");
+	
+	public static void renderCurl()
+	{
+		GL11.glPushMatrix();
+		GL11.glScalef(1, 1, -1);
+		GL11.glRotatef(40, 1, 0, 0);
+		GL11.glTranslatef(3 / 16F, 1.5F / 16F, 3.5F / 16F);
+		
+		Tessellator tes = Tessellator.instance;
+		tes.startDrawing(GL11.GL_QUAD_STRIP);
+		tes.setColorRGBA_I(0xF9DE85, 255);
+		float x = 0, y = 0, z = 0, angle;
+		float distance = 0.4F;
+		
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+		for(angle = 0.5F; angle <= (Math.PI * 2.16F * 2); angle += distance) 
+		{
+			float pos = 1 - (float)(angle / (Math.PI * 2.16F * 2)) * 0.7F;
+			x = (float) Math.sin(angle) * 0.1F * pos;
+			z = (float) Math.cos(angle) * 0.1F * pos;
+			Vec3 normals = Vec3.createVectorHelper(x, y, z).normalize();
+			tes.setNormal((float)normals.xCoord, (float)normals.yCoord, (float)normals.zCoord);
+			tes.addVertex(x - 0.025, y - 0.025, z - 0.025);
+			tes.addVertex(x + 0.025, y + 0.025, z + 0.025);
+			y += 0.01;
+		}
+		tes.draw();
+		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glPopMatrix();
+	}
+	
+	public static void renderHat()
+	{
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, -10 / 16F, 0);
+		
+		float radius = 4 / 16F, height = 2 / 16F;
+		float res = 0.7F;
+		Tessellator tes = Tessellator.instance;
+		
+		tes.startDrawing(GL11.GL_TRIANGLE_FAN);
+		tes.setColorRGBA_I(0x57424F, 255);
+		tes.setNormal(0, -1, 0);
+		tes.addVertex(0, 0, 0);
+		for(float i = 0; i <= 2 * Math.PI; i += res)
+			tes.addVertex(radius * Math.cos(i), 0, radius * Math.sin(i));
+		tes.addVertex(radius, 0, 0);
+		tes.draw();
+		
+		Vec3 center = Vec3.createVectorHelper(-radius, -height / 2, -radius);
+		tes.startDrawing(GL11.GL_QUAD_STRIP);
+		tes.setColorRGBA_I(0x57424F, 255);
+		for(float i = 0; i <= 2 * Math.PI; i += res)
+		{
+			float x = (float)(radius * Math.cos(i));
+			float z = (float)(radius * Math.sin(i));
+			Vec3 v1 = Vec3.createVectorHelper(x, 0, z).subtract(center).normalize();
+			tes.setNormal((float)v1.xCoord, (float)v1.yCoord, (float)v1.zCoord);
+			tes.addVertex(x, 0, z);
+			Vec3 v2 = Vec3.createVectorHelper(x, height, z).subtract(center).normalize();
+			tes.setNormal((float)v2.xCoord, (float)v2.yCoord, (float)v2.zCoord);
+			tes.addVertex(x, height, z);
+		}
+		tes.addVertex(radius, 0, 0);
+		tes.addVertex(radius, height, 0);
+		tes.draw();
+		
+		GL11.glPopMatrix();
+	}
 	
 	public static class ModelCrown extends ModelBase
 	{
@@ -211,122 +441,5 @@ public class ClientProxy extends CommonProxy
 			ear.render(1 / 16F);
 			GL11.glPopMatrix();
 		}
-	}
-	
-	@SubscribeEvent
-	public void onClientTick(TickEvent.ClientTickEvent event)
-	{
-		if(event.phase == Phase.END)
-		{
-			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
-			if(gui == null || !gui.doesGuiPauseGame()) clientTicks++;
-		}
-	}
-	
-	@SubscribeEvent
-	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
-	{
-		EntityPlayer player = event.entityPlayer;
-		String name = player.getCommandSenderName();
-		Minecraft mc = Minecraft.getMinecraft();
-		
-		int renderType = 0;
-		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
-		else if(name.equalsIgnoreCase("thog92")) renderType = 2;
-		else if(name.equalsIgnoreCase("rx14")) renderType = 3;
-		if(renderType == 0) return;	
-		
-		boolean hideArmor = player.inventory.armorItemInSlot(3) != null;
-		
-		//Test if AW is hiding the headgear
-		if(IntegratedCircuits.isAWLoaded)
-		{
-			try {
-				Object epRenderCache = Class.forName("riskyken.armourersWorkshop.client.render.EquipmentPlayerRenderCache").getDeclaredField("INSTANCE").get(null);
-				Field f = epRenderCache.getClass().getDeclaredField("skinMap");
-				f.setAccessible(true);
-				Map skinMap = (Map)f.get(epRenderCache);
-				if(skinMap.containsKey(player.getPersistentID()))
-				{
-					Object skinInfo = skinMap.get(player.getPersistentID());
-					BitSet armourOverride = (BitSet)skinInfo.getClass().getMethod("getArmourOverride").invoke(skinInfo);
-					if(armourOverride.get(0)) hideArmor = false;
-				}	
-			} catch (Exception e) {}
-		}
-		
-		if((renderType == 1 || renderType == 3) && hideArmor) return;
-		
-		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
-		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
-		float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * event.partialRenderTick;
-		float pitchZ = (float)Math.toDegrees(event.renderer.modelBipedMain.bipedHead.rotateAngleZ);
-		
-		GL11.glPushMatrix();
-		
-		GL11.glColor3f(1F, 1F, 1F);
-		GL11.glRotatef(pitchZ, 0, 0, 1);
-		GL11.glRotatef(yawOffset, 0, -1, 0);
-		GL11.glRotatef(yaw - 270, 0, 1, 0);
-		GL11.glRotatef(pitch, 0, 0, 1);
-		
-		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
-		
-		if(renderType == 2)
-		{
-			//Le halo
-			GL11.glPushMatrix();
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			RenderUtils.setBrightness(240, 240);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GL11.glColor4f(1F, 1F, 1F, 1F);
-			
-			mc.renderEngine.bindTexture(haloLocation);
-			
-			GL11.glRotated(30, 1, 0, -1);
-			GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
-			GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
-			
-			Tessellator tes = Tessellator.instance;
-			tes.startDrawingQuads();	
-			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
-			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
-			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
-			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);	
-			tes.draw();
-			
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glShadeModel(GL11.GL_FLAT);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glPopMatrix();
-			RenderUtils.resetBrightness();
-		}
-		else if(renderType == 1)
-		{
-			//Le crown
-			GL11.glPushMatrix();
-			float scale = 1 / 64F;
-			
-			GL11.glTranslated(15 * scale, -0.78, 15 * scale);			
-			float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
-			GL11.glTranslatef(-f1, 0, -f1);
-			GL11.glRotated(-25, 1, 0, -1);
-			GL11.glTranslatef(f1, 0, f1);
-			
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			ModelCrown.instance.render(scale);
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			GL11.glPopMatrix();
-		}
-		else if(renderType == 3)
-		{
-			//Le ... dog ears? No that sounds stupid.
-			mc.renderEngine.bindTexture(earsLocation);
-			ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
-			GameData.getBlockRegistry().getObject(name);
-		}
-		GL11.glPopMatrix();
 	}
 }
