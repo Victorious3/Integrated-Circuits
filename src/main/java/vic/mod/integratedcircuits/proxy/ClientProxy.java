@@ -30,9 +30,7 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.client.ItemCircuitRenderer;
 import vic.mod.integratedcircuits.client.ItemLaserRenderer;
-import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
@@ -50,7 +48,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy
 {
-	public static PartCircuitRenderer renderer;
 	public static SemiTransparentRenderer stRenderer;
 	public static int clientTicks;
 
@@ -69,7 +66,6 @@ public class ClientProxy extends CommonProxy
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
-		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemCircuit, new ItemCircuitRenderer());
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemLaser, new ItemLaserRenderer());
 	}
 	
@@ -308,7 +304,7 @@ public class ClientProxy extends CommonProxy
 			float pos = 1 - (float)(angle / (Math.PI * 2.16F * 2)) * 0.7F;
 			x = (float) Math.sin(angle) * 0.1F * pos;
 			z = (float) Math.cos(angle) * 0.1F * pos;
-			Vec3 normals = Vec3.createVectorHelper(x, y, z).normalize();
+			Vec3 normals = Vec3.createVectorHelper(x, 0, z).normalize();
 			tes.setNormal((float)normals.xCoord, (float)normals.yCoord, (float)normals.zCoord);
 			tes.addVertex(x - 0.025, y - 0.025, z - 0.025);
 			tes.addVertex(x + 0.025, y + 0.025, z + 0.025);

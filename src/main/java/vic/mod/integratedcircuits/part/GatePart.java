@@ -13,9 +13,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.client.PartRenderer;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -32,6 +35,8 @@ import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @InterfaceList(value = {
 	@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),
@@ -39,17 +44,30 @@ import cpw.mods.fml.common.Optional.InterfaceList;
 })
 public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, IBundledEmitter
 {
+	private String name;
 	public byte orientation;
 	private Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
 	public byte[][] output = new byte[4][16];
 	public byte[][] input = new byte[4][16];
+	
+	public GatePart(String name)
+	{
+		this.name = IntegratedCircuits.modID + "_" + name;
+		PartFactory.register(this);
+	}
+	
+	@Override
+	public String getType() 
+	{
+		return name;
+	}
 	
 	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
 	{
 		setSide(side ^ 1);
 		setRotation(Rotation.getSidedRotation(player, side));
 	}
-
+	
 	@Override
 	public void load(NBTTagCompound tag)
 	{
@@ -223,6 +241,47 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	
 	public abstract ItemStack getItem();
 
+	@Override
+	public Iterable<ItemStack> getDrops() 
+	{
+		return Arrays.asList(getItem());
+	}
+	
+	@Override
+	public ItemStack pickItem(MovingObjectPosition hit) 
+	{
+		return getItem();
+	}
+	
+	public abstract <T extends TMultiPart> PartRenderer<T> getRenderer();
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean renderStatic(Vector3 pos, int pass) 
+	{
+		if(pass == 0)
+		{
+			TextureUtils.bindAtlas(0);
+			CCRenderState.setBrightness(world(), x(), y(), z());
+			getRenderer().prepare(this);
+			getRenderer().renderStatic(pos.translation(), orientation & 255);
+			return true;
+		}	
+		else return false;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderDynamic(Vector3 pos, float frame, int pass) 
+	{
+		if(pass == 0)
+		{
+			TextureUtils.bindAtlas(0);
+			getRenderer().prepareDynamic(this, frame);
+			getRenderer().renderDynamic(this.getRotationTransformation().with(pos.translation()));
+		}	
+	}
+	
 	@Override
 	public void onNeighborChanged() 
 	{
@@ -414,4 +473,6 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	{
 		return getSide();
 	}
+
+	abstract GatePart newInstance();
 }

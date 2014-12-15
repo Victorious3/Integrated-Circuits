@@ -378,6 +378,15 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				{
 					x2 = x2 * 16 + te.offX;
 					y2 = y2 * 16 + te.offY;
+					if(selectedPart instanceof PartNull)
+					{
+						GL11.glColor3f(0F, 0.4F, 0F);
+						GL11.glDisable(GL11.GL_TEXTURE_2D);
+						Tessellator.instance.startDrawingQuads();
+						CircuitPartRenderer.addQuad(x2, y2, 2 * 16, 0, 16, 16);
+						Tessellator.instance.draw();
+						GL11.glEnable(GL11.GL_TEXTURE_2D);
+					}
 					CircuitPartRenderer.renderPart(selectedPart, x2, y2);
 				}
 				else

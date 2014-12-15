@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import vic.mod.integratedcircuits.item.ItemBase;
 import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
+import vic.mod.integratedcircuits.item.ItemGatePart;
 import vic.mod.integratedcircuits.item.ItemLaser;
 import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.net.AbstractPacket;
@@ -22,13 +23,14 @@ import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
 import vic.mod.integratedcircuits.net.PacketPCBLoad;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
+import vic.mod.integratedcircuits.part.Part7Segment;
+import vic.mod.integratedcircuits.part.PartCircuit;
 import vic.mod.integratedcircuits.part.PartFactory;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
 import vic.mod.integratedcircuits.tile.BlockPCBLayout;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
-import codechicken.multipart.MultiPartRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -50,9 +52,9 @@ public class IntegratedCircuits
 	public static boolean isBPLoaded = false;
 	
 	public static final String modID = "integratedcircuits";
-	public static final String partCircuit = modID + "_circuit";
 	
 	public static ItemCircuit itemCircuit;
+	public static ItemGatePart item7Segment;
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
 	public static ItemLaser itemLaser;
@@ -104,8 +106,10 @@ public class IntegratedCircuits
 				return itemCircuit;
 			}
 		};
-
-		itemCircuit = new ItemCircuit();
+		
+		itemCircuit = new ItemCircuit(new PartCircuit());
+		item7Segment = new ItemGatePart("7segment", new Part7Segment());
+		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
 		itemLaser = new ItemLaser();
@@ -113,9 +117,7 @@ public class IntegratedCircuits
 		itemSilicon = new ItemBase("silicon");
 		itemSiliconDrop = new ItemBase("silicon_drop");
 		itemCoalCompound = new ItemBase("coalcompound");
-		
-		GameRegistry.registerItem(itemCircuit, partCircuit, modID);  		
-		
+
 		blockPCBLayout = new BlockPCBLayout();
 		blockAssembler = new BlockAssembler();
 		
@@ -133,7 +135,7 @@ public class IntegratedCircuits
 		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
 		isBPLoaded = Loader.isModLoaded("bluepower");
 
-		MultiPartRegistry.registerParts(new PartFactory(), new String[]{partCircuit});
+		PartFactory.initialize();
 		proxy.initialize();
 	}
 

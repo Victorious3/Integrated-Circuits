@@ -70,25 +70,32 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			if(te.circuitFBO != null && te.isOccupied)
 			{
 				GL11.glDisable(GL11.GL_TEXTURE_2D);			
-				GL11.glColor3f(0, 0.1F, 0);
+				GL11.glColor3f(0, 0.1F, 0);	
 				
-				//TODO Add normals-
 				tes.startDrawingQuads();
+				//NORTH
+				tes.setNormal(0, 0, -1);
 				tes.addVertex(3 / 16F, 8 / 16F, 3 / 16F);
 				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
 				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
 				tes.addVertex(13 / 16F, 8 / 16F, 3 / 16F);
 				
+				//SOUTH
+				tes.setNormal(0, 0, 1);
 				tes.addVertex(3 / 16F, 8 / 16F, 13 / 16F);
 				tes.addVertex(13 / 16F, 8 / 16F, 13 / 16F);
 				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
 				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
 				
+				//EAST
+				tes.setNormal(-1, 0, 0);
 				tes.addVertex(3 / 16F, 8 / 16F, 13 / 16F);
 				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
 				tes.addVertex(3 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
 				tes.addVertex(3 / 16F, 8 / 16F, 3 / 16F);
 				
+				//WEST
+				tes.setNormal(1, 0, 0);
 				tes.addVertex(13 / 16F, 8 / 16F, 3 / 16F);
 				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 3 / 16F);
 				tes.addVertex(13 / 16F, 8 / 16F + 1 / 40F, 13 / 16F);
@@ -100,6 +107,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				te.circuitFBO.bindFramebufferTexture();
 				
 				tes.startDrawingQuads();
+				tes.setNormal(0, 1, 0);
 				tes.addVertexWithUV(3 / 16F, 8 / 16F + 1 / 40F, 3 / 16F, 1, 0);
 				tes.addVertexWithUV(3 / 16F, 8 / 16F + 1 / 40F, 13 / 16F, 1, 1);
 				tes.addVertexWithUV(13 / 16F, 8 / 16F + 1 / 40F, 13 / 16F, 0, 1);

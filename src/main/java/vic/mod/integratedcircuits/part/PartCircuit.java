@@ -1,38 +1,39 @@
 package vic.mod.integratedcircuits.part;
 
-import java.util.Arrays;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
-import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Vector3;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartCircuit extends GatePart implements ICircuit
 {
 	public CircuitData circuitData;
+	@SideOnly(Side.CLIENT)
+	public static PartCircuitRenderer renderer = new PartCircuitRenderer();
 	private boolean update;
+
+	public PartCircuit() 
+	{
+		super("circuit");
+	}
 	
 	@Override
-	public String getType() 
+	public PartCircuitRenderer getRenderer() 
 	{
-		return IntegratedCircuits.partCircuit;
+		return renderer;
 	}
 	
     public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
@@ -84,45 +85,6 @@ public class PartCircuit extends GatePart implements ICircuit
 		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
 		stack.stackTagCompound = comp;
 		return stack;
-	}
-	
-	@Override
-	public Iterable<ItemStack> getDrops() 
-	{
-		return Arrays.asList(getItem());
-	}
-
-	@Override
-	public ItemStack pickItem(MovingObjectPosition hit) 
-	{
-		return getItem();
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public boolean renderStatic(Vector3 pos, int pass) 
-	{
-		if(pass == 0)
-		{
-			TextureUtils.bindAtlas(0);
-			CCRenderState.setBrightness(world(), x(), y(), z());
-			ClientProxy.renderer.prepare(this);
-			ClientProxy.renderer.renderStatic(pos.translation(), orientation & 255);
-			return true;
-		}	
-		else return false;
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void renderDynamic(Vector3 pos, float frame, int pass) 
-	{
-		if(pass == 0)
-		{
-			TextureUtils.bindAtlas(0);
-			ClientProxy.renderer.prepareDynamic(this, frame);
-			ClientProxy.renderer.renderDynamic(this.getRotationTransformation().with(pos.translation()));
-		}	
 	}
 
 	private int getModeAtSide(int s)
@@ -262,5 +224,11 @@ public class PartCircuit extends GatePart implements ICircuit
 		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
 		tile().notifyPartChange(this);
 		tile().notifyNeighborChange(getSide());
+	}
+
+	@Override
+	GatePart newInstance() 
+	{
+		return new PartCircuit();
 	}
 }

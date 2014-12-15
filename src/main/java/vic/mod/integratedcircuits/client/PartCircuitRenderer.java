@@ -1,8 +1,6 @@
 package vic.mod.integratedcircuits.client;
 
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -16,107 +14,25 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.part.PartCircuit;
-import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
-import codechicken.lib.render.Vertex5;
 import codechicken.lib.render.uv.IconTransformation;
-import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
 
 /** https://github.com/MrTJP/ProjectRed/ **/
-public class PartCircuitRenderer
+public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 {
-	private List<ComponentModel> models = new LinkedList<ComponentModel>();
-	PinModel[] pinModels = new PinModel[]{new PinModel(0), new PinModel(1), new PinModel(2), new PinModel(3)};
+	private static PinModel[] pinModels = new PinModel[]{new PinModel(0), new PinModel(1), new PinModel(2), new PinModel(3)};
+	public static IIcon iconIC;
+	public static IIcon iconGold;
 	
 	public PartCircuitRenderer()
 	{
-		models.add(new BaseModel());
 		models.add(new ChipModel());
-		models.addAll(Arrays.asList(pinModels));	
-	}
-	
-	public void prepare(PartCircuit part) 
-	{
-		CircuitProperties prop = part.getCircuitData().getProperties();
-		pinModels[2].isBundeled = prop.getModeAtSide(0) == CircuitProperties.BUNDLED;
-		pinModels[3].isBundeled = prop.getModeAtSide(1) == CircuitProperties.BUNDLED;
-		pinModels[0].isBundeled = prop.getModeAtSide(2) == CircuitProperties.BUNDLED;
-		pinModels[1].isBundeled = prop.getModeAtSide(3) == CircuitProperties.BUNDLED;
-	}
-	
-	public void prepareInv(ItemStack stack)
-	{
-		NBTTagCompound comp = stack.getTagCompound();	
-		if(comp == null) return;
-		NBTTagCompound comp2 = comp.getCompoundTag("circuit").getCompoundTag("properties");
-		byte con = comp2.getByte("con");
-		pinModels[2].isBundeled = (con & 3) == CircuitProperties.BUNDLED;
-		pinModels[3].isBundeled = (con & 12) >> 2 == CircuitProperties.BUNDLED;
-		pinModels[0].isBundeled = (con & 48) >> 4 == CircuitProperties.BUNDLED;
-		pinModels[1].isBundeled = (con & 192) >> 6 == CircuitProperties.BUNDLED;
-		name = comp2.getString("name");
-		tier = (byte) (comp.getCompoundTag("circuit").getInteger("size") / 16);
-	}
-	
-	/** https://github.com/MrTJP/ProjectRed/blob/master/src/mrtjp/projectred/integration/ComponentStore.java **/
-	public static CCModel bakeCopy(CCModel base, int orient)
-	{
-		CCModel m = base.copy();
-		if(orient >= 24)
-		{
-			for(int i = 0; i < m.verts.length; i += 4)
-			{
-				Vertex5 vtmp = m.verts[i + 1];
-				Vector3 ntmp = m.normals()[i + 1];
-				m.verts[i + 1] = m.verts[i + 3];
-				m.normals()[i+1] = m.normals()[i+3];
-				m.verts[i + 3] = vtmp;
-				m.normals()[i + 3] = ntmp;
-			}
-		}
-		
-		Transformation t = Rotation.sideOrientation(orient % 24 >> 2, orient & 3);
-		if(orient >= 24) t = new Scale(-1, 1, 1).with(t);
-		
-		m.apply(t.at(Vector3.center)).computeLighting(LightModel.standardLightModel);
-		return m;
-	}
-	
-	public static abstract class ComponentModel
-	{
-		public abstract void renderModel(Transformation t, int orient);
-	}
-	
-	public static class BaseModel extends ComponentModel
-	{
-		public static CCModel[] models = new CCModel[24];
-		private static CCModel base = generateModel();
-		
-		static
-		{
-			for(int i = 0; i < 24; i++) models[i] = bakeCopy(base, i);
-		}
-
-		@Override
-		public void renderModel(Transformation t, int orient)
-		{
-			models[orient % 24].render(t, new IconTransformation(iconBase));
-		}
-		
-		private static CCModel generateModel()
-		{
-			CCModel m1 = CCModel.quadModel(24);
-			m1.generateBlock(0, 0.0002, 0.0002, 0.0002, 0.9998, 2 / 16D - 0.0002, 0.9998);
-			m1.computeNormals();
-			return m1;
-		}
+		models.addAll(Arrays.asList(pinModels));
 	}
 
-	public static class ChipModel extends ComponentModel
+	public static class ChipModel implements IComponentModel
 	{
 		private static CCModel[] models = new CCModel[24];
 		private static CCModel base = generateModel();
@@ -142,7 +58,7 @@ public class PartCircuitRenderer
 		}
 	}
 	
-	public static class PinModel extends ComponentModel
+	public static class PinModel implements IComponentModel
 	{
 		private static CCModel[] bundeledModels = new CCModel[24];
 		private static CCModel[] normalModels = new CCModel[24];
@@ -189,17 +105,39 @@ public class PartCircuitRenderer
 	private byte tier;
 	private String name = "NO_NAME";
 
-	public void prepareDynamic(PartCircuit part, float frame) 
+	@Override
+	public void prepare(PartCircuit part) 
+	{
+		CircuitProperties prop = part.getCircuitData().getProperties();
+		pinModels[2].isBundeled = prop.getModeAtSide(0) == CircuitProperties.BUNDLED;
+		pinModels[3].isBundeled = prop.getModeAtSide(1) == CircuitProperties.BUNDLED;
+		pinModels[0].isBundeled = prop.getModeAtSide(2) == CircuitProperties.BUNDLED;
+		pinModels[1].isBundeled = prop.getModeAtSide(3) == CircuitProperties.BUNDLED;
+	}
+	
+	@Override
+	public void prepareInv(ItemStack stack)
+	{
+		NBTTagCompound comp = stack.getTagCompound();	
+		if(comp == null) return;
+		NBTTagCompound comp2 = comp.getCompoundTag("circuit").getCompoundTag("properties");
+		byte con = comp2.getByte("con");
+		pinModels[2].isBundeled = (con & 3) == CircuitProperties.BUNDLED;
+		pinModels[3].isBundeled = (con & 12) >> 2 == CircuitProperties.BUNDLED;
+		pinModels[0].isBundeled = (con & 48) >> 4 == CircuitProperties.BUNDLED;
+		pinModels[1].isBundeled = (con & 192) >> 6 == CircuitProperties.BUNDLED;
+		name = comp2.getString("name");
+		tier = (byte) (comp.getCompoundTag("circuit").getInteger("size") / 16);
+	}
+	
+	@Override
+	public void prepareDynamic(PartCircuit part, float partialTicks) 
 	{
 		tier = (byte)(part.circuitData.getSize() / 16);
 		name = part.circuitData.getProperties().getName();
 	}
-	
-	public void renderStatic(Transformation t, int orient)
-	{
-		for(ComponentModel m : models) m.renderModel(t, orient);
-	}
 
+	@Override
 	public void renderDynamic(Transformation t)
 	{
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -228,14 +166,11 @@ public class PartCircuitRenderer
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
-	public static IIcon iconIC;
-	public static IIcon iconGold;
-	public static IIcon iconBase;
-	
+	@Override
 	public void registerIcons(IIconRegister arg0) 
 	{
+		super.registerIcons(arg0);
 		iconIC = arg0.registerIcon(IntegratedCircuits.modID + ":ic");
-		iconBase = arg0.registerIcon(IntegratedCircuits.modID + ":ic_base");
 		iconGold = arg0.registerIcon("gold_block");
 	}
 }
