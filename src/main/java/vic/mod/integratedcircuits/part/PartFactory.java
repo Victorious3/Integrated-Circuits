@@ -8,12 +8,12 @@ import codechicken.multipart.TMultiPart;
 
 public class PartFactory implements IPartFactory
 {
-	private static HashMap<String, GatePart> parts = new HashMap<String, GatePart>();
+	private static HashMap<String, PartGate> parts = new HashMap<String, PartGate>();
 	private static PartFactory instance = new PartFactory();
 	
 	private PartFactory() {}
 	
-	public static void register(GatePart part)
+	public static void register(PartGate part)
 	{
 		parts.put(part.getType(), part);
 	}
@@ -21,7 +21,7 @@ public class PartFactory implements IPartFactory
 	@Override
 	public TMultiPart createPart(String arg0, boolean arg1) 
 	{
-		GatePart part = parts.get(arg0);
+		PartGate part = parts.get(arg0);
 		if(part == null) return null;
 		return part.newInstance();
 	}

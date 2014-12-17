@@ -4,7 +4,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
 /** Has only one type of output **/
-public abstract class PartSimpleGate extends PartGate
+public abstract class PartSimpleGate extends PartCPGate
 {
 	protected final boolean getOutput()
 	{

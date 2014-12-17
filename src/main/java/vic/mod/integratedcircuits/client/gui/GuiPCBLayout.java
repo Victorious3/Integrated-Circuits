@@ -30,7 +30,7 @@ import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
-import vic.mod.integratedcircuits.ic.part.PartGate;
+import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.part.PartNull;
 import vic.mod.integratedcircuits.ic.part.PartSynchronizer;
@@ -514,9 +514,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				{
 					ArrayList<String> text = new ArrayList<String>();
 					text.add(part.getLocalizedName());
-					if(part instanceof PartGate) 
+					if(part instanceof PartCPGate) 
 					{
-						int rotation = ((PartGate)part).getRotation();
+						int rotation = ((PartCPGate)part).getRotation();
 						ForgeDirection rot = 
 							rotation == 0 ? ForgeDirection.NORTH :
 							rotation == 1 ? ForgeDirection.EAST :

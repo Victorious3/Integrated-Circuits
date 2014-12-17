@@ -1,10 +1,10 @@
 package vic.mod.integratedcircuits.ic.part.timed;
 
-import vic.mod.integratedcircuits.ic.part.PartGate;
+import vic.mod.integratedcircuits.ic.part.PartCPGate;
 
 
 /** Uses 8 bits for the delay. 255 ticks = 12.75 seconds*/
-public abstract class PartDelayedAction extends PartGate
+public abstract class PartDelayedAction extends PartCPGate
 {
 	protected abstract int getDelay();
 	

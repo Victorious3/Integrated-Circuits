@@ -9,7 +9,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.ic.part.PartGate;
+import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.ic.part.PartIOBit;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.part.PartNull;
@@ -67,7 +67,7 @@ public class CircuitPartRenderer
 		}
 		else if(part instanceof PartNullCell || part instanceof PartInvertCell || part instanceof PartBufferCell) renderPartCell(part, x, y, type);
 		else if(part instanceof PartANDCell) renderPartANDCell((PartANDCell)part, x, y, type);
-		else if(part instanceof PartGate) renderPartGate((PartGate)part, x, y, type);
+		else if(part instanceof PartCPGate) renderPartGate((PartCPGate)part, x, y, type);
 		else if(part instanceof PartTorch) renderPartTorch((PartTorch)part, x, y, type);	
 	}
 
@@ -288,7 +288,7 @@ public class CircuitPartRenderer
 	{
 		Tessellator tes = Tessellator.instance;
 		int rotation = 0;
-		if(cell instanceof PartGate) rotation = ((PartGate)cell).getRotation();
+		if(cell instanceof PartCPGate) rotation = ((PartCPGate)cell).getRotation();
 		
 		if(type == 0 && (cell.getOutputToSide(MiscUtils.rotn(ForgeDirection.NORTH, rotation)) 
 			|| cell.getInputFromSide(MiscUtils.rotn(ForgeDirection.NORTH, rotation)) 
@@ -339,7 +339,7 @@ public class CircuitPartRenderer
 		addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);	
 	}
 	
-	public static void renderPartGate(PartGate gate, double x, double y, int type) 
+	public static void renderPartGate(PartCPGate gate, double x, double y, int type) 
 	{
 		Tessellator tes = Tessellator.instance;
 		if(gate.canConnectToSide(ForgeDirection.NORTH))

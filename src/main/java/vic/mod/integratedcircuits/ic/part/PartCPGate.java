@@ -7,7 +7,7 @@ import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
 
 /** Rotateable Part **/
-public abstract class PartGate extends CircuitPart
+public abstract class PartCPGate extends CircuitPart
 {
 	public final int getRotation()
 	{

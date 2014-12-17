@@ -1,10 +1,10 @@
 package vic.mod.integratedcircuits.ic.part.latch;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.ic.part.PartGate;
+import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
-public class PartToggleLatch extends PartGate
+public class PartToggleLatch extends PartCPGate
 {
 	@Override
 	public void onClick(int button, boolean ctrl) 

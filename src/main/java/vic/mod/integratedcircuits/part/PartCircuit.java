@@ -18,7 +18,7 @@ import codechicken.lib.vec.Rotation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartCircuit extends GatePart implements ICircuit
+public class PartCircuit extends PartGate implements ICircuit
 {
 	public CircuitData circuitData;
 	@SideOnly(Side.CLIENT)
@@ -227,7 +227,7 @@ public class PartCircuit extends GatePart implements ICircuit
 	}
 
 	@Override
-	GatePart newInstance() 
+	PartGate newInstance() 
 	{
 		return new PartCircuit();
 	}

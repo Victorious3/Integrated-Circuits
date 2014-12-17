@@ -4,7 +4,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
 //TODO Is currently giving a one tick pulse, might cause problems with other gates.
-public class PartSynchronizer extends PartGate
+public class PartSynchronizer extends PartCPGate
 {
 	@Override
 	public void onInputChange(ForgeDirection side) 

@@ -1,10 +1,10 @@
 package vic.mod.integratedcircuits.ic.part.latch;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.ic.part.PartGate;
+import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
-public class PartTransparentLatch extends PartGate
+public class PartTransparentLatch extends PartCPGate
 {
 	@Override
 	public void onInputChange(ForgeDirection side) 

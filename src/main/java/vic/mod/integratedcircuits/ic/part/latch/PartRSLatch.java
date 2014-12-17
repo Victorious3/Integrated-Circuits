@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.ic.part.PartGate;
+import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
 //TODO Acts a little bit different then described on the P:R wiki. I'll come back to this.
-public class PartRSLatch extends PartGate
+public class PartRSLatch extends PartCPGate
 {	
 	@Override
 	public void onClick(int button, boolean ctrl) 

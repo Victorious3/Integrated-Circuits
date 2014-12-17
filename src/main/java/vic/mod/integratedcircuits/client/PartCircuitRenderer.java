@@ -62,15 +62,13 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 	{
 		private static CCModel[] bundeledModels = new CCModel[24];
 		private static CCModel[] normalModels = new CCModel[24];
-		private static CCModel normal = generateModel(false);
-		private static CCModel bundeled = generateModel(true);
 		public boolean isBundeled = true;
 		private final int rotation;
 		
 		static
 		{
-			for(int i = 0; i < 24; i++) normalModels[i] = bakeCopy(normal, i);
-			for(int i = 0; i < 24; i++) bundeledModels[i] = bakeCopy(bundeled, i);
+			for(int i = 0; i < 24; i++) normalModels[i] = bakeCopy(generateModel(false), i);
+			for(int i = 0; i < 24; i++) bundeledModels[i] = bakeCopy(generateModel(true), i);
 		}
 		
 		public PinModel(int rotation)
