@@ -22,7 +22,7 @@ import codechicken.lib.vec.Translation;
 /** https://github.com/MrTJP/ProjectRed/ **/
 public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 {
-	private static PinModel[] pinModels = new PinModel[]{new PinModel(0), new PinModel(1), new PinModel(2), new PinModel(3)};
+	private static PinModel[] pinModels = {new PinModel(0), new PinModel(1), new PinModel(2), new PinModel(3)};
 	public static IIcon iconIC;
 	public static IIcon iconGold;
 	
@@ -64,6 +64,8 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 		private static CCModel[] normalModels = new CCModel[24];
 		private static CCModel normal = generateModel(false);
 		private static CCModel bundeled = generateModel(true);
+		public boolean isBundeled = true;
+		private final int rotation;
 		
 		static
 		{
@@ -75,19 +77,13 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 		{
 			this.rotation = rotation;
 		}
-		
-		public boolean isBundeled = true;
-		private int rotation;
 
 		@Override
 		public void renderModel(Transformation arg0, int arg1)
 		{
-			int i1 = arg1 / 4 * 4;
-			int i2 = arg1 + rotation;
-			int i3 = Math.min(i1 + 3, i2);
-			int i4 = (i2 - i3) > 0 ? i1 + (i2 - i3) - 1 : i3;
-			if(isBundeled) bundeledModels[i4 % 24].render(arg0, new IconTransformation(iconGold));
-			else normalModels[i4 % 24].render(arg0, new IconTransformation(iconGold));
+			arg1 = arg1 & 28 | ((arg1 + rotation) & 3);
+			if(isBundeled) bundeledModels[arg1 % 24].render(arg0, new IconTransformation(iconGold));
+			else normalModels[arg1 % 24].render(arg0, new IconTransformation(iconGold));
 		}
 		
 		private static CCModel generateModel(boolean isBundeled)

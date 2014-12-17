@@ -288,7 +288,6 @@ public class ClientProxy extends CommonProxy
 	public static void renderCurl()
 	{
 		GL11.glPushMatrix();
-		GL11.glScalef(1, 1, -1);
 		GL11.glRotatef(40, 1, 0, 0);
 		GL11.glTranslatef(3 / 16F, 1.5F / 16F, 3.5F / 16F);
 		

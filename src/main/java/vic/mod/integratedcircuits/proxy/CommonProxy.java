@@ -64,7 +64,7 @@ public class CommonProxy
 			
 			ItemStack stack = event.entityPlayer.getCurrentEquippedItem();
 			
-			MovingObjectPosition target = MiscUtils.rayTrace(event.entityPlayer, 1F);	
+			MovingObjectPosition target = RayTracer.rayTrace(event.entityPlayer, 1F);	
 			AxisAlignedBB box = DiskDrive.getDiskDriveBoundingBox(drive, event.x, event.y, event.z, target.hitVec);
 			if(box != null)
 			{

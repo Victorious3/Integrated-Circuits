@@ -51,8 +51,9 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		private static CCModel generateModel()
 		{
 			CCModel m1 = CCModel.quadModel(24);
-			m1.generateBlock(0, 0.0002, 0.0002, 0.0002, 0.9998, 2 / 16D - 0.0002, 0.9998);
+			m1.generateBlock(0, 0, 0, 0, 1, 2 / 16D, 1);
 			m1.computeNormals();
+			shrink(m1, 0.0002);
 			return m1;
 		}
 	}
@@ -79,6 +80,13 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		
 		m.apply(t.at(Vector3.center)).computeLighting(LightModel.standardLightModel);
 		return m;
+	}
+	
+	public static CCModel shrink(CCModel model, double inset)
+	{
+		for(int i = 0; i < model.verts.length; i++)
+			model.verts[i].vec.subtract(model.normals()[i].copy().multiply(inset));
+		return model;
 	}
 	
 	public static interface IComponentModel

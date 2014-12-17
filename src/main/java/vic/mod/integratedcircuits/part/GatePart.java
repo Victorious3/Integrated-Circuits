@@ -45,7 +45,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, IBundledEmitter
 {
 	private String name;
-	public byte orientation;
+	public byte orientation, con;
 	private Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
 	public byte[][] output = new byte[4][16];
 	public byte[][] input = new byte[4][16];
@@ -72,24 +72,28 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	public void load(NBTTagCompound tag)
 	{
 		orientation = tag.getByte("orientation");
+		con = tag.getByte("con");
 	}
 	
 	@Override
 	public void save(NBTTagCompound tag)
 	{
 		tag.setByte("orientation", orientation);
+		tag.setByte("con", con);
 	}
 
 	@Override
 	public void readDesc(MCDataInput packet)
 	{
 		orientation = packet.readByte();
+		con = packet.readByte();
 	}
 	
 	@Override
 	public void writeDesc(MCDataOutput packet)
 	{
 		packet.writeByte(orientation);
+		packet.writeByte(con);
 	}
 
 	@Override
@@ -98,6 +102,10 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		switch (packet.readByte()) {
 		case 0 :
 			orientation = packet.readByte();
+			tile().markRender();
+			break;
+		case 1 :
+			con = packet.readByte();
 			tile().markRender();
 			break;
 		}
@@ -310,6 +318,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 			if(canConnectRedstoneImpl(i)) input[i][0] = (byte)updateRedstoneInput(i);
 			else if(IntegratedCircuits.isPRLoaded && canConnectBundledImpl(i)) input[i] = updatedBundledInput(i);
 		}
+		getWriteStream(1).writeByte(con);
 	}
 	
 	public byte getRedstoneInput(int side)
@@ -328,6 +337,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		int abs = Rotation.rotateSide(getSide(), r);
 		byte[] power = null;
 		
+		con |= 1 << side;
 		if(((abs ^ 1) & 6) != ((getSide() ^ 1) & 6))
 		{
 			BlockCoord pos = new BlockCoord(tile()).offset(abs).offset(getSide());
@@ -353,6 +363,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 			if(power != null) return power;
 		}
 		
+		con &= ~(1 << side);
 		return new byte[16];
 	}
 	
@@ -369,6 +380,7 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 		if(strongPowerLevel(abs) != 0) return 0;
 		int power = 0;
 		
+		con |= 1 << side;
 		if(((abs ^ 1) & 6) != ((getSide() ^ 1) & 6))
 		{
 			BlockCoord pos = new BlockCoord(tile()).offset(abs).offset(getSide());
@@ -393,7 +405,9 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 			IRedstonePart rp = (IRedstonePart)tp;
 			power = Math.max(rp.strongPowerLevel(getSide()), rp.weakPowerLevel(getSide())) << 4;
 			if(power > 0) return power;
-		}
+		}	
+		
+		con &= ~(1 << side);
 		return power;
 	}
 	
@@ -428,8 +442,16 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	public boolean connectStraight(IConnectable arg0, int arg1, int arg2) 
 	{
 		int side = getRotationRel(arg1);
-		if(arg0 instanceof IRedwireEmitter && canConnectRedstoneImpl(side)) return true;
-		if(arg0 instanceof IBundledEmitter) return canConnectBundledImpl(side);
+		if(arg0 instanceof IRedwireEmitter && canConnectRedstoneImpl(side)) 
+		{
+			con |= 1 << side;
+			return true;
+		}
+		if(arg0 instanceof IBundledEmitter && canConnectBundledImpl(side)) 
+		{
+			con |= 1 << side;
+			return true;
+		}
 		return false;
 	}
 	
@@ -442,6 +464,11 @@ public abstract class GatePart extends JCuboidPart implements JNormalOcclusion, 
 	}
 	
 	//---
+	
+	public boolean isConnectedOnSide(int side)
+	{
+		return (con >> side & 1) == 1;
+	}
 
 	@Override
 	public final boolean canConnectRedstone(int arg0) 

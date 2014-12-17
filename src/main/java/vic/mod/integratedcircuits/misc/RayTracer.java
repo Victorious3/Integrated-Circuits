@@ -78,4 +78,14 @@ public class RayTracer
 		}		
 		return nearest;
 	}
+
+	public static MovingObjectPosition rayTrace(EntityPlayer player, float partialTicks) 
+	{
+		Vec3[] playerRay = getPlayerRay(player, partialTicks);
+		Vec3 start = playerRay[0];
+		Vec3 end = playerRay[1];
+		
+		MovingObjectPosition target = player.worldObj.rayTraceBlocks(start, end);
+		return target;
+	}
 }

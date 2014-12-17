@@ -8,10 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
@@ -25,8 +22,8 @@ public class MiscUtils
 		return Minecraft.getMinecraft().thePlayer;
 	}
 
-	private static ForgeDirection[] order = new ForgeDirection[]{NORTH, EAST, SOUTH, WEST};
-	private static int[] index = new int[]{-1, -1, 0, 2, 3, 1, -1};
+	private static ForgeDirection[] order = {NORTH, EAST, SOUTH, WEST};
+	private static int[] index = {-1, -1, 0, 2, 3, 1, -1};
 	
 	public static ForgeDirection rotn(ForgeDirection fd, int offset)
 	{
@@ -60,21 +57,6 @@ public class MiscUtils
 	public static String getLocalizedDirection(ForgeDirection fd)
 	{
 		return I18n.format("fdirection." + fd.name().toLowerCase() + ".name");
-	}
-	
-	/** Borrowed from BetterStorage **/
-	public static MovingObjectPosition rayTrace(EntityPlayer player, float partialTicks) 
-	{
-		double range = ((player.worldObj.isRemote)
-			? Minecraft.getMinecraft().playerController.getBlockReachDistance()
-			: ((EntityPlayerMP)player).theItemInWorldManager.getBlockReachDistance());
-		
-		Vec3 start = Vec3.createVectorHelper(player.posX, player.posY + 1.62 - player.yOffset, player.posZ);
-		Vec3 look = player.getLook(1.0F);
-		Vec3 end = start.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range);
-		
-		MovingObjectPosition target = player.worldObj.rayTraceBlocks(start, end);
-		return target;
 	}
 	
 	public static AxisAlignedBB getRotatedInstance(AxisAlignedBB def, int rotation)
