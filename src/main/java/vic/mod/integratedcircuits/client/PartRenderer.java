@@ -3,10 +3,12 @@ package vic.mod.integratedcircuits.client;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.client.renderer.IconFlipped;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
@@ -25,11 +27,65 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 {	
 	protected List<IComponentModel> models = new LinkedList<IComponentModel>();
 	
+	private ModelBundledConnection[] bundledModels = new ModelBundledConnection[4];
+	private ModelRedstoneConnection[] redstoneModels = new ModelRedstoneConnection[4];
+	
 	public static IIcon iconBase;
+	public static IIcon iconWire;
+	public static IIcon iconWireFlipped;
+	public static IIcon iconRSWireOff;
+	public static IIcon iconRSWireOn;
 	
 	public PartRenderer()
 	{
 		models.add(new BaseModel());
+	}
+	
+	public void addBundledConnections(int flag1, int flag2)
+	{
+		if((flag1 & 1) != 0) bundledModels[0] = new ModelBundledConnection(0, flag2 & 1);
+		if((flag1 & 2) != 0) bundledModels[1] = new ModelBundledConnection(1, (flag2 & 2) >> 1);
+		if((flag1 & 4) != 0) bundledModels[2] = new ModelBundledConnection(2, (flag2 & 4) >> 2);
+		if((flag1 & 8) != 0) bundledModels[3] = new ModelBundledConnection(3, (flag2 & 8) >> 3);
+		
+		for(IComponentModel m : bundledModels)
+			if(m != null) models.add(m);
+	}
+	
+	public void addRedstoneConnections(int flag1, int flag2)
+	{
+		if((flag1 & 1) != 0) redstoneModels[0] = new ModelRedstoneConnection(0, flag2 & 1);
+		if((flag1 & 2) != 0) redstoneModels[1] = new ModelRedstoneConnection(1, (flag2 & 2) >> 1);
+		if((flag1 & 4) != 0) redstoneModels[2] = new ModelRedstoneConnection(2, (flag2 & 4) >> 2);
+		if((flag1 & 8) != 0) redstoneModels[3] = new ModelRedstoneConnection(3, (flag2 & 8) >> 3);
+		
+		for(IComponentModel m : redstoneModels)
+			if(m != null) models.add(m);
+	}
+	
+	public void prepareBundled(int flag)
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			bundledModels[i].rendered = (flag & 1) != 0;
+			flag >>= 1;
+		}
+	}
+	
+	public void prepareRedstone(int flag1, int flag2)
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			redstoneModels[i].rendered = (flag1 & 1) != 0;
+			redstoneModels[i].active = (flag2 & 1) != 0;
+			flag1 >>= 1;
+			flag2 >>= 1;
+		}
+	}
+	
+	public static interface IComponentModel
+	{
+		public void renderModel(Transformation t, int orient);
 	}
 	
 	public static class BaseModel implements IComponentModel
@@ -58,6 +114,98 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		}
 	}
 	
+	public static class ModelBundledConnection implements IComponentModel
+	{
+		public static CCModel[][] conModels = new CCModel[2][24];
+		
+		static
+		{
+			CCModel modelSmall = generateModel(true);
+			CCModel modelBig = generateModel(false);
+			for(int j = 0; j < 24; j++)
+			{
+				conModels[0][j] = bakeCopy(modelSmall, j).shrinkUVs(0.002);
+				conModels[1][j] = bakeCopy(modelBig, j).shrinkUVs(0.002);
+			}
+		}
+		
+		private final int rotation;
+		private boolean rendered = true;
+		private int small;
+		
+		ModelBundledConnection(int rotation, int small)
+		{
+			this.rotation = rotation;
+			this.small = small;
+		}
+	
+		@Override
+		public void renderModel(Transformation t, int arg1)
+		{
+			if(!rendered) return;
+			arg1 = arg1 & 28 | ((arg1 + rotation) & 3);
+			ForgeDirection dir = ForgeDirection.getOrientation((arg1 & 3) + 2);
+			ForgeDirection dir1 = ForgeDirection.getOrientation((arg1 & 28) >> 2).getRotation(ForgeDirection.UP);
+			boolean b = ((dir1.ordinal() % 2 == 0 ? 12 : 9) & dir.flag >> 2) > 0;
+			conModels[small][arg1 % 24].render(t, new IconTransformation(b ? iconWireFlipped : iconWire));
+		}
+		
+		private static CCModel generateModel(boolean small)
+		{
+			CCModel m1 = CCModel.quadModel(24);
+			double d = small ? 1 : 2;
+			m1.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, d / 16D);
+			m1.computeNormals();
+			return m1;
+		}
+	}
+
+	public static class ModelRedstoneConnection implements IComponentModel
+	{
+		public static CCModel[][] conModels = new CCModel[2][24];
+		
+		static
+		{
+			CCModel modelSmall = generateModel(true);
+			CCModel modelBig = generateModel(false);
+			for(int j = 0; j < 24; j++)
+			{
+				conModels[0][j] = bakeCopy(modelSmall, j).shrinkUVs(0.002);
+				conModels[1][j] = bakeCopy(modelBig, j).shrinkUVs(0.002);
+			}
+		}
+		
+		private final int rotation;
+		private boolean rendered = true;
+		private boolean active = false;
+		private int small;
+		
+		ModelRedstoneConnection(int rotation, int small)
+		{
+			this.rotation = rotation;
+			this.small = small;
+		}
+	
+		@Override
+		public void renderModel(Transformation t, int arg1)
+		{	
+			if(!rendered) return;
+			arg1 = arg1 & 28 | ((arg1 + rotation) & 3);
+			conModels[small][arg1 % 24].render(t, new IconTransformation(active ? iconRSWireOn : iconRSWireOff));
+		}
+		
+		private static CCModel generateModel(boolean small)
+		{
+			CCModel m1 = CCModel.quadModel(72);
+			double d = small ? 2 : 1;
+			m1.generateBox(0, 0, 2, 7, d, 0.32, 2, 0, 0, 16, 16, 16);
+			m1.generateBox(24, 0, 2, 6, d, 0.16, 1, 9, 0, 16, 16, 16);
+			m1.generateBox(48, 0, 2, 9, d, 0.16, 1, 9, 0, 16, 16, 16);
+			m1.computeNormals();
+			return m1;
+		}
+	}
+	
 	/** https://github.com/MrTJP/ProjectRed/blob/master/src/mrtjp/projectred/integration/ComponentStore.java **/
 	public static CCModel bakeCopy(CCModel base, int orient)
 	{
@@ -69,7 +217,7 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 				Vertex5 vtmp = m.verts[i + 1];
 				Vector3 ntmp = m.normals()[i + 1];
 				m.verts[i + 1] = m.verts[i + 3];
-				m.normals()[i+1] = m.normals()[i+3];
+				m.normals()[i + 1] = m.normals()[i + 3];
 				m.verts[i + 3] = vtmp;
 				m.normals()[i + 3] = ntmp;
 			}
@@ -88,12 +236,7 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 			model.verts[i].vec.subtract(model.normals()[i].copy().multiply(inset));
 		return model;
 	}
-	
-	public static interface IComponentModel
-	{
-		public void renderModel(Transformation t, int orient);
-	}
-	
+
 	public void prepare(T part) 
 	{
 		
@@ -122,6 +265,10 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 	public void registerIcons(IIconRegister arg0) 
 	{
 		iconBase = arg0.registerIcon(IntegratedCircuits.modID + ":ic_base");
+		iconWire = arg0.registerIcon(IntegratedCircuits.modID + ":ic_wire");
+		iconWireFlipped = new IconFlipped(iconWire, true, false);
+		iconRSWireOff = arg0.registerIcon(IntegratedCircuits.modID + ":ic_rswire_off");
+		iconRSWireOn = arg0.registerIcon(IntegratedCircuits.modID + ":ic_rswire_on");
 	}
 
 	@Override

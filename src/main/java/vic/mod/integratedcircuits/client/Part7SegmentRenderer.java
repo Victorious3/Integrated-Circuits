@@ -1,13 +1,9 @@
 package vic.mod.integratedcircuits.client;
 
-import java.util.Arrays;
-
-import net.minecraft.client.renderer.IconFlipped;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -20,18 +16,14 @@ import codechicken.lib.vec.Transformation;
 
 public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 {
-	private static ModelBundledConnection[] conModels = new ModelBundledConnection[] {
-		new ModelBundledConnection(0), new ModelBundledConnection(1), new ModelBundledConnection(2), new ModelBundledConnection(3)};
-	
 	public static IIcon iconSocket;
-	public static IIcon iconWire;
-	public static IIcon iconWireFlipped;
 	public static IIcon iconSegment;
 	
 	public Part7SegmentRenderer()
 	{
 		models.add(new ModelSocket());
-		models.addAll(Arrays.asList(conModels));
+		addBundledConnections(15, 10);
+		addRedstoneConnections(15, 10);
 	}
 	
 	public static class ModelSocket implements IComponentModel
@@ -64,55 +56,20 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		}
 	}
 	
-	public static class ModelBundledConnection implements IComponentModel
-	{
-		private CCModel[] models = new CCModel[24];
-		private final int rotation;
-		private boolean rendered = true;
-		
-		private ModelBundledConnection(int rotation)
-		{
-			this.rotation = rotation;
-			CCModel model =  generateModel(rotation % 2 == 0);
-			for(int i = 0; i < 24; i++)
-				models[i] = bakeCopy(model, i).shrinkUVs(0.002);
-		}
-
-		@Override
-		public void renderModel(Transformation t, int arg1)
-		{
-			if(!rendered) return;
-			arg1 = arg1 & 28 | ((arg1 + rotation) & 3);
-			ForgeDirection dir = ForgeDirection.getOrientation((arg1 & 3) + 2);
-			ForgeDirection dir1 = ForgeDirection.getOrientation((arg1 & 28) >> 2).getRotation(ForgeDirection.UP);
-			boolean b = ((dir1.ordinal() % 2 == 0 ? 12 : 9) & dir.flag >> 2) > 0;
-			models[arg1 % 24].render(t, new IconTransformation(b ? iconWireFlipped : iconWire));
-		}
-		
-		private static CCModel generateModel(boolean small)
-		{
-			CCModel m1 = CCModel.quadModel(24);
-			double d = small ? 1 : 2;
-			m1.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, d / 16D);
-			m1.computeNormals();
-			return m1;
-		}
-	}
-	
 	private int display;
 	
 	@Override
 	public void prepare(Part7Segment part) 
 	{
-		for(int i = 0; i < 4; i++)
-			conModels[i].rendered = true;
+		prepareBundled(15);
+		prepareRedstone(0, 0);
 	}
 
 	@Override
 	public void prepareInv(ItemStack stack) 
 	{
-		for(int i = 0; i < 4; i++)
-			conModels[i].rendered = false;
+		prepareBundled(15);
+		prepareRedstone(0, 0);
 	}
 	
 	@Override
@@ -153,8 +110,6 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	{
 		super.registerIcons(arg0);
 		iconSocket = arg0.registerIcon(IntegratedCircuits.modID + ":ic_uniform");
-		iconWire = arg0.registerIcon(IntegratedCircuits.modID + ":ic_wire");
-		iconWireFlipped = new IconFlipped(iconWire, true, false);
 		iconSegment = arg0.registerIcon(IntegratedCircuits.modID + ":ic_segment");
 	}
 }
