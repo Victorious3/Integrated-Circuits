@@ -79,6 +79,7 @@ public class IntegratedCircuits
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		Config.initialize(event.getSuggestedConfigurationFile());
+		proxy.preInitialize();
 		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
 		
 		AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);

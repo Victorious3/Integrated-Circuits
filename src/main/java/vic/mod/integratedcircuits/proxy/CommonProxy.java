@@ -34,14 +34,13 @@ public class CommonProxy
 	
 	public void initialize()
 	{
-		MinecraftForge.EVENT_BUS.register(this);
-		FMLCommonHandler.instance().bus().register(this);
-		registerNetwork();
+		NetworkRegistry.INSTANCE.registerGuiHandler(IntegratedCircuits.instance, new GuiHandler());
 	}
 	
-	public void registerNetwork()
+	public void preInitialize()
 	{
-		NetworkRegistry.INSTANCE.registerGuiHandler(IntegratedCircuits.instance, new GuiHandler());
+		MinecraftForge.EVENT_BUS.register(this);
+		FMLCommonHandler.instance().bus().register(this);
 	}
 	
 	@SubscribeEvent

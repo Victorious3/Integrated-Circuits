@@ -11,33 +11,30 @@ import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartCircuit extends PartGate implements ICircuit
 {
 	public CircuitData circuitData;
-	@SideOnly(Side.CLIENT)
-	public static PartCircuitRenderer renderer;
+
 	private boolean update;
 		
 	public PartCircuit() 
 	{
 		super("circuit");
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
-			renderer = new PartCircuitRenderer();
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public PartCircuitRenderer getRenderer() 
 	{
-		return renderer;
+		return ClientProxy.circuitRenderer;
 	}
 	
 	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)

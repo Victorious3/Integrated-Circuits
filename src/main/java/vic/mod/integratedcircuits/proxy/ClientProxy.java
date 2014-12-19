@@ -31,6 +31,8 @@ import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.ItemLaserRenderer;
+import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
+import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
@@ -50,23 +52,28 @@ public class ClientProxy extends CommonProxy
 {
 	public static SemiTransparentRenderer stRenderer;
 	public static int clientTicks;
+	public static PartCircuitRenderer circuitRenderer;
+	public static Part7SegmentRenderer segmentRenderer;
 
 	@Override
 	public void initialize() 
 	{
 		super.initialize();
-		registerRenderers();
-	}
-	
-	public void registerRenderers()
-	{
-		//TODO shader?
-//		ShaderHelper.loadShaders();
+		
 		stRenderer = new SemiTransparentRenderer();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemLaser, new ItemLaserRenderer());
+	}
+	
+	@Override
+	public void preInitialize() 
+	{
+		super.preInitialize();
+		
+		circuitRenderer = new PartCircuitRenderer();
+		segmentRenderer = new Part7SegmentRenderer();
 	}
 	
 	@SubscribeEvent

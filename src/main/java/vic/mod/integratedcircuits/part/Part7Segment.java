@@ -4,23 +4,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class Part7Segment extends PartGate
 {
-	@SideOnly(Side.CLIENT)
-	private static Part7SegmentRenderer renderer;
 	public int display;
 	
 	public Part7Segment() 
 	{
 		super("7segment");
-		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
-			renderer = new Part7SegmentRenderer();
 	}
 	
 	@Override
@@ -69,7 +65,7 @@ public class Part7Segment extends PartGate
 	@SideOnly(Side.CLIENT)
 	public Part7SegmentRenderer getRenderer() 
 	{
-		return renderer;
+		return ClientProxy.segmentRenderer;
 	}
 
 	@Override

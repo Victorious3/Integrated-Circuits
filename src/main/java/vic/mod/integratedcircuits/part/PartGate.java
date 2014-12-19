@@ -264,6 +264,7 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 		return getItem();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	public abstract <T extends TMultiPart> PartRenderer<T> getRenderer();
 	
 	@Override
