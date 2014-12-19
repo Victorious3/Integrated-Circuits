@@ -27,7 +27,7 @@ public class Part7Segment extends PartGate
 	public void load(NBTTagCompound tag)
 	{
 		super.load(tag);
-		display = tag.getInteger("display");	
+		display = tag.getInteger("display");
 	}
 	
 	@Override
@@ -66,6 +66,7 @@ public class Part7Segment extends PartGate
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public Part7SegmentRenderer getRenderer() 
 	{
 		return renderer;
