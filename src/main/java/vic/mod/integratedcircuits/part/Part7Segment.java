@@ -6,18 +6,21 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class Part7Segment extends PartGate
 {
 	@SideOnly(Side.CLIENT)
-	private static Part7SegmentRenderer renderer = new Part7SegmentRenderer();
+	private static Part7SegmentRenderer renderer;
 	public int display;
 	
 	public Part7Segment() 
 	{
 		super("7segment");
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
+			renderer = new Part7SegmentRenderer();
 	}
 	
 	@Override

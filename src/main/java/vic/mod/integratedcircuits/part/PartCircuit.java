@@ -15,6 +15,7 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -22,12 +23,14 @@ public class PartCircuit extends PartGate implements ICircuit
 {
 	public CircuitData circuitData;
 	@SideOnly(Side.CLIENT)
-	public static PartCircuitRenderer renderer = new PartCircuitRenderer();
+	public static PartCircuitRenderer renderer;
 	private boolean update;
 		
 	public PartCircuit() 
 	{
 		super("circuit");
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
+			renderer = new PartCircuitRenderer();
 	}
 	
 	@Override
