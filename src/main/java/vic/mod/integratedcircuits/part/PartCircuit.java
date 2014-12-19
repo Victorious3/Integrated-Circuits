@@ -24,7 +24,7 @@ public class PartCircuit extends PartGate implements ICircuit
 	@SideOnly(Side.CLIENT)
 	public static PartCircuitRenderer renderer = new PartCircuitRenderer();
 	private boolean update;
-
+		
 	public PartCircuit() 
 	{
 		super("circuit");
@@ -117,6 +117,17 @@ public class PartCircuit extends PartGate implements ICircuit
 	}
 
 	@Override
+	public void read(byte discr, MCDataInput packet) 
+	{
+		if(discr == 10)
+		{
+			io = packet.readByte();
+			tile().markRender();
+		}
+		super.read(discr, packet);
+	}
+
+	@Override
 	public void scheduledTick() 
 	{
 		circuitData.updateInput();
@@ -140,6 +151,7 @@ public class PartCircuit extends PartGate implements ICircuit
 	@Override
 	public int updateRedstoneInput(int side) 
 	{
+		int oin = input[side][0];
 		int in = super.updateRedstoneInput(side);
 		if(in == 0 && getModeAtSide(side) == CircuitProperties.ANALOG)
 			in = updateComparatorInput(side);
@@ -224,6 +236,7 @@ public class PartCircuit extends PartGate implements ICircuit
 		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
 		tile().notifyPartChange(this);
 		tile().notifyNeighborChange(getSide());
+		updateRedstoneIO();
 	}
 
 	@Override

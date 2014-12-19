@@ -49,6 +49,8 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 	private Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
 	public byte[][] output = new byte[4][16];
 	public byte[][] input = new byte[4][16];
+	//Used by the client, redstone IO
+	public byte io;
 	
 	public PartGate(String name)
 	{
@@ -103,6 +105,10 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 		switch (discr) {
 		case 0 :
 			orientation = packet.readByte();
+			tile().markRender();
+			break;
+		case 1 :
+			io = packet.readByte();
 			tile().markRender();
 			break;
 		}
@@ -315,6 +321,17 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 			if(canConnectRedstoneImpl(i)) input[i][0] = (byte)updateRedstoneInput(i);
 			else if(IntegratedCircuits.isPRLoaded && canConnectBundledImpl(i)) input[i] = updatedBundledInput(i);
 		}
+		updateRedstoneIO();
+	}
+	
+	public void updateRedstoneIO()
+	{
+		byte oio = io;
+		io = 0;
+		for(int i = 0; i < 4; i++)
+			io |= getRedstoneInput(i) != 0 ? 1 << i: 0;
+		
+		if(oio != io) getWriteStream(1).writeByte(io);
 	}
 	
 	public byte getRedstoneInput(int side)

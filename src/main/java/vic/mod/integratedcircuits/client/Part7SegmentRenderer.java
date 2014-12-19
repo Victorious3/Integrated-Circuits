@@ -22,8 +22,8 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	public Part7SegmentRenderer()
 	{
 		models.add(new ModelSocket());
-		addBundledConnections(15, 10);
-		addRedstoneConnections(15, 10);
+		addBundledConnections(15, 1, 2, 1, 2);
+		addRedstoneConnections(15, 1, 2, 1, 2);
 	}
 	
 	public static class ModelSocket implements IComponentModel

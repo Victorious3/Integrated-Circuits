@@ -41,23 +41,23 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		models.add(new BaseModel());
 	}
 	
-	public void addBundledConnections(int flag1, int flag2)
+	public void addBundledConnections(int flag1, int... size)
 	{
-		if((flag1 & 1) != 0) bundledModels[0] = new ModelBundledConnection(0, flag2 & 1);
-		if((flag1 & 2) != 0) bundledModels[1] = new ModelBundledConnection(1, (flag2 & 2) >> 1);
-		if((flag1 & 4) != 0) bundledModels[2] = new ModelBundledConnection(2, (flag2 & 4) >> 2);
-		if((flag1 & 8) != 0) bundledModels[3] = new ModelBundledConnection(3, (flag2 & 8) >> 3);
+		if((flag1 & 1) != 0) bundledModels[0] = new ModelBundledConnection(0, size[0]);
+		if((flag1 & 2) != 0) bundledModels[1] = new ModelBundledConnection(1, size[1]);
+		if((flag1 & 4) != 0) bundledModels[2] = new ModelBundledConnection(2, size[2]);
+		if((flag1 & 8) != 0) bundledModels[3] = new ModelBundledConnection(3, size[3]);
 		
 		for(IComponentModel m : bundledModels)
 			if(m != null) models.add(m);
 	}
 	
-	public void addRedstoneConnections(int flag1, int flag2)
+	public void addRedstoneConnections(int flag1, int... size)
 	{
-		if((flag1 & 1) != 0) redstoneModels[0] = new ModelRedstoneConnection(0, flag2 & 1);
-		if((flag1 & 2) != 0) redstoneModels[1] = new ModelRedstoneConnection(1, (flag2 & 2) >> 1);
-		if((flag1 & 4) != 0) redstoneModels[2] = new ModelRedstoneConnection(2, (flag2 & 4) >> 2);
-		if((flag1 & 8) != 0) redstoneModels[3] = new ModelRedstoneConnection(3, (flag2 & 8) >> 3);
+		if((flag1 & 1) != 0) redstoneModels[3] = new ModelRedstoneConnection(0, size[0]);
+		if((flag1 & 2) != 0) redstoneModels[0] = new ModelRedstoneConnection(1, size[1]);
+		if((flag1 & 4) != 0) redstoneModels[1] = new ModelRedstoneConnection(2, size[2]);
+		if((flag1 & 8) != 0) redstoneModels[2] = new ModelRedstoneConnection(3, size[3]);
 		
 		for(IComponentModel m : redstoneModels)
 			if(m != null) models.add(m);
@@ -67,6 +67,7 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 	{
 		for(int i = 0; i < 4; i++)
 		{
+			if(bundledModels[i] == null) continue;
 			bundledModels[i].rendered = (flag & 1) != 0;
 			flag >>= 1;
 		}
@@ -76,6 +77,7 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 	{
 		for(int i = 0; i < 4; i++)
 		{
+			if(redstoneModels[i] == null) continue;
 			redstoneModels[i].rendered = (flag1 & 1) != 0;
 			redstoneModels[i].active = (flag2 & 1) != 0;
 			flag1 >>= 1;
@@ -116,27 +118,16 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 	
 	public static class ModelBundledConnection implements IComponentModel
 	{
-		public static CCModel[][] conModels = new CCModel[2][24];
-		
-		static
-		{
-			CCModel modelSmall = generateModel(true);
-			CCModel modelBig = generateModel(false);
-			for(int j = 0; j < 24; j++)
-			{
-				conModels[0][j] = bakeCopy(modelSmall, j).shrinkUVs(0.002);
-				conModels[1][j] = bakeCopy(modelBig, j).shrinkUVs(0.002);
-			}
-		}
-		
+		private CCModel[] conModels = new CCModel[24];
 		private final int rotation;
 		private boolean rendered = true;
-		private int small;
 		
-		ModelBundledConnection(int rotation, int small)
+		ModelBundledConnection(int rotation, int size)
 		{
 			this.rotation = rotation;
-			this.small = small;
+			CCModel model = generateModel(size);
+			for(int i = 0; i < 24; i++)
+				conModels[i] = bakeCopy(model, i).shrinkUVs(0.002);
 		}
 	
 		@Override
@@ -147,14 +138,13 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 			ForgeDirection dir = ForgeDirection.getOrientation((arg1 & 3) + 2);
 			ForgeDirection dir1 = ForgeDirection.getOrientation((arg1 & 28) >> 2).getRotation(ForgeDirection.UP);
 			boolean b = ((dir1.ordinal() % 2 == 0 ? 12 : 9) & dir.flag >> 2) > 0;
-			conModels[small][arg1 % 24].render(t, new IconTransformation(b ? iconWireFlipped : iconWire));
+			conModels[arg1 % 24].render(t, new IconTransformation(b ? iconWireFlipped : iconWire));
 		}
 		
-		private static CCModel generateModel(boolean small)
+		private CCModel generateModel(int size)
 		{
 			CCModel m1 = CCModel.quadModel(24);
-			double d = small ? 1 : 2;
-			m1.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, d / 16D);
+			m1.generateBlock(0, 5 / 16D, 0.0003, 0, 11 / 16D, 4 / 16D, size / 16D);
 			m1.computeNormals();
 			return m1;
 		}
@@ -162,28 +152,18 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 
 	public static class ModelRedstoneConnection implements IComponentModel
 	{
-		public static CCModel[][] conModels = new CCModel[2][24];
-		
-		static
-		{
-			CCModel modelSmall = generateModel(true);
-			CCModel modelBig = generateModel(false);
-			for(int j = 0; j < 24; j++)
-			{
-				conModels[0][j] = bakeCopy(modelSmall, j).shrinkUVs(0.002);
-				conModels[1][j] = bakeCopy(modelBig, j).shrinkUVs(0.002);
-			}
-		}
-		
+		private CCModel[] conModels = new CCModel[24];
 		private final int rotation;
 		private boolean rendered = true;
 		private boolean active = false;
 		private int small;
 		
-		ModelRedstoneConnection(int rotation, int small)
+		ModelRedstoneConnection(int rotation, int size)
 		{
 			this.rotation = rotation;
-			this.small = small;
+			CCModel model = generateModel(size);
+			for(int i = 0; i < 24; i++)
+				conModels[i] = bakeCopy(model, i).shrinkUVs(0.002);
 		}
 	
 		@Override
@@ -191,16 +171,15 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		{	
 			if(!rendered) return;
 			arg1 = arg1 & 28 | ((arg1 + rotation) & 3);
-			conModels[small][arg1 % 24].render(t, new IconTransformation(active ? iconRSWireOn : iconRSWireOff));
+			conModels[arg1 % 24].render(t, new IconTransformation(active ? iconRSWireOn : iconRSWireOff));
 		}
 		
-		private static CCModel generateModel(boolean small)
+		private static CCModel generateModel(int size)
 		{
 			CCModel m1 = CCModel.quadModel(72);
-			double d = small ? 2 : 1;
-			m1.generateBox(0, 0, 2, 7, d, 0.32, 2, 0, 0, 16, 16, 16);
-			m1.generateBox(24, 0, 2, 6, d, 0.16, 1, 9, 0, 16, 16, 16);
-			m1.generateBox(48, 0, 2, 9, d, 0.16, 1, 9, 0, 16, 16, 16);
+			m1.generateBox(0, 0, 2, 7, size, 0.32, 2, 0, 0, 16, 16, 16);
+			m1.generateBox(24, 0, 2, 6, size, 0.16, 1, 9, 0, 16, 16, 16);
+			m1.generateBox(48, 0, 2, 9, size, 0.16, 1, 9, 0, 16, 16, 16);
 			m1.computeNormals();
 			return m1;
 		}
