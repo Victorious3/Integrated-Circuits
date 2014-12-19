@@ -22,7 +22,10 @@ import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.TMultiPart;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 {	
 	protected List<IComponentModel> models = new LinkedList<IComponentModel>();

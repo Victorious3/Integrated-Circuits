@@ -16,8 +16,11 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /** https://github.com/MrTJP/ProjectRed/ **/
+@SideOnly(Side.CLIENT)
 public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 {
 	public static IIcon iconIC;

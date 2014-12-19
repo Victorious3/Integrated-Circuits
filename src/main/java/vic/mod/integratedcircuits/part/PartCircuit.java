@@ -31,13 +31,14 @@ public class PartCircuit extends PartGate implements ICircuit
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public PartCircuitRenderer getRenderer() 
 	{
 		return renderer;
 	}
 	
-    public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
-    {
+	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
+	{
 		super.preparePlacement(player, pos, side, meta);
 		
 		ItemStack stack = player.getCurrentEquippedItem();
@@ -46,7 +47,7 @@ public class PartCircuit extends PartGate implements ICircuit
 		
 		circuitData = CircuitData.readFromNBT(comp.getCompoundTag("circuit"), this);
 		circuitData.setQueueEnabled(false);
-    }
+	}
 
 	@Override
 	public void load(NBTTagCompound tag) 
