@@ -117,17 +117,6 @@ public class PartCircuit extends PartGate implements ICircuit
 	}
 
 	@Override
-	public void read(byte discr, MCDataInput packet) 
-	{
-		if(discr == 10)
-		{
-			io = packet.readByte();
-			tile().markRender();
-		}
-		super.read(discr, packet);
-	}
-
-	@Override
 	public void scheduledTick() 
 	{
 		circuitData.updateInput();
