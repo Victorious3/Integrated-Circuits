@@ -7,13 +7,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.Resources;
+import vic.mod.integratedcircuits.client.model.ModelChip;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.part.PartCircuit;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Translation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -24,37 +21,11 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 
 	public PartCircuitRenderer()
 	{
-		models.add(new ChipModel());
+		models.add(new ModelChip());
 		addBundledConnections(15, 2, 2, 2, 2);
 		addRedstoneConnections(15, 2, 2, 2, 2);
 	}
 
-	public static class ChipModel implements IComponentModel
-	{
-		private static CCModel[] models = new CCModel[24];
-		private static CCModel base = generateModel();
-		
-		static
-		{
-			for(int i = 0; i < 24; i++) models[i] = bakeCopy(base, i);
-		}
-
-		@Override
-		public void renderModel(Transformation arg0, int arg1)
-		{
-			models[arg1 % 24].render(arg0, new IconTransformation(Resources.ICON_IC));
-		}
-		
-		private static CCModel generateModel()
-		{
-			CCModel m1 = CCModel.quadModel(24);
-			m1.generateBlock(0, 0, 0, 0, 12 / 16D, 3 / 16D, 12 / 16D);
-			m1.apply(new Translation(2 / 16D, 2 / 16D, 2 / 16D));
-			m1.computeNormals();
-			return m1;
-		}
-	}
-	
 	private byte tier;
 	private String name = "NO_NAME";
 

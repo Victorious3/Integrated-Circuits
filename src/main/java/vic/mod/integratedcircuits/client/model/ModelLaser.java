@@ -1,4 +1,4 @@
-package vic.mod.integratedcircuits.client;
+package vic.mod.integratedcircuits.client.model;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;

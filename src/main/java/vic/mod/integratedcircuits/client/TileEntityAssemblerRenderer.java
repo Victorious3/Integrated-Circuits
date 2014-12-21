@@ -15,6 +15,7 @@ import vic.mod.integratedcircuits.DiskDrive.ModelFloppy;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.Resources;
+import vic.mod.integratedcircuits.client.model.ModelLaser;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import vic.mod.integratedcircuits.misc.RenderUtils;
