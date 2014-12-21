@@ -14,13 +14,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockAssembler extends BlockContainer
 {
-	private IIcon front_off, front_on, back, side, bottom, top;
-	
 	public BlockAssembler() 
 	{
 		super(Material.iron);
@@ -61,14 +60,14 @@ public class BlockAssembler extends BlockContainer
 	{
 		int rotation = te != null ? te.rotation : 0;
 		
-		if(s == 0) return bottom;
-		else if(s == 1) return top;
+		if(s == 0) return Resources.ICON_ASSEMBLER_BOTTOM;
+		else if(s == 1) return Resources.ICON_ASSEMBLER_TOP;
 		else if(s == 2 && rotation == 0 || s == 5 && rotation == 1 
 			|| s == 3 && rotation == 2 || s == 4 && rotation == 3) 
-			return te != null && te.laserHelper.isRunning ? front_on : front_off;
+			return te != null && te.laserHelper.isRunning ? Resources.ICON_ASSEMBLER_FRONT_ON : Resources.ICON_ASSEMBLER_FRONT_OFF;
 		else if(s == 3 && rotation == 0 || s == 4 && rotation == 1 
-			|| s == 2 && rotation == 2 || s == 5 && rotation == 3) return back;
-		else return side;
+			|| s == 2 && rotation == 2 || s == 5 && rotation == 3) return Resources.ICON_ASSEMBLER_BACK;
+		else return Resources.ICON_ASSEMBLER_SIDE;
 	}
 	
 	@Override
@@ -84,18 +83,6 @@ public class BlockAssembler extends BlockContainer
 	{
 		TileEntityAssembler te = (TileEntityAssembler)world.getTileEntity(x, y, z);
 		te.dropContents();
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister ir) 
-	{
-		front_off = ir.registerIcon(IntegratedCircuits.modID + ":assembler_front_off");	
-		front_on = ir.registerIcon(IntegratedCircuits.modID + ":assembler_front_on");
-		back = ir.registerIcon(IntegratedCircuits.modID + ":assembler_back");
-		bottom = ir.registerIcon(IntegratedCircuits.modID + ":assembler_bottom");
-		top = ir.registerIcon(IntegratedCircuits.modID + ":assembler_top");
-		side = ir.registerIcon(IntegratedCircuits.modID + ":assembler_side");
 	}
 	
 	@Override
@@ -141,4 +128,7 @@ public class BlockAssembler extends BlockContainer
 	{
 		return false;
 	}
+
+	@Override
+	public void registerBlockIcons(IIconRegister p_149651_1_) {}
 }

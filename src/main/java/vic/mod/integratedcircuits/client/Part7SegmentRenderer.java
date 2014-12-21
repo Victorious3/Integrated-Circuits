@@ -1,13 +1,11 @@
 package vic.mod.integratedcircuits.client;
 
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.part.Part7Segment;
 import codechicken.lib.render.CCModel;
@@ -16,9 +14,6 @@ import codechicken.lib.vec.Transformation;
 
 public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 {
-	public static IIcon iconSocket;
-	public static IIcon iconSegment;
-	
 	public Part7SegmentRenderer()
 	{
 		models.add(new ModelSocket());
@@ -40,7 +35,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		@Override
 		public void renderModel(Transformation t, int orient)
 		{
-			models[orient % 24].render(t, new IconTransformation(iconSocket));
+			models[orient % 24].render(t, new IconTransformation(Resources.ICON_IC_SOCKET));
 		}
 		
 		private static CCModel generateModel()
@@ -89,10 +84,10 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		RenderUtils.setBrightness(240, 240);
 		GL11.glColor3f(0, 1, 0);
 		
-		double u1 = iconSegment.getInterpolatedU(0);
-		double u2 = iconSegment.getInterpolatedU(11.5);
-		double v1 = iconSegment.getInterpolatedV(0.5);
-		double v2 = iconSegment.getInterpolatedV(16);
+		double u1 = Resources.ICON_IC_SEGMENT.getInterpolatedU(0);
+		double u2 = Resources.ICON_IC_SEGMENT.getInterpolatedU(11.5);
+		double v1 = Resources.ICON_IC_SEGMENT.getInterpolatedV(0.5);
+		double v2 = Resources.ICON_IC_SEGMENT.getInterpolatedV(16);
 		double y = 3 / 16F + 0.002F;
 		
 		Tessellator tes = Tessellator.instance;
@@ -106,13 +101,5 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		
 		RenderUtils.resetBrightness();
 		GL11.glPopMatrix();
-	}
-
-	@Override
-	public void registerIcons(IIconRegister arg0) 
-	{
-		super.registerIcons(arg0);
-		iconSocket = arg0.registerIcon(IntegratedCircuits.modID + ":ic_uniform");
-		iconSegment = arg0.registerIcon(IntegratedCircuits.modID + ":ic_segment");
 	}
 }

@@ -14,13 +14,12 @@ import net.minecraft.world.World;
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockPCBLayout extends BlockContainer
 {
-	private IIcon front_off, front_on, back_off, back_on, side;
-	
 	public BlockPCBLayout() 
 	{
 		super(Material.iron);
@@ -83,22 +82,11 @@ public class BlockPCBLayout extends BlockContainer
 		if(te != null) rotation = te.rotation;
 		
 		if(rotation == 0 && s == 2 || rotation == 1 && s == 5 
-			|| rotation == 2 && s == 3 || rotation == 3 && s == 4) return on ? front_on : front_off;
+			|| rotation == 2 && s == 3 || rotation == 3 && s == 4) return on ? Resources.ICON_CAD_FRONT_ON : Resources.ICON_CAD_FRONT_OFF;
 		if(rotation == 0 && s == 3 || rotation == 1 && s == 4 
-			|| rotation == 2 && s == 2 || rotation == 3 && s == 5) return on ? back_on : back_off;
+			|| rotation == 2 && s == 2 || rotation == 3 && s == 5) return on ? Resources.ICON_CAD_BACK_ON : Resources.ICON_CAD_BACK_OFF;
 		
-		return side;
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister ir) 
-	{
-		front_off = ir.registerIcon(IntegratedCircuits.modID + ":cad_front_off");
-		front_on = ir.registerIcon(IntegratedCircuits.modID + ":cad_front_on");
-		back_off = ir.registerIcon(IntegratedCircuits.modID + ":cad_back_off");
-		back_on = ir.registerIcon(IntegratedCircuits.modID + ":cad_back_on");
-		side = ir.registerIcon(IntegratedCircuits.modID + ":cad_side");
+		return Resources.ICON_CAD_SIDE;
 	}
 
 	@Override
@@ -114,4 +102,7 @@ public class BlockPCBLayout extends BlockContainer
 	{
 		return false;
 	}
+	
+	@Override
+	public void registerBlockIcons(IIconRegister ir) {}
 }

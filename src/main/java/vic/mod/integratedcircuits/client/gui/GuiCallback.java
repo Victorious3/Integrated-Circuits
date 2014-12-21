@@ -7,12 +7,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
@@ -25,7 +24,6 @@ public class GuiCallback<E extends GuiScreen & IGuiCallback> extends GuiScreen i
 {
 	private E parent;
 	private int guiWidth, guiHeight, xOff, yOff;
-	private static ResourceLocation border = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/border.png");
 	private List<GuiLabel> labelList = Lists.newArrayList();
 	private IHoverable hoveredElement;
 	
@@ -123,7 +121,7 @@ public class GuiCallback<E extends GuiScreen & IGuiCallback> extends GuiScreen i
 		drawRect(guiWidth - 1, 4, guiWidth, guiHeight - 4, 0xFF000000);
 		drawRect(guiWidth - 3, 4, guiWidth - 1, guiHeight - 4, 0xFF555555);
 		
-		mc.renderEngine.bindTexture(border);
+		mc.renderEngine.bindTexture(Resources.RESOURCE_GUI_BORDER);
 		GL11.glColor4f(1, 1, 1, 1);
 		func_146110_a(0, 0, 0, 0, 4, 4, 8, 8);
 		func_146110_a(guiWidth - 4, 0, 4, 0, 4, 4, 8, 8);

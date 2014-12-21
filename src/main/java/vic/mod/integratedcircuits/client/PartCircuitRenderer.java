@@ -2,14 +2,12 @@ package vic.mod.integratedcircuits.client;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.part.PartCircuit;
 import codechicken.lib.render.CCModel;
@@ -23,8 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 {
-	public static IIcon iconIC;
-	
+
 	public PartCircuitRenderer()
 	{
 		models.add(new ChipModel());
@@ -45,7 +42,7 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 		@Override
 		public void renderModel(Transformation arg0, int arg1)
 		{
-			models[arg1 % 24].render(arg0, new IconTransformation(iconIC));
+			models[arg1 % 24].render(arg0, new IconTransformation(Resources.ICON_IC));
 		}
 		
 		private static CCModel generateModel()
@@ -124,12 +121,5 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 		
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_LIGHTING);
-	}
-
-	@Override
-	public void registerIcons(IIconRegister arg0) 
-	{
-		super.registerIcons(arg0);
-		iconIC = arg0.registerIcon(IntegratedCircuits.modID + ":ic");
 	}
 }

@@ -3,12 +3,11 @@ package vic.mod.integratedcircuits.ic;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.ic.part.PartIOBit;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;
@@ -42,13 +41,9 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class CircuitPartRenderer 
 {
-	public static ResourceLocation partResource = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png");
-	public static ResourceLocation partBG1 = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/bg1.png");
-	public static ResourceLocation partBG2 = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/bg2.png");
-	
 	public static void renderPart(CircuitRenderWrapper crw, double x, double y)
 	{
-		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		Tessellator tes = Tessellator.instance;
 		GL11.glTranslated(x, y, 0);
 		tes.startDrawingQuads();
@@ -109,8 +104,6 @@ public class CircuitPartRenderer
 				&& n.canConnectToSide(pos.offset(ForgeDirection.EAST), parent, ForgeDirection.WEST)
 				&& !(n instanceof PartNull);
 		}
-		
-		if(part instanceof PartTorch && pos.x > 1) System.out.println(pos + " " + c1 + " " + c2 + " " + c3 + " " + c4);
 		
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
@@ -183,7 +176,7 @@ public class CircuitPartRenderer
 		int w = circuit.getCircuitData().getSize();
 
 		GL11.glTranslated(offX, offY, 0);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		tes.startDrawingQuads();
 		for(int x2 = 0; x2 < w; x2++)
 		{
@@ -203,7 +196,7 @@ public class CircuitPartRenderer
 		int w = circuit.getCircuitData().getSize();
 	
 		GL11.glTranslated(offX, offY, 0);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(partResource);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		tes.startDrawingQuads();
 		for(int x2 = 0; x2 < w; x2++)
 		{
@@ -223,13 +216,13 @@ public class CircuitPartRenderer
 		int w = data.getSize();
 		
 		GL11.glTranslated(offX, offY, 0);
-		Minecraft.getMinecraft().getTextureManager().bindTexture(partBG1);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF1);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
 		addQuad(0, 0, 0, 0, data.getSize() * 16, data.getSize() * 16, 16, 16, 16D / data.getSize(), 16D / data.getSize(), 0);
 		tes.draw();
 		
-		Minecraft.getMinecraft().getTextureManager().bindTexture(partBG2);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF2);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
 		addQuad(0, 0, 0, 0, 16, data.getSize() * 16, 16, 16, 16D, 16D / data.getSize(), 0);

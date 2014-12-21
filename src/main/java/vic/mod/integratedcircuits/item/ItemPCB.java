@@ -2,20 +2,16 @@ package vic.mod.integratedcircuits.item;
 
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 public class ItemPCB extends ItemBase
 {
-	private static IIcon icon;
-	private static IIcon icon_raw;
-	
 	public ItemPCB()
 	{
 		super("pcb");
@@ -33,18 +29,11 @@ public class ItemPCB extends ItemBase
 			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);
 		}
 	}
-	
-	@Override
-	public void registerIcons(IIconRegister ir) 
-	{
-		icon = ir.registerIcon(IntegratedCircuits.modID + ":pcb");
-		icon_raw = ir.registerIcon(IntegratedCircuits.modID + ":pcb_raw");
-	}
 
 	@Override
 	public IIcon getIconFromDamage(int damage) 
 	{
-		if(damage == 0) return icon_raw;
-		return icon;
+		if(damage == 0) return Resources.ICON_PCB_RAW;
+		return Resources.ICON_PCB;
 	}
 }

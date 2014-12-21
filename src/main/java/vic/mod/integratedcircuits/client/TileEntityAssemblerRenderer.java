@@ -7,15 +7,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.ModelFloppy;
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import vic.mod.integratedcircuits.misc.RenderUtils;
@@ -29,9 +28,6 @@ import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRenderer
 {
 	private static ModelFloppy model = new ModelFloppy(-7, -7, -9, 12, 2, 1);
-	
-	private ResourceLocation safetyRegulationsTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_safety.png");
-	private ResourceLocation bottomTex = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_bottom.png");
 	
 	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
 	public static LinkedList<Framebuffer> fboArray;
@@ -58,7 +54,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		{
 			GL11.glPushMatrix();
 			Tessellator tes = Tessellator.instance;
-			this.bindTexture(bottomTex);
+			this.bindTexture(Resources.RESOURCE_ASSEMBLER_BOTTOM);
 			tes.startDrawingQuads();
 			tes.setNormal(0, 1, 0);
 			tes.addVertexWithUV(0, 8 / 16F, 0, 0, 0);
@@ -117,7 +113,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			
 			GL11.glRotatef(180, 0, 0, 1);
 			GL11.glTranslatef(-1.005F, -1, 0);
-			this.bindTexture(safetyRegulationsTex);
+			this.bindTexture(Resources.RESOURCE_ASSEMBLER_SAFETY);
 			tes.startDrawingQuads();
 			tes.setNormal(1, 0, 0);
 			tes.addVertexWithUV(0, 9 / 16F, 1 - 7 / 16F, 0, 0);

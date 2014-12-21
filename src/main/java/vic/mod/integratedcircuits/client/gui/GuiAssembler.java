@@ -7,13 +7,13 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
-import net.minecraft.util.ResourceLocation;
 
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.ContainerAssembler;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
@@ -25,7 +25,6 @@ import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiAssembler extends GuiContainer implements IHoverableHandler
 {
-	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/assembler.png");
 	public TileEntityAssembler te;
 	private GuiCraftingList craftingList;
 	
@@ -57,14 +56,14 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		this.buttonList.add(new GuiButtonExt(2, guiLeft + 89, guiTop + 93, 30, 14, I18n.format("gui.integratedcircuits.assembler.run")));
 		this.buttonList.add(new GuiButtonExt(3, guiLeft + 122, guiTop + 93, 14, 14, "x"));
 
-		this.buttonList.add(labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 47, 14, 14, backgroundTexture)
+		this.buttonList.add(labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 47, 14, 14, Resources.RESOURCE_GUI_ASSEMBLER_BACKGROUND)
 			.addState(new Vec2(176, 0), new Vec2(176, 14))
 			.addDescription(
 				I18n.format("gui.integratedcircuits.assembler.pull.single"), 
 				I18n.format("gui.integratedcircuits.assembler.pull.auto"))
 			.setState(te.getOptionSet().getInt(te.SETTING_PULL)));
 		
-		this.buttonList.add(labelRedstoneMode = new GuiStateLabel(this, 5, guiLeft + 9, guiTop + 29, 14, 14, backgroundTexture)
+		this.buttonList.add(labelRedstoneMode = new GuiStateLabel(this, 5, guiLeft + 9, guiTop + 29, 14, 14, Resources.RESOURCE_GUI_ASSEMBLER_BACKGROUND)
 			.addState(new Vec2(176, 28), new Vec2(176, 42), new Vec2(176, 56))
 			.addDescription(
 				I18n.format("gui.integratedcircuits.assembler.redstone.enabled"), 
@@ -125,7 +124,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 		drawDefaultBackground();
 		hoverable = null;
 		
-		this.mc.getTextureManager().bindTexture(backgroundTexture);
+		this.mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_ASSEMBLER_BACKGROUND);
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 
 		drawRect(guiLeft + 46, guiTop + 94, guiLeft + 68, guiTop + 106, 0xFFA0A0A0);
@@ -197,7 +196,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 					}
 					drawCenteredString(fontRendererObj, status, guiLeft + i4, guiTop + 76, color << 16);
 				}
-				this.mc.getTextureManager().bindTexture(backgroundTexture);
+				this.mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_ASSEMBLER_BACKGROUND);
 				if(showBack) GL11.glColor3f(0.8F, 0.9F, 1F);
 				else GL11.glColor3f(1, 1, 1);
 				drawTexturedModalRect(guiLeft + 128, guiTop + 26, 190, 0, 12, 12);

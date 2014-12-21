@@ -13,7 +13,6 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
@@ -23,6 +22,7 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.Config;
 import vic.mod.integratedcircuits.ContainerPCBLayout;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiCallback.Action;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
@@ -70,8 +70,6 @@ import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverableHandler
 {	
-	private static final ResourceLocation backgroundTexture = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/pcblayout.png");
-	
 	private int lastX, lastY;
 	public TileEntityPCBLayout te;
 	
@@ -164,21 +162,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		nameField.setFocused(false);
 		
 		for(int i = 0; i < 16; i++)
-		{
 			this.buttonList.add(new GuiIO(i + 13, cx + 39 + i * 9, cy + 37, 15 - i, 0, this, te));
-		}
 		for(int i = 0; i < 16; i++)
-		{
 			this.buttonList.add(new GuiIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, 15 - i, 1, this, te));
-		}
 		for(int i = 0; i < 16; i++)
-		{
 			this.buttonList.add(new GuiIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3, this, te));
-		}
 		for(int i = 0; i < 16; i++)
-		{
 			this.buttonList.add(new GuiIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2, this, te));
-		}
 		
 		this.buttonList.add(c1);
 		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
@@ -310,7 +300,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		hoveredElement = null;
 		
 		GL11.glColor3f(1F, 1F, 1F);
-		mc.getTextureManager().bindTexture(backgroundTexture);
+		mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_CAD_BACKGROUND);
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);	
 		
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
@@ -343,7 +333,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		GL11.glPushMatrix();
 		GL11.glTranslated(guiLeft, guiTop, 0);
-		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
+		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor((int)((guiLeft + 17) * guiScale), this.mc.displayHeight - (int)((guiTop + 44) * guiScale) - 374 / 2 * guiScale, (int)(374 * guiScale / 2), (int)(374 * guiScale / 2));

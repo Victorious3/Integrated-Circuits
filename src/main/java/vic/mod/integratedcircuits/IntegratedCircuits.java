@@ -6,7 +6,6 @@ import vic.mod.integratedcircuits.item.ItemBase;
 import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
 import vic.mod.integratedcircuits.item.ItemGatePart;
-import vic.mod.integratedcircuits.item.ItemLaser;
 import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.net.AbstractPacket;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
@@ -57,7 +56,7 @@ public class IntegratedCircuits
 	public static ItemGatePart item7Segment;
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
-	public static ItemLaser itemLaser;
+	public static ItemBase itemLaser;
 	
 	public static ItemBase itemSilicon;
 	public static ItemBase itemSiliconDrop;
@@ -113,7 +112,7 @@ public class IntegratedCircuits
 		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
-		itemLaser = new ItemLaser();
+		itemLaser = new ItemBase("laser");
 		
 		itemSilicon = new ItemBase("silicon");
 		itemSiliconDrop = new ItemBase("silicon_drop");

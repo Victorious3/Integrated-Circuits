@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -30,6 +29,7 @@ import org.lwjgl.opengl.GL11;
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.ItemLaserRenderer;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
@@ -51,6 +51,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ClientProxy extends CommonProxy
 {
 	public static SemiTransparentRenderer stRenderer;
+	public static Resources resources;
+	
 	public static int clientTicks;
 	public static PartCircuitRenderer circuitRenderer;
 	public static Part7SegmentRenderer segmentRenderer;
@@ -74,6 +76,7 @@ public class ClientProxy extends CommonProxy
 		
 		circuitRenderer = new PartCircuitRenderer();
 		segmentRenderer = new Part7SegmentRenderer();
+		resources = new Resources();
 	}
 	
 	@SubscribeEvent
@@ -201,7 +204,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			GL11.glColor4f(1F, 1F, 1F, 1F);
 			
-			mc.renderEngine.bindTexture(haloLocation);
+			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_HALO);
 			
 			GL11.glRotated(30, 1, 0, -1);
 			GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
@@ -240,7 +243,7 @@ public class ClientProxy extends CommonProxy
 		else if(renderType == 3)
 		{
 			//Stephanie Dola
-			mc.renderEngine.bindTexture(earsLocation);
+			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_EARS);
 			ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
 			GameData.getBlockRegistry().getObject(name);
 		}
@@ -255,7 +258,7 @@ public class ClientProxy extends CommonProxy
 			renderHat();
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			
-			mc.renderEngine.bindTexture(flowerLocation);
+			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLOWER);
 			GL11.glPushMatrix();
 			GL11.glTranslatef(0, -9 / 16F, 0);
 			GL11.glTranslatef(2 / 16F, 0, -3.3F / 16F);
@@ -269,7 +272,7 @@ public class ClientProxy extends CommonProxy
 			tes.draw();
 			GL11.glPopMatrix();
 			
-			mc.renderEngine.bindTexture(fluffLocation);
+			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLUFF);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glPushMatrix();
 			GL11.glTranslatef(-1 / 16F, -8 / 16F, -5F / 16F);
@@ -285,12 +288,6 @@ public class ClientProxy extends CommonProxy
 		}
 		GL11.glPopMatrix();
 	}
-	
-	private static ResourceLocation crownLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/crown.png");
-	private static ResourceLocation haloLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/halo.png");
-	private static ResourceLocation earsLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/ears.png");
-	private static ResourceLocation flowerLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/mami_flower.png");
-	private static ResourceLocation fluffLocation = new ResourceLocation(IntegratedCircuits.modID, "textures/mami_fluff.png");
 	
 	public static void renderCurl()
 	{
@@ -401,7 +398,7 @@ public class ClientProxy extends CommonProxy
 		
 		public void render(float scale)
 		{
-			Minecraft.getMinecraft().renderEngine.bindTexture(crownLocation);
+			Minecraft.getMinecraft().renderEngine.bindTexture(Resources.RESOURCE_MISC_CROWN);
 			crown1.render(scale);
 			crown2.render(scale);
 		}

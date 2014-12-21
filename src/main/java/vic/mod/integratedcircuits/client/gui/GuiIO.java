@@ -7,12 +7,11 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.misc.MiscUtils;
@@ -26,7 +25,6 @@ public class GuiIO extends GuiButton implements IHoverable
 	private GuiPCBLayout parent;
 	private TileEntityPCBLayout te;
 	private boolean isActive;
-	
 	public GuiIO(int id, int x, int y, int color, int side, GuiPCBLayout parent, TileEntityPCBLayout te) 
 	{
 		super(id, x, y, 9, 9, "");
@@ -39,7 +37,7 @@ public class GuiIO extends GuiButton implements IHoverable
 	@Override
 	public void drawButton(Minecraft mc, int x, int y) 
 	{
-		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
+		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		this.field_146123_n = x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width && y < this.yPosition + this.height;
 		this.field_146123_n = !parent.blockMouseInput && field_146123_n;
 		if(getHoverState(field_146123_n) == 2) parent.setCurrentItem(this);

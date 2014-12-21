@@ -6,8 +6,7 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
@@ -60,7 +59,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 	public void drawButton(Minecraft mc, int x, int y) 
 	{
 		super.drawButton(mc, x, y);
-		mc.getTextureManager().bindTexture(new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png"));
+		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		if(mode == 0) CircuitPartRenderer.renderPart(current, this.xPosition + 2, this.yPosition + 2);
 		else drawTexturedModalRect(this.xPosition + 2, this.yPosition + 1, (4 + mode) * 16, 15 * 16, 16, 16);
 		

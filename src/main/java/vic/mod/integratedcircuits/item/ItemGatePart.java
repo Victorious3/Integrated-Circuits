@@ -48,13 +48,6 @@ public class ItemGatePart extends JItemMultiPart
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister ir) 
 	{
-		part.getRenderer().registerIcons(ir);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public int getSpriteNumber() 
-	{
-		return 0;
+		
 	}
 }

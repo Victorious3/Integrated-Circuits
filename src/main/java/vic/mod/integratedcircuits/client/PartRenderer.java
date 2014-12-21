@@ -3,13 +3,10 @@ package vic.mod.integratedcircuits.client;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.minecraft.client.renderer.IconFlipped;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Resources;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -32,12 +29,6 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 	
 	private ModelBundledConnection[] bundledModels = new ModelBundledConnection[4];
 	private ModelRedstoneConnection[] redstoneModels = new ModelRedstoneConnection[4];
-	
-	public static IIcon iconBase;
-	public static IIcon iconWire;
-	public static IIcon iconWireFlipped;
-	public static IIcon iconRSWireOff;
-	public static IIcon iconRSWireOn;
 	
 	public PartRenderer()
 	{
@@ -106,7 +97,7 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		@Override
 		public void renderModel(Transformation t, int orient)
 		{
-			models[orient % 24].render(t, new IconTransformation(iconBase));
+			models[orient % 24].render(t, new IconTransformation(Resources.ICON_IC_BASE));
 		}
 		
 		private static CCModel generateModel()
@@ -141,7 +132,7 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 			ForgeDirection dir = ForgeDirection.getOrientation((arg1 & 3) + 2);
 			ForgeDirection dir1 = ForgeDirection.getOrientation((arg1 & 28) >> 2).getRotation(ForgeDirection.UP);
 			boolean b = ((dir1.ordinal() % 2 == 0 ? 12 : 9) & dir.flag >> 2) > 0;
-			conModels[arg1 % 24].render(t, new IconTransformation(b ? iconWireFlipped : iconWire));
+			conModels[arg1 % 24].render(t, new IconTransformation(b ? Resources.ICON_IC_WIRE_FLIPPED : Resources.ICON_IC_WIRE));
 		}
 		
 		private CCModel generateModel(int size)
@@ -174,7 +165,7 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		{	
 			if(!rendered) return;
 			arg1 = arg1 & 28 | ((arg1 + rotation) & 3);
-			conModels[arg1 % 24].render(t, new IconTransformation(active ? iconRSWireOn : iconRSWireOff));
+			conModels[arg1 % 24].render(t, new IconTransformation(active ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF));
 		}
 		
 		private static CCModel generateModel(int size)
@@ -244,15 +235,6 @@ public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 		
 	}
 	
-	public void registerIcons(IIconRegister arg0) 
-	{
-		iconBase = arg0.registerIcon(IntegratedCircuits.modID + ":ic_base");
-		iconWire = arg0.registerIcon(IntegratedCircuits.modID + ":ic_wire");
-		iconWireFlipped = new IconFlipped(iconWire, true, false);
-		iconRSWireOff = arg0.registerIcon(IntegratedCircuits.modID + ":ic_rswire_off");
-		iconRSWireOn = arg0.registerIcon(IntegratedCircuits.modID + ":ic_rswire_on");
-	}
-
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) 
 	{
