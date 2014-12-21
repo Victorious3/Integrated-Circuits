@@ -3,7 +3,6 @@ package vic.mod.integratedcircuits.ic.part.cell;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.ic.part.PartSimpleGate;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartANDCell extends PartSimpleGate
@@ -30,9 +29,9 @@ public class PartANDCell extends PartSimpleGate
 	@Override
 	protected void calcOutput(Vec2 pos, ICircuit parent) 
 	{
-		ForgeDirection f1 = MiscUtils.rotn(ForgeDirection.NORTH, getRotation(pos, parent));
+		ForgeDirection f1 = toExternal(pos, parent, ForgeDirection.NORTH);
 		ForgeDirection f2 = f1.getOpposite();
-		ForgeDirection f3 = MiscUtils.rotn(ForgeDirection.EAST, getRotation(pos, parent));
+		ForgeDirection f3 = toExternal(pos, parent, ForgeDirection.EAST);
 		setOutput(pos, parent, (getInputFromSide(pos, parent, f1) || getInputFromSide(pos, parent, f2)) && getInputFromSide(pos, parent, f3));
 	}
 

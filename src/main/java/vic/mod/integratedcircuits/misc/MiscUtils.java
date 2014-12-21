@@ -33,6 +33,11 @@ public class MiscUtils
 		return order[pos];
 	}
 	
+	public static ForgeDirection rot(ForgeDirection fd)
+	{
+		return rotn(fd, 1);
+	}
+	
 	public static ForgeDirection getDirection(int side)
 	{
 		return order[side];
@@ -41,11 +46,6 @@ public class MiscUtils
 	public static int getSide(ForgeDirection dir)
 	{
 		return index[dir.ordinal()];
-	}
-
-	public static ForgeDirection rot(ForgeDirection fd)
-	{
-		return rotn(fd, 1);
 	}
 	
 	public static String getLocalizedDirection(ForgeDirection fd)
@@ -58,9 +58,9 @@ public class MiscUtils
 		def = def.copy();
 		def.offset(-0.5, -0.5, -0.5);
 		switch (rotation) {
-		case 2 : def = AxisAlignedBB.getBoundingBox(def.minZ, def.minY, def.maxX * -1, def.maxZ, def.maxY, def.minX * -1);
-		case 3 : def = AxisAlignedBB.getBoundingBox(def.maxX * -1, def.minY, def.maxZ * -1, def.minX * -1, def.maxY, def.minZ * -1);
-		case 1 : def = AxisAlignedBB.getBoundingBox(def.maxZ * -1, def.minY, def.minX, def.minZ * -1, def.maxY, def.maxX);
+		case 2 : def = AxisAlignedBB.getBoundingBox(def.minZ, def.minY, -def.maxX, def.maxZ, def.maxY, -def.minX);
+		case 3 : def = AxisAlignedBB.getBoundingBox(-def.maxX, def.minY, -def.maxZ, -def.minX, def.maxY, -def.minZ);
+		case 1 : def = AxisAlignedBB.getBoundingBox(-def.maxZ, def.minY, def.minX, -def.minZ, def.maxY, def.maxX);
 		}
 		def.offset(0.5, 0.5, 0.5);	
 		return def;

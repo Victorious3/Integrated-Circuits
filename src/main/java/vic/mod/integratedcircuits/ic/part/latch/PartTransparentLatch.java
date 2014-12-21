@@ -3,7 +3,6 @@ package vic.mod.integratedcircuits.ic.part.latch;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartTransparentLatch extends PartCPGate
@@ -13,9 +12,9 @@ public class PartTransparentLatch extends PartCPGate
 	{
 		super.onInputChange(pos, parent, side);
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		if(s2 == ForgeDirection.SOUTH || (s2 == ForgeDirection.WEST && getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent))))) 
+		if(s2 == ForgeDirection.SOUTH || (s2 == ForgeDirection.WEST && getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))) 
 		{
-			if(getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, getRotation(pos, parent)))) 
+			if(getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.WEST))) 
 				setState(pos, parent, getState(pos, parent) | 128);
 			else setState(pos, parent, getState(pos, parent) & ~128);
 		}

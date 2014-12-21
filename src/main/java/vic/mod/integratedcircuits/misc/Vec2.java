@@ -5,7 +5,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 /** An int value pair **/
 public class Vec2 implements Cloneable
 {
-	public int x, y;
+	public final int x, y;
 	
 	public Vec2(int a, int b)
 	{

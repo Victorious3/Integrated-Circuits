@@ -5,7 +5,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartStateCell extends PartDelayedAction
@@ -61,13 +60,13 @@ public class PartStateCell extends PartDelayedAction
 				setState(pos, parent, getState(pos, parent) & ~f2);
 				notifyNeighbours(pos, parent);
 			}
-			else if(!getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, getRotation(pos, parent))))
+			else if(!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)))
 				setDelay(pos, parent, true);
 		}
 		else if(s2 == ForgeDirection.EAST && (getState(pos, parent) & f1) > 0)
 		{
 			if(getInputFromSide(pos, parent, side)) setDelay(pos, parent, false);
-			else if(!getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent))))
+			else if(!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
 				setDelay(pos, parent, true);
 			notifyNeighbours(pos, parent);
 		}

@@ -3,7 +3,6 @@ package vic.mod.integratedcircuits.ic.part.cell;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.ic.part.PartSimpleGate;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartBufferCell extends PartSimpleGate
@@ -20,20 +19,25 @@ public class PartBufferCell extends PartSimpleGate
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		ForgeDirection fd = toInternal(pos, parent, side);
-		if(fd == ForgeDirection.NORTH) return getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent)));
-		else if(fd == ForgeDirection.SOUTH) return getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.NORTH, getRotation(pos, parent)));
+		if(fd == ForgeDirection.NORTH) 
+			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH));
+		else if(fd == ForgeDirection.SOUTH) 
+			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.NORTH));
 		
 		boolean out = super.getOutputToSide(pos, parent, side);
-		if(fd == ForgeDirection.EAST && !out) return getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, getRotation(pos, parent)));
-		else if(fd == ForgeDirection.WEST && !out) return getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, getRotation(pos, parent)));
+		if(fd == ForgeDirection.EAST && !out) 
+			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.WEST));
+		else if(fd == ForgeDirection.WEST && !out) 
+			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST));
+		
 		return out;
 	}
 	
 	@Override
 	protected void calcOutput(Vec2 pos, ICircuit parent) 
 	{
-		setOutput(pos, parent, (getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.NORTH, getRotation(pos, parent))) 
-			|| getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent)))));
+		setOutput(pos, parent, (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.NORTH)) 
+			|| getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))));
 	}
 	
 	@Override

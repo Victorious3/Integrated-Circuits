@@ -88,12 +88,14 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		GL11.glTranslatef(-0.5F, 0, -0.5F);
 		RenderUtils.setBrightness(240, 240);
 		GL11.glColor3f(0, 1, 0);
-		Tessellator tes = Tessellator.instance;
+		
 		double u1 = iconSegment.getInterpolatedU(0);
 		double u2 = iconSegment.getInterpolatedU(11.5);
 		double v1 = iconSegment.getInterpolatedV(0.5);
 		double v2 = iconSegment.getInterpolatedV(16);
 		double y = 3 / 16F + 0.002F;
+		
+		Tessellator tes = Tessellator.instance;
 		tes.startDrawingQuads();
 		tes.setNormal(0, 1, 0);
 		tes.addVertexWithUV(3.5 / 16F, y, 2.5 / 16F, u1, v1);
@@ -101,6 +103,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		tes.addVertexWithUV(12.5 / 16F, y, 13.5 / 16F, u2, v2);
 		tes.addVertexWithUV(12.5 / 16F, y, 2.5 / 16F, u2, v1);
 		tes.draw();
+		
 		RenderUtils.resetBrightness();
 		GL11.glPopMatrix();
 	}

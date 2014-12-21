@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits.ic.part;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 //TODO Is currently giving a one tick pulse, might cause problems with other gates.
@@ -16,9 +15,9 @@ public class PartSynchronizer extends PartCPGate
 		boolean input = getInputFromSide(pos, parent, s2);
 		
 		if(s2 == ForgeDirection.SOUTH && getInputFromSide(pos, parent, s2)) setState(pos, parent, getState(pos, parent) & ~896);
-		else if(s2 == ForgeDirection.EAST && !getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent))) && input) 
+		else if(s2 == ForgeDirection.EAST && !getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)) && input) 
 			setState(pos, parent, getState(pos, parent) | 128);
-		else if(s2 == ForgeDirection.WEST && !getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent))) && input) 
+		else if(s2 == ForgeDirection.WEST && !getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)) && input) 
 			setState(pos, parent, getState(pos, parent) | 256);
 		
 		if((getState(pos, parent) & 384) >> 7 == 3) 

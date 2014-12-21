@@ -6,7 +6,6 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 //TODO Acts a little bit different then described on the P:R wiki. I'll come back to this.
@@ -53,7 +52,7 @@ public class PartRSLatch extends PartCPGate
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		ForgeDirection s3 = MiscUtils.rotn(ForgeDirection.NORTH, getRotation(pos, parent));
+		ForgeDirection s3 = toExternal(pos, parent, ForgeDirection.NORTH);
 		boolean b1 = !(getInputFromSide(pos, parent, s3) && getInputFromSide(pos, parent, s3.getOpposite()));
 		if(((s2 == ForgeDirection.EAST && !isMirrored(pos, parent) 
 			|| s2 == ForgeDirection.WEST && isMirrored(pos, parent)) 

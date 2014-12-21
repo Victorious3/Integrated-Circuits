@@ -7,7 +7,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartRandomizer extends PartDelayedAction
@@ -36,7 +35,7 @@ public class PartRandomizer extends PartDelayedAction
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		if(!getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent)))) return false;
+		if(!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) return false;
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 == ForgeDirection.SOUTH) return false;
 		int rand = (getState(pos, parent) & 229376) >> 15;
