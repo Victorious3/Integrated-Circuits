@@ -4,40 +4,42 @@ import java.util.Random;
 
 import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartRandomizer extends PartDelayedAction
 {
 	@Override
-	protected int getDelay() 
+	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{
 		return 2;
 	}
 	
 	@Override
-	public void onPlaced()
+	public void onPlaced(Vec2 pos, ICircuit parent)
 	{
-		setDelay(true);
+		setDelay(pos, parent, true);
 	}
 
 	@Override
-	public void onDelay() 
+	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		setState(getState() & ~229376);
-		setState(getState() | new Random().nextInt(7) << 15);
-		notifyNeighbours();
-		setDelay(true);
+		setState(pos, parent, getState(pos, parent) & ~229376);
+		setState(pos, parent, getState(pos, parent) | new Random().nextInt(7) << 15);
+		notifyNeighbours(pos, parent);
+		setDelay(pos, parent, true);
 	}
 
 	@Override
-	public boolean getOutputToSide(ForgeDirection side) 
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation()))) return false;
-		ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+		if(!getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent)))) return false;
+		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 == ForgeDirection.SOUTH) return false;
-		int rand = (getState() & 229376) >> 15;
+		int rand = (getState(pos, parent) & 229376) >> 15;
 		if(s2 == ForgeDirection.EAST && (rand >> 2 & 1) == 1) return true;
 		if(s2 == ForgeDirection.WEST && (rand >> 1 & 1) == 1) return true;
 		if(s2 == ForgeDirection.NORTH && (rand & 1) == 1) return true;
@@ -45,13 +47,13 @@ public class PartRandomizer extends PartDelayedAction
 	}
 
 	@Override
-	public void onInputChange(ForgeDirection side) 
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
-		super.onInputChange(side);
-		ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+		super.onInputChange(pos, parent, side);
+		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 != ForgeDirection.SOUTH) return;
-		if(!getInputFromSide(side)) setDelay(false);
-		else setDelay(true);
+		if(!getInputFromSide(pos, parent, side)) setDelay(pos, parent, false);
+		else setDelay(pos, parent, true);
 	}
 	
 	@Override

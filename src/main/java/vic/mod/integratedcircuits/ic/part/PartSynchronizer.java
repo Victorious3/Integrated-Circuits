@@ -1,48 +1,50 @@
 package vic.mod.integratedcircuits.ic.part;
 
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 //TODO Is currently giving a one tick pulse, might cause problems with other gates.
 public class PartSynchronizer extends PartCPGate
 {
 	@Override
-	public void onInputChange(ForgeDirection side) 
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
-		updateInput();
-		ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-		boolean input = getInputFromSide(s2);
+		updateInput(pos, parent);
+		ForgeDirection s2 = toInternal(pos, parent, side);
+		boolean input = getInputFromSide(pos, parent, s2);
 		
-		if(s2 == ForgeDirection.SOUTH && getInputFromSide(s2)) setState(getState() & ~896);
-		else if(s2 == ForgeDirection.EAST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())) && input) 
-			setState(getState() | 128);
-		else if(s2 == ForgeDirection.WEST && !getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())) && input) 
-			setState(getState() | 256);
+		if(s2 == ForgeDirection.SOUTH && getInputFromSide(pos, parent, s2)) setState(pos, parent, getState(pos, parent) & ~896);
+		else if(s2 == ForgeDirection.EAST && !getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent))) && input) 
+			setState(pos, parent, getState(pos, parent) | 128);
+		else if(s2 == ForgeDirection.WEST && !getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent))) && input) 
+			setState(pos, parent, getState(pos, parent) | 256);
 		
-		if((getState() & 384) >> 7 == 3) 
+		if((getState(pos, parent) & 384) >> 7 == 3) 
 		{
-			setState(getState() & ~384);
-			setState(getState() | 512);
-			scheduleTick();
+			setState(pos, parent, getState(pos, parent) & ~384);
+			setState(pos, parent, getState(pos, parent) | 512);
+			scheduleTick(pos, parent);
 		}
 	}
 
 	@Override
-	public void onScheduledTick()
+	public void onScheduledTick(Vec2 pos, ICircuit parent)
 	{
-		notifyNeighbours();
-		if((getState() & 512) > 0)
+		notifyNeighbours(pos, parent);
+		if((getState(pos, parent) & 512) > 0)
 		{
-			setState(getState() & ~512);
-			scheduleTick();
+			setState(pos, parent, getState(pos, parent) & ~512);
+			scheduleTick(pos, parent);
 		}
 	}
 
 	@Override
-	public boolean getOutputToSide(ForgeDirection side) 
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-		if(s2 == ForgeDirection.NORTH) return (getState() & 512) > 0;
+		ForgeDirection s2 = toInternal(pos, parent, side);
+		if(s2 == ForgeDirection.NORTH) return (getState(pos, parent) & 512) > 0;
 		return false;
 	}
 }

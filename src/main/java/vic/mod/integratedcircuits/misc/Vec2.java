@@ -1,7 +1,9 @@
 package vic.mod.integratedcircuits.misc;
 
+import net.minecraftforge.common.util.ForgeDirection;
+
 /** An int value pair **/
-public class Vec2
+public class Vec2 implements Cloneable
 {
 	public int x, y;
 	
@@ -11,6 +13,17 @@ public class Vec2
 		this.y = b;
 	}
 	
+	@Override
+	public Vec2 clone()
+	{
+		return new Vec2(x, y);
+	}
+	
+	public Vec2 offset(ForgeDirection dir)
+	{
+		return new Vec2(x + dir.offsetX, y + dir.offsetZ);
+	}
+
 	@Override
 	public int hashCode() 
 	{
@@ -29,5 +42,11 @@ public class Vec2
 		if (getClass() != obj.getClass()) return false;
 		Vec2 other = (Vec2)obj;
 		return x == other.x && y == other.y;
+	}
+
+	@Override
+	public String toString() 
+	{
+		return "Vec2[" + x + ", " + y + "]";
 	}
 }

@@ -2,51 +2,53 @@ package vic.mod.integratedcircuits.ic.part;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.CircuitPart;
+import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartIOBit extends CircuitPart
 {
-	public final int getRotation()
+	public final int getRotation(Vec2 pos, ICircuit parent)
 	{
-		return (getState() & 48) >> 4;
+		return (getState(pos, parent) & 48) >> 4;
 	}
 	
-	public final void setRotation(int rotation)
+	public final void setRotation(Vec2 pos, ICircuit parent, int rotation)
 	{
-		setState(getState() & ~48 | rotation << 4);
+		setState(pos, parent, getState(pos, parent) & ~48 | rotation << 4);
 	}
 	
-	public final int getFrequency()
+	public final int getFrequency(Vec2 pos, ICircuit parent)
 	{
-		return (getState() & 960) >> 6;
+		return (getState(pos, parent) & 960) >> 6;
 	}
 	
-	public final void setFrequency(int frequency)
+	public final void setFrequency(Vec2 pos, ICircuit parent, int frequency)
 	{
-		setState(getState() & ~960 | frequency << 6);
+		setState(pos, parent, getState(pos, parent) & ~960 | frequency << 6);
 	}
 
 	@Override
-	public void onInputChange(ForgeDirection side) 
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
-		updateInput();
-		ForgeDirection dir = MiscUtils.getDirection(getRotation());
+		updateInput(pos, parent);
+		ForgeDirection dir = MiscUtils.getDirection(getRotation(pos, parent));
 		if(side == dir.getOpposite())
-			getData().getCircuit().setOutputToSide(dir, getFrequency(), getInputFromSide(side));
+			parent.setOutputToSide(dir, getFrequency(pos, parent), getInputFromSide(pos, parent, side));
 	}
 
 	@Override
-	public boolean getOutputToSide(ForgeDirection side) 
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		ForgeDirection dir = MiscUtils.getDirection(getRotation());
+		ForgeDirection dir = MiscUtils.getDirection(getRotation(pos, parent));
 		if(side == dir.getOpposite())
-			return getData().getCircuit().getInputFromSide(dir, getFrequency());
+			return parent.getInputFromSide(dir, getFrequency(pos, parent));
 		else return false;
 	}
 	
-	public boolean isPowered()
+	public boolean isPowered(Vec2 pos, ICircuit parent)
 	{
-		ForgeDirection dir = MiscUtils.getDirection(getRotation()).getOpposite();
-		return getOutputToSide(dir) || getNeighbourOnSide(dir).getOutputToSide(dir.getOpposite());
+		ForgeDirection dir = MiscUtils.getDirection(getRotation(pos, parent)).getOpposite();
+		return getOutputToSide(pos, parent, dir) || getNeighbourOnSide(pos, parent, dir).getOutputToSide(pos.offset(dir), parent, dir.getOpposite());
 	}
 }

@@ -33,12 +33,6 @@ public class MiscUtils
 		return order[pos];
 	}
 	
-	public static int rotn(int r, int o, int a)
-	{
-		int nr = r + o;
-		return nr > a - 1 ? nr - a : nr < 0 ? nr + a : nr;
-	}
-	
 	public static ForgeDirection getDirection(int side)
 	{
 		return order[side];

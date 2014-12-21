@@ -34,11 +34,13 @@ import vic.mod.integratedcircuits.ic.part.timed.PartSequencer;
 import vic.mod.integratedcircuits.ic.part.timed.PartStateCell;
 import vic.mod.integratedcircuits.ic.part.timed.PartTimer;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
+import vic.mod.integratedcircuits.misc.Vec2;
 
-public abstract class CircuitPart implements Cloneable
+public abstract class CircuitPart
 {
 	private static HashMap<Integer, CircuitPart> partRegistry = new HashMap<Integer, CircuitPart>();
 	private static HashMap<Class<? extends CircuitPart>, Integer> idRegistry = new HashMap<Class<? extends CircuitPart>, Integer>();
+	private int id;
 	
 	static 
 	{
@@ -83,91 +85,55 @@ public abstract class CircuitPart implements Cloneable
 		return part.id;
 	}
 	
-	public static Integer getIdFromClass(Class<? extends CircuitPart> clazz)
+	public static Integer getId(Class<? extends CircuitPart> clazz)
 	{
 		return idRegistry.get(clazz);
 	}
 	
+	public static CircuitPart getPart(Class<? extends CircuitPart> clazz)
+	{
+		return partRegistry.get(getId(clazz));
+	}
+	
 	/** Returns a CircuitPart from the registry. **/
-	@Deprecated
 	public static CircuitPart getPart(int id)
 	{
-		return partRegistry.get(id).clone();
-	}
-	
-	/** Returns a CircuitPart from the registry, already prepared. **/
-	public static CircuitPart getPart(int id, int x, int y, CircuitData parent)
-	{
-		return partRegistry.get(id).clone().prepare(x, y, parent);
+		return partRegistry.get(id);
 	}
 
-	private int id;
-	private int x;
-	private int y;
-	private CircuitData parent;
-	
-	public void onPlaced()
+	public void onPlaced(Vec2 pos, ICircuit parent)
 	{
-		updateInput();
-		notifyNeighbours();
-	}
-	
-	public final CircuitPart prepare(int x, int y, CircuitData parent)
-	{
-		this.x = x;
-		this.y = y;
-		this.parent = parent;
-		return this;
-	}
-	
-	@Override
-	protected final CircuitPart clone()
-	{
-		try {
-			return (CircuitPart) super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return null;
+		updateInput(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 
-	public void onTick(){}
+	public void onTick(Vec2 pos, ICircuit parent){}
 	
-	public void onScheduledTick(){}
+	public void onScheduledTick(Vec2 pos, ICircuit parent){}
 	
-	public final void scheduleTick()
+	public final void scheduleTick(Vec2 pos, ICircuit parent)
 	{
-		getData().scheduleTick(getX(), getY());
+		parent.getCircuitData().scheduleTick(pos);
 	}
 	
-	public final void markForUpdate()
+	public final void markForUpdate(Vec2 pos, ICircuit parent)
 	{
-		getData().markForUpdate(getX(), getY());
+		parent.getCircuitData().markForUpdate(pos);
 	}
 	
-	public void onClick(int button, boolean ctrl){}
+	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl){}
 	
-	public final int getX()
-	{
-		return x;
-	}
-	
-	public final int getY()
-	{
-		return y;
-	}
-	
-	public String getName()
+	public String getName(Vec2 pos, ICircuit parent)
 	{
 		return getClass().getSimpleName().substring(4).toLowerCase();
 	}
 	
-	public String getLocalizedName()
+	public String getLocalizedName(Vec2 pos, ICircuit parent)
 	{
-		return I18n.format("part." + IntegratedCircuits.modID + "." + getName() + ".name");
+		return I18n.format("part." + IntegratedCircuits.modID + "." + getName(pos, parent) + ".name");
 	}
 	
-	public ArrayList<String> getInformation() 
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent) 
 	{
 		return new ArrayList<String>();
 	}
@@ -177,86 +143,88 @@ public abstract class CircuitPart implements Cloneable
 		
 	}
 	
-	public final CircuitData getData()
+	public final int getState(Vec2 pos, ICircuit parent)
 	{
-		return parent;
+		return parent.getCircuitData().getMeta(pos);
 	}
 	
-	public final int getState()
+	public final void setState(Vec2 pos, ICircuit parent, int state)
 	{
-		return parent.getMeta(getX(), getY());
+		parent.getCircuitData().setMeta(pos, state);
 	}
 	
-	public final void setState(int state)
-	{
-		parent.setMeta(getX(), getY(), state);
-	}
-	
-	public boolean canConnectToSide(ForgeDirection side)
+	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		return true;
 	}
 	
-	public final boolean getInputFromSide(ForgeDirection side)
+	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		boolean cc = true;
-		CircuitPart neighbour = getNeighbourOnSide(side);
-		if(neighbour != null) cc = neighbour.canConnectToSide(side.getOpposite());
-		if(!(canConnectToSide(side) && cc)) return false;
-		boolean in = ((getState() & 15) << (side.ordinal() - 2) & 8) > 0;
+		CircuitPart neighbour = getNeighbourOnSide(pos, parent, side);
+		if(neighbour != null) cc = neighbour.canConnectToSide(pos.offset(side), parent, side.getOpposite());
+		if(!(canConnectToSide(pos, parent, side) && cc)) return false;
+		boolean in = ((getState(pos, parent) & 15) << (side.ordinal() - 2) & 8) > 0;
 		return in;
 	}
 	
-	public void onInputChange(ForgeDirection side)
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		updateInput();
+		updateInput(pos, parent);
 	}
 	
-	public final void updateInput()
+	public final void updateInput(Vec2 pos, ICircuit parent)
 	{
 		int newState = 0;
 		//Check every side to update the internal buffer.
-		newState |= (getNeighbourOnSide(ForgeDirection.NORTH) != null ? 
-			getNeighbourOnSide(ForgeDirection.NORTH).getOutputToSide(ForgeDirection.NORTH.getOpposite()) ? 1 : 0 : 0) << 3;
-		newState |= (getNeighbourOnSide(ForgeDirection.SOUTH) != null ? 
-			getNeighbourOnSide(ForgeDirection.SOUTH).getOutputToSide(ForgeDirection.SOUTH.getOpposite()) ? 1 : 0 : 0) << 2; 
-		newState |= (getNeighbourOnSide(ForgeDirection.WEST) != null ? 
-			getNeighbourOnSide(ForgeDirection.WEST).getOutputToSide(ForgeDirection.WEST.getOpposite()) ? 1 : 0 : 0) << 1;
-		newState |= (getNeighbourOnSide(ForgeDirection.EAST) != null ? 
-			getNeighbourOnSide(ForgeDirection.EAST).getOutputToSide(ForgeDirection.EAST.getOpposite()) ? 1 : 0 : 0);
-		setState(getState() & ~15 | newState);
+		newState |= (getNeighbourOnSide(pos, parent, ForgeDirection.NORTH) != null ? 
+			getNeighbourOnSide(pos, parent, ForgeDirection.NORTH).getOutputToSide(pos.offset(ForgeDirection.NORTH), parent, ForgeDirection.SOUTH) ? 1 : 0 : 0) << 3;
+		newState |= (getNeighbourOnSide(pos, parent, ForgeDirection.SOUTH) != null ? 
+			getNeighbourOnSide(pos, parent, ForgeDirection.SOUTH).getOutputToSide(pos.offset(ForgeDirection.SOUTH), parent, ForgeDirection.NORTH) ? 1 : 0 : 0) << 2; 
+		newState |= (getNeighbourOnSide(pos, parent, ForgeDirection.WEST) != null ? 
+			getNeighbourOnSide(pos, parent, ForgeDirection.WEST).getOutputToSide(pos.offset(ForgeDirection.WEST), parent, ForgeDirection.EAST) ? 1 : 0 : 0) << 1;
+		newState |= (getNeighbourOnSide(pos, parent, ForgeDirection.EAST) != null ? 
+			getNeighbourOnSide(pos, parent, ForgeDirection.EAST).getOutputToSide(pos.offset(ForgeDirection.EAST), parent, ForgeDirection.WEST) ? 1 : 0 : 0);
+		setState(pos, parent, getState(pos, parent) & ~15 | newState);
 	}
 	
-	public boolean getOutputToSide(ForgeDirection side)
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		return false;
 	}
 	
-	public final void notifyNeighbours()
+	public final void notifyNeighbours(Vec2 pos, ICircuit parent)
 	{
 		for(int i = 2; i < 6; i++)
 		{
 			ForgeDirection fd = ForgeDirection.getOrientation(i);
-			CircuitPart part = getNeighbourOnSide(fd);
-			if(part != null && canConnectToSide(fd) && part.canConnectToSide(fd.getOpposite()) && getOutputToSide(fd) != part.getInputFromSide(fd.getOpposite()))
+			Vec2 pos2 = pos.offset(fd);
+			CircuitPart part = getNeighbourOnSide(pos, parent, fd);
+			
+			boolean b = canConnectToSide(pos, parent, fd) 
+				&& part.canConnectToSide(pos2, parent, fd.getOpposite()) 
+				&& getOutputToSide(pos, parent, fd) != part.getInputFromSide(pos2, parent, fd.getOpposite());
+			
+			if(part != null && b)
 			{
-				part.onInputChange(fd.getOpposite());
-				part.markForUpdate();
+				part.onInputChange(pos2, parent, fd.getOpposite());
+				part.markForUpdate(pos2, parent);
 			}
-			markForUpdate();
+			
+			markForUpdate(pos, parent);
 		}
 	}
 	
-	public final CircuitPart getNeighbourOnSide(ForgeDirection side)
+	public final CircuitPart getNeighbourOnSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{	
-		return parent.getPart(x + side.offsetX, y + side.offsetZ);
+		return parent.getCircuitData().getPart(pos.offset(side));
 	}
 	
-	public final boolean getInput()
+	public final boolean getInput(Vec2 pos, ICircuit parent)
 	{
-		return getInputFromSide(ForgeDirection.NORTH)
-			|| getInputFromSide(ForgeDirection.EAST)
-			|| getInputFromSide(ForgeDirection.SOUTH)
-			|| getInputFromSide(ForgeDirection.WEST);
+		return getInputFromSide(pos, parent, ForgeDirection.NORTH)
+			|| getInputFromSide(pos, parent, ForgeDirection.EAST)
+			|| getInputFromSide(pos, parent, ForgeDirection.SOUTH)
+			|| getInputFromSide(pos, parent, ForgeDirection.WEST);
 	}
 }

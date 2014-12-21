@@ -5,6 +5,7 @@ import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.ic.CircuitData;
+import vic.mod.integratedcircuits.misc.Vec2;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import cpw.mods.fml.relauncher.Side;
 
@@ -67,15 +68,14 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 			CircuitData cdata = te.getCircuitData();
 			for(int i = 0; i < size; i += 4)
 			{	
-				int x = data[i];
-				int y = data[i + 1];
-				if(button != -1) cdata.getPart(x, y).onClick(button, ctrl);
+				Vec2 pos = new Vec2(data[i], data[i + 1]);
+				if(button != -1) cdata.getPart(pos).onClick(pos, te, button, ctrl);
 				else
 				{
-					cdata.setID(x, y, data[i + 2]);
-					cdata.setMeta(x, y, data[i + 3]);
-					if(placed) cdata.getPart(x, y).onPlaced();
-					cdata.markForUpdate(x, y);
+					cdata.setID(pos, data[i + 2]);
+					cdata.setMeta(pos, data[i + 3]);
+					if(placed) cdata.getPart(pos).onPlaced(pos, te);
+					cdata.markForUpdate(pos);
 				}
 			}
 		}

@@ -1,40 +1,54 @@
 package vic.mod.integratedcircuits.ic.part;
 
 import net.minecraft.init.Items;
+import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitPart;
+import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
+import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 /** Rotateable Part **/
 public abstract class PartCPGate extends CircuitPart
 {
-	public final int getRotation()
+	public final int getRotation(Vec2 pos, ICircuit parent)
 	{
-		return (getState() & 48) >> 4;
+		return (getState(pos, parent) & 48) >> 4;
 	}
 	
-	public final void setRotation(int rotation)
+	public final void setRotation(Vec2 pos, ICircuit parent, int rotation)
 	{
-		setState(getState() & ~48 | rotation << 4);
-		notifyNeighbours();
+		setState(pos, parent, getState(pos, parent) & ~48 | rotation << 4);
+		notifyNeighbours(pos, parent);
 	}
 	
 	@Override
-	public void onClick(int button, boolean ctrl) 
+	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 
 	{
 		if(button == 0 && !ctrl)
 		{
-			int rot = getRotation() + 1;
-			setRotation(rot > 3 ? 0 : rot);
+			int rot = getRotation(pos, parent) + 1;
+			setRotation(pos, parent, rot > 3 ? 0 : rot);
 		}
-		markForUpdate();
+		markForUpdate(pos, parent);
+	}
+	
+	public ForgeDirection toInternal(Vec2 pos, ICircuit parent, ForgeDirection dir)
+	{
+		return MiscUtils.rotn(dir, -getRotation(pos, parent));
+	}
+	
+	public ForgeDirection toExternal(Vec2 pos, ICircuit parent, ForgeDirection dir)
+	{
+		return MiscUtils.rotn(dir, getRotation(pos, parent));
 	}
 
 	@Override
-	public void onScheduledTick() 
+	public void onScheduledTick(Vec2 pos, ICircuit parent) 
 	{
-		notifyNeighbours();
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override

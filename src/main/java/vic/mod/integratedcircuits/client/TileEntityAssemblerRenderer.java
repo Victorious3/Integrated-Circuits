@@ -17,7 +17,7 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.LaserHelper;
 import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
-import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CurcuitRenderWrapper;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
@@ -257,8 +257,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		if(te.excMatrix != null && te.cdata != null)
 		{
 			GL11.glScalef(16 / (float)te.cdata.getSize(), 16 / (float)te.cdata.getSize(), 1);
-			te.cdata.setParent(CurcuitRenderWrapper.instance);
-			CircuitPartRenderer.renderParts(0, 0, te.cdata, te.excMatrix, te.size > 16 ? 2 : 1);
+			CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.cdata), 0, 0, te.excMatrix, te.size > 16 ? 2 : 1);
 		}
 
 		te.circuitFBO.unbindFramebuffer();

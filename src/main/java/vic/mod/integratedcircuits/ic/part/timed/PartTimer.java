@@ -2,66 +2,69 @@ package vic.mod.integratedcircuits.ic.part.timed;
 
 import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
-import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 //TODO The timer should really use the tick method instead of scheduled ticks.
 public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 {
 	@Override
-	protected int getDelay() 
+	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{
-		if((getState() & 32768) == 0) return getConfigurableDelay();
+		if((getState(pos, parent) & 32768) == 0) return getConfigurableDelay(pos, parent);
 		else return 2;
 	}
 	
-	public int getConfigurableDelay()
+	@Override
+	public int getConfigurableDelay(Vec2 pos, ICircuit parent)
 	{
-		return ((getState() & 16711680) >> 16);
+		return ((getState(pos, parent) & 16711680) >> 16);
 	}
 	
-	public void setConfigurableDelay(int delay)
+	@Override
+	public void setConfigurableDelay(Vec2 pos, ICircuit parent, int delay)
 	{
-		setState(getState() & ~16711680);
-		setState(getState() | delay << 16);
+		setState(pos, parent, getState(pos, parent) & ~16711680);
+		setState(pos, parent, getState(pos, parent) | delay << 16);
 	}
 
 	@Override
-	public void onPlaced()
+	public void onPlaced(Vec2 pos, ICircuit parent)
 	{
-		setState(10 << 16);
-		updateInput();
-		if(!getInputFromSide(ForgeDirection.SOUTH)) setDelay(true);
+		setState(pos, parent, 10 << 16);
+		updateInput(pos, parent);
+		if(!getInputFromSide(pos, parent, ForgeDirection.SOUTH)) setDelay(pos, parent, true);
 	}
 	
 	@Override
-	public void onInputChange(ForgeDirection side) 
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
-		updateInput();
-		if(MiscUtils.rotn(side, -getRotation()) != ForgeDirection.SOUTH) return;
-		setState(getState() & ~32768);
-		if(getInputFromSide(side))
+		updateInput(pos, parent);
+		if(toInternal(pos, parent, side) != ForgeDirection.SOUTH) return;
+		setState(pos, parent, getState(pos, parent) & ~32768);
+		if(getInputFromSide(pos, parent, side))
 		{
-			setDelay(false);
-			notifyNeighbours();
+			setDelay(pos, parent, false);
+			notifyNeighbours(pos, parent);
 		}
-		else setDelay(true);
+		else setDelay(pos, parent, true);
 	}
 
 	@Override
-	public void onDelay() 
+	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		setState(getState() ^ 32768);
-		setDelay(true);
-		super.onDelay();
+		setState(pos, parent, getState(pos, parent) ^ 32768);
+		setDelay(pos, parent, true);
+		super.onDelay(pos, parent);
 	}
 
 	@Override
-	public boolean getOutputToSide(ForgeDirection side) 
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		if(MiscUtils.rotn(side, -getRotation()) == ForgeDirection.SOUTH) return false;
-		return (getState() & 32768) != 0;
+		if(toInternal(pos, parent, side) == ForgeDirection.SOUTH) return false;
+		return (getState(pos, parent) & 32768) != 0;
 	}
 	
 	@Override

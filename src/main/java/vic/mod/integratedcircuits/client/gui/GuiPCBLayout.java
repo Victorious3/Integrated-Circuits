@@ -30,6 +30,7 @@ import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.part.PartNull;
@@ -88,7 +89,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	public boolean blockMouseInput = false;
 	private IHoverable hoveredElement;
 	
-	public CircuitPart selectedPart;
+	public CircuitRenderWrapper selectedPart;
 	
 	//Used by the wires
 	private int sx, sy, ex, ey;
@@ -99,7 +100,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	private GuiCheckBoxExt checkboxDelete;
 	private GuiCallback callbackTimed;
 	private GuiLabel labelTimed;
-	private CircuitPart timedPart;
+	private CircuitRenderWrapper timedPart;
 	
 	public GuiPCBLayout(ContainerPCBLayout container) 
 	{
@@ -181,45 +182,39 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		this.buttonList.add(c1);
 		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 131, CircuitPartRenderer.createEncapsulated(PartNullCell.class), 
-			new ArrayList<CircuitPart>(Arrays.asList(
-			CircuitPartRenderer.createEncapsulated(PartBufferCell.class),
-			CircuitPartRenderer.createEncapsulated(PartInvertCell.class),
-			CircuitPartRenderer.createEncapsulated(PartANDCell.class))), this));
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 131, new CircuitRenderWrapper(PartNullCell.class), Arrays.asList(
+			new CircuitRenderWrapper(PartBufferCell.class),
+			new CircuitRenderWrapper(PartInvertCell.class),
+			new CircuitRenderWrapper(PartANDCell.class)), this));
+
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, new CircuitRenderWrapper(PartTorch.class), this));
 		
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, CircuitPartRenderer.createEncapsulated(PartTorch.class), this));
+		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class), Arrays.asList(
+			new CircuitRenderWrapper(PartWire.class, 1 << 5),
+			new CircuitRenderWrapper(PartWire.class, 2 << 5)), this));
 		
-		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, CircuitPartRenderer.createEncapsulated(PartWire.class),
-			new ArrayList<CircuitPart>(Arrays.asList(
-			CircuitPartRenderer.createEncapsulated(PartWire.class, 1 << 5),
-			CircuitPartRenderer.createEncapsulated(PartWire.class, 2 << 5))), this));
+		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, new CircuitRenderWrapper(PartToggleLatch.class), Arrays.asList(
+			new CircuitRenderWrapper(PartRSLatch.class),
+			new CircuitRenderWrapper(PartTransparentLatch.class)), this));
 		
-		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, CircuitPartRenderer.createEncapsulated(PartToggleLatch.class),
-			new ArrayList<CircuitPart>(Arrays.asList(
-			CircuitPartRenderer.createEncapsulated(PartRSLatch.class),
-			CircuitPartRenderer.createEncapsulated(PartTransparentLatch.class))), this));
+		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, new CircuitRenderWrapper(PartANDGate.class), Arrays.asList(
+			new CircuitRenderWrapper(PartORGate.class),
+			new CircuitRenderWrapper(PartXORGate.class),
+			new CircuitRenderWrapper(PartBufferGate.class)), this));
 		
-		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, CircuitPartRenderer.createEncapsulated(PartANDGate.class),
-			new ArrayList<CircuitPart>(Arrays.asList(
-			CircuitPartRenderer.createEncapsulated(PartORGate.class),
-			CircuitPartRenderer.createEncapsulated(PartXORGate.class),
-			CircuitPartRenderer.createEncapsulated(PartBufferGate.class))), this));
+		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, new CircuitRenderWrapper(PartNANDGate.class), Arrays.asList(
+			new CircuitRenderWrapper(PartNORGate.class),
+			new CircuitRenderWrapper(PartXNORGate.class),
+			new CircuitRenderWrapper(PartNOTGate.class)), this));
 		
-		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, CircuitPartRenderer.createEncapsulated(PartNANDGate.class),
-			new ArrayList<CircuitPart>(Arrays.asList(
-			CircuitPartRenderer.createEncapsulated(PartNORGate.class),
-			CircuitPartRenderer.createEncapsulated(PartXNORGate.class),
-			CircuitPartRenderer.createEncapsulated(PartNOTGate.class))), this));
-		
-		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, CircuitPartRenderer.createEncapsulated(PartTimer.class),
-			new ArrayList<CircuitPart>(Arrays.asList(
-			CircuitPartRenderer.createEncapsulated(PartSequencer.class),
-			CircuitPartRenderer.createEncapsulated(PartSynchronizer.class),
-			CircuitPartRenderer.createEncapsulated(PartStateCell.class),
-			CircuitPartRenderer.createEncapsulated(PartPulseFormer.class),
-			CircuitPartRenderer.createEncapsulated(PartRandomizer.class),
-			CircuitPartRenderer.createEncapsulated(PartRepeater.class),
-			CircuitPartRenderer.createEncapsulated(PartMultiplexer.class))), this));
+		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, new CircuitRenderWrapper(PartTimer.class), Arrays.asList(
+			new CircuitRenderWrapper(PartSequencer.class),
+			new CircuitRenderWrapper(PartSynchronizer.class),
+			new CircuitRenderWrapper(PartStateCell.class),
+			new CircuitRenderWrapper(PartPulseFormer.class),
+			new CircuitRenderWrapper(PartRandomizer.class),
+			new CircuitRenderWrapper(PartRepeater.class),
+			new CircuitRenderWrapper(PartMultiplexer.class)), this));
 
 		refreshUI();
 		super.initGui();
@@ -283,7 +278,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		else if(gui == callbackTimed && result == Action.CUSTOM)
 		{
 			IConfigurableDelay conf = (IConfigurableDelay)timedPart;
-			int delay = conf.getConfigurableDelay();
+			int delay = conf.getConfigurableDelay(timedPart.getPos(), timedPart);
 			switch (id) {
 			case 1 : delay -= 20; break;
 			case 2 : delay -= 1; break;
@@ -291,10 +286,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			case 4 : delay += 20; break;
 			}
 			delay = delay < 2 ? 2 : delay > 255 ? 255 : delay;
-			conf.setConfigurableDelay(delay);
-			labelTimed.setText(I18n.format("gui.integratedcitcuits.cad.callback.delay", conf.getConfigurableDelay()));
+			conf.setConfigurableDelay(timedPart.getPos(), timedPart, delay);
+			labelTimed.setText(I18n.format("gui.integratedcitcuits.cad.callback.delay", conf.getConfigurableDelay(timedPart.getPos(), timedPart)));
 			IntegratedCircuits.networkWrapper.sendToServer(
-				new PacketPCBChangePart(new int[]{timedPart.getX(), timedPart.getY(), CircuitPart.getId(timedPart), timedPart.getState()}, -1, false, false, te.xCoord, te.yCoord, te.zCoord));
+				new PacketPCBChangePart(new int[]{timedPart.getPos().x, timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getCircuitData().getMeta(timedPart.getPos())}, -1, false, false, te.xCoord, te.yCoord, te.zCoord));
 		}
 	}
 	
@@ -355,7 +350,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glScalef(te.scale, te.scale, 1F);
 		
 		CircuitPartRenderer.renderPerfboard(te.offX, te.offY, data);
-		CircuitPartRenderer.renderParts(te.offX, te.offY, data);
+		CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.getCircuitData()), te.offX, te.offY);
 		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -364,7 +359,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		double x2 = (int)((x - guiLeft - te.offX * te.scale) / 16F / te.scale);
 		double y2 = (int)((y - guiTop - te.offY * te.scale) / 16F / te.scale);
 		
-		if(selectedPart instanceof PartWire && drag)
+		if(selectedPart != null && selectedPart.getPart() instanceof PartWire && drag)
 		{
 			ex = (int)x2;
 			ey = (int)y2;
@@ -372,13 +367,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown && !blockMouseInput)
 		{
-			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
+			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187) && selectedPart != null)
 			{
-				if(!(selectedPart instanceof PartWire) || !drag)
+				if(!(selectedPart.getPart() instanceof PartWire) || !drag)
 				{
 					x2 = x2 * 16 + te.offX;
 					y2 = y2 * 16 + te.offY;
-					if(selectedPart instanceof PartNull)
+					if(selectedPart.getPart() instanceof PartNull)
 					{
 						GL11.glColor3f(0F, 0.4F, 0F);
 						GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -391,9 +386,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				}
 				else
 				{
-					PartWire wire = (PartWire)selectedPart;
+					PartWire wire = (PartWire)selectedPart.getPart();
 					GL11.glTranslated(te.offX, te.offY, 0);
-					switch (wire.getColor()) {
+					switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
 					case 1: GL11.glColor3f(0.4F, 0F, 0F); break;
 					case 2: GL11.glColor3f(0.4F, 0.2F, 0F); break;
 					default: GL11.glColor3f(0F, 0.4F, 0F); break;
@@ -509,14 +504,15 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
-				CircuitPart part = data.getPart(x2, y2);
+				Vec2 pos = new Vec2(x2, y2);
+				CircuitPart part = data.getPart(pos);
 				if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
 				{
 					ArrayList<String> text = new ArrayList<String>();
-					text.add(part.getLocalizedName());
+					text.add(part.getLocalizedName(pos, te));
 					if(part instanceof PartCPGate) 
 					{
-						int rotation = ((PartCPGate)part).getRotation();
+						int rotation = ((PartCPGate)part).getRotation(pos, te);
 						ForgeDirection rot = 
 							rotation == 0 ? ForgeDirection.NORTH :
 							rotation == 1 ? ForgeDirection.EAST :
@@ -524,7 +520,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							ForgeDirection.WEST;
 						text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + MiscUtils.getLocalizedDirection(rot));
 					}
-					text.addAll(part.getInformation());
+					text.addAll(part.getInformation(pos, te));
 					drawHoveringText(text, x - guiLeft, y - guiTop, this.fontRendererObj);
 				}
 			}
@@ -565,17 +561,18 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		{
 			if(selectedPart == null)
 			{
-				CircuitPart cp = data.getPart(x2, y2);
+				Vec2 pos = new Vec2(x2, y2);
+				CircuitPart cp = data.getPart(pos);
 				if(cp instanceof IConfigurableDelay && ctrlDown) 
 				{
-					timedPart = cp;
-					labelTimed.setText(String.format("Current delay: %s ticks", ((IConfigurableDelay)timedPart).getConfigurableDelay()));
+					timedPart = new CircuitRenderWrapper(te.getCircuitData()).setPart(cp);
+					labelTimed.setText(String.format("Current delay: %s ticks", ((IConfigurableDelay)timedPart).getConfigurableDelay(pos, te)));
 					callbackTimed.display();
 				}
 				else IntegratedCircuits.networkWrapper.sendToServer(
 					new PacketPCBChangePart(new int[]{x2, y2, 0, 0}, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));
 			}	
-			else if(selectedPart instanceof PartWire)
+			else if(selectedPart.getPart() instanceof PartWire)
 			{
 				sx = x2;
 				sy = y2;
@@ -584,7 +581,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			else
 			{
 				IntegratedCircuits.networkWrapper.sendToServer(
-					new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
+					new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart.getPart()), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
 			}
 		}
 		
@@ -596,7 +593,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	{
 		super.mouseClickMove(x, y, par3, par4);
 		
-		if(selectedPart instanceof PartNull)
+		if(selectedPart != null && selectedPart.getPart() instanceof PartNull)
 		{
 			int x2 = (int)((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
 			int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
@@ -605,10 +602,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			
 			if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
 			{
-				if(!(te.getCircuitData().getPart(x2, y2) instanceof PartNull))
+				Vec2 pos = new Vec2(x2, y2);
+				if(!(te.getCircuitData().getPart(pos) instanceof PartNull))
 				{
 					IntegratedCircuits.networkWrapper.sendToServer(
-						new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
+						new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart.getPart()), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
 				}
 			}
 		}
@@ -673,10 +671,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			this.selectedChooser.mouseReleased(x, y);
 			this.selectedChooser = null;
 	    }
-		if(button != -1 && drag)
+		if(button != -1 && drag && selectedPart != null)
 		{
-			int id = CircuitPart.getId(selectedPart);
-			int state = selectedPart.getState();	
+			int id = CircuitPart.getId(selectedPart.getPart());
+			int state = selectedPart.getState();
 			int w = te.getCircuitData().getSize();
 			
 			if(ex > 0 && ey > 0 && ex < w - 1 && ey < w - 1 && !blockMouseInput)

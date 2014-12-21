@@ -21,7 +21,7 @@ public class CircuitData implements Cloneable
 {
 	private int size;
 	private int[][] meta;
-	private CircuitPart[][] parts;
+	private int[][] id;
 	private LinkedHashSet<Vec2> tickSchedule;
 	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	
@@ -38,7 +38,6 @@ public class CircuitData implements Cloneable
 	{
 		this.parent = parent;
 		this.size = size;
-		clear(size);
 	}
 	
 	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule, CircuitProperties prop)
@@ -46,14 +45,7 @@ public class CircuitData implements Cloneable
 		this.parent = parent;
 		this.prop = prop;
 		this.size = size;
-		this.parts = new CircuitPart[size][size];
-		for(int x = 0; x < size; x++)
-		{
-			for(int y = 0; y < size; y++)
-			{
-				parts[x][y] = CircuitPart.getPart(id[x][y], x, y, this);
-			}
-		}
+		this.id = id;
 		this.meta = meta;
 		this.tickSchedule = tickSchedule;
 	}
@@ -61,29 +53,34 @@ public class CircuitData implements Cloneable
 	public void setup()
 	{
 		int o = supportsBundled() ? size / 2 - 8 : 1;
-		int cid = CircuitPart.getIdFromClass(PartIOBit.class);
+		int cid = CircuitPart.getId(PartIOBit.class);
 		
 		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
 		{
-			setID(size - 1 - (i + o), 0, cid);
-			setID(size - 1, size - 1 - (i + o), cid);
-			setID(i + o, size - 1, cid);
-			setID(0, i + o, cid);
+			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
+			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
+			Vec2 pos3 = new Vec2(i + o, size - 1);
+			Vec2 pos4 = new Vec2(0, i + o);
 			
-			PartIOBit io1 = (PartIOBit)getPart(size - 1 - (i + o), 0);
-			PartIOBit io2 = (PartIOBit)getPart(size - 1, size - 1 - (i + o));
-			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
-			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
+			setID(pos1, cid);
+			setID(pos2, cid);
+			setID(pos3, cid);
+			setID(pos4, cid);
 			
-			io1.setFrequency(i);
-			io2.setFrequency(i);
-			io3.setFrequency(i);
-			io4.setFrequency(i);
+			PartIOBit io1 = (PartIOBit)getPart(pos1);
+			PartIOBit io2 = (PartIOBit)getPart(pos2);
+			PartIOBit io3 = (PartIOBit)getPart(pos3);
+			PartIOBit io4 = (PartIOBit)getPart(pos4);
 			
-			io1.setRotation(0);
-			io2.setRotation(1);
-			io3.setRotation(2);
-			io4.setRotation(3);
+			io1.setFrequency(pos1, parent, i);
+			io2.setFrequency(pos2, parent, i);
+			io3.setFrequency(pos3, parent, i);
+			io4.setFrequency(pos4, parent, i);
+			
+			io1.setRotation(pos1, parent, 0);
+			io2.setRotation(pos2, parent, 1);
+			io3.setRotation(pos3, parent, 2);
+			io4.setRotation(pos4, parent, 3);
 		}
 	}
 	
@@ -94,15 +91,20 @@ public class CircuitData implements Cloneable
 		
 		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
 		{	
-			PartIOBit io1 = (PartIOBit)getPart(size - 1 - (i + o), 0);
-			PartIOBit io2 = (PartIOBit)getPart(size - 1, size - 1 - (i + o));
-			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
-			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
+			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
+			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
+			Vec2 pos3 = new Vec2(i + o, size - 1);
+			Vec2 pos4 = new Vec2(0, i + o);
 			
-			io1.notifyNeighbours();
-			io2.notifyNeighbours();
-			io3.notifyNeighbours();
-			io4.notifyNeighbours();
+			PartIOBit io1 = (PartIOBit)getPart(pos1);
+			PartIOBit io2 = (PartIOBit)getPart(pos2);
+			PartIOBit io3 = (PartIOBit)getPart(pos3);
+			PartIOBit io4 = (PartIOBit)getPart(pos4);
+			
+			io1.notifyNeighbours(pos1, parent);
+			io2.notifyNeighbours(pos2, parent);
+			io3.notifyNeighbours(pos3, parent);
+			io4.notifyNeighbours(pos4, parent);
 		}
 	}
 	
@@ -113,15 +115,20 @@ public class CircuitData implements Cloneable
 		
 		for(int i = 0; i < (supportsBundled() ? 16 : 1); i++)
 		{		
-			PartIOBit io1 = (PartIOBit)getPart(size - 1 - (i + o), 0);
-			PartIOBit io2 = (PartIOBit)getPart(size - 1, size - 1 - (i + o));
-			PartIOBit io3 = (PartIOBit)getPart(i + o, size - 1);
-			PartIOBit io4 = (PartIOBit)getPart(0, i + o);
+			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
+			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
+			Vec2 pos3 = new Vec2(i + o, size - 1);
+			Vec2 pos4 = new Vec2(0, i + o);
 			
-			io1.onInputChange(ForgeDirection.SOUTH);
-			io2.onInputChange(ForgeDirection.WEST);
-			io3.onInputChange(ForgeDirection.NORTH);
-			io4.onInputChange(ForgeDirection.EAST);
+			PartIOBit io1 = (PartIOBit)getPart(pos1);
+			PartIOBit io2 = (PartIOBit)getPart(pos2);
+			PartIOBit io3 = (PartIOBit)getPart(pos3);
+			PartIOBit io4 = (PartIOBit)getPart(pos4);
+			
+			io1.onInputChange(pos1, parent, ForgeDirection.SOUTH);
+			io2.onInputChange(pos2, parent, ForgeDirection.WEST);
+			io3.onInputChange(pos3, parent, ForgeDirection.NORTH);
+			io4.onInputChange(pos4, parent, ForgeDirection.EAST);
 		}
 	}
 	
@@ -135,28 +142,28 @@ public class CircuitData implements Cloneable
 		return size > 16;
 	}
 	
-	public int getMeta(int x, int y)
+	public int getMeta(Vec2 pos)
 	{
-		if(x < 0 || y < 0 || x >= size || y >= size) return 0;
-		return meta[x][y];
+		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return 0;
+		return meta[pos.x][pos.y];
 	}
 	
-	public void setMeta(int x, int y, int m)
+	public void setMeta(Vec2 pos, int m)
 	{
-		if(x < 0 || y < 0 || x >= size || y >= size) return;
-		meta[x][y] = m;
+		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return;
+		meta[pos.x][pos.y] = m;
 	}
 	
-	public int getID(int x, int y) 
+	public int getID(Vec2 pos) 
 	{
-		if(x < 0 || y < 0 || x >= size || y >= size) return 0;
-		return CircuitPart.getId(parts[x][y]);
+		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return 0;
+		return id[pos.x][pos.y];
 	}
 	
-	public void setID(int x, int y, int i)
+	public void setID(Vec2 pos, int id)
 	{
-		if(x < 0 || y < 0 || x >= size || y >= size) return;
-		parts[x][y] = CircuitPart.getPart(i, x, y, this);
+		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return;
+		this.id[pos.x][pos.y] = id;
 	}
 	
 	public ICircuit getCircuit()
@@ -176,39 +183,30 @@ public class CircuitData implements Cloneable
 	
 	public void clear(int size)
 	{
-		this.parts = new CircuitPart[size][size];
-		for(int x = 0; x < size; x++)
-		{
-			for(int y = 0; y < size; y++)
-			{
-				parts[x][y] = CircuitPart.getPart(0, x, y, this);
-			}
-		}
+		this.id = new int[size][size];
 		this.meta = new int[size][size];
 		tickSchedule = new LinkedHashSet<Vec2>();
 		updateQueue = new LinkedHashSet<Vec2>();
 		this.size = size;
 		setup();
-		if(!supportsBundled()) prop.setCon(0);
+		if(!supportsBundled()) prop.setCon(0);	
 	}
-	
-	public CircuitPart getPart(int x, int y)
+
+	public CircuitPart getPart(Vec2 pos)
 	{
-		if(x < 0 || y < 0 || x >= size || y >= size) return null;
-		return parts[x][y];
+		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return CircuitPart.getPart(PartNull.class);
+		return CircuitPart.getPart(id[pos.x][pos.y]);
 	}
 	
-	public void scheduleTick(int x, int y)
+	public void scheduleTick(Vec2 pos)
 	{
-		Vec2 p = new Vec2(x, y);
-		tickSchedule.add(p);
+		tickSchedule.add(pos.clone());
 	}
 	
-	public void markForUpdate(int x, int y)
+	public void markForUpdate(Vec2 pos)
 	{
 		if(!queueEnabled) return;
-		Vec2 p = new Vec2(x, y);
-		updateQueue.add(p);
+		updateQueue.add(pos.clone());
 	}
 	
 	public void updateMatrix()
@@ -217,13 +215,14 @@ public class CircuitData implements Cloneable
 		tickSchedule.clear();
 		for(Vec2 v : tmp)
 		{
-			getPart(v.x, v.y).onScheduledTick();
+			getPart(v).onScheduledTick(v, parent);
 		}
 		for(int x = 0; x < size; x++)
 		{
 			for(int y = 0; y < size; y++)
 			{
-				getPart(x, y).onTick();
+				Vec2 pos = new Vec2(x, y);
+				getPart(pos).onTick(null, parent);
 			}
 		}
 	}
@@ -270,9 +269,7 @@ public class CircuitData implements Cloneable
 		{
 			int[] id = new int[size];
 			for(int j = 0; j < size; j++)
-			{
-				id[j] = CircuitPart.getId(parts[i][j]);
-			}
+				id[j] = this.id[i][j];
 			idlist.appendTag(new NBTTagIntArray(id));
 		}
 		
@@ -305,7 +302,7 @@ public class CircuitData implements Cloneable
 		{
 			buf.writeByte(v.x);
 			buf.writeByte(v.y);
-			buf.writeByte(CircuitPart.getId(parts[v.x][v.y]));
+			buf.writeByte(id[v.x][v.y]);
 			buf.writeInt(meta[v.x][v.y]);
 		}
 		updateQueue.clear();
@@ -320,7 +317,7 @@ public class CircuitData implements Cloneable
 			int y = buf.readByte();
 			int cid = buf.readByte();
 			int data = buf.readInt();
-			setID(x, y, cid);
+			setID(new Vec2(x, y), cid);
 			meta[x][y] = data;
 		}
 	}
@@ -339,17 +336,11 @@ public class CircuitData implements Cloneable
 	{
 		CircuitData data = new CircuitData();
 		data.size = 3;
-		data.parts = new CircuitPart[3][3];
-		
-		data.parts[0][0] = CircuitPart.getPart(0, 0, 0, data);
-		data.parts[1][0] = CircuitPart.getPart(1, 0, 0, data);
-		data.parts[2][0] = CircuitPart.getPart(0, 0, 0, data);
-		data.parts[0][1] = CircuitPart.getPart(1, 0, 0, data);
-		data.parts[1][1] = CircuitPart.getPart(0, 0, 0, data);
-		data.parts[2][1] = CircuitPart.getPart(1, 0, 0, data);
-		data.parts[0][2] = CircuitPart.getPart(0, 0, 0, data);
-		data.parts[1][2] = CircuitPart.getPart(1, 0, 0, data);
-		data.parts[2][2] = CircuitPart.getPart(0, 0, 0, data);
+		data.id = new int[3][3];
+		data.id[1][0] = 1;
+		data.id[0][1] = 1;
+		data.id[2][1] = 1;
+		data.id[1][2] = 1;
 		
 		data.meta = new int[][]{new int[]{0, 0, 0}, new int[]{0, state, 0}, new int[]{0, 0, 0}};
 		data.parent = parent;
@@ -374,10 +365,11 @@ public class CircuitData implements Cloneable
 	{
 		cost = new CraftingAmount();
 		amount = 0;
-		for(CircuitPart[] p1 : parts)
+		for(int[] i1 : id)
 		{
-			for(CircuitPart part : p1)
+			for(int i : i1)
 			{
+				CircuitPart part = CircuitPart.getPart(i);
 				if(part instanceof PartNull) continue;
 				part.getCraftingCost(cost);
 				amount++;

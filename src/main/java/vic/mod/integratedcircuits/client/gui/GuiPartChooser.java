@@ -11,11 +11,11 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
-import vic.mod.integratedcircuits.ic.part.PartNull;
+import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 
 public class GuiPartChooser extends GuiButton implements IHoverable
 {
-	public CircuitPart current;
+	public CircuitRenderWrapper current;
 	private ArrayList<GuiPartChooser> list;
 	public int mode;
 	private boolean active = false;
@@ -30,22 +30,23 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 		this.parent = parent;
 	}
 	
-	public GuiPartChooser(int id, int x, int y, CircuitPart current, GuiPCBLayout parent)
+	public GuiPartChooser(int id, int x, int y, CircuitRenderWrapper current, GuiPCBLayout parent)
 	{
 		this(id, x, y, current, null, parent);
 	}
 	
-	public GuiPartChooser(int id, int x, int y, CircuitPart current, ArrayList<CircuitPart> list, GuiPCBLayout parent) 
+	public GuiPartChooser(int id, int x, int y, CircuitRenderWrapper current, List<CircuitRenderWrapper> list2, GuiPCBLayout parent) 
 	{
 		super(id, x, y, 20, 20, "");
 		this.current = current;
-		if(list != null)
+		if(list2 != null)
 		{
-			list.add(0, current);
+			ArrayList<CircuitRenderWrapper> list3 = new ArrayList<CircuitRenderWrapper>(list2);
+			list3.add(0, current);
 			this.list = new ArrayList<GuiPartChooser>();
-			for(int i = 0; i < list.size(); i++)
+			for(int i = 0; i < list3.size(); i++)
 			{
-				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + i * 21, list.get(i), parent);
+				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + i * 21, list3.get(i), parent);
 				child.chooserParent = this;
 				child.visible = false;
 				this.list.add(child);
@@ -129,8 +130,8 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 			}
 			
 			if(mode == 1) parent.selectedPart = null;
-			else if(mode == 2) parent.selectedPart = CircuitPartRenderer.createEncapsulated(PartNull.class);
-			else parent.selectedPart = this.current;
+			else if(mode == 2) parent.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
+			else parent.selectedPart = current;
 		}
 		if(list != null)
 		{
@@ -153,7 +154,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 	public List<String> getHoverInformation() 
 	{
 		ArrayList<String> text = new ArrayList<String>();
-		if(current != null) text.add(current.getLocalizedName());
+		if(current != null) text.add(current.getPart().getLocalizedName(current.getPos(), current));
 		else if(mode == 1) text.add(I18n.format("gui.integratedcircuits.cad.edit"));
 		else if(mode == 2) text.add(I18n.format("gui.integratedcircuits.cad.erase"));
 		return text;

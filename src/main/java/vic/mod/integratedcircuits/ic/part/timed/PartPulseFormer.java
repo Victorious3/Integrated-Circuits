@@ -1,54 +1,49 @@
 package vic.mod.integratedcircuits.ic.part.timed;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.ic.ICircuit;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartPulseFormer extends PartDelayedAction
 {
 	@Override
-	public void onInputChange(ForgeDirection side) 
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
-		updateInput();
-		if((MiscUtils.rotn(side, -getRotation()) != ForgeDirection.SOUTH)) return;
-		if(getInputFromSide(side)) 
+		updateInput(pos, parent);
+		if((toInternal(pos, parent, side) != ForgeDirection.SOUTH)) return;
+		if(getInputFromSide(pos, parent, side)) 
 		{
-			setState(getState() | 128);
-			notifyNeighbours();
-			setDelay(true);
+			setState(pos, parent, getState(pos, parent) | 128);
+			notifyNeighbours(pos, parent);
+			setDelay(pos, parent, true);
 		}
 	}
 
 	@Override
-	public boolean getOutputToSide(ForgeDirection side) 
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		ForgeDirection f2 = MiscUtils.rotn(side, -getRotation());
+		ForgeDirection f2 = toInternal(pos, parent, side);
 		if(f2 != ForgeDirection.NORTH) return false;
-		return (getState() & 128) > 0;
+		return (getState(pos, parent) & 128) > 0;
 	}
 
 	@Override
-	public boolean canConnectToSide(ForgeDirection side) 
+	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
-		ForgeDirection f2 = MiscUtils.rotn(side, -getRotation());
+		ForgeDirection f2 = toInternal(pos, parent, side);
 		return f2 == ForgeDirection.NORTH || f2 == ForgeDirection.SOUTH;
 	}
 
 	@Override
-	public void onTick() 
-	{
-		super.onTick();
-	}
-
-	@Override
-	protected int getDelay() 
+	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{
 		return 2;
 	}
 
 	@Override
-	public void onDelay() 
+	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		setState(getState() & ~128);
-		super.onDelay();
+		setState(pos, parent, getState(pos, parent) & ~128);
+		super.onDelay(pos, parent);
 	}
 }

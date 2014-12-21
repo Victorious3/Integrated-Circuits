@@ -2,9 +2,11 @@ package vic.mod.integratedcircuits.ic.part.timed;
 
 import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartStateCell extends PartDelayedAction
 {	
@@ -12,62 +14,62 @@ public class PartStateCell extends PartDelayedAction
 	private static int f2 = 1 << 24;
 
 	@Override
-	protected int getDelay()
+	protected int getDelay(Vec2 pos, ICircuit parent)
 	{
-		if((getState() & f2) > 0) return 2;
-		return ((getState() & 8355840) >> 16);
+		if((getState(pos, parent) & f2) > 0) return 2;
+		return ((getState(pos, parent) & 8355840) >> 16);
 	}
 	
 	@Override
-	public boolean getOutputToSide(ForgeDirection side) 
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
-		ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
-		if(s2 == ForgeDirection.WEST && (getState() & f1) > 0) return true;
-		if(s2 == ForgeDirection.NORTH && (getState() & f2) > 0) return true;
+		ForgeDirection s2 = toInternal(pos, parent, side);
+		if(s2 == ForgeDirection.WEST && (getState(pos, parent) & f1) > 0) return true;
+		if(s2 == ForgeDirection.NORTH && (getState(pos, parent) & f2) > 0) return true;
 		return false;
 	}
 
 	@Override
-	public void onDelay() 
+	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		if((getState() & f2) > 0) setState(getState() & ~f2);
-		else if((getState() & f1) > 0) 
+		if((getState(pos, parent) & f2) > 0) setState(pos, parent, getState(pos, parent) & ~f2);
+		else if((getState(pos, parent) & f1) > 0) 
 		{
-			setState(getState() & ~f1);
-			setState(getState() | f2);
-			setDelay(true);
+			setState(pos, parent, getState(pos, parent) & ~f1);
+			setState(pos, parent, getState(pos, parent) | f2);
+			setDelay(pos, parent, true);
 		}
-		super.onDelay();
+		super.onDelay(pos, parent);
 	}
 
 	@Override
-	public void onPlaced()
+	public void onPlaced(Vec2 pos, ICircuit parent)
 	{
-		setState(10 << 16);
+		setState(pos, parent, 10 << 16);
 	}
 
 	@Override
-	public void onInputChange(ForgeDirection side) 
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
-		updateInput();
-		ForgeDirection s2 = MiscUtils.rotn(side, -getRotation());
+		updateInput(pos, parent);
+		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 == ForgeDirection.SOUTH)
 		{
-			if(getInputFromSide(side))
+			if(getInputFromSide(pos, parent, side))
 			{
-				setState(getState() | f1);
-				setState(getState() & ~f2);
-				notifyNeighbours();
+				setState(pos, parent, getState(pos, parent) | f1);
+				setState(pos, parent, getState(pos, parent) & ~f2);
+				notifyNeighbours(pos, parent);
 			}
-			else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.EAST, getRotation())))
-				setDelay(true);
+			else if(!getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, getRotation(pos, parent))))
+				setDelay(pos, parent, true);
 		}
-		else if(s2 == ForgeDirection.EAST && (getState() & f1) > 0)
+		else if(s2 == ForgeDirection.EAST && (getState(pos, parent) & f1) > 0)
 		{
-			if(getInputFromSide(side)) setDelay(false);
-			else if(!getInputFromSide(MiscUtils.rotn(ForgeDirection.SOUTH, getRotation())))
-				setDelay(true);
-			notifyNeighbours();
+			if(getInputFromSide(pos, parent, side)) setDelay(pos, parent, false);
+			else if(!getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, getRotation(pos, parent))))
+				setDelay(pos, parent, true);
+			notifyNeighbours(pos, parent);
 		}
 	}
 	

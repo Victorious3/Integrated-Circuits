@@ -330,7 +330,7 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 		byte oio = io;
 		io = 0;
 		for(int i = 0; i < 4; i++)
-			io |= getRedstoneInput(i) != 0 ? 1 << i: 0;
+			io |= (getRedstoneInput(i) != 0 || output[i][0] != 0) ? 1 << i: 0;
 		
 		if(oio != io) getWriteStream(1).writeByte(io);
 	}

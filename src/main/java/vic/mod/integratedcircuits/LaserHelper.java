@@ -10,6 +10,7 @@ import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.Vec2;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
@@ -256,7 +257,7 @@ public class LaserHelper
 				if(!te.excMatrix[x][y])
 				{
 					//Check if the items needed to craft the selected part are supplied
-					CircuitPart part = te.cdata.getPart(x, y);
+					CircuitPart part = te.cdata.getPart(new Vec2(x, y));
 					CraftingAmount amount = new CraftingAmount();
 					part.getCraftingCost(amount);
 					ItemAmount insufficient = te.craftingSupply.getInsufficient();

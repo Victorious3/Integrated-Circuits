@@ -34,6 +34,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	public void setup(int size)
 	{
 		circuitData = new CircuitData(size, this);
+		circuitData.clear(size);
 	}
 
 	@Override
