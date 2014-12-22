@@ -4,21 +4,27 @@ import java.util.ArrayList;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
+//FIXME The repeater currently breaks when pulsing it quickly!
 public class PartRepeater extends PartDelayedAction
 {
+	public final IntProperty PROP_DELAY = new IntProperty(stitcher, 255);
+	private final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
+	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{
-		return ((getState(pos, parent) & 16711680) >> 16);
+		return getProperty(pos, parent, PROP_DELAY);
 	}
 	
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent)
 	{
-		setState(pos, parent, 2 << 16);
-		setState(pos, parent, getState(pos, parent) | 32768);
+		setProperty(pos, parent, PROP_DELAY, 2);
+		setProperty(pos, parent, PROP_OUT, true);
 	}
 
 	@Override
@@ -30,16 +36,11 @@ public class PartRepeater extends PartDelayedAction
 			int delay = getDelay(pos, parent);
 			int newDelay = 0;
 			switch (delay) {
-			case 2 : delay = 4; break;
-			case 4 : delay = 8; break;
-			case 8 : delay = 16; break;
-			case 16 : delay = 32; break;
-			case 32 : delay = 64; break;
-			case 64 : delay = 128; break;
+			case 255 : delay = 2; break;
 			case 128 : delay = 255; break;
-			default : delay = 2; break;
+			default : delay <<= 1; break;
 			}
-			setState(pos, parent, (getState(pos, parent) & ~16711680) | delay << 16);
+			setProperty(pos, parent, PROP_DELAY, delay);
 		}
 	}
 
@@ -55,13 +56,14 @@ public class PartRepeater extends PartDelayedAction
 	{
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 != ForgeDirection.NORTH) return false;
-		return getCurrentDelay(pos, parent) > 0 ? (getState(pos, parent) & 32768) > 0 : (getState(pos, parent) & 32768) == 0;
+		boolean tmp = getProperty(pos, parent, PROP_OUT);
+		return getCurrentDelay(pos, parent) > 0 ? tmp : !tmp;
 	}
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) 
 	{	
-		setState(pos, parent, getState(pos, parent) ^ 32768);
+		invertProperty(pos, parent, PROP_OUT);
 		super.onDelay(pos, parent);
 	}
 
@@ -72,10 +74,9 @@ public class PartRepeater extends PartDelayedAction
 		if(toInternal(pos, parent, side) != ForgeDirection.SOUTH) return;
 		if(getCurrentDelay(pos, parent) == 0)
 		{
-			if(((getState(pos, parent) & 32768) >> 15) != (getInputFromSide(pos, parent, side) ? 1 : 0))
-			{
-				setState(pos, parent, getState(pos, parent) & ~32768 | (getInputFromSide(pos, parent, side) ? 1 : 0) << 15);
-			}
+			boolean in = getInputFromSide(pos, parent, side);
+			if(getProperty(pos, parent, PROP_OUT) != in)
+				setProperty(pos, parent, PROP_OUT, in);
 		}
 		setDelay(pos, parent, true);
 	}

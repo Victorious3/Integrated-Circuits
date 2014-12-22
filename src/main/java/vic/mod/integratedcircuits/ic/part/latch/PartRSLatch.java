@@ -6,34 +6,34 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
-//TODO Acts a little bit different then described on the P:R wiki. I'll come back to this.
 public class PartRSLatch extends PartCPGate
 {	
+	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
+	public final IntProperty PROP_MODE = new IntProperty(stitcher, 3);
+	
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 
 	{
 		super.onClick(pos, parent, button, ctrl);
 		if(button == 0 && ctrl)
 		{
-			int state = (getState(pos, parent) & 768) >> 8;
-			state++;
-			state = state > 3 ? 0 : state;
-			setState(pos, parent, getState(pos, parent) & ~768);
-			setState(pos, parent, getState(pos, parent) | state << 8);
+			cycleProperty(pos, parent, PROP_MODE);
 			notifyNeighbours(pos, parent);
 		}
 	}
 	
 	private boolean isMirrored(Vec2 pos, ICircuit parent)
 	{
-		return (getState(pos, parent) & 512) > 0;
+		return (getProperty(pos, parent, PROP_MODE) & 2) != 0;
 	}
 	
 	private boolean isSpecial(Vec2 pos, ICircuit parent)
 	{
-		return (getState(pos, parent) & 256) > 0;
+		return (getProperty(pos, parent, PROP_MODE) & 1) != 0;
 	}
 
 	@Override
@@ -42,8 +42,7 @@ public class PartRSLatch extends PartCPGate
 		updateInput(pos, parent);
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 == ForgeDirection.EAST || s2 == ForgeDirection.WEST) return;
-		if(s2 == ForgeDirection.NORTH) setState(pos, parent, getState(pos, parent) | 128);
-		else setState(pos, parent, getState(pos, parent) & ~128);
+		setProperty(pos, parent, PROP_OUT, s2 == ForgeDirection.NORTH);
 		scheduleTick(pos, parent);
 		markForUpdate(pos, parent);
 	}
@@ -58,12 +57,12 @@ public class PartRSLatch extends PartCPGate
 			|| s2 == ForgeDirection.WEST && isMirrored(pos, parent)) 
 			|| (s2 == ForgeDirection.NORTH && isSpecial(pos, parent) 
 			&& !getInputFromSide(pos, parent, s3.getOpposite()))) 
-			&& b1 && (getState(pos, parent) & 128) != 0) return true;
+			&& b1 && getProperty(pos, parent, PROP_OUT)) return true;
 		if(((s2 == ForgeDirection.WEST && !isMirrored(pos, parent) 
 			|| s2 == ForgeDirection.EAST && isMirrored(pos, parent)) 
 			|| (s2 == ForgeDirection.SOUTH && isSpecial(pos, parent) 
 			&& !getInputFromSide(pos, parent, s3))) 
-			&& b1 && (getState(pos, parent) & 128) == 0) return true;
+			&& b1 && !getProperty(pos, parent, PROP_OUT)) return true;
 		return false;
 	}
 

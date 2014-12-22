@@ -5,37 +5,54 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
-public class PartStateCell extends PartDelayedAction
-{	
-	private static int f1 = 1 << 23;
-	private static int f2 = 1 << 24;
+public class PartStateCell extends PartDelayedAction implements IConfigurableDelay
+{
+	public final IntProperty PROP_DELAY = new IntProperty(stitcher, 255);
+	//TODO Figure out what these do, I have not a slightest clue about them.
+	private final BooleanProperty PROP_OUT_WEST = new BooleanProperty(stitcher);
+	private final BooleanProperty PROP_OUT_NORTH = new BooleanProperty(stitcher);
 
+	@Override
+	public int getConfigurableDelay(Vec2 pos, ICircuit parent) 
+	{
+		return getProperty(pos, parent, PROP_DELAY);
+	}
+
+	@Override
+	public void setConfigurableDelay(Vec2 pos, ICircuit parent, int delay) 
+	{
+		setProperty(pos, parent, PROP_DELAY, delay);
+	}
+	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent)
 	{
-		if((getState(pos, parent) & f2) > 0) return 2;
-		return ((getState(pos, parent) & 8355840) >> 16);
+		if(getProperty(pos, parent, PROP_OUT_NORTH)) return 2;
+		return getConfigurableDelay(pos, parent);
 	}
 	
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		if(s2 == ForgeDirection.WEST && (getState(pos, parent) & f1) > 0) return true;
-		if(s2 == ForgeDirection.NORTH && (getState(pos, parent) & f2) > 0) return true;
+		if(s2 == ForgeDirection.WEST && getProperty(pos, parent, PROP_OUT_WEST)) return true;
+		if(s2 == ForgeDirection.NORTH && getProperty(pos, parent, PROP_OUT_NORTH)) return true;
 		return false;
 	}
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		if((getState(pos, parent) & f2) > 0) setState(pos, parent, getState(pos, parent) & ~f2);
-		else if((getState(pos, parent) & f1) > 0) 
+		if(getProperty(pos, parent, PROP_OUT_NORTH)) 
+			setProperty(pos, parent, PROP_OUT_NORTH, false);
+		else if(getProperty(pos, parent, PROP_OUT_WEST)) 
 		{
-			setState(pos, parent, getState(pos, parent) & ~f1);
-			setState(pos, parent, getState(pos, parent) | f2);
+			setProperty(pos, parent, PROP_OUT_WEST, false);
+			setProperty(pos, parent, PROP_OUT_NORTH, true);
 			setDelay(pos, parent, true);
 		}
 		super.onDelay(pos, parent);
@@ -44,7 +61,7 @@ public class PartStateCell extends PartDelayedAction
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent)
 	{
-		setState(pos, parent, 10 << 16);
+		setProperty(pos, parent, PROP_DELAY, 20);
 	}
 
 	@Override
@@ -56,14 +73,14 @@ public class PartStateCell extends PartDelayedAction
 		{
 			if(getInputFromSide(pos, parent, side))
 			{
-				setState(pos, parent, getState(pos, parent) | f1);
-				setState(pos, parent, getState(pos, parent) & ~f2);
+				setProperty(pos, parent, PROP_OUT_WEST, true);
+				setProperty(pos, parent, PROP_OUT_NORTH, false);
 				notifyNeighbours(pos, parent);
 			}
 			else if(!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)))
 				setDelay(pos, parent, true);
 		}
-		else if(s2 == ForgeDirection.EAST && (getState(pos, parent) & f1) > 0)
+		else if(s2 == ForgeDirection.EAST && getProperty(pos, parent, PROP_OUT_WEST))
 		{
 			if(getInputFromSide(pos, parent, side)) setDelay(pos, parent, false);
 			else if(!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))

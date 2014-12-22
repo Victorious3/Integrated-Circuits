@@ -267,7 +267,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		}
 		else if(gui == callbackTimed && result == Action.CUSTOM)
 		{
-			IConfigurableDelay conf = (IConfigurableDelay)timedPart;
+			IConfigurableDelay conf = (IConfigurableDelay)timedPart.getPart();
 			int delay = conf.getConfigurableDelay(timedPart.getPos(), timedPart);
 			switch (id) {
 			case 1 : delay -= 20; break;
@@ -279,7 +279,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			conf.setConfigurableDelay(timedPart.getPos(), timedPart, delay);
 			labelTimed.setText(I18n.format("gui.integratedcitcuits.cad.callback.delay", conf.getConfigurableDelay(timedPart.getPos(), timedPart)));
 			IntegratedCircuits.networkWrapper.sendToServer(
-				new PacketPCBChangePart(new int[]{timedPart.getPos().x, timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getCircuitData().getMeta(timedPart.getPos())}, -1, false, false, te.xCoord, te.yCoord, te.zCoord));
+				new PacketPCBChangePart(new int[]{timedPart.getPos().x, timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getState()}, -1, false, false, te.xCoord, te.yCoord, te.zCoord));
 		}
 	}
 	
@@ -555,8 +555,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				CircuitPart cp = data.getPart(pos);
 				if(cp instanceof IConfigurableDelay && ctrlDown) 
 				{
-					timedPart = new CircuitRenderWrapper(te.getCircuitData()).setPart(cp);
-					labelTimed.setText(String.format("Current delay: %s ticks", ((IConfigurableDelay)timedPart).getConfigurableDelay(pos, te)));
+					timedPart = new CircuitRenderWrapper(te.getCircuitData()).setPart(cp).setPos(pos);
+					labelTimed.setText(String.format("Current delay: %s ticks", ((IConfigurableDelay)cp).getConfigurableDelay(pos, te)));
 					callbackTimed.display();
 				}
 				else IntegratedCircuits.networkWrapper.sendToServer(

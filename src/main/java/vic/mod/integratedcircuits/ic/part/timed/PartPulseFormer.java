@@ -2,10 +2,13 @@ package vic.mod.integratedcircuits.ic.part.timed;
 
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartPulseFormer extends PartDelayedAction
 {
+	public BooleanProperty PROP_OUTPUT = new BooleanProperty(stitcher);
+	
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
@@ -13,7 +16,7 @@ public class PartPulseFormer extends PartDelayedAction
 		if((toInternal(pos, parent, side) != ForgeDirection.SOUTH)) return;
 		if(getInputFromSide(pos, parent, side)) 
 		{
-			setState(pos, parent, getState(pos, parent) | 128);
+			setProperty(pos, parent, PROP_OUTPUT, true);
 			notifyNeighbours(pos, parent);
 			setDelay(pos, parent, true);
 		}
@@ -24,7 +27,7 @@ public class PartPulseFormer extends PartDelayedAction
 	{
 		ForgeDirection f2 = toInternal(pos, parent, side);
 		if(f2 != ForgeDirection.NORTH) return false;
-		return (getState(pos, parent) & 128) > 0;
+		return getProperty(pos, parent, PROP_OUTPUT);
 	}
 
 	@Override
@@ -43,7 +46,7 @@ public class PartPulseFormer extends PartDelayedAction
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		setState(pos, parent, getState(pos, parent) & ~128);
+		setProperty(pos, parent, PROP_OUTPUT, false);
 		super.onDelay(pos, parent);
 	}
 }

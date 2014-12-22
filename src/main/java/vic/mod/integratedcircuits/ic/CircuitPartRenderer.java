@@ -482,6 +482,12 @@ public class CircuitPartRenderer
 			return data;
 		}
 		
+		public CircuitRenderWrapper setPos(Vec2 pos)
+		{
+			this.pos = pos;
+			return this;
+		}
+		
 		public Vec2 getPos()
 		{
 			return pos;

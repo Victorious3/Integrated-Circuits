@@ -7,10 +7,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartRandomizer extends PartDelayedAction
 {
+	public final IntProperty PROP_RANDOM = new IntProperty(stitcher, 7);
+	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{
@@ -26,8 +29,7 @@ public class PartRandomizer extends PartDelayedAction
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		setState(pos, parent, getState(pos, parent) & ~229376);
-		setState(pos, parent, getState(pos, parent) | new Random().nextInt(7) << 15);
+		setProperty(pos, parent, PROP_RANDOM, new Random().nextInt(7));
 		notifyNeighbours(pos, parent);
 		setDelay(pos, parent, true);
 	}
@@ -38,10 +40,10 @@ public class PartRandomizer extends PartDelayedAction
 		if(!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) return false;
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 == ForgeDirection.SOUTH) return false;
-		int rand = (getState(pos, parent) & 229376) >> 15;
-		if(s2 == ForgeDirection.EAST && (rand >> 2 & 1) == 1) return true;
-		if(s2 == ForgeDirection.WEST && (rand >> 1 & 1) == 1) return true;
-		if(s2 == ForgeDirection.NORTH && (rand & 1) == 1) return true;
+		int rand = getProperty(pos, parent, PROP_RANDOM);
+		if(s2 == ForgeDirection.EAST && (rand >> 2 & 1) != 0) return true;
+		if(s2 == ForgeDirection.WEST && (rand >> 1 & 1) != 0) return true;
+		if(s2 == ForgeDirection.NORTH && (rand & 1) != 0) return true;
 		return false;
 	}
 

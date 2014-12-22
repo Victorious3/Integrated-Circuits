@@ -3,17 +3,20 @@ package vic.mod.integratedcircuits.ic.part.latch;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartToggleLatch extends PartCPGate
 {
+	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
+	
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 
 	{
 		super.onClick(pos, parent, button, ctrl);
 		if(button == 0 && ctrl) 
 		{
-			setState(pos, parent, getState(pos, parent) ^ 128);
+			invertProperty(pos, parent, PROP_OUT);
 			notifyNeighbours(pos, parent);
 		}
 	}
@@ -25,7 +28,7 @@ public class PartToggleLatch extends PartCPGate
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if((s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH))
 		{
-			if(getInputFromSide(pos, parent, side)) setState(pos, parent, getState(pos, parent) ^ 128);
+			if(getInputFromSide(pos, parent, side)) invertProperty(pos, parent, PROP_OUT);
 			scheduleTick(pos, parent);
 		}
 	}
@@ -34,8 +37,8 @@ public class PartToggleLatch extends PartCPGate
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		if(s2 == ForgeDirection.EAST) return (getState(pos, parent) & 128) > 0;
-		if(s2 == ForgeDirection.WEST) return (getState(pos, parent) & 128) == 0;
+		if(s2 == ForgeDirection.EAST) return getProperty(pos, parent, PROP_OUT);
+		if(s2 == ForgeDirection.WEST) return !getProperty(pos, parent, PROP_OUT);
 		return false;
 	}
 }

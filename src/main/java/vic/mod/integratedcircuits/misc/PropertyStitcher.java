@@ -85,7 +85,7 @@ public class PropertyStitcher
 		}
 	}
 
-	private static abstract class ValueProperty<T extends Comparable> implements IProperty<T>
+	public static abstract class ValueProperty<T extends Comparable> implements IProperty<T>
 	{
 		private int flag;
 		private int offset;
@@ -110,6 +110,11 @@ public class PropertyStitcher
 		public int getOffset() 
 		{
 			return offset;
+		}
+		
+		public int getLimit()
+		{
+			return max;
 		}
 		
 		@Override

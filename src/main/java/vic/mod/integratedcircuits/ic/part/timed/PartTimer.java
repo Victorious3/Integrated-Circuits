@@ -5,29 +5,33 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 //TODO The timer should really use the tick method instead of scheduled ticks.
 public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 {
+	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
+	public final IntProperty PROP_DELAY = new IntProperty(stitcher, 255);
+	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{
-		if((getState(pos, parent) & 32768) == 0) return getConfigurableDelay(pos, parent);
+		if(!getProperty(pos, parent, PROP_OUT)) return getConfigurableDelay(pos, parent);
 		else return 2;
 	}
 	
 	@Override
 	public int getConfigurableDelay(Vec2 pos, ICircuit parent)
 	{
-		return ((getState(pos, parent) & 16711680) >> 16);
+		return getProperty(pos, parent, PROP_DELAY);
 	}
 	
 	@Override
 	public void setConfigurableDelay(Vec2 pos, ICircuit parent, int delay)
 	{
-		setState(pos, parent, getState(pos, parent) & ~16711680);
-		setState(pos, parent, getState(pos, parent) | delay << 16);
+		setProperty(pos, parent, PROP_DELAY, delay);
 	}
 
 	@Override
@@ -35,7 +39,8 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 	{
 		setState(pos, parent, 10 << 16);
 		updateInput(pos, parent);
-		if(!getInputFromSide(pos, parent, ForgeDirection.SOUTH)) setDelay(pos, parent, true);
+		if(!getInputFromSide(pos, parent, ForgeDirection.SOUTH)) 
+			setDelay(pos, parent, true);
 	}
 	
 	@Override
@@ -43,7 +48,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 	{
 		updateInput(pos, parent);
 		if(toInternal(pos, parent, side) != ForgeDirection.SOUTH) return;
-		setState(pos, parent, getState(pos, parent) & ~32768);
+		setProperty(pos, parent, PROP_OUT, false);
 		if(getInputFromSide(pos, parent, side))
 		{
 			setDelay(pos, parent, false);
@@ -55,7 +60,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) 
 	{
-		setState(pos, parent, getState(pos, parent) ^ 32768);
+		invertProperty(pos, parent, PROP_OUT);
 		setDelay(pos, parent, true);
 		super.onDelay(pos, parent);
 	}
@@ -64,7 +69,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		if(toInternal(pos, parent, side) == ForgeDirection.SOUTH) return false;
-		return (getState(pos, parent) & 32768) != 0;
+		return getProperty(pos, parent, PROP_OUT);
 	}
 	
 	@Override
