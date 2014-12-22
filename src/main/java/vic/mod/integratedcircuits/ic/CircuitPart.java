@@ -128,7 +128,7 @@ public abstract class CircuitPart
 	
 	public final void cycleProperty(Vec2 pos, ICircuit parent, ValueProperty property, int offset)
 	{
-		int value = getProperty(pos, parent, property);
+		int value = (Integer)property.get(getState(pos, parent));
 		value = (value + offset) % (property.getLimit() + 1);
 		setProperty(pos, parent, property, value);
 	}
