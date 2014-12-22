@@ -7,7 +7,6 @@ import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
-import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 /** Rotateable Part **/
@@ -37,12 +36,12 @@ public abstract class PartCPGate extends CircuitPart
 	
 	public ForgeDirection toInternal(Vec2 pos, ICircuit parent, ForgeDirection dir)
 	{
-		return MiscUtils.rotn(dir, -getRotation(pos, parent));
+		return ForgeDirection.getOrientation((dir.ordinal() - 2 + 4 - getRotation(pos, parent)) % 4 + 2);
 	}
 	
 	public ForgeDirection toExternal(Vec2 pos, ICircuit parent, ForgeDirection dir)
 	{
-		return MiscUtils.rotn(dir, getRotation(pos, parent));
+		return ForgeDirection.getOrientation((dir.ordinal() - 2 + getRotation(pos, parent)) % 4 + 2);
 	}
 
 	@Override

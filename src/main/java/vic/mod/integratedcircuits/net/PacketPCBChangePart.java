@@ -72,6 +72,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 				if(button != -1) cdata.getPart(pos).onClick(pos, te, button, ctrl);
 				else
 				{
+					//TODO Doesn't reset the meta properly
 					cdata.setID(pos, data[i + 2]);
 					cdata.setMeta(pos, data[i + 3]);
 					if(placed) cdata.getPart(pos).onPlaced(pos, te);

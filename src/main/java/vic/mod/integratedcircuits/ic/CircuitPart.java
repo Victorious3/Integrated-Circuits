@@ -121,7 +121,7 @@ public abstract class CircuitPart
 		parent.getCircuitData().markForUpdate(pos);
 	}
 	
-	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl){}
+	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {}
 	
 	public String getName(Vec2 pos, ICircuit parent)
 	{
@@ -138,10 +138,7 @@ public abstract class CircuitPart
 		return new ArrayList<String>();
 	}
 	
-	public void getCraftingCost(CraftingAmount amount)
-	{
-		
-	}
+	public void getCraftingCost(CraftingAmount amount) {}
 	
 	public final int getState(Vec2 pos, ICircuit parent)
 	{
