@@ -8,12 +8,10 @@ import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
-//FIXME The repeater currently breaks when pulsing it quickly!
 public class PartRepeater extends PartDelayedAction
 {
 	public final IntProperty PROP_DELAY = new IntProperty(stitcher, 255);
-	private final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
-	
+	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{
@@ -56,14 +54,15 @@ public class PartRepeater extends PartDelayedAction
 	{
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if(s2 != ForgeDirection.NORTH) return false;
-		boolean tmp = getProperty(pos, parent, PROP_OUT);
-		return getCurrentDelay(pos, parent) > 0 ? tmp : !tmp;
+		return getProperty(pos, parent, PROP_OUT);
 	}
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) 
 	{	
-		invertProperty(pos, parent, PROP_OUT);
+		boolean b = invertProperty(pos, parent, PROP_OUT);
+		if(b != getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
+			setDelay(pos, parent, true);
 		super.onDelay(pos, parent);
 	}
 
@@ -76,9 +75,8 @@ public class PartRepeater extends PartDelayedAction
 		{
 			boolean in = getInputFromSide(pos, parent, side);
 			if(getProperty(pos, parent, PROP_OUT) != in)
-				setProperty(pos, parent, PROP_OUT, in);
+				setDelay(pos, parent, true);
 		}
-		setDelay(pos, parent, true);
 	}
 
 	@Override
