@@ -12,8 +12,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -31,7 +29,6 @@ import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer;
 import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
-import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.part.PartNull;
 import vic.mod.integratedcircuits.ic.part.PartSynchronizer;
@@ -66,6 +63,9 @@ import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import vic.mod.integratedcircuits.net.PacketPCBClear;
 import vic.mod.integratedcircuits.net.PacketPCBIO;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
+
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverableHandler
@@ -309,9 +309,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		CircuitData data = te.getCircuitData();
 		
 		int w = data.getSize();
-		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-		
-		if(Mouse.isButtonDown(0) && (Math.abs(x - lastX) > 0 || Math.abs(y - lastY) > 0) && shiftDown)
+		if(Mouse.isButtonDown(0) && (Math.abs(x - lastX) > 0 || Math.abs(y - lastY) > 0) && isShiftKeyDown())
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
@@ -355,7 +353,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			ey = (int)y2;
 		}
 		
-		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown && !blockMouseInput)
+		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !isShiftKeyDown() && !blockMouseInput)
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187) && selectedPart != null)
 			{
@@ -490,7 +488,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
 		
 		int w = data.getSize();
-		if(x2 >= 0 && y2 >= 0 && x2 < w && y2 < w && !blockMouseInput)
+		if(x2 >= 0 && y2 >= 0 && x2 < w && y2 < w && !blockMouseInput && !isShiftKeyDown())
 		{
 			if(!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187))
 			{
@@ -498,19 +496,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				CircuitPart part = data.getPart(pos);
 				if(!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell))
 				{
-					ArrayList<String> text = new ArrayList<String>();
+					ArrayList<String> text = Lists.newArrayList();
 					text.add(part.getLocalizedName(pos, te));
-					if(part instanceof PartCPGate) 
-					{
-						int rotation = ((PartCPGate)part).getRotation(pos, te);
-						ForgeDirection rot = 
-							rotation == 0 ? ForgeDirection.NORTH :
-							rotation == 1 ? ForgeDirection.EAST :
-							rotation == 2 ? ForgeDirection.SOUTH :
-							ForgeDirection.WEST;
-						text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + MiscUtils.getLocalizedDirection(rot));
-					}
-					text.addAll(part.getInformation(pos, te));
+					text.addAll(part.getInformation(pos, te, selectedPart == null, isCtrlKeyDown()));
 					drawHoveringText(text, x - guiLeft, y - guiTop, this.fontRendererObj);
 				}
 			}
@@ -540,14 +528,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		CircuitData data = te.getCircuitData();
 		
-		boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-		boolean ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
+		boolean ctrlDown = isCtrlKeyDown();
 		int x2 = (int)((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
 		int y2 = (int)((y - guiTop - te.offY * te.scale) / (16F * te.scale));
 		int w = data.getSize();
 		
 		drag = false;
-		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown)
+		if(x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !isShiftKeyDown())
 		{
 			if(selectedPart == null)
 			{

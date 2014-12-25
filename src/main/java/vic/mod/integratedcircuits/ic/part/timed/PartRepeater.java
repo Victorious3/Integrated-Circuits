@@ -80,9 +80,9 @@ public class PartRepeater extends PartDelayedAction
 	}
 
 	@Override
-	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent) 
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 
 	{
-		ArrayList<String> list = super.getInformation(pos, parent);
+		ArrayList<String> list = super.getInformation(pos, parent, edit, ctrlDown);
 		list.add("Delay: " + getDelay(pos, parent));
 		return list;
 	}	

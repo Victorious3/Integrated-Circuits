@@ -1,5 +1,8 @@
 package vic.mod.integratedcircuits.ic.part;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
@@ -33,5 +36,13 @@ public abstract class Part3I1O extends PartSimpleGate
 	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd) 
 	{
 		return fd == ForgeDirection.NORTH;
+	}
+	
+	@Override
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 
+	{
+		ArrayList<String> text = super.getInformation(pos, parent, edit, ctrlDown);
+		if(edit && ctrlDown) text.add(I18n.format("gui.integratedcircuits.cad.mode"));
+		return text;
 	}
 }

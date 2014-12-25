@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
@@ -26,6 +27,14 @@ public class BlockAssembler extends BlockContainer
 		setBlockName(IntegratedCircuits.modID + ".assembler");
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setHardness(2F);
+	}
+
+	@Override
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World p_149668_1_,
+			int p_149668_2_, int p_149668_3_, int p_149668_4_) {
+		// TODO Auto-generated method stub
+		return super.getCollisionBoundingBoxFromPool(p_149668_1_, p_149668_2_,
+				p_149668_3_, p_149668_4_);
 	}
 
 	@Override
@@ -60,6 +69,7 @@ public class BlockAssembler extends BlockContainer
 	{
 		int rotation = te != null ? te.rotation : 0;
 		
+		//TODO Maybe... just maybe use ForgeDirection's rotating here?
 		if(s == 0) return Resources.ICON_ASSEMBLER_BOTTOM;
 		else if(s == 1) return Resources.ICON_ASSEMBLER_TOP;
 		else if(s == 2 && rotation == 0 || s == 5 && rotation == 1 

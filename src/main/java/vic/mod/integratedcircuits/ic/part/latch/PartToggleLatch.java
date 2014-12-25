@@ -1,5 +1,8 @@
 package vic.mod.integratedcircuits.ic.part.latch;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
@@ -40,5 +43,13 @@ public class PartToggleLatch extends PartCPGate
 		if(s2 == ForgeDirection.EAST) return getProperty(pos, parent, PROP_OUT);
 		if(s2 == ForgeDirection.WEST) return !getProperty(pos, parent, PROP_OUT);
 		return false;
+	}
+
+	@Override
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 
+	{
+		ArrayList<String> text = super.getInformation(pos, parent, edit, ctrlDown);
+		if(edit && ctrlDown) text.add(I18n.format("gui.integratedcircuits.cad.toggle"));
+		return text;
 	}
 }

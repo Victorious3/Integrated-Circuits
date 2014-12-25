@@ -73,7 +73,7 @@ public class LaserHelper
 		if(laser == null) lasers[id] = null;
 		else lasers[id] = new Laser(te, id);
 		te.contents[offset + id] = laser;
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER && te.getWorldObj() != null)
+		if(MiscUtils.isServer() && te.getWorldObj() != null)
 			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id, laser), te.getWorldObj().provider.dimensionId);
 	}
 
@@ -171,7 +171,7 @@ public class LaserHelper
 		{
 			this.te = te;
 			this.id = id;
-			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			if(MiscUtils.isClient())
 				lastModified = ClientProxy.clientTicks;
 			else 
 			{
@@ -313,14 +313,14 @@ public class LaserHelper
 		
 		public void setAim(int x, int y)
 		{
-			if(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER)
+			if(MiscUtils.isServer())
 				IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
 			
 			this.x = x;
 			this.y = y;
 			this.isActive = false;
 			
-			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			if(MiscUtils.isClient())
 				lastModified = ClientProxy.clientTicks;
 			else lastModified = CommonProxy.serverTicks;
 			
@@ -362,7 +362,7 @@ public class LaserHelper
 				direction = ForgeDirection.NORTH; break;
 			}
 			
-			if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			if(MiscUtils.isClient())
 				lastModified = ClientProxy.clientTicks;
 			else lastModified = CommonProxy.serverTicks;
 			

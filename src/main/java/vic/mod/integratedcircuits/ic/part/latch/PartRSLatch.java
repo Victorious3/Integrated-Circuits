@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits.ic.part.latch;
 
 import java.util.ArrayList;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
@@ -67,11 +68,12 @@ public class PartRSLatch extends PartCPGate
 	}
 
 	@Override
-	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent) 
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 
 	{
-		ArrayList<String> text = super.getInformation(pos, parent);
-		text.add("Mode: " + (isSpecial(pos, parent) ? 1 : 0));
-		if(isMirrored(pos, parent)) text.add(EnumChatFormatting.ITALIC + "Mirrored");
+		ArrayList<String> text = super.getInformation(pos, parent, edit, ctrlDown);
+		text.add(I18n.format("part.integratedcircuits.rslatch.mode") + ": " + (isSpecial(pos, parent) ? 1 : 0));
+		if(isMirrored(pos, parent)) text.add(EnumChatFormatting.ITALIC + I18n.format("part.integratedcircuits.rslatch.mirrored"));
+		if(edit && ctrlDown) text.add(I18n.format("gui.integratedcircuits.cad.mode"));
 		return text;
 	}
 }

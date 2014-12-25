@@ -1,5 +1,8 @@
 package vic.mod.integratedcircuits.ic.part.timed;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
@@ -77,5 +80,13 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 	{
 		cost.add(new ItemAmount(Items.redstone, 0.15));
 		cost.add(new ItemAmount(Items.glowstone_dust, 0.1));
+	}
+	
+	@Override
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 
+	{
+		ArrayList<String> text = super.getInformation(pos, parent, edit, ctrlDown);
+		if(edit && ctrlDown) text.add(I18n.format("gui.integratedcircuits.cad.delay"));
+		return text;
 	}
 }

@@ -1,14 +1,13 @@
 package vic.mod.integratedcircuits.client;
 
-import java.util.LinkedList;
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
 import vic.mod.integratedcircuits.client.model.IComponentModel;
 import vic.mod.integratedcircuits.client.model.ModelBase;
 import vic.mod.integratedcircuits.client.model.ModelBundledConnection;
 import vic.mod.integratedcircuits.client.model.ModelRedstoneConnection;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.client.IItemRenderer;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -20,13 +19,12 @@ import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.TMultiPart;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
+import com.google.common.collect.Lists;
+
 public class PartRenderer <T extends TMultiPart> implements IItemRenderer
 {	
-	protected List<IComponentModel> models = new LinkedList<IComponentModel>();
+	protected List<IComponentModel> models = Lists.newLinkedList();
 	
 	private ModelBundledConnection[] bundledModels = new ModelBundledConnection[4];
 	private ModelRedstoneConnection[] redstoneModels = new ModelRedstoneConnection[4];

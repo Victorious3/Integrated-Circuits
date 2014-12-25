@@ -40,6 +40,8 @@ import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.PropertyStitcher.ValueProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
+import com.google.common.collect.Lists;
+
 public abstract class CircuitPart
 {
 	private static HashMap<Integer, CircuitPart> partRegistry = new HashMap<Integer, CircuitPart>();
@@ -170,9 +172,9 @@ public abstract class CircuitPart
 		return I18n.format("part." + IntegratedCircuits.modID + "." + getName(pos, parent) + ".name");
 	}
 	
-	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent) 
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 
 	{
-		return new ArrayList<String>();
+		return Lists.newArrayList();
 	}
 	
 	public void getCraftingCost(CraftingAmount amount) {}

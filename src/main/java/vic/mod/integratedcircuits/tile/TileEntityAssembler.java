@@ -418,7 +418,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		
 		laserHelper.readFromNBT(compound);
 		
-		if(FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT && (getStackInSlot(1) != null || laserHelper.isRunning)) 
+		if(MiscUtils.isClient() && (getStackInSlot(1) != null || laserHelper.isRunning)) 
 		{
 			isOccupied = true;
 			TileEntityAssemblerRenderer.scheduleFramebuffer(this);

@@ -1,6 +1,10 @@
 package vic.mod.integratedcircuits.ic.part;
 
+import java.util.ArrayList;
+
+import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitPart;
@@ -10,6 +14,8 @@ import vic.mod.integratedcircuits.misc.ItemAmount;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
+
+import com.google.common.collect.Lists;
 
 /** Rotateable Part **/
 public abstract class PartCPGate extends CircuitPart
@@ -38,14 +44,21 @@ public abstract class PartCPGate extends CircuitPart
 	public ForgeDirection toInternal(Vec2 pos, ICircuit parent, ForgeDirection dir)
 	{
 		return MiscUtils.rotn(dir, -getRotation(pos, parent));
-		//TODO Find a better replacement or fix the original method
-//		return ForgeDirection.getOrientation((dir.ordinal() - 2 + 4 - getRotation(pos, parent)) % 4 + 2);
 	}
 	
 	public ForgeDirection toExternal(Vec2 pos, ICircuit parent, ForgeDirection dir)
 	{
 		return MiscUtils.rotn(dir, getRotation(pos, parent));
-//		return ForgeDirection.getOrientation((dir.ordinal() - 2 + getRotation(pos, parent)) % 4 + 2);
+	}
+
+	@Override
+	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 
+	{
+		ArrayList<String> text = Lists.newArrayList();
+		ForgeDirection rot = MiscUtils.getDirection(getRotation(pos, parent));
+		text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + MiscUtils.getLocalizedDirection(rot));
+		if(edit && !ctrlDown) text.add(I18n.format("gui.integratedcircuits.cad.rotate"));
+		return text;
 	}
 
 	@Override

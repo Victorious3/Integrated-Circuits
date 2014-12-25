@@ -34,6 +34,8 @@ part.integratedcircuits.notgate.name=NOT Gate
 
 part.integratedcircuits.togglelatch.name=Toggle Latch
 part.integratedcircuits.rslatch.name=RS Latch
+part.integratedcircuits.rslatch.mode=Mode
+part.integratedcircuits.rslatch.mirrored=Mirrored
 part.integratedcircuits.transparentlatch.name=Transparent Latch
 
 part.integratedcircuits.timer.name=Timer
@@ -54,6 +56,11 @@ gui.integratedcircuits.callback.no=No
 gui.integratedcircuits.cad.name=PCB Layout CAD
 gui.integratedcircuits.cad.edit=Edit
 gui.integratedcircuits.cad.erase=Erase
+
+gui.integratedcircuits.cad.rotate=-Rotate-
+gui.integratedcircuits.cad.toggle=-Toggle-
+gui.integratedcircuits.cad.delay=-Delay-
+gui.integratedcircuits.cad.mode=-Mode-
 
 gui.integratedcircuits.cad.mode.simple=simple
 gui.integratedcircuits.cad.mode.bundled=bundled

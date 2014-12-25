@@ -11,14 +11,10 @@ import vic.mod.integratedcircuits.client.model.ModelChip;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.part.PartCircuit;
 import codechicken.lib.vec.Transformation;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 /** https://github.com/MrTJP/ProjectRed/ **/
-@SideOnly(Side.CLIENT)
 public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 {
-
 	public PartCircuitRenderer()
 	{
 		models.add(new ModelChip());

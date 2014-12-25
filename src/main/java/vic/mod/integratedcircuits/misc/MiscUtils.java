@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -72,5 +73,15 @@ public class MiscUtils
 		Block block = world.getBlock(x, y, z);
 		if(block == null) return false;
 		return block.isSideSolid(world, x, y, z, ForgeDirection.getOrientation(side));
+	}
+	
+	public static boolean isClient()
+	{
+		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
+	}
+	
+	public static boolean isServer()
+	{
+		return FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER;
 	}
 }
