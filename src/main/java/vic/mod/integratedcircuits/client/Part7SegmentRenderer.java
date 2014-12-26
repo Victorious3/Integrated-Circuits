@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.client;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 
@@ -25,7 +26,11 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	@Override
 	public void prepare(Part7Segment part) 
 	{
-		prepareBundled(15);
+		if(part.isSlave)
+			prepareBundled(0);
+		else if(part.slaves.size() > 0)
+			prepareBundled(13);
+		else prepareBundled(15);
 		prepareRedstone(0, 0);
 	}
 
@@ -67,6 +72,11 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		tes.addVertexWithUV(12.5 / 16F, y, 13.5 / 16F, u2, v2);
 		tes.addVertexWithUV(12.5 / 16F, y, 2.5 / 16F, u2, v1);
 		tes.draw();
+		
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glScalef(1 / 32F, 1 / 32F, 1 / 32F);
+		Minecraft.getMinecraft().fontRenderer.drawString(String.valueOf(display), 0, 0, 0xFFFFFF, false);
+		GL11.glEnable(GL11.GL_LIGHTING);
 		
 		RenderUtils.resetBrightness();
 		GL11.glPopMatrix();
