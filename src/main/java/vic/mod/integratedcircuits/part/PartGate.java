@@ -424,7 +424,8 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 	private int updatePartSignal(TMultiPart part, int r)
 	{
 		if(!IntegratedCircuits.isPRLoaded) return 0;
-		if(part instanceof IRedwireEmitter) return ((IRedwireEmitter)part).getRedwireSignal(r);
+		if(part instanceof IRedwireEmitter) 
+			return ((IRedwireEmitter)part).getRedwireSignal(r);
 		return 0;
 	}
 	

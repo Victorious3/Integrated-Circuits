@@ -1,8 +1,8 @@
 package vic.mod.integratedcircuits.part;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -10,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
@@ -21,7 +22,7 @@ import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -31,7 +32,7 @@ public class Part7Segment extends PartGate
 	public int display;
 	public boolean isSlave;
 	public BlockCoord parent;
-	public ArrayList<BlockCoord> slaves = Lists.newArrayList();
+	public HashSet<BlockCoord> slaves = Sets.newHashSet();
 	
 	//    0
 	//    --
@@ -39,7 +40,7 @@ public class Part7Segment extends PartGate
 	//    --
 	//  4|3 |2
 	//    --    #7
-	public static final byte[] NUMBERS = {31, 6, 91, 79, 102, 109, 125, 7, 127, 111};
+	public static final byte[] NUMBERS = {63, 6, 91, 79, 102, 109, 125, 7, 127, 111};
 	public static final int DOT = 1 << 8;
 	
 	public Part7Segment() 
@@ -70,6 +71,7 @@ public class Part7Segment extends PartGate
 					seg.slaves.add(pos);
 					seg.tile().markRender();
 					seg.tile().notifyPartChange(seg);
+					seg.updateSlaves();
 					break;
 				}
 			}
@@ -85,7 +87,7 @@ public class Part7Segment extends PartGate
 		{
 			BlockCoord crd = new BlockCoord(tile());
 			isSlave = false;
-			Part7Segment master = getMaster();
+			Part7Segment master = getSegment(parent);
 			if(master != null) master.claimSlaves();
 			int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
 			crd.offset(abs);
@@ -125,23 +127,9 @@ public class Part7Segment extends PartGate
 			}
 			else break;
 		} while (te != null);
+		updateSlaves();
 		tile().markRender();
 		tile().notifyPartChange(this);
-	}
-	
-	public Part7Segment getMaster()
-	{
-		TileEntity te = world().getTileEntity(parent.x, parent.y, parent.z);
-		if(te instanceof TileMultipart)
-		{
-			TileMultipart tm = (TileMultipart)te;
-			TMultiPart multipart = tm.partMap(getSide());
-			if(multipart instanceof Part7Segment) return (Part7Segment)multipart;
-		}
-		isSlave = false;
-		tile().markRender();
-		tile().notifyPartChange(this);
-		return null;
 	}
 	
 	public Part7Segment getSegment(BlockCoord crd)
@@ -153,7 +141,6 @@ public class Part7Segment extends PartGate
 			TMultiPart multipart = tm.partMap(getSide());
 			if(multipart instanceof Part7Segment) return (Part7Segment)multipart;
 		}
-		slaves.remove(crd);
 		return null;
 	}
 	
@@ -161,7 +148,10 @@ public class Part7Segment extends PartGate
 //	Also, why is this constantly running with input from black?
 	public void updateSlaves()
 	{
-		Collections.sort(slaves, SlaveComparator.instance);
+		if(world().isRemote) return;
+		BlockCoord[] slaves = this.slaves.toArray(new BlockCoord[this.slaves.size()]);
+		Arrays.sort(slaves, SlaveComparator.instance);
+
 		int input = 0;
 		for(byte[] in : this.input)
 		{
@@ -171,21 +161,20 @@ public class Part7Segment extends PartGate
 			input |= i2;
 		}
 		
-		for(int i = 0; i < Math.floor(Math.log10(input)) + 1; i++)
+		for(int i = 0; i <= slaves.length; i++)
 		{
 			int decimal = (int)Math.floor(input / Math.pow(10, i)) % 10;
+			decimal = MathHelper.clamp_int(decimal, 0, 9);
 			Part7Segment slave = this;
-			if(i > 0 && i < slaves.size())
+			if(i > 0)
 			{
-				BlockCoord bc = slaves.get(i);
+				BlockCoord bc = slaves[i - 1];
 				slave = getSegment(bc);
 			}
 			if(slave != null)
 			{
-//				slave.display = NUMBERS[decimal];
 				int odisp = slave.display;
-				slave.display = decimal;
-				System.out.println(decimal);
+				slave.display = NUMBERS[decimal];
 				if(odisp != slave.display)
 					slave.getWriteStream(10).writeInt(slave.display);
 			}
@@ -209,7 +198,7 @@ public class Part7Segment extends PartGate
 			parent = new BlockCoord(tag.getIntArray("parent"));
 		else
 		{
-			this.slaves = Lists.newArrayList();
+			this.slaves = Sets.newHashSet();
 			NBTTagList slaves = tag.getTagList("slaves", NBT.TAG_INT_ARRAY);
 			for(int i = 0; i < slaves.tagCount(); i++)
 				this.slaves.add(new BlockCoord(slaves.func_150306_c(i)));
@@ -295,8 +284,8 @@ public class Part7Segment extends PartGate
 		@Override
 		public int compare(BlockCoord o1, BlockCoord o2) 
 		{
-			if(o1.x > o2.x) return 1;
-			else if(o1.x < o2.x) return -1;
+			if(o1.z > o2.z) return -1;
+			else if(o1.z < o2.z) return 1;
 			return 0;
 		}
 	}
