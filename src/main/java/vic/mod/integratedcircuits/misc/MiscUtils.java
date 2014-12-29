@@ -8,23 +8,64 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.oredict.OreDictionary;
+
+import com.google.common.collect.HashBiMap;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class MiscUtils 
 {
+	private static ForgeDirection[] order = {NORTH, EAST, SOUTH, WEST};
+	private static int[] index = {-1, -1, 0, 2, 3, 1, -1};
+	public static HashBiMap<String, Integer> colors = HashBiMap.create();
+	
+	static 
+	{
+		colors.put("dyeBlack",    15);
+		colors.put("dyeRed",      14);
+		colors.put("dyeGreen",    13);
+		colors.put("dyeBrown",    12);
+		colors.put("dyeBlue",     11);
+		colors.put("dyePurple",   10);
+		colors.put("dyeCyan",      9);
+		colors.put("dyeLightGray", 8);
+		colors.put("dyeGray",      7);
+		colors.put("dyePink",      6);
+		colors.put("dyeLime",      5);
+		colors.put("dyeYellow",    4);
+		colors.put("dyeLightBlue", 3);
+		colors.put("dyeMagenta",   2);
+		colors.put("dyeOrange",    1);
+		colors.put("dyeWhite",     0);
+	}
+	
+	public static int getColor(ItemStack stack)
+	{
+		for(int id : OreDictionary.getOreIDs(stack))
+		{
+			Integer color = colors.get(OreDictionary.getOreName(id));
+			if(color != null) return color;
+		}
+		return -1;
+	}
+	
+	public static String getLocalizedColor(int color)
+	{
+		return I18n.format("item.fireworksCharge." + colors.inverse().get(color).substring(3).toLowerCase());
+	}
+	
 	@SideOnly(Side.CLIENT)
 	public static EntityPlayer thePlayer() 
 	{
 		return Minecraft.getMinecraft().thePlayer;
 	}
-
-	private static ForgeDirection[] order = {NORTH, EAST, SOUTH, WEST};
-	private static int[] index = {-1, -1, 0, 2, 3, 1, -1};
 	
 	public static ForgeDirection rotn(ForgeDirection fd, int offset)
 	{

@@ -2,10 +2,10 @@ package vic.mod.integratedcircuits;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import vic.mod.integratedcircuits.item.Item7Segment;
 import vic.mod.integratedcircuits.item.ItemBase;
 import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
-import vic.mod.integratedcircuits.item.ItemGatePart;
 import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.net.AbstractPacket;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
@@ -53,7 +53,7 @@ public class IntegratedCircuits
 	public static final String modID = "integratedcircuits";
 	
 	public static ItemCircuit itemCircuit;
-	public static ItemGatePart item7Segment;
+	public static Item7Segment item7Segment;
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
 	public static ItemBase itemLaser;
@@ -108,7 +108,7 @@ public class IntegratedCircuits
 		};
 		
 		itemCircuit = new ItemCircuit(new PartCircuit());
-		item7Segment = new ItemGatePart("7segment", new Part7Segment());
+		item7Segment = new Item7Segment(new Part7Segment());
 		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();

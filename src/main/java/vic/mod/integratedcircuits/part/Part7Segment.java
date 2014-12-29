@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits.part;
 
 import java.util.ArrayList;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -27,6 +28,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class Part7Segment extends PartGate
 {
 	public int display = NUMBERS[0];
+	public int color;
 	public boolean isSlave;
 	public boolean hasSlaves;
 	
@@ -41,10 +43,18 @@ public class Part7Segment extends PartGate
 	//    --    #7
 	public static final byte[] NUMBERS = {63, 6, 91, 79, 102, 109, 125, 7, 127, 111};
 	public static final int DOT = 1 << 8;
+	public static final int SIGN = 1 << 6;
 	
 	public Part7Segment() 
 	{
 		super("7segment");
+	}
+
+	@Override
+	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) 
+	{
+		super.preparePlacement(player, pos, side, meta);
+		color = meta;
 	}
 
 	@Override
@@ -60,8 +70,9 @@ public class Part7Segment extends PartGate
 		do {
 			pos2.offset(abs);
 			seg = getSegment(pos2);
-			if(seg == null) break;
+			if(seg == null || seg.getRotation() != getRotation()) break;
 			if(seg.isSlave) continue;
+			
 			parent = pos2;
 			isSlave = true;
 			
@@ -120,17 +131,21 @@ public class Part7Segment extends PartGate
 	{
 		isSlave = false;
 		slaves.clear();
-		int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
+		
+		int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));	
 		BlockCoord pos = new BlockCoord(tile());
 		BlockCoord pos2 = pos.copy();
 		Part7Segment seg;
+		
 		do {
 			pos2.offset(abs);
 			seg = getSegment(pos2);
 			if(seg == null) break;
-			if(seg.isSlave) slaves.add(pos2.copy());
+			if(seg.isSlave && seg.getRotation() == getRotation()) 
+				slaves.add(pos2.copy());
 			else break;
 		} while (true);
+		
 		updateSlaves();
 		sendChangesToClient();
 	}
@@ -161,6 +176,10 @@ public class Part7Segment extends PartGate
 			input |= i2;
 		}
 		
+		boolean outOfBounds = false;
+		int size = Math.max((int)Math.log10(input), 0);
+		if(size > slaves.size()) outOfBounds = true;
+		
 		for(int i = 0; i <= slaves.size(); i++)
 		{
 			int decimal = (int)Math.floor(input / Math.pow(10, i)) % 10;
@@ -174,7 +193,7 @@ public class Part7Segment extends PartGate
 			if(slave != null)
 			{
 				int odisp = slave.display;
-				slave.display = NUMBERS[decimal];
+				slave.display = outOfBounds ? SIGN : NUMBERS[decimal];
 				if(odisp != slave.display)
 					slave.getWriteStream(10).writeInt(slave.display);
 			}
@@ -201,6 +220,7 @@ public class Part7Segment extends PartGate
 		super.load(tag);
 		display = tag.getInteger("display");
 		isSlave = tag.getBoolean("isSlave");
+		color = tag.getInteger("color");
 		if(isSlave)
 			parent = new BlockCoord(tag.getIntArray("parent"));
 		else
@@ -218,6 +238,7 @@ public class Part7Segment extends PartGate
 		super.save(tag);
 		tag.setInteger("display", display);
 		tag.setBoolean("isSlave", isSlave);
+		tag.setInteger("color", color);
 		if(isSlave)
 			tag.setIntArray("parent", parent.intArray());
 		else
@@ -233,16 +254,20 @@ public class Part7Segment extends PartGate
 	public void readDesc(MCDataInput packet)
 	{
 		super.readDesc(packet);
-		load(packet.readNBTTagCompound());
+		display = packet.readInt();
+		color = packet.readInt();
+		isSlave = packet.readBoolean();
+		hasSlaves = packet.readBoolean();
 	}
 	
 	@Override
 	public void writeDesc(MCDataOutput packet)
 	{
 		super.writeDesc(packet);
-		NBTTagCompound comp = new NBTTagCompound();
-		save(comp);
-		packet.writeNBTTagCompound(comp);
+		packet.writeInt(display);
+		packet.writeInt(color);
+		packet.writeBoolean(isSlave);
+		packet.writeBoolean(slaves.size() > 0);
 	}
 
 	@Override

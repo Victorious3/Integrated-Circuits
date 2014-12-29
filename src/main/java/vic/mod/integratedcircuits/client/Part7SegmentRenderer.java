@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.client;
 
+import net.minecraft.block.material.MapColor;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
 
@@ -21,6 +22,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	}
 	
 	private int display;
+	private int color;
 	
 	@Override
 	public void prepare(Part7Segment part) 
@@ -36,7 +38,8 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	@Override
 	public void prepareInv(ItemStack stack) 
 	{
-		display = 0;
+		display = 127;
+		color = stack.getItemDamage();
 		prepareBundled(15);
 		prepareRedstone(0, 0);
 	}
@@ -45,6 +48,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	public void prepareDynamic(Part7Segment part, float partialTicks) 
 	{
 		display = part.display;
+		color = part.color;
 	}
 
 	@Override
@@ -73,12 +77,13 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	
 	public void renderSegment(boolean enabled, int x1, int y1, int x2, int y2)
 	{
+		int color = MapColor.getMapColorForBlockColored(this.color).colorValue;
 		if(enabled) 
 		{
-			GL11.glColor3f(0, 1, 0);
+			RenderUtils.applyColorIRGB(color);
 			RenderUtils.setBrightness(240, 240);
 		}
-		else GL11.glColor3f(0, 0.2F, 0);
+		else RenderUtils.applyColorIRGB(color, 0.2F);
 		
 		double u1 = Resources.ICON_IC_SEGMENT.getInterpolatedU(x1 / 2D);
 		double u2 = Resources.ICON_IC_SEGMENT.getInterpolatedU(x2 / 2D);
