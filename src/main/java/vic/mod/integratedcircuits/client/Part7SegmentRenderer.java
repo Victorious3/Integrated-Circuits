@@ -27,7 +27,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	{
 		if(part.isSlave)
 			prepareBundled(0);
-		else if(part.slaves.size() > 0)
+		else if(part.hasSlaves)
 			prepareBundled(13);
 		else prepareBundled(15);
 		prepareRedstone(0, 0);

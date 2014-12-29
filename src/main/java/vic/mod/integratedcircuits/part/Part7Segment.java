@@ -28,6 +28,8 @@ public class Part7Segment extends PartGate
 {
 	public int display = NUMBERS[0];
 	public boolean isSlave;
+	public boolean hasSlaves;
+	
 	public BlockCoord parent;
 	public ArrayList<BlockCoord> slaves = Lists.newArrayList();
 	
@@ -49,7 +51,8 @@ public class Part7Segment extends PartGate
 	public void onAdded() 
 	{
 		super.onAdded();
-
+		if(world().isRemote) return;
+		
 		int abs = Rotation.rotateSide(getSide(), getRotationAbs(3));
 		BlockCoord pos = new BlockCoord(tile());
 		BlockCoord pos2 = pos.copy();
@@ -62,13 +65,13 @@ public class Part7Segment extends PartGate
 			parent = pos2;
 			isSlave = true;
 			
-			seg.claimSlaves();			
-			seg.tile().markRender();
-			seg.tile().notifyPartChange(seg);
+			seg.claimSlaves();	
 			seg.updateSlaves();
 			
 			break;
 		} while (true);
+		
+		sendChangesToClient();
 	}
 
 	@Override
@@ -81,17 +84,17 @@ public class Part7Segment extends PartGate
 	@Override
 	public void rotate() 
 	{
-		super.rotate();
 		updateConnections(true);
+		super.rotate();
+		claimSlaves();
 	}
 	
-	public void updateConnections(boolean update)
+	private void updateConnections(boolean update)
 	{
 		if(isSlave)
 		{
 			BlockCoord crd = new BlockCoord(tile());
 			isSlave = false;
-			if(update) claimSlaves();
 			
 			Part7Segment master = getSegment(parent);
 			if(master != null) master.claimSlaves();
@@ -113,7 +116,7 @@ public class Part7Segment extends PartGate
 		}
 	}
 
-	public void claimSlaves()
+	private void claimSlaves()
 	{
 		isSlave = false;
 		slaves.clear();
@@ -125,15 +128,14 @@ public class Part7Segment extends PartGate
 			pos2.offset(abs);
 			seg = getSegment(pos2);
 			if(seg == null) break;
-			if(seg.isSlave) 
-				slaves.add(pos2.copy());
+			if(seg.isSlave) slaves.add(pos2.copy());
+			else break;
 		} while (true);
 		updateSlaves();
-		tile().markRender();
-		tile().notifyPartChange(this);
+		sendChangesToClient();
 	}
 	
-	public Part7Segment getSegment(BlockCoord crd)
+	private Part7Segment getSegment(BlockCoord crd)
 	{
 		TileEntity te = world().getTileEntity(crd.x, crd.y, crd.z);
 		if(te instanceof TileMultipart)
@@ -146,7 +148,7 @@ public class Part7Segment extends PartGate
 		return null;
 	}
 	
-	public void updateSlaves()
+	private void updateSlaves()
 	{
 		if(world().isRemote) return;
 		
@@ -177,6 +179,13 @@ public class Part7Segment extends PartGate
 					slave.getWriteStream(10).writeInt(slave.display);
 			}
 		}
+	}
+	
+	private void sendChangesToClient()
+	{
+		tile().notifyPartChange(this);
+		hasSlaves = slaves.size() > 0;
+		getWriteStream(11).writeBoolean(isSlave).writeBoolean(hasSlaves);
 	}
 	
 	@Override
@@ -241,6 +250,12 @@ public class Part7Segment extends PartGate
 	{
 		if(discr == 10)
 			display = packet.readInt();
+		else if(discr == 11)
+		{
+			isSlave = packet.readBoolean();
+			hasSlaves = packet.readBoolean();
+			tile().markRender();
+		}
 		else super.read(discr, packet);
 	}
 
