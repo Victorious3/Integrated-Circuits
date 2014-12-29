@@ -7,3 +7,7 @@ The use of Project:Red is recommended for bundled wires, not a requirement anymo
 
 Jenkins: [jenkins.rx14.co.uk](http://jenkins.rx14.co.uk)
 *generously served by @RX14*
+
+![license](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
+
+http://creativecommons.org/licenses/by-nc-sa/4.0/
