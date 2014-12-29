@@ -1,10 +1,7 @@
 package vic.mod.integratedcircuits.part;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.ArrayList;
 
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -22,17 +19,17 @@ import codechicken.lib.vec.Rotation;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class Part7Segment extends PartGate
 {
-	public int display;
+	public int display = NUMBERS[0];
 	public boolean isSlave;
 	public BlockCoord parent;
-	public HashSet<BlockCoord> slaves = Sets.newHashSet();
+	public ArrayList<BlockCoord> slaves = Lists.newArrayList();
 	
 	//    0
 	//    --
@@ -47,46 +44,55 @@ public class Part7Segment extends PartGate
 	{
 		super("7segment");
 	}
-	
+
 	@Override
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) 
+	public void onAdded() 
 	{
-		super.preparePlacement(player, pos, side, meta);
+		super.onAdded();
+
 		int abs = Rotation.rotateSide(getSide(), getRotationAbs(3));
+		BlockCoord pos = new BlockCoord(tile());
 		BlockCoord pos2 = pos.copy();
-		TileEntity te;
+		Part7Segment seg;
 		do {
 			pos2.offset(abs);
-			te = player.worldObj.getTileEntity(pos2.x, pos2.y, pos2.z);
-			if(te instanceof TileMultipart)
-			{
-				TileMultipart tm = (TileMultipart)te;
-				TMultiPart multipart = tm.partMap(getSide());
-				if(multipart instanceof Part7Segment)
-				{
-					Part7Segment seg = (Part7Segment) multipart;
-					if(seg.isSlave) continue;
-					parent = pos2;
-					isSlave = true;
-					seg.slaves.add(pos);
-					seg.tile().markRender();
-					seg.tile().notifyPartChange(seg);
-					seg.updateSlaves();
-					break;
-				}
-			}
-			else break;
-		} while (te != null);
+			seg = getSegment(pos2);
+			if(seg == null) break;
+			if(seg.isSlave) continue;
+			parent = pos2;
+			isSlave = true;
+			
+			seg.claimSlaves();			
+			seg.tile().markRender();
+			seg.tile().notifyPartChange(seg);
+			seg.updateSlaves();
+			
+			break;
+		} while (true);
 	}
 
 	@Override
 	public void onRemoved() 
 	{
 		super.onRemoved();
+		if(!world().isRemote) updateConnections(false);
+	}
+	
+	@Override
+	public void rotate() 
+	{
+		super.rotate();
+		updateConnections(true);
+	}
+	
+	public void updateConnections(boolean update)
+	{
 		if(isSlave)
 		{
 			BlockCoord crd = new BlockCoord(tile());
 			isSlave = false;
+			if(update) claimSlaves();
+			
 			Part7Segment master = getSegment(parent);
 			if(master != null) master.claimSlaves();
 			int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
@@ -98,11 +104,15 @@ public class Part7Segment extends PartGate
 		{
 			int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
 			BlockCoord crd = new BlockCoord(tile()).offset(abs);
-			Part7Segment seg = getSegment(crd);
-			if(seg != null) seg.claimSlaves();
+			if(slaves.contains(crd))
+			{
+				Part7Segment seg = getSegment(crd);
+				if(seg != null) seg.claimSlaves();
+			}
+			slaves.clear();
 		}
 	}
-	
+
 	public void claimSlaves()
 	{
 		isSlave = false;
@@ -110,23 +120,14 @@ public class Part7Segment extends PartGate
 		int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
 		BlockCoord pos = new BlockCoord(tile());
 		BlockCoord pos2 = pos.copy();
-		TileEntity te;
+		Part7Segment seg;
 		do {
 			pos2.offset(abs);
-			te = world().getTileEntity(pos2.x, pos2.y, pos2.z);
-			if(te instanceof TileMultipart)
-			{
-				TileMultipart tm = (TileMultipart)te;
-				TMultiPart multipart = tm.partMap(getSide());
-				if(multipart instanceof Part7Segment)
-				{
-					Part7Segment seg = (Part7Segment) multipart;
-					if(seg.isSlave) slaves.add(pos2);
-					seg.parent = pos;
-				}
-			}
-			else break;
-		} while (te != null);
+			seg = getSegment(pos2);
+			if(seg == null) break;
+			if(seg.isSlave) 
+				slaves.add(pos2.copy());
+		} while (true);
 		updateSlaves();
 		tile().markRender();
 		tile().notifyPartChange(this);
@@ -139,19 +140,16 @@ public class Part7Segment extends PartGate
 		{
 			TileMultipart tm = (TileMultipart)te;
 			TMultiPart multipart = tm.partMap(getSide());
-			if(multipart instanceof Part7Segment) return (Part7Segment)multipart;
+			if(multipart instanceof Part7Segment) 
+				return (Part7Segment)multipart;
 		}
 		return null;
 	}
 	
-	//FIXME Don't fucking update this shit on every tick, there HAS to be a way to check if the input changed! 
-//	Also, why is this constantly running with input from black?
 	public void updateSlaves()
 	{
 		if(world().isRemote) return;
-		BlockCoord[] slaves = this.slaves.toArray(new BlockCoord[this.slaves.size()]);
-		Arrays.sort(slaves, SlaveComparator.instance);
-
+		
 		int input = 0;
 		for(byte[] in : this.input)
 		{
@@ -161,14 +159,14 @@ public class Part7Segment extends PartGate
 			input |= i2;
 		}
 		
-		for(int i = 0; i <= slaves.length; i++)
+		for(int i = 0; i <= slaves.size(); i++)
 		{
 			int decimal = (int)Math.floor(input / Math.pow(10, i)) % 10;
 			decimal = MathHelper.clamp_int(decimal, 0, 9);
 			Part7Segment slave = this;
 			if(i > 0)
 			{
-				BlockCoord bc = slaves[i - 1];
+				BlockCoord bc = slaves.get(i - 1);
 				slave = getSegment(bc);
 			}
 			if(slave != null)
@@ -198,7 +196,7 @@ public class Part7Segment extends PartGate
 			parent = new BlockCoord(tag.getIntArray("parent"));
 		else
 		{
-			this.slaves = Sets.newHashSet();
+			this.slaves = Lists.newArrayList();
 			NBTTagList slaves = tag.getTagList("slaves", NBT.TAG_INT_ARRAY);
 			for(int i = 0; i < slaves.tagCount(); i++)
 				this.slaves.add(new BlockCoord(slaves.func_150306_c(i)));
@@ -275,18 +273,5 @@ public class Part7Segment extends PartGate
 	PartGate newInstance() 
 	{
 		return new Part7Segment();
-	}
-	
-	private static class SlaveComparator implements Comparator<BlockCoord>
-	{
-		private static SlaveComparator instance = new SlaveComparator();
-		
-		@Override
-		public int compare(BlockCoord o1, BlockCoord o2) 
-		{
-			if(o1.z > o2.z) return -1;
-			else if(o1.z < o2.z) return 1;
-			return 0;
-		}
 	}
 }

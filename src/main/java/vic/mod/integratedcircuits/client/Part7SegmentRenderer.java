@@ -36,6 +36,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	@Override
 	public void prepareInv(ItemStack stack) 
 	{
+		display = 0;
 		prepareBundled(15);
 		prepareRedstone(0, 0);
 	}
@@ -55,15 +56,15 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		GL11.glRotatef(180, 0, 1, 0);
 		GL11.glTranslatef(-0.5F, 0, -0.5F);
 		
-		renderSegment((display & 2) != 0, 17, 4, 20, 15);   //1
-		renderSegment((display & 4) != 0, 17, 18, 20, 29);  //2
+		renderSegment((display & 2) != 0, 17, 4, 20, 15);    //1
+		renderSegment((display & 4) != 0, 17, 18, 20, 29);   //2
 		
-		renderSegment((display & 1) != 0, 6, 1, 17, 4);     //0
-		renderSegment((display & 64) != 0, 6, 15, 17, 18);  //6
-		renderSegment((display & 8) != 0, 6, 29, 17, 32);   //3
+		renderSegment((display & 1) != 0, 6, 1, 17, 4);      //0
+		renderSegment((display & 64) != 0, 6, 15, 17, 18);   //6
+		renderSegment((display & 8) != 0, 6, 29, 17, 32);    //3
 		
-		renderSegment((display & 16) != 0, 3, 18, 6, 29);   //4
-		renderSegment((display & 32) != 0, 3, 4, 6, 15);    //5
+		renderSegment((display & 16) != 0, 3, 18, 6, 29);    //4
+		renderSegment((display & 32) != 0, 3, 4, 6, 15);     //5
 		
 		renderSegment((display & 128) != 0, 20, 29, 23, 32); //7 (dot)
 		
