@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
-import mrtjp.projectred.api.IScrewdriver;
 import mrtjp.projectred.transmission.APIImpl_Transmission;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -200,19 +199,12 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 	{
 		if(item != null)
 		{
-			if(item.getItem().getUnlocalizedName().equals("item.projectred.core.screwdriver"))
-			{
-				if(!world().isRemote)
-				{
-					((IScrewdriver)item.getItem()).damageScrewdriver(world(), player);
-					rotate();
-				}
-				return true;
-			}
+			//TODO This is really ugly and doesn't use P:R's API.
 			String name = item.getItem().getUnlocalizedName();
-			if(name.equals("item.redlogic.screwdriver") || name.equals("item.bluepower:screwdriver"))
+			if(item.getItem() == IntegratedCircuits.itemScrewdriver || name.equals("item.redlogic.screwdriver") || name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver"))
 			{
 				if(!world().isRemote) rotate();
+				item.damageItem(1, player);
 				return true;
 			}
 		}

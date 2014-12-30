@@ -14,6 +14,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import com.google.common.collect.HashBiMap;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -58,7 +60,9 @@ public class MiscUtils
 	
 	public static String getLocalizedColor(int color)
 	{
-		return I18n.format("item.fireworksCharge." + colors.inverse().get(color).substring(3).toLowerCase());
+		if(color == 8)
+			return I18n.format("item.fireworksCharge.silver");
+		else return I18n.format("item.fireworksCharge." + WordUtils.uncapitalize(colors.inverse().get(color).substring(3)));
 	}
 	
 	@SideOnly(Side.CLIENT)

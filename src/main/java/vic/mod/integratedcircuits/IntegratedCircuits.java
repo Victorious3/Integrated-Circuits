@@ -2,26 +2,13 @@ package vic.mod.integratedcircuits;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import vic.mod.integratedcircuits.compat.NEIAddon;
 import vic.mod.integratedcircuits.item.Item7Segment;
 import vic.mod.integratedcircuits.item.ItemBase;
 import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
 import vic.mod.integratedcircuits.item.ItemPCB;
-import vic.mod.integratedcircuits.net.AbstractPacket;
-import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
-import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
-import vic.mod.integratedcircuits.net.PacketAssemblerStart;
-import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
-import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
-import vic.mod.integratedcircuits.net.PacketChangeSetting;
-import vic.mod.integratedcircuits.net.PacketFloppyDisk;
-import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
-import vic.mod.integratedcircuits.net.PacketPCBChangeName;
-import vic.mod.integratedcircuits.net.PacketPCBChangePart;
-import vic.mod.integratedcircuits.net.PacketPCBClear;
-import vic.mod.integratedcircuits.net.PacketPCBIO;
-import vic.mod.integratedcircuits.net.PacketPCBLoad;
-import vic.mod.integratedcircuits.net.PacketPCBUpdate;
+import vic.mod.integratedcircuits.item.ItemScrewdriver;
 import vic.mod.integratedcircuits.part.Part7Segment;
 import vic.mod.integratedcircuits.part.PartCircuit;
 import vic.mod.integratedcircuits.part.PartFactory;
@@ -38,10 +25,8 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = "integratedcircuits", dependencies = "required-after:ForgeMultipart;")
 public class IntegratedCircuits
@@ -61,6 +46,8 @@ public class IntegratedCircuits
 	public static ItemBase itemSilicon;
 	public static ItemBase itemSiliconDrop;
 	public static ItemBase itemCoalCompound;
+	public static ItemBase itemPCBChip;
+	public static ItemScrewdriver itemScrewdriver;
 	
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
@@ -77,26 +64,14 @@ public class IntegratedCircuits
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
+		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
+		isBPLoaded = Loader.isModLoaded("bluepower");
+		
+		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
+		
 		Config.initialize(event.getSuggestedConfigurationFile());
 		proxy.preInitialize();
-		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(modID);
-		
-		AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
-		AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
-		AbstractPacket.registerPacket(PacketPCBClear.class, null, 2);
-		AbstractPacket.registerPacket(PacketPCBChangeName.class, null, 3);
-		AbstractPacket.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
-		AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
-		AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
-		
-		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
-		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
-		AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
-		AbstractPacket.registerPacket(PacketAssemblerChangeItem.class, Side.CLIENT, 11);
-		AbstractPacket.registerPacket(PacketAssemblerUpdateInsufficient.class, Side.CLIENT, 12);
-		
-		AbstractPacket.registerPacket(PacketChangeSetting.class, null, 13);
-		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 14);
 		
 		creativeTab = new CreativeTabs(modID + ".ctab") 
 		{
@@ -112,11 +87,17 @@ public class IntegratedCircuits
 		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
-		itemLaser = new ItemBase("laser");
+		itemPCBChip = new ItemBase("pcb_chip");
+		itemLaser = new ItemBase("laser").setHasIcon(false);
 		
-		itemSilicon = new ItemBase("silicon");
 		itemSiliconDrop = new ItemBase("silicon_drop");
-		itemCoalCompound = new ItemBase("coalcompound");
+		itemScrewdriver = new ItemScrewdriver();
+		
+		if(!(isBPLoaded || isPRLoaded))
+		{
+			itemSilicon = new ItemBase("silicon");
+			itemCoalCompound = new ItemBase("coalcompound");
+		}
 
 		blockPCBLayout = new BlockPCBLayout();
 		blockAssembler = new BlockAssembler();
@@ -131,10 +112,6 @@ public class IntegratedCircuits
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
-		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
-		isBPLoaded = Loader.isModLoaded("bluepower");
-
 		PartFactory.initialize();
 		proxy.initialize();
 	}

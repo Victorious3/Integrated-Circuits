@@ -20,6 +20,21 @@ import vic.mod.integratedcircuits.LaserHelper.Laser;
 import vic.mod.integratedcircuits.client.gui.GuiHandler;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.RayTracer;
+import vic.mod.integratedcircuits.net.AbstractPacket;
+import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
+import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
+import vic.mod.integratedcircuits.net.PacketAssemblerStart;
+import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
+import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
+import vic.mod.integratedcircuits.net.PacketChangeSetting;
+import vic.mod.integratedcircuits.net.PacketFloppyDisk;
+import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
+import vic.mod.integratedcircuits.net.PacketPCBChangeName;
+import vic.mod.integratedcircuits.net.PacketPCBChangePart;
+import vic.mod.integratedcircuits.net.PacketPCBClear;
+import vic.mod.integratedcircuits.net.PacketPCBIO;
+import vic.mod.integratedcircuits.net.PacketPCBLoad;
+import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
@@ -27,6 +42,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy 
 {
@@ -41,6 +57,25 @@ public class CommonProxy
 	{
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLCommonHandler.instance().bus().register(this);
+		
+		IntegratedCircuits.networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(IntegratedCircuits.modID);
+		
+		AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
+		AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
+		AbstractPacket.registerPacket(PacketPCBClear.class, null, 2);
+		AbstractPacket.registerPacket(PacketPCBChangeName.class, null, 3);
+		AbstractPacket.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
+		AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
+		AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
+		
+		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
+		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
+		AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
+		AbstractPacket.registerPacket(PacketAssemblerChangeItem.class, Side.CLIENT, 11);
+		AbstractPacket.registerPacket(PacketAssemblerUpdateInsufficient.class, Side.CLIENT, 12);
+		
+		AbstractPacket.registerPacket(PacketChangeSetting.class, null, 13);
+		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 14);
 	}
 	
 	@SubscribeEvent

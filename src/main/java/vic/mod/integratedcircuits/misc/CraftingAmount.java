@@ -2,9 +2,11 @@ package vic.mod.integratedcircuits.misc;
 
 import java.util.ArrayList;
 
+import com.google.common.collect.Lists;
+
 public class CraftingAmount implements Cloneable
 {
-	private ArrayList<ItemAmount> items = new ArrayList<ItemAmount>();
+	private ArrayList<ItemAmount> items = Lists.newArrayList();
 	
 	public void add(ItemAmount itemAmount)
 	{

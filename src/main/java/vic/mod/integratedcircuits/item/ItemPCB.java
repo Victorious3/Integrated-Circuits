@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits.item;
 
 import java.util.List;
 
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,6 +29,14 @@ public class ItemPCB extends ItemBase
 			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("name"));
 			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);
 		}
+	}
+
+	@Override
+	public String getItemStackDisplayName(ItemStack stack) 
+	{
+		if(stack.getItemDamage() == 0)
+			return I18n.format(getUnlocalizedName() + ".name");
+		else return I18n.format(getUnlocalizedName() + ".printed.name");
 	}
 
 	@Override

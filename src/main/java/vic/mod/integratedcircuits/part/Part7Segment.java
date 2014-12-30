@@ -44,6 +44,7 @@ public class Part7Segment extends PartGate
 	public static final byte[] NUMBERS = {63, 6, 91, 79, 102, 109, 125, 7, 127, 111};
 	public static final int DOT = 1 << 8;
 	public static final int SIGN = 1 << 6;
+	public static final int MAX_DIGITS = 32;
 	
 	public Part7Segment() 
 	{
@@ -67,7 +68,10 @@ public class Part7Segment extends PartGate
 		BlockCoord pos = new BlockCoord(tile());
 		BlockCoord pos2 = pos.copy();
 		Part7Segment seg;
+		
+		int off = 0;
 		do {
+			off++;
 			pos2.offset(abs);
 			seg = getSegment(pos2);
 			if(seg == null || seg.getRotation() != getRotation()) break;
@@ -80,7 +84,7 @@ public class Part7Segment extends PartGate
 			seg.updateSlaves();
 			
 			break;
-		} while (true);
+		} while (off < MAX_DIGITS);
 		
 		sendChangesToClient();
 	}
@@ -137,14 +141,16 @@ public class Part7Segment extends PartGate
 		BlockCoord pos2 = pos.copy();
 		Part7Segment seg;
 		
+		int off = 0;
 		do {
+			off++;
 			pos2.offset(abs);
 			seg = getSegment(pos2);
 			if(seg == null) break;
 			if(seg.isSlave && seg.getRotation() == getRotation()) 
 				slaves.add(pos2.copy());
 			else break;
-		} while (true);
+		} while (off < MAX_DIGITS);
 		
 		updateSlaves();
 		sendChangesToClient();
@@ -206,7 +212,7 @@ public class Part7Segment extends PartGate
 		hasSlaves = slaves.size() > 0;
 		getWriteStream(11).writeBoolean(isSlave).writeBoolean(hasSlaves);
 	}
-	
+
 	@Override
 	public void updateInput() 
 	{
@@ -287,7 +293,7 @@ public class Part7Segment extends PartGate
 	@Override
 	public ItemStack getItem() 
 	{
-		return new ItemStack(IntegratedCircuits.item7Segment);
+		return new ItemStack(IntegratedCircuits.item7Segment, 1, color);
 	}
 
 	@Override
