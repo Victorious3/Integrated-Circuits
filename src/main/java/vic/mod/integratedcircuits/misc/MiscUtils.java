@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.google.common.collect.HashBiMap;
@@ -118,6 +119,18 @@ public class MiscUtils
 		Block block = world.getBlock(x, y, z);
 		if(block == null) return false;
 		return block.isSideSolid(world, x, y, z, ForgeDirection.getOrientation(side));
+	}
+	
+	//TODO Finish this.
+	public static String formatFloat(int digits, float f)
+	{
+		String out = "";
+		if(f % 1.0 != 0)
+			out = String.format("%s", f);
+		else out = String.format("%.0f", f);
+		int index = out.indexOf(".");
+		out = StringUtils.repeat('0', digits - out.length() + (index == -1 ? 0 : 1)) + out;
+		return out;
 	}
 	
 	public static boolean isClient()

@@ -24,6 +24,7 @@ import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 import buildcraft.api.tiles.IControllable;
 import buildcraft.api.tiles.IHasWork;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -194,7 +195,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 			laserHelper.reset();
 			laserHelper.start();
 			updateStatus(RUNNING);
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
+			CommonProxy.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
 			return true;
 		}
 		return false;
@@ -232,7 +233,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		{
 			laserHelper.reset();
 			updateStatus(IDLE);
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
+			CommonProxy.networkWrapper.sendToDimension(new PacketAssemblerStart(xCoord, yCoord, zCoord, queue), worldObj.provider.dimensionId);
 		}
 	}
 
@@ -332,7 +333,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 		if(worldObj.isRemote) return;
 		if(id > 8 && id < 13) laserHelper.createLaser(id - 9, getStackInSlot(id));
 		else if(id == 1) 
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeItem(xCoord, yCoord, zCoord, getStackInSlot(id) != null), worldObj.provider.dimensionId);
+			CommonProxy.networkWrapper.sendToDimension(new PacketAssemblerChangeItem(xCoord, yCoord, zCoord, getStackInSlot(id) != null), worldObj.provider.dimensionId);
 	}
 
 	@Override
@@ -379,7 +380,7 @@ public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, I
 	{
 		setInventorySlotContents(0, stack);
 		if(!worldObj.isRemote) 
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
+			CommonProxy.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
 		loadMatrixFromDisk();
 		if(worldObj.isRemote && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
 		{

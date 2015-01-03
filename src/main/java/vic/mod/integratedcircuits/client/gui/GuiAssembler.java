@@ -12,14 +12,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.ContainerAssembler;
-import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.Resources;
+import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.misc.Vec2;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
@@ -97,7 +97,7 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 			te.getOptionSet().changeSetting(te.SETTING_PULL, ((GuiStateLabel)button).getState());
 		else if(button.id == 5)
 			te.getOptionSet().changeSetting(te.SETTING_REDSTONE, ((GuiStateLabel)button).getState());
-		else IntegratedCircuits.networkWrapper.sendToServer(
+		else CommonProxy.networkWrapper.sendToServer(
 			new PacketAssemblerStart(te.xCoord, te.yCoord, te.zCoord, (byte)(te.request * (button.id == 2 ? 1 : 0))));
 	}
 	

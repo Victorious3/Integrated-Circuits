@@ -50,10 +50,8 @@ public class GuiCraftingListEntry implements IGuiListEntry, IHoverable
 		RenderHelper.disableStandardItemLighting();
 		
 		String s = current + "/" + needed;
-		String s2 = stack.getDisplayName();
-		
-		int i1 = fr.getStringWidth(s2);
-		if(i1 > listWidth - 45) s2 = s2.substring(0, 5) + "..." + s2.substring(s2.length() - 5, s2.length());
+		String s2 = stack.getDisplayName();	
+		s2 = RenderUtils.cutStringToSize(fr, s2, listWidth - 45);
 		
 		fr.setUnicodeFlag(true);
 		fr.drawString(s, x + listWidth - 2 - fr.getStringWidth(s), y + slotHeight - fr.FONT_HEIGHT, 0xFFFFFF);

@@ -5,7 +5,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
@@ -13,6 +12,7 @@ import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -47,13 +47,13 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 			getCircuitData().updateMatrix();
 			if(getCircuitData().checkUpdate())
 			{
-				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), 
+				CommonProxy.networkWrapper.sendToAllAround(new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), 
 					new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
 			if(updateIO)
 			{
 				updateIO = false;
-				IntegratedCircuits.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord), 
+				CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord), 
 					new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
 			markDirty();
@@ -108,7 +108,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 				if(im == CircuitProperties.ANALOG) i[MiscUtils.getSide(dir)] = 1;
 				else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
 			}
-			IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord));
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord));
 		}
 	}
 	
@@ -118,7 +118,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 		int con = circuitData.getProperties().setModeAtSide(side, mode);
 		int i[] = this.i.clone();
 		i[side] = mode == CircuitProperties.ANALOG ? 1 : 0;
-		IntegratedCircuits.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
+		CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class TileEntityPCBLayout extends TileEntityBase implements ICircuit, IDi
 	{
 		setInventorySlotContents(0, stack);
 		if(!worldObj.isRemote) 
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
+			CommonProxy.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack), worldObj.provider.dimensionId);
 	}
 
 	@Override

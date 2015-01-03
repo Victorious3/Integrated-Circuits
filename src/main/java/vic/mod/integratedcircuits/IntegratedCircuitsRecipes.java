@@ -152,6 +152,16 @@ public class IntegratedCircuitsRecipes
 					'p', IntegratedCircuits.itemPCBChip
 		);
 		
+		GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.itemLaser),
+			"i#i",
+			"i#i",
+			"opo",
+					'i', Items.redstone,
+					'#', Items.diamond,
+					'o', Blocks.obsidian,
+					'p', IntegratedCircuits.itemPCBChip
+		);
+		
 		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(IntegratedCircuits.itemCircuit), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)))
 		{
 			@Override

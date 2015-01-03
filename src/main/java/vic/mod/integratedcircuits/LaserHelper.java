@@ -74,7 +74,7 @@ public class LaserHelper
 		else lasers[id] = new Laser(te, id);
 		te.contents[offset + id] = laser;
 		if(MiscUtils.isServer() && te.getWorldObj() != null)
-			IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id, laser), te.getWorldObj().provider.dimensionId);
+			CommonProxy.networkWrapper.sendToDimension(new PacketAssemblerChangeLaser(te.xCoord, te.yCoord, te.zCoord, id, laser), te.getWorldObj().provider.dimensionId);
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound tag)
@@ -266,7 +266,7 @@ public class LaserHelper
 						te.updateStatus(te.OUT_OF_MATERIALS);
 						ItemAmount insufficient2 = te.craftingSupply.getInsufficient();
 						if(insufficient == null || !insufficient.hasEqualItem(insufficient2))
-							IntegratedCircuits.networkWrapper.sendToAllAround(new PacketAssemblerUpdateInsufficient(te.xCoord, te.yCoord, te.zCoord, te.craftingSupply.getInsufficient()), 
+							CommonProxy.networkWrapper.sendToAllAround(new PacketAssemblerUpdateInsufficient(te.xCoord, te.yCoord, te.zCoord, te.craftingSupply.getInsufficient()), 
 								new TargetPoint(te.getWorldObj().provider.dimensionId, te.xCoord, te.yCoord, te.zCoord, 8));
 						return;
 					}
@@ -314,7 +314,7 @@ public class LaserHelper
 		public void setAim(int x, int y)
 		{
 			if(MiscUtils.isServer())
-				IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
+				CommonProxy.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
 			
 			this.x = x;
 			this.y = y;
@@ -368,7 +368,7 @@ public class LaserHelper
 			
 			reload();
 			if(te.getWorldObj() != null) 
-				IntegratedCircuits.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
+				CommonProxy.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord, te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
 		}
 		
 		public boolean canUpdate()

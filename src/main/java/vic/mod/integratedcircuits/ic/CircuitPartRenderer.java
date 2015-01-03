@@ -7,7 +7,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.Resources;
+import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.ic.part.PartCPGate;
 import vic.mod.integratedcircuits.ic.part.PartIOBit;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;

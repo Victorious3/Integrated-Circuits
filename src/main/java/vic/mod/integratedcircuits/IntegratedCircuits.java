@@ -25,7 +25,6 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 @Mod(modid = "integratedcircuits", dependencies = "required-after:ForgeMultipart;")
@@ -51,8 +50,6 @@ public class IntegratedCircuits
 	
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
-	public static SimpleNetworkWrapper networkWrapper;
-	
 	public static CreativeTabs creativeTab;
 	
 	@Instance(modID)

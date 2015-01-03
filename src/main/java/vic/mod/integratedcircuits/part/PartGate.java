@@ -203,12 +203,17 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 			String name = item.getItem().getUnlocalizedName();
 			if(item.getItem() == IntegratedCircuits.itemScrewdriver || name.equals("item.redlogic.screwdriver") || name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver"))
 			{
-				if(!world().isRemote) rotate();
+				if(!world().isRemote) onActivatedWithScrewdriver(player, hit, item);
 				item.damageItem(1, player);
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public void onActivatedWithScrewdriver(EntityPlayer player, MovingObjectPosition hit, ItemStack item)
+	{
+		rotate();
 	}
 	
 	public void rotate()

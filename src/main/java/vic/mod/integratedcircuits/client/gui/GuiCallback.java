@@ -11,10 +11,10 @@ import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import vic.mod.integratedcircuits.misc.RenderUtils;
 
 import com.google.common.collect.Lists;
 
@@ -109,32 +109,19 @@ public class GuiCallback<E extends GuiScreen & IGuiCallback> extends GuiScreen i
 		
 		xOff = width / 2 - guiWidth / 2;
 		yOff = height / 2 - guiHeight / 2;		
-		GL11.glTranslatef(xOff, yOff, 510);
+		GL11.glTranslatef(0, 0, 510);
 		
-		drawRect(3, 3, guiWidth - 3, guiHeight - 3, 0xFFC6C6C6);
-		drawRect(4, 0, guiWidth - 4, 1, 0xFF000000);
-		drawRect(4, 1, guiWidth - 4, 3, 0xFFFFFFFF);
-		drawRect(4, guiHeight - 1, guiWidth - 4, guiHeight, 0xFF000000);
-		drawRect(4, guiHeight - 3, guiWidth - 4, guiHeight - 1, 0xFF555555);
-		drawRect(0, 4, 1, guiHeight - 4, 0xFF000000);
-		drawRect(1, 4, 3, guiHeight - 4, 0xFFFFFFFF);
-		drawRect(guiWidth - 1, 4, guiWidth, guiHeight - 4, 0xFF000000);
-		drawRect(guiWidth - 3, 4, guiWidth - 1, guiHeight - 4, 0xFF555555);
-		
-		mc.renderEngine.bindTexture(Resources.RESOURCE_GUI_BORDER);
-		GL11.glColor4f(1, 1, 1, 1);
-		func_146110_a(0, 0, 0, 0, 4, 4, 8, 8);
-		func_146110_a(guiWidth - 4, 0, 4, 0, 4, 4, 8, 8);
-		func_146110_a(guiWidth - 4, guiHeight - 4, 4, 4, 4, 4, 8, 8);
-		func_146110_a(0, guiHeight - 4, 0, 4, 4, 4, 8, 8);	
+		RenderUtils.drawGUIWindow(xOff, yOff, guiWidth, guiHeight);
 		
 		hoveredElement = null;
 		
+		GL11.glTranslatef(xOff, yOff, 0);
 		for(GuiLabel l : labelList) l.drawLabel(mc, x, y);
 		super.drawScreen(x - xOff, y - yOff, par3);
+		
 		if(hoveredElement != null) 
 			drawHoveringText(hoveredElement.getHoverInformation(), x - xOff, y - yOff, this.fontRendererObj);
-			
+		
 		GL11.glTranslatef(-xOff, -yOff, -510);
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}

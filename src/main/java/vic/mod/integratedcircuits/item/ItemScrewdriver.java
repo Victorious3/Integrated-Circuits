@@ -21,4 +21,10 @@ public class ItemScrewdriver extends ItemBase implements IScrewdriver
 	{
 		player.getHeldItem().damageItem(1, player);
 	}
+
+	@Override
+	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) 
+	{
+		return true;
+	}
 }

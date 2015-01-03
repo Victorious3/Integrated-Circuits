@@ -5,8 +5,8 @@ import java.io.IOException;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.misc.IOptionsProvider;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
@@ -45,7 +45,7 @@ public class PacketChangeSetting <T extends TileEntity & IOptionsProvider> exten
 		T te = (T) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
 		if(side == Side.SERVER)
-			IntegratedCircuits.networkWrapper.sendToAllAround(this, 
+			CommonProxy.networkWrapper.sendToAllAround(this, 
 				new TargetPoint(te.getWorldObj().provider.dimensionId, xCoord, yCoord, zCoord, 8));
 		te.getOptionSet().changeSettingPayload(setting, param);
 		te.onSettingChanged(setting);

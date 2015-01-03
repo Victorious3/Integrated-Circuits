@@ -1,5 +1,6 @@
-package vic.mod.integratedcircuits;
+package vic.mod.integratedcircuits.client;
 
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import net.minecraft.client.renderer.IconFlipped;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
@@ -46,8 +47,9 @@ public class Resources
 	public static final ResourceLocation RESOURCE_ASSEMBLER_SAFETY = new ResourceLocation(IntegratedCircuits.modID, "textures/blocks/assembler_safety.png");
 	
 	public static final ResourceLocation RESOURCE_GUI_ASSEMBLER_BACKGROUND = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/assembler.png");
-	public static final ResourceLocation RESOURCE_GUI_BORDER = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/border.png");
+	public static final ResourceLocation RESOURCE_GUI_CONTROLS = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/controls.png");
 	public static final ResourceLocation RESOURCE_GUI_CAD_BACKGROUND = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/cad.png");
+	public static final ResourceLocation RESOURCE_GUI_7SEGMENT_BACKGROUND = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/7segment.png");
 	
 	public static final ResourceLocation RESOURCE_PCB = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/sublogicpart.png");
 	public static final ResourceLocation RESOURCE_PCB_PERF1 = new ResourceLocation(IntegratedCircuits.modID, "textures/gui/bg1.png");

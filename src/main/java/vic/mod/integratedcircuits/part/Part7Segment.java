@@ -3,16 +3,20 @@ package vic.mod.integratedcircuits.part;
 import java.util.ArrayList;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.Constants.NBT;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
+import vic.mod.integratedcircuits.net.Packet7SegmentOpenGui;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -44,7 +48,7 @@ public class Part7Segment extends PartGate
 	public static final byte[] NUMBERS = {63, 6, 91, 79, 102, 109, 125, 7, 127, 111};
 	public static final int DOT = 1 << 8;
 	public static final int SIGN = 1 << 6;
-	public static final int MAX_DIGITS = 32;
+	public static final int MAX_DIGITS = 16;
 	
 	public Part7Segment() 
 	{
@@ -56,6 +60,14 @@ public class Part7Segment extends PartGate
 	{
 		super.preparePlacement(player, pos, side, meta);
 		color = meta;
+	}
+
+	@Override
+	public void onActivatedWithScrewdriver(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
+	{
+		if(player.isSneaking())
+			CommonProxy.networkWrapper.sendTo(new Packet7SegmentOpenGui(this), (EntityPlayerMP)player);
+		else super.onActivatedWithScrewdriver(player, hit, item);
 	}
 
 	@Override
@@ -156,7 +168,7 @@ public class Part7Segment extends PartGate
 		sendChangesToClient();
 	}
 	
-	private Part7Segment getSegment(BlockCoord crd)
+	public Part7Segment getSegment(BlockCoord crd)
 	{
 		TileEntity te = world().getTileEntity(crd.x, crd.y, crd.z);
 		if(te instanceof TileMultipart)
@@ -210,7 +222,9 @@ public class Part7Segment extends PartGate
 	{
 		tile().notifyPartChange(this);
 		hasSlaves = slaves.size() > 0;
-		getWriteStream(11).writeBoolean(isSlave).writeBoolean(hasSlaves);
+		MCDataOutput out = getWriteStream(11);
+		out.writeBoolean(isSlave);
+		out.writeBoolean(hasSlaves);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package vic.mod.integratedcircuits.client.model;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.PartRenderer;
+import vic.mod.integratedcircuits.client.Resources;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Transformation;

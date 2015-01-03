@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -51,7 +51,7 @@ public abstract class AbstractPacket<T extends AbstractPacket<T>> implements IMe
 
 	public static <T extends IMessage & IMessageHandler<T, IMessage>> void registerPacket(Class<T> clazz, Side side, int id)
 	{
-		if(side == null || side == Side.CLIENT) IntegratedCircuits.networkWrapper.registerMessage(clazz, clazz, id, Side.CLIENT);
-		if(side == null || side == Side.SERVER) IntegratedCircuits.networkWrapper.registerMessage(clazz, clazz, id, Side.SERVER);
+		if(side == null || side == Side.CLIENT) CommonProxy.networkWrapper.registerMessage(clazz, clazz, id, Side.CLIENT);
+		if(side == null || side == Side.SERVER) CommonProxy.networkWrapper.registerMessage(clazz, clazz, id, Side.SERVER);
 	}
 }

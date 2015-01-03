@@ -1,7 +1,7 @@
 package vic.mod.integratedcircuits.client.model;
 
-import vic.mod.integratedcircuits.Resources;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
+import vic.mod.integratedcircuits.client.Resources;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Transformation;

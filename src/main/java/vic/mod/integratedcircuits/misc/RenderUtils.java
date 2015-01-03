@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.misc;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -7,6 +8,11 @@ import net.minecraft.client.renderer.Tessellator;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.client.Resources;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public class RenderUtils 
 {
 	public static void drawTexture(double x, double y, int u, int v, int w, int h, float rotation, Gui gui)
@@ -65,6 +71,28 @@ public class RenderUtils
 		fr.drawString(str, x, y, color);
 	}
 	
+	public static void drawGUIWindow(int xOffset, int yOffset, int width, int height)
+	{
+		GL11.glTranslatef(xOffset, yOffset, 0);
+		Gui.drawRect(3, 3, width - 3, height - 3, 0xFFC6C6C6);
+		Gui.drawRect(4, 0, width - 4, 1, 0xFF000000);
+		Gui.drawRect(4, 1, width - 4, 3, 0xFFFFFFFF);
+		Gui.drawRect(4, height - 1, width - 4, height, 0xFF000000);
+		Gui.drawRect(4, height - 3, width - 4, height - 1, 0xFF555555);
+		Gui.drawRect(0, 4, 1, height - 4, 0xFF000000);
+		Gui.drawRect(1, 4, 3, height - 4, 0xFFFFFFFF);
+		Gui.drawRect(width - 1, 4, width, height - 4, 0xFF000000);
+		Gui.drawRect(width - 3, 4, width - 1, height - 4, 0xFF555555);
+		
+		Minecraft.getMinecraft().renderEngine.bindTexture(Resources.RESOURCE_GUI_CONTROLS);
+		GL11.glColor4f(1, 1, 1, 1);
+		Gui.func_146110_a(0, 0, 0, 0, 4, 4, 32, 32);
+		Gui.func_146110_a(width - 4, 0, 4, 0, 4, 4, 32, 32);
+		Gui.func_146110_a(width - 4, height - 4, 4, 4, 4, 4, 32, 32);
+		Gui.func_146110_a(0, height - 4, 0, 4, 4, 4, 32, 32);
+		GL11.glTranslatef(-xOffset, -yOffset, 0);
+	}
+	
 	public static void applyColorIRGBA(int rbga)
 	{
 		float red = (float)(rbga >> 16 & 255) / 255.0F;
@@ -85,6 +113,23 @@ public class RenderUtils
 		float blue = (float)(rbg >> 8 & 255) / 255.0F * brightness;
 		float green = (float)(rbg & 255) / 255.0F * brightness;
 		GL11.glColor4f(red, blue, green, 1F);
+	}
+	
+	public static String cutStringToSize(FontRenderer fr, String str, int width)
+	{
+		if(fr.getStringWidth(str) > width)
+		{
+			String dots = "...";
+			int dotsWidth = fr.getStringWidth(dots);
+			int i;
+			for(i = str.length() / 2; i > 0; i--)
+			{
+				int length = fr.getStringWidth(str.substring(0, i)) + dotsWidth + fr.getStringWidth(str.substring(str.length() - i, str.length()));
+				if(length < width) break;
+			}
+			str = str.substring(0, i) + dots + str.substring(str.length() - i, str.length());
+		}
+		return str;
 	}
 	
 	private static float lightX, lightY;

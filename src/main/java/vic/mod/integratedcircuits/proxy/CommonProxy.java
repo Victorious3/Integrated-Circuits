@@ -21,6 +21,7 @@ import vic.mod.integratedcircuits.client.gui.GuiHandler;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.RayTracer;
 import vic.mod.integratedcircuits.net.AbstractPacket;
+import vic.mod.integratedcircuits.net.Packet7SegmentOpenGui;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
@@ -42,11 +43,13 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy 
 {
 	public static int serverTicks;
+	public static SimpleNetworkWrapper networkWrapper;
 	
 	public void initialize()
 	{
@@ -58,7 +61,7 @@ public class CommonProxy
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLCommonHandler.instance().bus().register(this);
 		
-		IntegratedCircuits.networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(IntegratedCircuits.modID);
+		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(IntegratedCircuits.modID);
 		
 		AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
 		AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
@@ -76,6 +79,8 @@ public class CommonProxy
 		
 		AbstractPacket.registerPacket(PacketChangeSetting.class, null, 13);
 		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 14);
+		
+		AbstractPacket.registerPacket(Packet7SegmentOpenGui.class, Side.CLIENT, 15);
 	}
 	
 	@SubscribeEvent

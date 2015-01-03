@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.net.PacketChangeSetting;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 
 public interface IOptionsProvider
 {
@@ -32,7 +32,7 @@ public interface IOptionsProvider
 		public void changeSetting(int setting, int par)
 		{
 			if(parent.getWorldObj().isRemote)
-				IntegratedCircuits.networkWrapper.sendToServer(new PacketChangeSetting(parent.xCoord, parent.yCoord, parent.zCoord, setting, par));
+				CommonProxy.networkWrapper.sendToServer(new PacketChangeSetting(parent.xCoord, parent.yCoord, parent.zCoord, setting, par));
 			else changeSettingPayload(setting, par);
 		}
 		
