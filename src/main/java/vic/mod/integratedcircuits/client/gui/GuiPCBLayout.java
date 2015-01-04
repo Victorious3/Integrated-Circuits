@@ -111,7 +111,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage.getBoolean(), I18n.format("gui.integratedcircuits.cad.callback.show"), callbackDelete);
 		callbackDelete
 			.addControl(new GuiLabel(75, 7, I18n.format("gui.integratedcircuits.cad.callback.confirm"), 0x333333, true))
-			.addControl(new GuiLabel(75, 25, I18n.format("gui.integratedcircuits.cad.callback.message").replaceAll("\\\\n", "\n"), 0, true))
+			.addControl(new GuiLabel(75, 25, I18n.format("gui.integratedcircuits.cad.callback.message"), 0, true))
 			.addControl(new GuiLabel(75, 63, I18n.format("gui.integratedcircuits.cad.callback.continue"), 0x333333, true))
 			.addControl(checkboxDelete);
 

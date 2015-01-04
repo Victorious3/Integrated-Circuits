@@ -75,7 +75,7 @@ gui.integratedcircuits.cad.mode.high=HIGH
 gui.integratedcircuits.cad.callback.show=Show this message?
 gui.integratedcircuits.cad.callback.confirm=Are you sure?
 gui.integratedcircuits.cad.callback.continue=Continue anyways?
-gui.integratedcircuits.cad.callback.message=This will revert all of\nyour progress and\nclear the current circuit.
+gui.integratedcircuits.cad.callback.message=This will revert all of%nyour progress and%nclear the current circuit.
 gui.integratedcitcuits.cad.callback.delay=Current delay: %s ticks
 
 gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
@@ -89,9 +89,22 @@ gui.integratedcircuits.assembler.pull.single=Single Pull
 gui.integratedcircuits.assembler.pull.auto=Automatic Pull
 gui.integratedcircuits.assembler.run=Run
 
+gui.integratedcircuits.7segment.mode.simple=Simple
+gui.integratedcircuits.7segment.mode.analog=Analog
+gui.integratedcircuits.7segment.mode.short.signed=signed Short
+gui.integratedcircuits.7segment.mode.short.unsigned=unsigned Short
+gui.integratedcircuits.7segment.mode.float=signed Float
+
+gui.integratedcircuits.7segment.mode.simple.tooltip=A digital redstone signal:%n§8§oEither true or false.
+gui.integratedcircuits.7segment.mode.analog.tooltip=An analog redstone signal:%n§8§oFrom 0 to F.
+gui.integratedcircuits.7segment.mode.short.signed.tooltip=Parses a bundled signal as%nsigned 16 bit short:%n§8§oFrom -32768 to 32768.
+gui.integratedcircuits.7segment.mode.short.unsigned.tooltip=Parses a bundled signal as%nunsigned 16 bit short:%n§8§oFrom 0 to 65535. 
+gui.integratedcircuits.7segment.mode.float.tooltip=Parses a bundled signal as%n16 bit floating-point (binary16):%n§8§oFrom -122880 to 122880.
+
 # misc
 itemGroup.integratedcircuits.ctab=Integrated Circuits
 
+# Forge Direction
 fdirection.north.name=NORTH
 fdirection.east.name=EAST
 fdirection.south.name=SOUTH

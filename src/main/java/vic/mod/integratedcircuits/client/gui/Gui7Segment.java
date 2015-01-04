@@ -2,7 +2,9 @@ package vic.mod.integratedcircuits.client.gui;
 
 import java.util.Arrays;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -19,7 +21,8 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 	private int xSize, ySize, guiLeft, guiTop;
 	private IHoverable hoverable;
 	private GuiDropdown dropdown;
-	
+	private GuiCheckBoxExt cbMaster, cbSlave;
+
 	public Gui7Segment(Part7Segment part) 
 	{
 		this.part = part;
@@ -37,18 +40,62 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 	public void initGui() 
 	{
 		guiLeft = (width - xSize) / 2;
-        guiTop = (height - ySize) / 2;
-        
-        buttonList.add(dropdown = new GuiDropdown(0, guiLeft + 60, guiTop + 23, 75, 15, Arrays.asList(
-        	"Element 1", 
-        	"A HYPER LONG ELEMENT TWO THAT HAS TO BE CROPPED",
-        	"Element 3", 
-        	"DHUIAWODG"
-        )));
+		guiTop = (height - ySize) / 2;
+	
+		buttonList.add(cbMaster = (new GuiCheckBoxExt(1, guiLeft + 15, guiTop + 50, "Master", false, "Check if Master", this).setColor(0).setDropShadow(false)));
+		buttonList.add(cbSlave = (new GuiCheckBoxExt(2, guiLeft + 15, guiTop + 70, "Slave", true, "Check if Slave", this).setColor(0).setDropShadow(false)));
+		
+		buttonList.add(dropdown = (new GuiDropdown(0, guiLeft + 45, guiTop + 23, 90, 15, Arrays.asList(
+			I18n.format("gui.integratedcircuits.7segment.mode.simple"),
+			I18n.format("gui.integratedcircuits.7segment.mode.analog"),
+			I18n.format("gui.integratedcircuits.7segment.mode.short.signed"),
+			I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned"),
+			I18n.format("gui.integratedcircuits.7segment.mode.float")
+		), this).setTooltips(Arrays.asList(
+			I18n.format("gui.integratedcircuits.7segment.mode.simple.tooltip"),
+			I18n.format("gui.integratedcircuits.7segment.mode.analog.tooltip"),
+			I18n.format("gui.integratedcircuits.7segment.mode.short.signed.tooltip"),
+			I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned.tooltip"),
+			I18n.format("gui.integratedcircuits.7segment.mode.float.tooltip")
+		))));
+		
+		refreshUI();
+	}
+	
+	public void refreshUI()
+	{
+		cbSlave.setIsChecked(part.isSlave);
+		cbMaster.setIsChecked(!part.isSlave);
+		
+		boolean isSlave = cbSlave.isChecked();
+		if(isSlave)
+		{
+			dropdown.setSelected(0);
+			dropdown.setEnabled(false);
+		}
+		else dropdown.setEnabled(true);
 	}
 	
 	//TODO Localization
 	
+	@Override
+	protected void actionPerformed(GuiButton button) 
+	{
+		if(button.id > 0)
+		{
+			GuiCheckBoxExt box = (GuiCheckBoxExt)button;
+			GuiCheckBoxExt other = button.id == 1 ? cbSlave : cbMaster;
+			other.setIsChecked(!box.isChecked());
+			boolean isSlave = cbSlave.isChecked();
+			if(isSlave)
+			{
+				dropdown.setSelected(0);
+				dropdown.setEnabled(false);
+			}
+			else dropdown.setEnabled(true);
+		}
+	}
+
 	@Override
 	public void drawScreen(int x, int y, float par3) 
 	{
@@ -80,6 +127,9 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 		Part7SegmentRenderer.render7Segment(part.display, 1, part.color);
 		GL11.glPopMatrix();
 		
+		String label = "Mode:";
+		fontRendererObj.drawString(label, guiLeft + 40 - fontRendererObj.getStringWidth(label), guiTop + 27, 0);
+		
 		super.drawScreen(x, y, par3);
 		
 		if(hoverable != null)
@@ -93,7 +143,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 	{
 		if(keycode == Keyboard.KEY_ESCAPE || keycode == Keyboard.KEY_E)
 		{
-			this.mc.displayGuiScreen((GuiScreen)null);
+			this.mc.displayGuiScreen(null);
 			this.mc.setIngameFocus();
 		}
 	}

@@ -37,7 +37,7 @@ public class GuiLabel extends Gui
 	{
 		float scale = size / 6F;
 		GL11.glScalef(scale, scale, 1);
-		String[] list = text.split("\n");
+		String[] list = text.split("\r\n");
 		for(int i = 0; i < list.length; i++)
 		{
 			int width = mc.fontRenderer.getStringWidth(list[i]);
