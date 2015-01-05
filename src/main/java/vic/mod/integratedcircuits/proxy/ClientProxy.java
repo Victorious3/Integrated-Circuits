@@ -262,7 +262,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glPushMatrix();
 			GL11.glTranslatef(0, -9 / 16F, 0);
 			GL11.glTranslatef(2 / 16F, 0, -3.3F / 16F);
-			GL11.glRotatef(80, 1, 0, 0);
+			GL11.glRotatef(85, 1, 0, 0);
 			GL11.glRotatef(30, 0, 0, 1);
 			tes.startDrawingQuads();
 			tes.addVertexWithUV(-2 / 16F, 0, -2 / 16F, 0, 0);
@@ -276,7 +276,7 @@ public class ClientProxy extends CommonProxy
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glPushMatrix();
 			GL11.glTranslatef(-1 / 16F, -8 / 16F, -5F / 16F);
-			GL11.glRotatef(60, 1, 0, 0);
+			GL11.glRotatef(0, 1, 0, 0);
 			tes.startDrawingQuads();
 			tes.addVertexWithUV(0, -3 / 16F, -3 / 16F, 0, 0);
 			tes.addVertexWithUV(0, 3 / 16F, -3 / 16F, 0, 1);

@@ -5,10 +5,10 @@
   "description": "Some description here, currently missing.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "vic.ngnl.ovh",
   "updateUrl": "",
   "authorList": ["Vic Nightfall"],
-  "credits": "",
+  "credits": "Balduran (http://balduranne.deviantart.com/), MrTJP, chickenbones",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
