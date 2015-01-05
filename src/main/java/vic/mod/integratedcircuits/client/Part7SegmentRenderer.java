@@ -27,11 +27,25 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	public void prepare(Part7Segment part) 
 	{
 		if(part.isSlave)
+		{
 			prepareBundled(0);
-		else if(part.hasSlaves)
-			prepareBundled(13);
-		else prepareBundled(15);
-		prepareRedstone(0, 0);
+			prepareRedstone(0, 0);
+		}
+		else
+		{
+			int i1 = 15;
+			if(part.hasSlaves) i1 = 13;
+			if(part.mode > 1) 
+			{
+				prepareBundled(i1);
+				prepareRedstone(0, 0);
+			}
+			else
+			{
+				prepareBundled(0);
+				prepareRedstone(i1, part.io);
+			}
+		}
 	}
 
 	@Override
@@ -60,7 +74,9 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 		GL11.glTranslatef(-0.5F, 0, -0.5F);
 		
 		GL11.glTranslatef(17 / 64F, 3 / 16F + 0.002F, 11 / 64F);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		render7Segment(display, 1 / 48F, color);
+		GL11.glEnable(GL11.GL_LIGHTING);
 		
 		GL11.glPopMatrix();
 	}
@@ -97,7 +113,6 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 
 		Tessellator tes = Tessellator.instance;
 		tes.startDrawingQuads();
-		tes.setNormal(0, 1, 0);
 		tes.addVertexWithUV(x1 * scale, 0, y1 * scale, u1, v1);
 		tes.addVertexWithUV(x1 * scale, 0, y2 * scale, u1, v2);
 		tes.addVertexWithUV(x2 * scale, 0, y2 * scale, u2, v2);

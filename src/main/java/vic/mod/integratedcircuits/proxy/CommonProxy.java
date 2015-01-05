@@ -21,6 +21,7 @@ import vic.mod.integratedcircuits.client.gui.GuiHandler;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.RayTracer;
 import vic.mod.integratedcircuits.net.AbstractPacket;
+import vic.mod.integratedcircuits.net.Packet7SegmentChangeMode;
 import vic.mod.integratedcircuits.net.Packet7SegmentOpenGui;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeLaser;
@@ -81,6 +82,7 @@ public class CommonProxy
 		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 14);
 		
 		AbstractPacket.registerPacket(Packet7SegmentOpenGui.class, Side.CLIENT, 15);
+		AbstractPacket.registerPacket(Packet7SegmentChangeMode.class, null, 16);
 	}
 	
 	@SubscribeEvent

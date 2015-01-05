@@ -82,7 +82,7 @@ public class GuiDropdown extends GuiButton implements IHoverable
 		if(!visible) return;
 		FontRenderer fr = mc.fontRenderer;
 		
-		if(x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height && tooltips != null && !toggle)
+		if(x >= xPosition && x < xPosition + width && y >= yPosition && y < yPosition + height && tooltips != null && !toggle && enabled)
 			parent.setCurrentItem(this);
 		
 		drawRect(xPosition, yPosition, xPosition + width, yPosition + height, 0xFF000000);

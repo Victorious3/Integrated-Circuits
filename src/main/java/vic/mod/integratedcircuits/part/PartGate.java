@@ -171,7 +171,7 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 	}
 	
 	@Override
-    public boolean occlusionTest(TMultiPart npart)
+	public boolean occlusionTest(TMultiPart npart)
 	{
 		return NormalOcclusionTest.apply(this, npart);
 	}

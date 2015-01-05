@@ -13,7 +13,9 @@ import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import vic.mod.integratedcircuits.net.Packet7SegmentChangeMode;
 import vic.mod.integratedcircuits.part.Part7Segment;
+import vic.mod.integratedcircuits.proxy.CommonProxy;
 
 public class Gui7Segment extends GuiScreen implements IHoverableHandler
 {
@@ -42,21 +44,25 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 		guiLeft = (width - xSize) / 2;
 		guiTop = (height - ySize) / 2;
 	
-		buttonList.add(cbMaster = (new GuiCheckBoxExt(1, guiLeft + 15, guiTop + 50, "Master", false, "Check if Master", this).setColor(0).setDropShadow(false)));
-		buttonList.add(cbSlave = (new GuiCheckBoxExt(2, guiLeft + 15, guiTop + 70, "Slave", true, "Check if Slave", this).setColor(0).setDropShadow(false)));
+		buttonList.add(cbMaster = (new GuiCheckBoxExt(1, guiLeft + 15, guiTop + 50, I18n.format("gui.integratedcircuits.7segment.master"), false, null, this).setColor(0).setDropShadow(false)));
+		buttonList.add(cbSlave = (new GuiCheckBoxExt(2, guiLeft + 15, guiTop + 70, I18n.format("gui.integratedcircuits.7segment.slave"), true, null, this).setColor(0).setDropShadow(false)));
 		
 		buttonList.add(dropdown = (new GuiDropdown(0, guiLeft + 45, guiTop + 23, 90, 15, Arrays.asList(
 			I18n.format("gui.integratedcircuits.7segment.mode.simple"),
 			I18n.format("gui.integratedcircuits.7segment.mode.analog"),
 			I18n.format("gui.integratedcircuits.7segment.mode.short.signed"),
 			I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned"),
-			I18n.format("gui.integratedcircuits.7segment.mode.float")
+			I18n.format("gui.integratedcircuits.7segment.mode.float"),
+			I18n.format("gui.integratedcircuits.7segment.mode.binary"),
+			I18n.format("gui.integratedcircuits.7segment.mode.manual")
 		), this).setTooltips(Arrays.asList(
 			I18n.format("gui.integratedcircuits.7segment.mode.simple.tooltip"),
 			I18n.format("gui.integratedcircuits.7segment.mode.analog.tooltip"),
 			I18n.format("gui.integratedcircuits.7segment.mode.short.signed.tooltip"),
 			I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned.tooltip"),
-			I18n.format("gui.integratedcircuits.7segment.mode.float.tooltip")
+			I18n.format("gui.integratedcircuits.7segment.mode.float.tooltip"),
+			I18n.format("gui.integratedcircuits.7segment.mode.binary.tooltip"),
+			I18n.format("gui.integratedcircuits.7segment.mode.manual.tooltip")
 		))));
 		
 		refreshUI();
@@ -67,17 +73,10 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 		cbSlave.setIsChecked(part.isSlave);
 		cbMaster.setIsChecked(!part.isSlave);
 		
-		boolean isSlave = cbSlave.isChecked();
-		if(isSlave)
-		{
-			dropdown.setSelected(0);
-			dropdown.setEnabled(false);
-		}
-		else dropdown.setEnabled(true);
+		dropdown.setEnabled(!cbSlave.isChecked());
+		dropdown.setSelected(part.mode);
 	}
-	
-	//TODO Localization
-	
+
 	@Override
 	protected void actionPerformed(GuiButton button) 
 	{
@@ -94,6 +93,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 			}
 			else dropdown.setEnabled(true);
 		}
+		CommonProxy.networkWrapper.sendToServer(new Packet7SegmentChangeMode(part, dropdown.getSelectedElement(), cbSlave.isChecked()));
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 			drawTexturedModalRect(guiLeft + 86 + i * 4, guiTop + 94, 150 + off, 33, 1, 5);
 		}
 		
-		String title = "Seven Segment Display";
+		String title = I18n.format("gui.integratedcircuits.7segment.name");
 		fontRendererObj.drawString(title, guiLeft + xSize / 2 - fontRendererObj.getStringWidth(title) / 2, guiTop + 8, 0x333333);
 		
 		this.mc.getTextureManager().bindTexture(this.mc.getTextureManager().getResourceLocation(0));
@@ -127,7 +127,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 		Part7SegmentRenderer.render7Segment(part.display, 1, part.color);
 		GL11.glPopMatrix();
 		
-		String label = "Mode:";
+		String label = I18n.format("gui.integratedcircuits.7segment.mode");
 		fontRendererObj.drawString(label, guiLeft + 40 - fontRendererObj.getStringWidth(label), guiTop + 27, 0);
 		
 		super.drawScreen(x, y, par3);

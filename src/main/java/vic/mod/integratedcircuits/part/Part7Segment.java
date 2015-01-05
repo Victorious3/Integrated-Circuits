@@ -35,6 +35,7 @@ public class Part7Segment extends PartGate
 	public int color;
 	public boolean isSlave;
 	public boolean hasSlaves;
+	public int mode = MODE_SIMPLE;
 	
 	public BlockCoord parent;
 	public ArrayList<BlockCoord> slaves = Lists.newArrayList();
@@ -45,10 +46,19 @@ public class Part7Segment extends PartGate
 	//    --
 	//  4|3 |2
 	//    --    #7
-	public static final byte[] NUMBERS = {63, 6, 91, 79, 102, 109, 125, 7, 127, 111};
+	public static final byte[] NUMBERS = {63, 6, 91, 79, 102, 109, 125, 7, 127, 111}; //0-F
+	public static final byte[] TRUE = {121, 62, 80, 120}; //true
+	public static final byte[] FALSE = {121, 109, 56, 119, 113}; //false
+			
 	public static final int DOT = 1 << 8;
 	public static final int SIGN = 1 << 6;
-	public static final int MAX_DIGITS = 16;
+	public static final int MAX_DIGITS = 16; //TODO Mabye a config option?
+	
+	public static final int MODE_SIMPLE = 0;
+	public static final int MODE_ANALOG = 1;
+	public static final int MODE_SHORT_SIGNED = 2;
+	public static final int MODE_SHORT_UNSIGNED = 3;
+	public static final int MODE_FLOAT = 4;
 	
 	public Part7Segment() 
 	{
@@ -76,6 +86,7 @@ public class Part7Segment extends PartGate
 		super.onAdded();
 		if(world().isRemote) return;
 		
+		isSlave = false;
 		int abs = Rotation.rotateSide(getSide(), getRotationAbs(3));
 		BlockCoord pos = new BlockCoord(tile());
 		BlockCoord pos2 = pos.copy();
@@ -105,18 +116,18 @@ public class Part7Segment extends PartGate
 	public void onRemoved() 
 	{
 		super.onRemoved();
-		if(!world().isRemote) updateConnections(false);
+		if(!world().isRemote) updateConnections();
 	}
 	
 	@Override
 	public void rotate() 
 	{
-		updateConnections(true);
+		updateConnections();
 		super.rotate();
 		claimSlaves();
 	}
 	
-	private void updateConnections(boolean update)
+	public void updateConnections()
 	{
 		if(isSlave)
 		{
@@ -143,7 +154,7 @@ public class Part7Segment extends PartGate
 		}
 	}
 
-	private void claimSlaves()
+	public void claimSlaves()
 	{
 		isSlave = false;
 		slaves.clear();
@@ -186,36 +197,77 @@ public class Part7Segment extends PartGate
 		if(world().isRemote) return;
 		
 		int input = 0;
-		for(byte[] in : this.input)
+
+		if(mode == MODE_SIMPLE)
 		{
-			int i2 = 0;
-			for(int i = 0; i < in.length; i++)
-				i2 |= (in[i] != 0 ? 1 : 0) << i;
-			input |= i2;
+			for(byte[] in : this.input)
+				input |= in[0] != 0 ? 1 : 0;
+			
+			if(slaves.size() > 3)
+			{
+				byte[] digits = input == 0 ? FALSE : TRUE;
+				for(int i = 0; i <= slaves.size(); i++)
+				{
+					Part7Segment slave = this;
+					int digit = i < digits.length ? digits[i] : 0;	
+					if(i > 0)
+					{
+						BlockCoord bc = slaves.get(i - 1);
+						slave = getSegment(bc);
+					}
+					if(slave != null) slave.setDisplay(digit);
+				}
+			}
+			else 
+			{
+				setDisplay(NUMBERS[input]);
+				for(int i = 0; i < slaves.size(); i++)
+				{
+					BlockCoord bc = slaves.get(i);
+					Part7Segment slave = getSegment(bc);
+					if(slave != null) slave.setDisplay(0);
+				}
+			}
 		}
-		
-		boolean outOfBounds = false;
-		int size = Math.max((int)Math.log10(input), 0);
-		if(size > slaves.size()) outOfBounds = true;
-		
-		for(int i = 0; i <= slaves.size(); i++)
+		else if(mode == MODE_ANALOG)
 		{
-			int decimal = (int)Math.floor(input / Math.pow(10, i)) % 10;
-			decimal = MathHelper.clamp_int(decimal, 0, 9);
-			Part7Segment slave = this;
-			if(i > 0)
+			
+		}
+		else
+		{
+			for(byte[] in : this.input)
 			{
-				BlockCoord bc = slaves.get(i - 1);
-				slave = getSegment(bc);
+				int i2 = 0;
+				for(int i = 0; i < in.length; i++)
+					i2 |= (in[i] != 0 ? 1 : 0) << i;
+				input |= i2;
 			}
-			if(slave != null)
+			
+			boolean outOfBounds = false;
+			int size = Math.max((int)Math.log10(input), 0);
+			if(size > slaves.size()) outOfBounds = true;
+			
+			for(int i = 0; i <= slaves.size(); i++)
 			{
-				int odisp = slave.display;
-				slave.display = outOfBounds ? SIGN : NUMBERS[decimal];
-				if(odisp != slave.display)
-					slave.getWriteStream(10).writeInt(slave.display);
+				int decimal = (int)Math.floor(input / Math.pow(10, i)) % 10;
+				decimal = MathHelper.clamp_int(decimal, 0, 9);
+				Part7Segment slave = this;
+				if(i > 0)
+				{
+					BlockCoord bc = slaves.get(i - 1);
+					slave = getSegment(bc);
+				}
+				if(slave != null)
+					slave.setDisplay(outOfBounds ? SIGN : NUMBERS[decimal]);
 			}
 		}
+	}
+	
+	private void setDisplay(int display)
+	{
+		int odisp = this.display;
+		this.display = display;
+		if(odisp != display) getWriteStream(10).writeInt(display);
 	}
 	
 	private void sendChangesToClient()
@@ -241,6 +293,7 @@ public class Part7Segment extends PartGate
 		display = tag.getInteger("display");
 		isSlave = tag.getBoolean("isSlave");
 		color = tag.getInteger("color");
+		mode = tag.getInteger("mode");
 		if(isSlave)
 			parent = new BlockCoord(tag.getIntArray("parent"));
 		else
@@ -259,6 +312,7 @@ public class Part7Segment extends PartGate
 		tag.setInteger("display", display);
 		tag.setBoolean("isSlave", isSlave);
 		tag.setInteger("color", color);
+		tag.setInteger("mode", mode);
 		if(isSlave)
 			tag.setIntArray("parent", parent.intArray());
 		else
@@ -278,6 +332,7 @@ public class Part7Segment extends PartGate
 		color = packet.readInt();
 		isSlave = packet.readBoolean();
 		hasSlaves = packet.readBoolean();
+		mode = packet.readInt();
 	}
 	
 	@Override
@@ -288,6 +343,7 @@ public class Part7Segment extends PartGate
 		packet.writeInt(color);
 		packet.writeBoolean(isSlave);
 		packet.writeBoolean(slaves.size() > 0);
+		packet.writeInt(mode);
 	}
 
 	@Override
@@ -320,13 +376,13 @@ public class Part7Segment extends PartGate
 	@Override
 	public boolean canConnectRedstoneImpl(int arg0) 
 	{
-		return false;
+		return !isSlave && mode < 2;
 	}
 
 	@Override
 	public boolean canConnectBundledImpl(int arg0) 
 	{
-		return !isSlave;
+		return !isSlave && mode > 1;
 	}
 
 	@Override

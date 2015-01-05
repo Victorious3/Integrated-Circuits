@@ -6,6 +6,9 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.client.config.GuiCheckBox;
 import cpw.mods.fml.client.config.GuiUtils;
 
@@ -62,6 +65,8 @@ public class GuiCheckBoxExt extends GuiCheckBox implements IHoverable
 	@Override
 	public List<String> getHoverInformation() 
 	{
-		return Arrays.asList(hoverInfo.split("%n"));
+		if(hoverInfo != null)
+			return Arrays.asList(hoverInfo.split("%n"));
+		else return Lists.newArrayList();
 	}
 }
