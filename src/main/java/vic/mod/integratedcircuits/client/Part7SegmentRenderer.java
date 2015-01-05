@@ -17,7 +17,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	{
 		models.add(new ModelSocket());
 		addBundledConnections(15, 1, 2, 1, 2);
-		addRedstoneConnections(15, 1, 2, 1, 2);
+		addRedstoneConnections(15, 2, 2, 2, 2);
 	}
 	
 	private int display;
