@@ -14,7 +14,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
 
 import com.google.common.collect.HashBiMap;
@@ -121,18 +120,6 @@ public class MiscUtils
 		return block.isSideSolid(world, x, y, z, ForgeDirection.getOrientation(side));
 	}
 	
-	//TODO Finish this.
-	public static String formatFloat(int digits, float f)
-	{
-		String out = "";
-		if(f % 1.0 != 0)
-			out = String.format("%s", f);
-		else out = String.format("%.0f", f);
-		int index = out.indexOf(".");
-		out = StringUtils.repeat('0', digits - out.length() + (index == -1 ? 0 : 1)) + out;
-		return out;
-	}
-	
 	public static boolean isClient()
 	{
 		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
@@ -141,5 +128,29 @@ public class MiscUtils
 	public static boolean isServer()
 	{
 		return FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER;
+	}
+
+	public static float toBinary16Float(int bits) 
+	{
+		int mant = bits & 0x03FF;
+		int exp = bits & 0x7C00;
+		
+		if(exp == 0x7C00) exp = 0x3FC00;
+		else if (exp != 0)
+		{
+			exp += 0x1C000;
+			if (mant == 0 && exp > 0x1C400)	
+				return Float.intBitsToFloat((bits & 0x8000) << 16 | exp << 13 | 0x3FF);
+		} 
+		else if (mant != 0)
+		{
+			exp = 0x1C400;
+			do {
+				mant <<= 1;
+				exp -= 0x400;
+			} while ((mant & 0x400) == 0);
+			mant &= 0x3FF;
+		}
+		return Float.intBitsToFloat((bits & 0x8000) << 16 | (exp | mant) << 13);
 	}
 }

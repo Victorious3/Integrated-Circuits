@@ -60,7 +60,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	@Override
 	public void prepareDynamic(Part7Segment part, float partialTicks) 
 	{
-		display = part.display;
+		display = part.digit;
 		color = part.color;
 	}
 

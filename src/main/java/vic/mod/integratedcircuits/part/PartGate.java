@@ -39,7 +39,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @InterfaceList(value = {
 	@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),
-	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core"),
+	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core")
 })
 public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, IBundledEmitter
 {
@@ -73,24 +73,28 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 	public void load(NBTTagCompound tag)
 	{
 		orientation = tag.getByte("orientation");
+		io = tag.getByte("io");
 	}
 	
 	@Override
 	public void save(NBTTagCompound tag)
 	{
 		tag.setByte("orientation", orientation);
+		tag.setByte("io", io);
 	}
 
 	@Override
 	public void readDesc(MCDataInput packet)
 	{
 		orientation = packet.readByte();
+		io = packet.readByte();
 	}
 	
 	@Override
 	public void writeDesc(MCDataOutput packet)
 	{
 		packet.writeByte(orientation);
+		packet.writeByte(io);
 	}
 
 	@Override
@@ -228,9 +232,13 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public void onAdded() 
 	{
-		if(!world().isRemote) updateInput();
-		tile().notifyPartChange(this);
-		tile().notifyNeighborChange(getSide());
+		notifyChanges();
+	}
+
+	@Override
+	public void onWorldJoin() 
+	{
+		notifyChanges();
 	}
 
 	@Override
@@ -243,6 +251,12 @@ public abstract class PartGate extends JCuboidPart implements JNormalOcclusion, 
 	@Override
 	public void onMoved() 
 	{
+		notifyChanges();
+	}
+
+	public void notifyChanges()
+	{
+		if(!world().isRemote) updateInput();
 		tile().notifyPartChange(this);
 		tile().notifyNeighborChange(getSide());
 	}

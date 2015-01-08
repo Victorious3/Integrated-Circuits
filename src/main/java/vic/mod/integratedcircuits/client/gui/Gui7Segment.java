@@ -110,10 +110,10 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 		if(!(x >= guiLeft + 119 && x < guiLeft + 119 + 23 && y >= guiTop + 51 && y < guiTop + 51 + 33 && !dropdown.isOpen()))
 			drawTexturedModalRect(guiLeft + 119, guiTop + 51, 150, 0, 23, 33);
 		
-		int display = part.display;
+		int display = part.digit;
 		for(int i = 0; i < 8; i++)
 		{
-			int off = part.display >> i & 1;
+			int off = part.digit >> i & 1;
 			drawTexturedModalRect(guiLeft + 86 + i * 4, guiTop + 94, 150 + off, 33, 1, 5);
 		}
 		
@@ -124,7 +124,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 		GL11.glPushMatrix();
 		GL11.glTranslatef(guiLeft + 119, guiTop + 51, 0);
 		GL11.glRotatef(-90, 1, 0, 0);
-		Part7SegmentRenderer.render7Segment(part.display, 1, part.color);
+		Part7SegmentRenderer.render7Segment(part.digit, 1, part.color);
 		GL11.glPopMatrix();
 		
 		String label = I18n.format("gui.integratedcircuits.7segment.mode");
