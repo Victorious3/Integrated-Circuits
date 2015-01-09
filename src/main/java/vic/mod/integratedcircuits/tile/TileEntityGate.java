@@ -21,6 +21,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider
 	public TileEntityGate(PartGate part)
 	{
 		this.gate = part;
+		part.setProvider(this);
 	}
 	
 	@Override

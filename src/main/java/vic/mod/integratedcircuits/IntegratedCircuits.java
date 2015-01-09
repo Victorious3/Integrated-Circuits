@@ -16,6 +16,7 @@ import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
 import vic.mod.integratedcircuits.tile.BlockPCBLayout;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
+import vic.mod.integratedcircuits.tile.TileEntityGate;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -37,8 +38,11 @@ public class IntegratedCircuits
 	
 	public static final String modID = "integratedcircuits";
 	
+	public static ItemCircuit itemCircuitFMP;
+	public static Item7Segment item7SegmentFMP;
 	public static ItemCircuit itemCircuit;
 	public static Item7Segment item7Segment;
+	
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
 	public static ItemBase itemLaser;
@@ -77,12 +81,21 @@ public class IntegratedCircuits
 			@Override
 			public Item getTabIconItem() 
 			{
-				return itemCircuit;
+				return isFMPLoaded ? itemCircuitFMP : itemCircuit;
 			}
 		};
 		
-		itemCircuit = new ItemCircuit(new PartCircuit());
-		item7Segment = new Item7Segment(new Part7Segment());
+		PartCircuit partCircuit = new PartCircuit();
+		Part7Segment part7Segment = new Part7Segment();
+		
+		if(isFMPLoaded)
+		{
+			itemCircuitFMP = new ItemCircuit(partCircuit, true);
+			item7SegmentFMP = new Item7Segment(part7Segment, true);
+		}
+		
+		itemCircuit = new ItemCircuit(partCircuit, false);
+		item7Segment = new Item7Segment(part7Segment, false);
 		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
@@ -106,6 +119,7 @@ public class IntegratedCircuits
 		
 		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
+		GameRegistry.registerTileEntity(TileEntityGate.class, modID + ".gate");
 	}
     
 	@EventHandler

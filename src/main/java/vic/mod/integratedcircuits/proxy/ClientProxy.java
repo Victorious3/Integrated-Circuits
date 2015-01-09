@@ -35,11 +35,14 @@ import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
+import vic.mod.integratedcircuits.client.TileEntityGateRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
+import vic.mod.integratedcircuits.tile.TileEntityGate;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -56,6 +59,8 @@ public class ClientProxy extends CommonProxy
 	public static int clientTicks;
 	public static PartCircuitRenderer circuitRenderer;
 	public static Part7SegmentRenderer segmentRenderer;
+	
+	public static int GATE_RENDER_ID;
 
 	@Override
 	public void initialize() 
@@ -64,8 +69,16 @@ public class ClientProxy extends CommonProxy
 		
 		stRenderer = new SemiTransparentRenderer();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
+		
+		GATE_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
+		
+		TileEntityGateRenderer gateRenderer = new TileEntityGateRenderer();
+		RenderingRegistry.registerBlockHandler(GATE_RENDER_ID, gateRenderer);
+		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGate.class, gateRenderer);
+		
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemLaser, new ItemLaserRenderer());
 	}
 	

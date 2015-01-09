@@ -81,7 +81,7 @@ public class PartCircuit extends PartGate implements ICircuit
 	
 	public ItemStack getItem()
 	{
-		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuit);
+		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuitFMP);
 		NBTTagCompound comp = new NBTTagCompound();
 		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
 		stack.stackTagCompound = comp;

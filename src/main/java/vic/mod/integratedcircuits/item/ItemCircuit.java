@@ -4,11 +4,11 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import vic.mod.integratedcircuits.gate.PartGate;
 
-public class ItemCircuit extends ItemGatePart
+public class ItemCircuit extends ItemPartGate
 {
-	public ItemCircuit(PartGate part)
+	public ItemCircuit(PartGate part, boolean isMultiPart)
 	{
-		super("circuit", part);
+		super("circuit", part, isMultiPart);
 		setMaxStackSize(1);
 		setCreativeTab(null);
 	}

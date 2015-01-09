@@ -439,7 +439,7 @@ public class Part7Segment extends PartGate
 	@Override
 	public ItemStack getItem() 
 	{
-		return new ItemStack(IntegratedCircuits.item7Segment, 1, color);
+		return new ItemStack(IntegratedCircuits.item7SegmentFMP, 1, color);
 	}
 
 	@Override

@@ -9,11 +9,11 @@ import net.minecraft.item.ItemStack;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
-public class Item7Segment extends ItemGatePart implements IDyeable
+public class Item7Segment extends ItemPartGate implements IDyeable
 {
-	public Item7Segment(PartGate part) 
+	public Item7Segment(PartGate part, boolean isMultiPart) 
 	{
-		super("7segment", part);
+		super("7segment", part, isMultiPart);
 	}
 
 	@Override

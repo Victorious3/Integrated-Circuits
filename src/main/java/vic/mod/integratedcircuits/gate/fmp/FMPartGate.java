@@ -135,11 +135,6 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 		return false;
 	}
 	
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
-	{
-		gate.preparePlacement(player, pos, side, meta);
-	}
-	
 	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
 	{
