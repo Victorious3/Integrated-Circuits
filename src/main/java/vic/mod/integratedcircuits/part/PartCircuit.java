@@ -161,7 +161,7 @@ public class PartCircuit extends PartGate implements ICircuit
 					{
 						input[i][0] = (byte)in;
 						provider.scheduleTick(0);
-					}		
+					}
 				}
 			circuitData.updateMatrix();
 		}

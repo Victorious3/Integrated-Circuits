@@ -251,7 +251,7 @@ public abstract class PartGate
 	
 	public byte getRedstoneOutput(int side) 
 	{
-		return getBundledInput(side, 0);
+		return getBundledOutput(side, 0);
 	}
 
 	public byte getBundledOutput(int side, int frequency) 

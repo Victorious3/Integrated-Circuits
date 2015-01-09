@@ -265,7 +265,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 		if((arg0 & 6) == (gate.getSide() & 6)) return 0;
 		int rot = gate.getSideRel(arg0);
 		if(!gate.canConnectRedstoneImpl(rot)) return 0;
-		return gate.getRedstoneInput(rot);
+		return gate.getRedstoneOutput(rot);
 	}
 
 	@Override
@@ -382,7 +382,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 		
 		if(((abs ^ 1) & 6) != ((gate.getSide() ^ 1) & 6))
 		{
-			BlockCoord pos = new BlockCoord(tile()).offset(abs).offset(gate.getSide());
+			BlockCoord pos = getPos().offset(abs).offset(gate.getSide());
 			TileEntity t = world().getTileEntity(pos.x, pos.y, pos.z);
 			if(t != null && t instanceof TileMultipart) 
 				power = updatePartSignal(((TileMultipart)t).partMap(abs ^ 1), Rotation.rotationTo(abs ^ 1, gate.getSide() ^ 1));
@@ -397,14 +397,13 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 		{
 			power = updatePartSignal(tp, Rotation.rotationTo(abs, gate.getSide()));
 			if(power > 0) return power / 17;
-		}
-		
+		}	
 		if(tp instanceof IRedstonePart)
 		{
 			IRedstonePart rp = (IRedstonePart)tp;
 			power = Math.max(rp.strongPowerLevel(gate.getSide()), rp.weakPowerLevel(gate.getSide())) << 4;
 			if(power > 0) return power;
-		}	
+		}
 		
 		return power;
 	}
