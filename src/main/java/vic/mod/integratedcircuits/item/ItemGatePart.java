@@ -8,6 +8,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.part.PartGate;
+import vic.mod.integratedcircuits.part.fmp.FMPartGate;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.JItemMultiPart;
@@ -20,11 +21,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemGatePart extends JItemMultiPart
 {
-	private PartGate part;
+	private FMPartGate part;
 	
 	public ItemGatePart(String name, PartGate part) 
 	{
-		this.part = part;
+		this.part = new FMPartGate(part);
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setUnlocalizedName(IntegratedCircuits.modID + "." + name);
 		setTextureName(IntegratedCircuits.modID + ":" + name);
@@ -39,7 +40,7 @@ public class ItemGatePart extends JItemMultiPart
 	{
 		BlockCoord bc = arg3.copy().offset(arg4 ^ 1);
 		if(!MiscUtils.canPlaceGateOnSide(arg2, bc.x, bc.y, bc.z, arg4)) return null;
-		PartGate part = (PartGate)MultiPartRegistry.createPart(this.part.getType(), false);
+		FMPartGate part = (FMPartGate)MultiPartRegistry.createPart(this.part.getType(), false);
 		part.preparePlacement(arg1, arg3, arg4, arg0.getItemDamage());
 		return part;
 	}

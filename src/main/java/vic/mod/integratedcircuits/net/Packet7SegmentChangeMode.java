@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.client.gui.Gui7Segment;
+import vic.mod.integratedcircuits.part.GateProvider.IGateProvider;
 import vic.mod.integratedcircuits.part.Part7Segment;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -18,7 +19,7 @@ public class Packet7SegmentChangeMode extends PacketGate<Packet7SegmentChangeMod
 	
 	public Packet7SegmentChangeMode() {}
 	
-	public Packet7SegmentChangeMode(Part7Segment part, int mode, boolean isSlave)
+	public Packet7SegmentChangeMode(IGateProvider part, int mode, boolean isSlave)
 	{
 		super(part);
 		this.mode = mode;
@@ -59,13 +60,12 @@ public class Packet7SegmentChangeMode extends PacketGate<Packet7SegmentChangeMod
 			}
 			if(!isSlave) part.mode = mode;
 			
-			part.tile().notifyPartChange(part);
-			part.tile().notifyNeighborChange(part.getSide());
+			part.getProvider().notifyBlocksAndChanges();
 			part.input = new byte[4][16];
 			part.updateInput();
 			
 			CommonProxy.networkWrapper.sendToAllAround(this, 
-				new TargetPoint(part.world().provider.dimensionId, xCoord, yCoord, zCoord, 8));
+				new TargetPoint(part.getProvider().getWorld().provider.dimensionId, xCoord, yCoord, zCoord, 8));
 		}
 		else
 		{
@@ -73,7 +73,7 @@ public class Packet7SegmentChangeMode extends PacketGate<Packet7SegmentChangeMod
 			if(!isSlave && mode != part.mode)
 			{
 				part.mode = mode;
-				part.tile().markRender();
+				part.getProvider().markRender();
 			}
 			if(Minecraft.getMinecraft().currentScreen instanceof Gui7Segment)
 				((Gui7Segment)Minecraft.getMinecraft().currentScreen).refreshUI();

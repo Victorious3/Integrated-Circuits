@@ -4,9 +4,10 @@ import java.io.IOException;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
+import vic.mod.integratedcircuits.part.GateProvider;
+import vic.mod.integratedcircuits.part.GateProvider.IGateProvider;
 import vic.mod.integratedcircuits.part.PartGate;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
+import codechicken.lib.vec.BlockCoord;
 
 public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTileEntity<T>
 {
@@ -14,10 +15,13 @@ public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTile
 	
 	public PacketGate() {}
 	
-	public PacketGate(PartGate part)
+	public PacketGate(IGateProvider part)
 	{
-		super(part.x(), part.y(), part.z());
-		this.facing = part.getFace();
+		BlockCoord pos = part.getPos();
+		this.xCoord = pos.x;
+		this.yCoord = pos.y;
+		this.zCoord = pos.z;
+		this.facing = part.getGate().getSide();
 	}
 
 	@Override
@@ -36,10 +40,6 @@ public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTile
 	
 	protected PartGate getPart(World world)
 	{
-		TileMultipart tm = (TileMultipart)world.getTileEntity(xCoord, yCoord, zCoord);
-		if(tm == null) return null;
-		TMultiPart part = tm.partMap(this.facing);
-		if(part == null || !(part instanceof PartGate)) return null;
-		return (PartGate)part;
+		return GateProvider.getGateAt(world, new BlockCoord(xCoord, yCoord, zCoord), facing);
 	}
 }

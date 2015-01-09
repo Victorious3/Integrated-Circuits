@@ -102,7 +102,7 @@ public class PartCircuit extends PartGate implements ICircuit
 	@Override
 	public void onAdded() 
 	{
-		if(!world().isRemote)
+		if(!provider.getWorld().isRemote)
 		{
 			super.updateInput();
 			circuitData.updateInput();
@@ -114,7 +114,7 @@ public class PartCircuit extends PartGate implements ICircuit
 	public void updateInput() 
 	{
 		super.updateInput();
-		scheduleTick(0);
+		provider.scheduleTick(0);
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class PartCircuit extends PartGate implements ICircuit
 	@Override
 	public void update() 
 	{
-		if(!world().isRemote)
+		if(!provider.getWorld().isRemote)
 		{
 			for(int i = 0; i < 4; i++)
 				if(getModeAtSide(i) == CircuitProperties.ANALOG && hasComparatorInput(i))
@@ -160,7 +160,7 @@ public class PartCircuit extends PartGate implements ICircuit
 					if(in != input[i][0]) 
 					{
 						input[i][0] = (byte)in;
-						scheduleTick(0);
+						provider.scheduleTick(0);
 					}		
 				}
 			circuitData.updateMatrix();
@@ -172,8 +172,8 @@ public class PartCircuit extends PartGate implements ICircuit
 		int r = getRotationAbs(side);
 		int abs = Rotation.rotateSide(getSide(), r);
 
-		BlockCoord pos = new BlockCoord(tile()).offset(abs);
-		Block b = world().getBlock(pos.x, pos.y, pos.z);
+		BlockCoord pos = provider.getPos().offset(abs);
+		Block b = provider.getWorld().getBlock(pos.x, pos.y, pos.z);
 		return b.hasComparatorInputOverride();
 	}
 
@@ -182,10 +182,10 @@ public class PartCircuit extends PartGate implements ICircuit
 		int r = getRotationAbs(side);
 		int abs = Rotation.rotateSide(getSide(), r);
 
-		BlockCoord pos = new BlockCoord(tile()).offset(abs);
-		Block b = world().getBlock(pos.x, pos.y, pos.z);
+		BlockCoord pos = provider.getPos().offset(abs);
+		Block b = provider.getWorld().getBlock(pos.x, pos.y, pos.z);
 		if(b != null && b.hasComparatorInputOverride())
-			return b.getComparatorInputOverride(world(), pos.x, pos.y, pos.z, abs ^ 1);
+			return b.getComparatorInputOverride(provider.getWorld(), pos.x, pos.y, pos.z, abs ^ 1);
 		return 0;
 	}
 
@@ -224,13 +224,12 @@ public class PartCircuit extends PartGate implements ICircuit
 		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;
 		else if(mode == CircuitProperties.ANALOG && this.input[side][0] != 0) return;
 		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
-		tile().notifyPartChange(this);
-		tile().notifyNeighborChange(getSide());
+		provider.notifyBlocksAndChanges();
 		updateRedstoneIO();
 	}
 
 	@Override
-	PartGate newInstance() 
+	public PartGate newInstance() 
 	{
 		return new PartCircuit();
 	}

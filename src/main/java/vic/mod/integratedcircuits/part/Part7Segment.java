@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.Constants.NBT;
 
@@ -27,8 +26,6 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
 
 import com.google.common.collect.Lists;
 
@@ -89,7 +86,7 @@ public class Part7Segment extends PartGate
 	public void onActivatedWithScrewdriver(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
 	{
 		if(player.isSneaking())
-			CommonProxy.networkWrapper.sendTo(new Packet7SegmentOpenGui(this), (EntityPlayerMP)player);
+			CommonProxy.networkWrapper.sendTo(new Packet7SegmentOpenGui(provider), (EntityPlayerMP)player);
 		else super.onActivatedWithScrewdriver(player, hit, item);
 	}
 
@@ -97,11 +94,11 @@ public class Part7Segment extends PartGate
 	public void onAdded() 
 	{
 		super.onAdded();
-		if(world().isRemote) return;
+		if(provider.getWorld().isRemote) return;
 		
 		isSlave = false;
 		int abs = Rotation.rotateSide(getSide(), getRotationAbs(3));
-		BlockCoord pos = new BlockCoord(tile());
+		BlockCoord pos = provider.getPos();
 		BlockCoord pos2 = pos.copy();
 		Part7Segment seg;
 		
@@ -129,7 +126,7 @@ public class Part7Segment extends PartGate
 	public void onRemoved() 
 	{
 		super.onRemoved();
-		if(!world().isRemote) updateConnections();
+		if(!provider.getWorld().isRemote) updateConnections();
 	}
 	
 	@Override
@@ -145,7 +142,7 @@ public class Part7Segment extends PartGate
 	{
 		if(isSlave)
 		{
-			BlockCoord crd = new BlockCoord(tile());
+			BlockCoord crd = provider.getPos();
 			isSlave = false;
 			
 			Part7Segment master = getSegment(parent);
@@ -158,7 +155,7 @@ public class Part7Segment extends PartGate
 		else
 		{
 			int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
-			BlockCoord crd = new BlockCoord(tile()).offset(abs);
+			BlockCoord crd = provider.getPos().offset(abs);
 			if(slaves.contains(crd))
 			{
 				Part7Segment seg = getSegment(crd);
@@ -174,7 +171,7 @@ public class Part7Segment extends PartGate
 		slaves.clear();
 		
 		int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));	
-		BlockCoord pos = new BlockCoord(tile());
+		BlockCoord pos = provider.getPos();
 		BlockCoord pos2 = pos.copy();
 		Part7Segment seg;
 		
@@ -195,20 +192,14 @@ public class Part7Segment extends PartGate
 	
 	public Part7Segment getSegment(BlockCoord crd)
 	{
-		TileEntity te = world().getTileEntity(crd.x, crd.y, crd.z);
-		if(te instanceof TileMultipart)
-		{
-			TileMultipart tm = (TileMultipart)te;
-			TMultiPart multipart = tm.partMap(getSide());
-			if(multipart instanceof Part7Segment) 
-				return (Part7Segment)multipart;
-		}
+		PartGate gate = GateProvider.getGateAt(provider.getWorld(), crd, getSide());
+		if(gate instanceof Part7Segment) return (Part7Segment)gate;
 		return null;
 	}
 	
 	private void updateSlaves()
 	{
-		if(world().isRemote) return;
+		if(provider.getWorld().isRemote) return;
 		
 		int input = 0;
 
@@ -347,7 +338,7 @@ public class Part7Segment extends PartGate
 	{
 		int odisp = this.digit;
 		this.digit = digit;
-		if(odisp != digit) getWriteStream(10).writeInt(digit);
+		if(odisp != digit) provider.getWriteStream(10).writeInt(digit);
 	}
 	
 	private boolean isSigned()
@@ -357,9 +348,9 @@ public class Part7Segment extends PartGate
 	
 	private void sendChangesToClient()
 	{
-		tile().notifyPartChange(this);
+		provider.notifyPartChange();
 		hasSlaves = slaves.size() > 0;
-		MCDataOutput out = getWriteStream(11);
+		MCDataOutput out = provider.getWriteStream(11);
 		out.writeBoolean(isSlave);
 		out.writeBoolean(hasSlaves);
 	}
@@ -440,7 +431,7 @@ public class Part7Segment extends PartGate
 		{
 			isSlave = packet.readBoolean();
 			hasSlaves = packet.readBoolean();
-			tile().markRender();
+			provider.markRender();
 		}
 		else super.read(discr, packet);
 	}
@@ -471,7 +462,7 @@ public class Part7Segment extends PartGate
 	}
 
 	@Override
-	PartGate newInstance() 
+	public PartGate newInstance() 
 	{
 		return new Part7Segment();
 	}

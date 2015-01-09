@@ -8,6 +8,7 @@ import vic.mod.integratedcircuits.client.model.IComponentModel;
 import vic.mod.integratedcircuits.client.model.ModelBase;
 import vic.mod.integratedcircuits.client.model.ModelBundledConnection;
 import vic.mod.integratedcircuits.client.model.ModelRedstoneConnection;
+import vic.mod.integratedcircuits.part.PartGate;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -18,11 +19,10 @@ import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.TMultiPart;
 
 import com.google.common.collect.Lists;
 
-public class PartRenderer <T extends TMultiPart> implements IItemRenderer
+public class PartRenderer <T extends PartGate> implements IItemRenderer
 {	
 	protected List<IComponentModel> models = Lists.newLinkedList();
 	

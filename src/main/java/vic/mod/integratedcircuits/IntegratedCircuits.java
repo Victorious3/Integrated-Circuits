@@ -11,7 +11,7 @@ import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.item.ItemScrewdriver;
 import vic.mod.integratedcircuits.part.Part7Segment;
 import vic.mod.integratedcircuits.part.PartCircuit;
-import vic.mod.integratedcircuits.part.PartFactory;
+import vic.mod.integratedcircuits.part.fmp.PartFactory;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
 import vic.mod.integratedcircuits.tile.BlockPCBLayout;

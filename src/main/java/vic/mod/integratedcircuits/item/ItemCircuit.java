@@ -2,11 +2,11 @@ package vic.mod.integratedcircuits.item;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import vic.mod.integratedcircuits.part.PartCircuit;
+import vic.mod.integratedcircuits.part.PartGate;
 
 public class ItemCircuit extends ItemGatePart
 {
-	public ItemCircuit(PartCircuit part)
+	public ItemCircuit(PartGate part)
 	{
 		super("circuit", part);
 		setMaxStackSize(1);

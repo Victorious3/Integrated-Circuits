@@ -93,7 +93,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler
 			}
 			else dropdown.setEnabled(true);
 		}
-		CommonProxy.networkWrapper.sendToServer(new Packet7SegmentChangeMode(part, dropdown.getSelectedElement(), cbSlave.isChecked()));
+		CommonProxy.networkWrapper.sendToServer(new Packet7SegmentChangeMode(part.getProvider(), dropdown.getSelectedElement(), cbSlave.isChecked()));
 	}
 
 	@Override
