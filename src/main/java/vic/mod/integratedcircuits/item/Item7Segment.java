@@ -6,8 +6,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
-import vic.mod.integratedcircuits.part.PartGate;
 
 public class Item7Segment extends ItemGatePart implements IDyeable
 {

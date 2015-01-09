@@ -3,15 +3,15 @@ package vic.mod.integratedcircuits;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import vic.mod.integratedcircuits.compat.NEIAddon;
+import vic.mod.integratedcircuits.gate.Part7Segment;
+import vic.mod.integratedcircuits.gate.PartCircuit;
+import vic.mod.integratedcircuits.gate.fmp.PartFactory;
 import vic.mod.integratedcircuits.item.Item7Segment;
 import vic.mod.integratedcircuits.item.ItemBase;
 import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
 import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.item.ItemScrewdriver;
-import vic.mod.integratedcircuits.part.Part7Segment;
-import vic.mod.integratedcircuits.part.PartCircuit;
-import vic.mod.integratedcircuits.part.fmp.PartFactory;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
 import vic.mod.integratedcircuits.tile.BlockPCBLayout;
@@ -27,12 +27,13 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-@Mod(modid = "integratedcircuits", dependencies = "required-after:ForgeMultipart;")
+@Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore;")
 public class IntegratedCircuits
 {
 	public static boolean isPRLoaded = false;
 	public static boolean isAWLoaded = false;
 	public static boolean isBPLoaded = false;
+	public static boolean isFMPLoaded = false;
 	
 	public static final String modID = "integratedcircuits";
 	
@@ -64,6 +65,7 @@ public class IntegratedCircuits
 		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
 		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
 		isBPLoaded = Loader.isModLoaded("bluepower");
+		isFMPLoaded = Loader.isModLoaded("ForgeMultipart");
 		
 		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
 		

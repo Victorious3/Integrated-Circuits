@@ -7,6 +7,7 @@ import static net.minecraftforge.common.util.ForgeDirection.WEST;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
@@ -118,6 +119,12 @@ public class MiscUtils
 		Block block = world.getBlock(x, y, z);
 		if(block == null) return false;
 		return block.isSideSolid(world, x, y, z, ForgeDirection.getOrientation(side));
+	}
+	
+	public static void dropItem(World world, ItemStack stack, int x, int y, int z)
+	{
+		EntityItem entityItem = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5, stack);
+		world.spawnEntityInWorld(entityItem);
 	}
 	
 	public static boolean isClient()

@@ -13,8 +13,8 @@ import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.net.Packet7SegmentChangeMode;
-import vic.mod.integratedcircuits.part.Part7Segment;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 
 public class Gui7Segment extends GuiScreen implements IHoverableHandler

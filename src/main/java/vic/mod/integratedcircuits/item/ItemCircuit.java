@@ -2,7 +2,7 @@ package vic.mod.integratedcircuits.item;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import vic.mod.integratedcircuits.part.PartGate;
+import vic.mod.integratedcircuits.gate.PartGate;
 
 public class ItemCircuit extends ItemGatePart
 {

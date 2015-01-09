@@ -8,7 +8,7 @@ import vic.mod.integratedcircuits.client.model.IComponentModel;
 import vic.mod.integratedcircuits.client.model.ModelBase;
 import vic.mod.integratedcircuits.client.model.ModelBundledConnection;
 import vic.mod.integratedcircuits.client.model.ModelRedstoneConnection;
-import vic.mod.integratedcircuits.part.PartGate;
+import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;

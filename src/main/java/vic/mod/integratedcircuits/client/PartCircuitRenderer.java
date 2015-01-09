@@ -8,8 +8,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.client.model.ModelChip;
+import vic.mod.integratedcircuits.gate.PartCircuit;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
-import vic.mod.integratedcircuits.part.PartCircuit;
 import codechicken.lib.vec.Transformation;
 
 /** https://github.com/MrTJP/ProjectRed/ **/

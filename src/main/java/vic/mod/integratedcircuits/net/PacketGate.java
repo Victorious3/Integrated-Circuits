@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
-import vic.mod.integratedcircuits.part.GateProvider;
-import vic.mod.integratedcircuits.part.GateProvider.IGateProvider;
-import vic.mod.integratedcircuits.part.PartGate;
+import vic.mod.integratedcircuits.gate.GateProvider;
+import vic.mod.integratedcircuits.gate.PartGate;
+import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
 import codechicken.lib.vec.BlockCoord;
 
 public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTileEntity<T>

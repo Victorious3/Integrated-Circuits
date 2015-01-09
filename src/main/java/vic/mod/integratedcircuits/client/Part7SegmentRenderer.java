@@ -7,8 +7,8 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.client.model.ModelSocket;
+import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
-import vic.mod.integratedcircuits.part.Part7Segment;
 import codechicken.lib.vec.Transformation;
 
 public class Part7SegmentRenderer extends PartRenderer<Part7Segment>

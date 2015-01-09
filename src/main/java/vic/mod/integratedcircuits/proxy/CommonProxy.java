@@ -29,6 +29,7 @@ import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdate;
 import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
 import vic.mod.integratedcircuits.net.PacketChangeSetting;
+import vic.mod.integratedcircuits.net.PacketDataStream;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
@@ -83,6 +84,8 @@ public class CommonProxy
 		
 		AbstractPacket.registerPacket(Packet7SegmentOpenGui.class, Side.CLIENT, 15);
 		AbstractPacket.registerPacket(Packet7SegmentChangeMode.class, null, 16);
+		
+		AbstractPacket.registerPacket(PacketDataStream.class, Side.CLIENT, 17);
 	}
 	
 	@SubscribeEvent
