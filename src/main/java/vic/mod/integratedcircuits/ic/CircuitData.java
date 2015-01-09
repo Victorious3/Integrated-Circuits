@@ -222,7 +222,7 @@ public class CircuitData implements Cloneable
 			for(int y = 0; y < size; y++)
 			{
 				Vec2 pos = new Vec2(x, y);
-				getPart(pos).onTick(null, parent);
+				getPart(pos).onTick(pos, parent);
 			}
 		}
 	}

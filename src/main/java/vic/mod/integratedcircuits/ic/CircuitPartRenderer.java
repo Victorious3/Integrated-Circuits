@@ -394,6 +394,7 @@ public class CircuitPartRenderer
 
 		tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		
+		//TODO Really, this is horrible. Get rid of it.
 		if(gate instanceof PartNANDGate) addQuad(x, y, 10 * 16, 0, 16, 16, gate.getRotation(pos, parent));
 		else if(gate instanceof PartNORGate) addQuad(x, y, 11 * 16, 0, 16, 16, gate.getRotation(pos, parent));
 		else if(gate instanceof PartXNORGate) addQuad(x, y, 12 * 16, 0, 16, 16, gate.getRotation(pos, parent));
@@ -433,9 +434,9 @@ public class CircuitPartRenderer
 	
 	public static class CircuitRenderWrapper implements ICircuit
 	{
-		private CircuitData data;
-		private CircuitPart part;
-		private Vec2 pos = new Vec2(1, 1);
+		private final CircuitData data;
+		private final CircuitPart part;
+		private final Vec2 pos;
 
 		public CircuitRenderWrapper(Class<? extends CircuitPart> clazz)
 		{
@@ -444,25 +445,26 @@ public class CircuitPartRenderer
 		
 		public CircuitRenderWrapper(Class<? extends CircuitPart> clazz, int state)
 		{
-			this.data = CircuitData.createShallowInstance(state, this);
-			this.part = CircuitPart.getPart(clazz);
+			this(state, CircuitPart.getPart(clazz));
 		}
 		
 		public CircuitRenderWrapper(int state, CircuitPart part)
 		{
 			this.data = CircuitData.createShallowInstance(state, this);
 			this.part = part;
+			this.pos = new Vec2(1, 1);
 		}
 		
 		public CircuitRenderWrapper(CircuitData data)
 		{
-			this.data = data;
+			this(data, null, null);
 		}
-
-		public CircuitRenderWrapper setPart(CircuitPart part)
+		
+		public CircuitRenderWrapper(CircuitData data, CircuitPart part, Vec2 pos)
 		{
+			this.data = data;
 			this.part = part;
-			return this;
+			this.pos = pos;
 		}
 		
 		public CircuitPart getPart()
@@ -470,22 +472,10 @@ public class CircuitPartRenderer
 			return part;
 		}
 		
-		public CircuitRenderWrapper setState(int state)
-		{
-			this.data = CircuitData.createShallowInstance(state, this);
-			return this;
-		}
-		
 		@Override 
 		public CircuitData getCircuitData() 
 		{
 			return data;
-		}
-		
-		public CircuitRenderWrapper setPos(Vec2 pos)
-		{
-			this.pos = pos;
-			return this;
 		}
 		
 		public Vec2 getPos()

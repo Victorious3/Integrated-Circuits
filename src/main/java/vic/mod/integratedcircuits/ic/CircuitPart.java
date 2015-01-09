@@ -146,6 +146,8 @@ public abstract class CircuitPart
 		notifyNeighbours(pos, parent);
 	}
 
+	//TODO Isn't really used anywhere. Leaving the iteration in doesn't make much sense, but maybe the repeater could make use of it.
+	@Deprecated
 	public void onTick(Vec2 pos, ICircuit parent){}
 	
 	public void onScheduledTick(Vec2 pos, ICircuit parent){}

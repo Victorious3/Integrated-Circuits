@@ -542,7 +542,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				CircuitPart cp = data.getPart(pos);
 				if(cp instanceof IConfigurableDelay && ctrlDown) 
 				{
-					timedPart = new CircuitRenderWrapper(te.getCircuitData()).setPart(cp).setPos(pos);
+					timedPart = new CircuitRenderWrapper(te.getCircuitData(), cp, pos);
 					labelTimed.setText(String.format("Current delay: %s ticks", ((IConfigurableDelay)cp).getConfigurableDelay(pos, te)));
 					callbackTimed.display();
 				}

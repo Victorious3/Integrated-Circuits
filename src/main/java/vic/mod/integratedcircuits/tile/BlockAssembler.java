@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
@@ -27,14 +26,6 @@ public class BlockAssembler extends BlockContainer
 		setBlockName(IntegratedCircuits.modID + ".assembler");
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setHardness(2F);
-	}
-
-	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World p_149668_1_,
-			int p_149668_2_, int p_149668_3_, int p_149668_4_) {
-		// TODO Auto-generated method stub
-		return super.getCollisionBoundingBoxFromPool(p_149668_1_, p_149668_2_,
-				p_149668_3_, p_149668_4_);
 	}
 
 	@Override
