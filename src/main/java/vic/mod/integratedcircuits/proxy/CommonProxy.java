@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
@@ -44,6 +45,7 @@ import vic.mod.integratedcircuits.net.PacketPCBIO;
 import vic.mod.integratedcircuits.net.PacketPCBLoad;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
+import codechicken.lib.vec.BlockCoord;
 
 import com.google.common.collect.Maps;
 
@@ -53,7 +55,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
@@ -61,7 +62,7 @@ public class CommonProxy
 {
 	public static int serverTicks;
 	public static SimpleNetworkWrapper networkWrapper;
-	private static HashMap<TargetPoint, MCDataOutputImpl> out = Maps.newHashMap();
+	private static HashMap<World, HashMap<BlockCoord, MCDataOutputImpl>> out = Maps.newHashMap();
 	
 	public void initialize()
 	{
@@ -98,15 +99,17 @@ public class CommonProxy
 		AbstractPacket.registerPacket(PacketDataStream.class, Side.CLIENT, 17);
 	}
 	
-	public MCDataOutputImpl addStream(TargetPoint tp)
+	public MCDataOutputImpl addStream(World world, BlockCoord crd)
 	{
-		if(out.containsKey(tp))
-		{
-			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(out.get(tp), (int)tp.x, (int)tp.y, (int)tp.z), tp.dimension);
-			out.remove(tp);
-		}
+		if(!out.containsKey(world))
+			out.put(world, new HashMap<BlockCoord, MCDataOutputImpl>());
+		HashMap<BlockCoord, MCDataOutputImpl> map = out.get(world);
+		
+		if(map.containsKey(crd))
+			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.remove(crd), crd.x, crd.y, crd.z), world.provider.dimensionId);
+		
 		MCDataOutputImpl stream = new MCDataOutputImpl(new ByteArrayOutputStream());
-		out.put(tp, stream);
+		map.put(crd, stream);
 		return stream;
 	}
 	
@@ -117,12 +120,16 @@ public class CommonProxy
 		{
 			serverTicks++;
 			
-			for(Entry<TargetPoint, MCDataOutputImpl> entry : out.entrySet())
+			for(World world : out.keySet())
 			{
-				TargetPoint tp = entry.getKey();
-				CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(entry.getValue(), (int)tp.x, (int)tp.y, (int)tp.z), tp.dimension);
+				HashMap<BlockCoord, MCDataOutputImpl> map = out.get(world);
+				for(Entry<BlockCoord, MCDataOutputImpl> entry : map.entrySet())
+				{
+					BlockCoord crd = entry.getKey();
+					CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.get(crd), crd.x, crd.y, crd.z), world.provider.dimensionId);
+				}
+				map.clear();
 			}
-			out.clear();
 		}
 	}
 	

@@ -107,9 +107,8 @@ public class GateProvider
 			power = updateBundledPartSignal(1, t, abs ^ 1);
 		else if(t instanceof TileMultipart)
 			power = updateBundledPartSignal(1, ((TileMultipart)t).partMap(face), (r + 2) % 4);
-		else if(IntegratedCircuits.isPRLoaded)
-			power = APIImpl_Transmission.getBundledSignal(provider.getWorld(), pos, abs ^ 1);
-		
+		else power = APIImpl_Transmission.getBundledSignal(provider.getWorld(), pos, abs ^ 1);
+
 		if(power != null) return power;
 		
 		if(provider.getTileEntity() instanceof TileMultipart)

@@ -1,6 +1,8 @@
 package vic.mod.integratedcircuits.tile;
 
 import io.netty.buffer.Unpooled;
+import mrtjp.projectred.api.IBundledTile;
+import mrtjp.projectred.transmission.BundledCablePart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -16,9 +18,10 @@ import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
-public class TileEntityGate extends TileEntity implements IGateProvider
+public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile
 {
 	private PartGate gate;
 	
@@ -47,6 +50,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider
 	{
 		super.readFromNBT(compound);
 		gate = GateRegistry.createGateInstace(compound.getString("gate_id"));
+		gate.setProvider(this);
 		gate.load(compound);
 	}
 
@@ -81,7 +85,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider
 	public MCDataOutput getWriteStream(int disc) 
 	{
 		if(!worldObj.isRemote)
-			return IntegratedCircuits.proxy.addStream(new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 0)).writeByte(disc);
+			return IntegratedCircuits.proxy.addStream(getWorld(), getPos()).writeByte(disc);
 		throw new IllegalArgumentException("Cannot use getWriteStream on a client world");
 	}
 
@@ -143,6 +147,38 @@ public class TileEntityGate extends TileEntity implements IGateProvider
 	{
 		return gate;
 	}
+	
+	//ProjectRed
+	
+	@Override
+	public boolean canConnectBundled(int side) 
+	{
+		int rel = gate.getRotationRel(side);
+		
+		//Dirty hack for P:R, will only return true if something can connect from that side
+		//As there is no way to get the caller of this method, this will return true even
+		//if the part connecting can't connect when a different part on the given side can.
+		BlockCoord pos = getPos().offset(side);
+		TileEntity t = worldObj.getTileEntity(pos.x, pos.y, pos.z);
+		
+		if(t instanceof TileMultipart)
+		{
+			TMultiPart mp = ((TileMultipart)t).partMap(gate.getSide());
+			if(!(mp instanceof BundledCablePart)) return false;
+		}
+		
+		return gate.canConnectBundledImpl(rel);
+	}
+	
+	@Override
+	public byte[] getBundledSignal(int arg0) 
+	{
+		int rot = gate.getRotationRel(arg0);
+		if(!gate.canConnectBundledImpl(rot)) return null;
+		return gate.output[rot];
+	}
+	
+	//---
 
 	@Override
 	public int strongPowerLevel(int side) 

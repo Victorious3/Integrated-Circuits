@@ -46,7 +46,7 @@ public class BlockGate extends BlockContainer
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		te.getGate().scheduledTick();
+		te.getGate().onNeighborChanged();
 	}
 
 	@Override
@@ -61,6 +61,20 @@ public class BlockGate extends BlockContainer
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		return te.getGate().activate(player, new MovingObjectPosition(x, y, z, side, Vec3.createVectorHelper(hitX, hitY, hitZ)), player.getHeldItem());
+	}
+	
+	@Override
+	public void onBlockAdded(World world, int x, int y, int z) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		te.getGate().onWorldJoin();
+	}
+
+	@Override
+	public void onBlockPreDestroy(World world, int x, int y, int z, int meta) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		te.getGate().onRemoved();
 	}
 
 	@Override
@@ -88,5 +102,56 @@ public class BlockGate extends BlockContainer
 	public TileEntity createNewTileEntity(World world, int meta) 
 	{
 		return new TileEntityGate(gate.newInstance());
+	}
+
+	@Override
+	public boolean canProvidePower() 
+	{
+		return true;
+	}
+
+	@Override
+	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		if((side & 6) == (gate.getSide() & 6)) return false;
+		int rel = gate.getSideRel(side);
+		System.out.println(rel);
+		
+		/*if(IntegratedCircuits.isFMPLoaded)
+		{
+			//Check if ANY multipart from that side can connect.
+			BlockCoord pos = new BlockCoord(te).offset(side);
+			TileEntity t = world.getTileEntity(pos.x, pos.y, pos.z);
+			System.out.println(t);
+			
+			if(t instanceof TileMultipart)
+			{
+				TMultiPart mp = ((TileMultipart)t).partMap(gate.getSide());
+				if(!(mp instanceof IRedstoneConnector)) return false;
+			}
+		}*/
+		
+		return gate.canConnectRedstoneImpl(rel);
+	}
+
+	@Override
+	public int isProvidingWeakPower(IBlockAccess world, int x, int y, int z, int side) 
+	{
+		return isProvidingStrongPower(world, x, y, z, side);
+	}
+
+	@Override
+	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		if((side & 6) == (gate.getSide() & 6)) return 0;
+		int rot = gate.getSideRel(side);
+		if(!gate.canConnectRedstoneImpl(rot)) return 0;
+		return gate.getRedstoneOutput(rot);
 	}
 }
