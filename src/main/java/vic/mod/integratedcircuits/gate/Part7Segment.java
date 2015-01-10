@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
+import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.Packet7SegmentOpenGui;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
@@ -437,9 +439,15 @@ public class Part7Segment extends PartGate
 	}
 
 	@Override
-	public ItemStack getItem() 
+	public GateRegistry.ItemGatePair getItemType() 
 	{
-		return new ItemStack(IntegratedCircuits.item7SegmentFMP, 1, color);
+		return IntegratedCircuits.item7Segment;
+	}
+	
+	@Override
+	public ItemStack getItemStack(Item item) 
+	{
+		return new ItemStack(item, 1, color);
 	}
 
 	@Override

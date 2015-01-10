@@ -37,7 +37,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 	@Interface(iface = "buildcraft.api.tiles.IControllable", modid = "BuildCraft|Core"),
 	@Interface(iface = "buildcraft.api.tiles.IHasWork", modid = "BuildCraft|Core")
 })
-public class TileEntityAssembler extends TileEntityBase implements IDiskDrive, ISidedInventory, IOptionsProvider, IHasWork, IControllable
+public class TileEntityAssembler extends TileEntityContainer implements IDiskDrive, ISidedInventory, IOptionsProvider, IHasWork, IControllable
 {
 	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
 	public static final int SETTING_PULL = 0, SETTING_REDSTONE = 1;

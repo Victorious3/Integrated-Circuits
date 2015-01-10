@@ -1,5 +1,9 @@
 package vic.mod.integratedcircuits.proxy;
 
+import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -21,6 +25,7 @@ import vic.mod.integratedcircuits.client.gui.GuiHandler;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.RayTracer;
 import vic.mod.integratedcircuits.net.AbstractPacket;
+import vic.mod.integratedcircuits.net.MCDataOutputImpl;
 import vic.mod.integratedcircuits.net.Packet7SegmentChangeMode;
 import vic.mod.integratedcircuits.net.Packet7SegmentOpenGui;
 import vic.mod.integratedcircuits.net.PacketAssemblerChangeItem;
@@ -39,12 +44,16 @@ import vic.mod.integratedcircuits.net.PacketPCBIO;
 import vic.mod.integratedcircuits.net.PacketPCBLoad;
 import vic.mod.integratedcircuits.net.PacketPCBUpdate;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
+
+import com.google.common.collect.Maps;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
@@ -52,6 +61,7 @@ public class CommonProxy
 {
 	public static int serverTicks;
 	public static SimpleNetworkWrapper networkWrapper;
+	private static HashMap<TargetPoint, MCDataOutputImpl> out = Maps.newHashMap();
 	
 	public void initialize()
 	{
@@ -88,10 +98,32 @@ public class CommonProxy
 		AbstractPacket.registerPacket(PacketDataStream.class, Side.CLIENT, 17);
 	}
 	
+	public MCDataOutputImpl addStream(TargetPoint tp)
+	{
+		if(out.containsKey(tp))
+		{
+			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(out.get(tp), (int)tp.x, (int)tp.y, (int)tp.z), tp.dimension);
+			out.remove(tp);
+		}
+		MCDataOutputImpl stream = new MCDataOutputImpl(new ByteArrayOutputStream());
+		out.put(tp, stream);
+		return stream;
+	}
+	
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent event)
 	{
-		if(event.phase == Phase.END) serverTicks++;
+		if(event.phase == Phase.END) 
+		{
+			serverTicks++;
+			
+			for(Entry<TargetPoint, MCDataOutputImpl> entry : out.entrySet())
+			{
+				TargetPoint tp = entry.getKey();
+				CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(entry.getValue(), (int)tp.x, (int)tp.y, (int)tp.z), tp.dimension);
+			}
+			out.clear();
+		}
 	}
 	
 	@SubscribeEvent

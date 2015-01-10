@@ -6,10 +6,15 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
+import codechicken.lib.vec.Cuboid6;
 
 public class BlockGate extends BlockContainer
 {
@@ -20,6 +25,14 @@ public class BlockGate extends BlockContainer
 		super(Material.circuits);
 		setBlockName(gate.getType());
 		this.gate = gate;
+	}
+
+	@Override
+	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		Cuboid6 bounds = PartGate.box.copy().apply(te.getGate().getRotationTransformation());
+		bounds.setBlockBounds(this);
 	}
 
 	@Override
@@ -41,6 +54,13 @@ public class BlockGate extends BlockContainer
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		te.getGate().onAdded();
+	}
+	
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		return te.getGate().activate(player, new MovingObjectPosition(x, y, z, side, Vec3.createVectorHelper(hitX, hitY, hitZ)), player.getHeldItem());
 	}
 
 	@Override
@@ -67,6 +87,6 @@ public class BlockGate extends BlockContainer
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) 
 	{
-		return new TileEntityGate(gate);
+		return new TileEntityGate(gate.newInstance());
 	}
 }

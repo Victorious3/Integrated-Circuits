@@ -41,13 +41,13 @@ public class ItemPartGate extends Item implements TItemMultiPart
 		if(isMultiPart) fmpType = new FMPartGate(part).getType();
 		
 		setCreativeTab(IntegratedCircuits.creativeTab);
-		setUnlocalizedName(IntegratedCircuits.modID + "." + name + (isMultiPart ? "_fmp" : ""));
+		setUnlocalizedName(IntegratedCircuits.modID + "." + name);
 		GameRegistry.registerItem(this, IntegratedCircuits.modID + "_" + name + (isMultiPart ? "_fmp" : ""), IntegratedCircuits.modID);
 		
 		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
 			MinecraftForgeClient.registerItemRenderer(this, part.getRenderer());
 		if(!isMultiPart) 
-			GameRegistry.registerBlock(blockType = new BlockGate(part), getUnlocalizedName());
+			GameRegistry.registerBlock(blockType = new BlockGate(part), IntegratedCircuits.modID + "." + name);
 	}
 	
 	@Override
@@ -81,11 +81,12 @@ public class ItemPartGate extends Item implements TItemMultiPart
 		
 		boolean b = false;
 		if(isMultiPart) b = placeFMP(stack, player, world, pos, side, vhit);
-		else
+		else if(world.getBlock(pos.x, pos.y, pos.z).isReplaceable(world, pos.x, pos.y, pos.z))
 		{
 			world.setBlock(pos.x, pos.y, pos.z, blockType);
 			TileEntityGate te = (TileEntityGate)world.getTileEntity(pos.x, pos.y, pos.z);
 			te.getGate().preparePlacement(player, pos, side, stack.getItemDamage());
+			te.getGate().onAdded();
 			b = true;
 		}
 		if(!b) return false;
@@ -118,5 +119,15 @@ public class ItemPartGate extends Item implements TItemMultiPart
 	public void registerIcons(IIconRegister ir) 
 	{
 		
+	}
+	
+	public boolean isMultipartItem()
+	{
+		return isMultiPart;
+	}
+	
+	public Block getBlockType()
+	{
+		return blockType;
 	}
 }

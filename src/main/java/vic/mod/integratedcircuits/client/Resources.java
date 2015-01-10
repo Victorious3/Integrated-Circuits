@@ -1,12 +1,12 @@
 package vic.mod.integratedcircuits.client;
 
-import vic.mod.integratedcircuits.IntegratedCircuits;
 import net.minecraft.client.renderer.IconFlipped;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -19,6 +19,7 @@ public class Resources
 	public static IIcon ICON_IC_SOCKET;
 	public static IIcon ICON_IC_SEGMENT;
 	public static IIcon ICON_IC_BASE;
+	public static IIcon ICON_IC_BASE_FMP;
 	public static IIcon ICON_IC_WIRE;
 	public static IIcon ICON_IC_WIRE_FLIPPED;
 	public static IIcon ICON_IC_RSWIRE_OFF;
@@ -79,6 +80,7 @@ public class Resources
 			ICON_IC_SOCKET = map.registerIcon(IntegratedCircuits.modID + ":ic_uniform");
 			ICON_IC_SEGMENT = map.registerIcon(IntegratedCircuits.modID + ":ic_segment");
 			ICON_IC_BASE = map.registerIcon(IntegratedCircuits.modID + ":ic_base");
+			ICON_IC_BASE_FMP = map.registerIcon(IntegratedCircuits.modID + ":ic_base_fmp");
 			ICON_IC_WIRE = map.registerIcon(IntegratedCircuits.modID + ":ic_wire");
 			ICON_IC_WIRE_FLIPPED = new IconFlipped(ICON_IC_WIRE, true, false);
 			ICON_IC_RSWIRE_OFF = map.registerIcon(IntegratedCircuits.modID + ":ic_rswire_off");

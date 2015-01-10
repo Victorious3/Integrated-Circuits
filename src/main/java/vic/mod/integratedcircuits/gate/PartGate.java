@@ -1,18 +1,21 @@
 package vic.mod.integratedcircuits.gate;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.client.PartRenderer;
+import vic.mod.integratedcircuits.client.PartGateRenderer;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
@@ -21,8 +24,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class PartGate
 {
+	//Collision box
+	public static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
+	
 	private String name;
 	protected IGateProvider provider;
+	
 	//Used by the client, redstone IO
 	public byte io;
 	public byte[][] output = new byte[4][16];
@@ -32,7 +39,7 @@ public abstract class PartGate
 	
 	public PartGate(String name)
 	{
-		this.name = IntegratedCircuits.modID + "_" + name;
+		this.name = name;
 	}
 	
 	public IGateProvider getProvider()
@@ -46,6 +53,11 @@ public abstract class PartGate
 	}
 	
 	public String getType() 
+	{
+		return IntegratedCircuits.modID + "_" + name;
+	}
+	
+	public String getName()
 	{
 		return name;
 	}
@@ -183,11 +195,16 @@ public abstract class PartGate
 		provider.notifyBlocksAndChanges();
 	}
 	
-	public abstract ItemStack getItem();
+	public abstract GateRegistry.ItemGatePair getItemType();
+	
+	public ItemStack getItemStack(Item item)
+	{
+		return new ItemStack(item);
+	}
 
 	public ItemStack pickItem(MovingObjectPosition hit) 
 	{
-		return getItem();
+		return provider.getItemStack();
 	}
 
 	public Transformation getRotationTransformation()
@@ -196,7 +213,7 @@ public abstract class PartGate
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public abstract <T extends PartGate> PartRenderer<T> getRenderer();
+	public abstract <T extends PartGate> PartGateRenderer<T> getRenderer();
 	
 	@SideOnly(Side.CLIENT)
 	public boolean renderStatic(Vector3 pos, int pass) 
@@ -231,7 +248,7 @@ public abstract class PartGate
 			BlockCoord pos = new BlockCoord(provider.getTileEntity()).offset(getSide());
 			if(!MiscUtils.canPlaceGateOnSide(provider.getWorld(), pos.x, pos.y, pos.z, getSide() ^ 1))
 			{
-				MiscUtils.dropItem(provider.getWorld(), getItem(), pos.x, pos.y, pos.z);
+				MiscUtils.dropItem(provider.getWorld(), provider.getItemStack(), pos.x, pos.y, pos.z);
 				provider.destroy();
 			}
 			else updateInput();

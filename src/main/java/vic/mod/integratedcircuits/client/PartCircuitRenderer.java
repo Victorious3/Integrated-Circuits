@@ -13,7 +13,7 @@ import vic.mod.integratedcircuits.ic.CircuitProperties;
 import codechicken.lib.vec.Transformation;
 
 /** https://github.com/MrTJP/ProjectRed/ **/
-public class PartCircuitRenderer extends PartRenderer<PartCircuit>
+public class PartCircuitRenderer extends PartGateRenderer<PartCircuit>
 {
 	public PartCircuitRenderer()
 	{
@@ -28,6 +28,7 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 	@Override
 	public void prepare(PartCircuit part) 
 	{
+		super.prepare(part);
 		CircuitProperties prop = part.getCircuitData().getProperties();
 		int bundled = 0;
 		for(int i = 0; i < 4; i++)
@@ -39,6 +40,7 @@ public class PartCircuitRenderer extends PartRenderer<PartCircuit>
 	@Override
 	public void prepareInv(ItemStack stack)
 	{
+		super.prepareInv(stack);
 		NBTTagCompound comp = stack.getTagCompound();	
 		if(comp == null) return;
 		NBTTagCompound comp2 = comp.getCompoundTag("circuit").getCompoundTag("properties");

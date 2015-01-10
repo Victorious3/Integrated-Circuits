@@ -8,7 +8,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-public abstract class TileEntityBase extends TileEntity implements IInventory
+public abstract class TileEntityContainer extends TileEntity implements IInventory
 {
 	public int rotation;
 	public int playersUsing;

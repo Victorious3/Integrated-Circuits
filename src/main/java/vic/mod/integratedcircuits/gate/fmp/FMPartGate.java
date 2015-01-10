@@ -37,7 +37,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, IBundledEmitter, IGateProvider
 {
 	private PartGate gate;
-	private Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
 
 	public FMPartGate(PartGate gate)
 	{
@@ -90,7 +89,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	@Override
 	public Cuboid6 getBounds()
 	{
-		return box.copy().apply(gate.getRotationTransformation());
+		return PartGate.box.copy().apply(gate.getRotationTransformation());
 	}
 	
 	@Override
@@ -168,7 +167,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	@Override
 	public Iterable<ItemStack> getDrops() 
 	{
-		return Arrays.asList(gate.getItem());
+		return Arrays.asList(getItemStack());
 	}
 	
 	@Override
@@ -337,5 +336,17 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	public PartGate getGate() 
 	{
 		return gate;
+	}
+
+	@Override
+	public ItemStack getItemStack() 
+	{
+		return gate.getItemStack(gate.getItemType().getItemFMP());
+	}
+
+	@Override
+	public boolean isMultipart() 
+	{
+		return true;
 	}
 }

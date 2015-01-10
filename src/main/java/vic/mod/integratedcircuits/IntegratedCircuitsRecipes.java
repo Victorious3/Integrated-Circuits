@@ -42,7 +42,7 @@ public class IntegratedCircuitsRecipes
 						'c', Items.coal
 			);
 			
-			GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.item7SegmentFMP),
+			GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItemFMP()),
 				"srs",
 				"r#r",
 				"sps",
@@ -68,7 +68,7 @@ public class IntegratedCircuitsRecipes
 				OreDictionary.registerOre("stoneWire", new ItemStack(prCorePart, 1, 2));
 			}
 			
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(IntegratedCircuits.item7SegmentFMP),
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItemFMP()),
 				"srs",
 				"r#r",
 				"sps",
@@ -162,7 +162,7 @@ public class IntegratedCircuitsRecipes
 					'p', IntegratedCircuits.itemPCBChip
 		);
 		
-		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(IntegratedCircuits.itemCircuitFMP), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)))
+		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP()), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)))
 		{
 			@Override
 			public ItemStack getCraftingResult(InventoryCrafting crafting) 
@@ -178,7 +178,7 @@ public class IntegratedCircuitsRecipes
 					}
 				}
 				if(stack == null) return null;
-				ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuitFMP);
+				ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP());
 				NBTTagCompound comp = (NBTTagCompound)stack.getTagCompound().copy();
 				ret.setTagCompound(comp);
 				return ret;

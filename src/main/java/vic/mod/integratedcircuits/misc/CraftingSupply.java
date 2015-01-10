@@ -4,16 +4,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
-import vic.mod.integratedcircuits.tile.TileEntityBase;
+import vic.mod.integratedcircuits.tile.TileEntityContainer;
 
 public class CraftingSupply 
 {
 	private CraftingAmount cache;
-	private TileEntityBase provider;
+	private TileEntityContainer provider;
 	private int from, to;
 	private ItemAmount insufficient;
 	
-	public CraftingSupply(TileEntityBase provider, int from, int to)
+	public CraftingSupply(TileEntityContainer provider, int from, int to)
 	{
 		this.cache = new CraftingAmount();
 		this.provider = provider;
@@ -67,7 +67,7 @@ public class CraftingSupply
 		return false;
 	}
 	
-	public static CraftingSupply readFromNBT(NBTTagCompound compound, TileEntityBase provider, CraftingAmount base, int from, int to)
+	public static CraftingSupply readFromNBT(NBTTagCompound compound, TileEntityContainer provider, CraftingAmount base, int from, int to)
 	{
 		CraftingSupply supply = new CraftingSupply(provider, from, to);
 		NBTTagList list = compound.getTagList("supply", NBT.TAG_COMPOUND);

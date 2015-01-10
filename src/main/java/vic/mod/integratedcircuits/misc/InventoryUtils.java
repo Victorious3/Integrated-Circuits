@@ -1,11 +1,11 @@
 package vic.mod.integratedcircuits.misc;
 
 import net.minecraft.item.ItemStack;
-import vic.mod.integratedcircuits.tile.TileEntityBase;
+import vic.mod.integratedcircuits.tile.TileEntityContainer;
 
 public class InventoryUtils 
 {
-	public static ItemStack tryFetchItem(TileEntityBase te, ItemStack stack, int from, int to)
+	public static ItemStack tryFetchItem(TileEntityContainer te, ItemStack stack, int from, int to)
 	{
 		for(int i = from; i <= to; i++)
 		{
@@ -23,7 +23,7 @@ public class InventoryUtils
 		return null;
 	}
 	
-	public static boolean tryPutItem(TileEntityBase te, ItemStack stack, int from, int to)
+	public static boolean tryPutItem(TileEntityContainer te, ItemStack stack, int from, int to)
 	{
 		if(stack == null) return true;
 		for(int i = from; i <= to; i++)

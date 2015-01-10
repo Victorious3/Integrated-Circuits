@@ -11,7 +11,7 @@ import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import codechicken.lib.vec.Transformation;
 
-public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
+public class Part7SegmentRenderer extends PartGateRenderer<Part7Segment>
 {
 	public Part7SegmentRenderer()
 	{
@@ -26,6 +26,7 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	@Override
 	public void prepare(Part7Segment part) 
 	{
+		super.prepare(part);
 		if(part.isSlave)
 		{
 			prepareBundled(0);
@@ -51,10 +52,11 @@ public class Part7SegmentRenderer extends PartRenderer<Part7Segment>
 	@Override
 	public void prepareInv(ItemStack stack) 
 	{
+		super.prepareInv(stack);
 		display = 127;
 		color = stack.getItemDamage();
-		prepareBundled(15);
-		prepareRedstone(0, 0);
+		prepareBundled(0);
+		prepareRedstone(15, 0);
 	}
 	
 	@Override

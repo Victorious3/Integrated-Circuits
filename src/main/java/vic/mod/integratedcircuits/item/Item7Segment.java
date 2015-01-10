@@ -11,9 +11,9 @@ import vic.mod.integratedcircuits.misc.MiscUtils;
 
 public class Item7Segment extends ItemPartGate implements IDyeable
 {
-	public Item7Segment(PartGate part, boolean isMultiPart) 
+	public Item7Segment(String name, PartGate part, boolean isMultiPart) 
 	{
-		super("7segment", part, isMultiPart);
+		super(name, part, isMultiPart);
 	}
 
 	@Override

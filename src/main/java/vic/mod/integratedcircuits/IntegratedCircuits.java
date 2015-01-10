@@ -3,6 +3,7 @@ package vic.mod.integratedcircuits;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import vic.mod.integratedcircuits.compat.NEIAddon;
+import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.gate.PartCircuit;
 import vic.mod.integratedcircuits.gate.fmp.PartFactory;
@@ -38,10 +39,8 @@ public class IntegratedCircuits
 	
 	public static final String modID = "integratedcircuits";
 	
-	public static ItemCircuit itemCircuitFMP;
-	public static Item7Segment item7SegmentFMP;
-	public static ItemCircuit itemCircuit;
-	public static Item7Segment item7Segment;
+	public static GateRegistry.ItemGatePair itemCircuit;
+	public static GateRegistry.ItemGatePair item7Segment;
 	
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
@@ -71,8 +70,6 @@ public class IntegratedCircuits
 		isBPLoaded = Loader.isModLoaded("bluepower");
 		isFMPLoaded = Loader.isModLoaded("ForgeMultipart");
 		
-		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
-		
 		Config.initialize(event.getSuggestedConfigurationFile());
 		proxy.preInitialize();
 		
@@ -81,21 +78,12 @@ public class IntegratedCircuits
 			@Override
 			public Item getTabIconItem() 
 			{
-				return isFMPLoaded ? itemCircuitFMP : itemCircuit;
+				return itemCircuit.getItem();
 			}
 		};
 		
-		PartCircuit partCircuit = new PartCircuit();
-		Part7Segment part7Segment = new Part7Segment();
-		
-		if(isFMPLoaded)
-		{
-			itemCircuitFMP = new ItemCircuit(partCircuit, true);
-			item7SegmentFMP = new Item7Segment(part7Segment, true);
-		}
-		
-		itemCircuit = new ItemCircuit(partCircuit, false);
-		item7Segment = new Item7Segment(part7Segment, false);
+		itemCircuit = GateRegistry.registerGate(new PartCircuit(), ItemCircuit.class);
+		item7Segment = GateRegistry.registerGate(new Part7Segment(), Item7Segment.class);
 		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
@@ -120,6 +108,8 @@ public class IntegratedCircuits
 		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
 		GameRegistry.registerTileEntity(TileEntityGate.class, modID + ".gate");
+		
+		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
 	}
     
 	@EventHandler

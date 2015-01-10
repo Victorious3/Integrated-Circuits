@@ -4,6 +4,7 @@ import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.transmission.APIImpl_Transmission;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.IntegratedCircuits;
@@ -48,6 +49,10 @@ public class GateProvider
 		public PartGate getGate();
 		
 		public int strongPowerLevel(int side);
+		
+		public ItemStack getItemStack();
+		
+		public boolean isMultipart();
 	}
 	
 	public static PartGate getGateAt(World world, BlockCoord pos, int side)

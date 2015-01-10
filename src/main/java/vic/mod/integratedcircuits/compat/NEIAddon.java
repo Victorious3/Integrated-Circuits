@@ -11,6 +11,10 @@ public class NEIAddon
 	{
 		if(MiscUtils.isServer()) return;
 		
-		API.hideItem(new ItemStack(IntegratedCircuits.itemCircuitFMP));
+		API.hideItem(new ItemStack(IntegratedCircuits.itemCircuit.getItem()));
+		if(IntegratedCircuits.isFMPLoaded)
+			API.hideItem(new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP()));
+		
+		API.hideItem(new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP().getBlockType()));
 	}
 }

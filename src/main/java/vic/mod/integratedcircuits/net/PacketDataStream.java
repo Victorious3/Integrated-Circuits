@@ -15,23 +15,22 @@ import cpw.mods.fml.relauncher.Side;
 public class PacketDataStream extends PacketTileEntity<PacketDataStream>
 {
 	private MCDataInput in;
-	private TileEntityGate gate;
+	private MCDataOutputImpl out;
 	
 	public PacketDataStream() {}
 	
-	public PacketDataStream(TileEntityGate gate)
+	public PacketDataStream(MCDataOutputImpl out, int x, int y, int z)
 	{
-		super(gate.xCoord, gate.yCoord, gate.zCoord);
-		this.gate = gate;
+		super(x, y, z);
+		this.out = out;
 	}
 	
 	@Override
 	public void read(PacketBuffer buffer) throws IOException 
 	{
 		super.read(buffer);
-		int size = buffer.readInt();
-		ByteBuf buf = Unpooled.buffer(size);
-		buffer.readBytes(buf);
+		ByteBuf buf = Unpooled.buffer();
+		buffer.readBytes(buf, buffer.readableBytes());
 		in = new PacketCustom(buf);
 	}
 
@@ -39,10 +38,9 @@ public class PacketDataStream extends PacketTileEntity<PacketDataStream>
 	public void write(PacketBuffer buffer) throws IOException 
 	{
 		super.write(buffer);
-		byte[] out = gate.out.toByteArray();
-		buffer.writeInt(out.length);
-		buffer.writeBytes(out);
-		gate.out = null;
+		PacketCustom packet = new PacketCustom("", 1);
+		packet.writeByteArray(out.toByteArray());
+		buffer.writeBytes(packet.getByteBuf());
 	}
 
 	@Override

@@ -1,22 +1,28 @@
 package vic.mod.integratedcircuits.tile;
 
-import java.io.ByteArrayOutputStream;
-
+import io.netty.buffer.Unpooled;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.PartGate;
-import vic.mod.integratedcircuits.net.MCDataOutputImpl;
-import vic.mod.integratedcircuits.net.PacketDataStream;
-import vic.mod.integratedcircuits.proxy.CommonProxy;
 import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
 public class TileEntityGate extends TileEntity implements IGateProvider
 {
 	private PartGate gate;
-	public MCDataOutputImpl out;
+	
+	public TileEntityGate() {}
 	
 	public TileEntityGate(PartGate part)
 	{
@@ -33,16 +39,49 @@ public class TileEntityGate extends TileEntity implements IGateProvider
 	@Override
 	public void updateEntity() 
 	{
-		if(!worldObj.isRemote && out != null)
-			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(this), worldObj.provider.dimensionId);
 		gate.update();
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound compound) 
+	{
+		super.readFromNBT(compound);
+		gate = GateRegistry.createGateInstace(compound.getString("gate_id"));
+		gate.load(compound);
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound compound) 
+	{
+		super.writeToNBT(compound);
+		compound.setString("gate_id", gate.getName());
+		gate.save(compound);
+	}
+
+	@Override
+	public Packet getDescriptionPacket() 
+	{
+		NBTTagCompound comp = new NBTTagCompound();
+		PacketCustom packet = new PacketCustom("", 1);
+		gate.writeDesc(packet);
+		comp.setByteArray("data", packet.getByteBuf().array());
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, blockMetadata, comp);
+	}
+
+	@Override
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) 
+	{
+		NBTTagCompound comp = pkt.func_148857_g();
+		byte[] data = comp.getByteArray("data");
+		PacketCustom in = new PacketCustom(Unpooled.copiedBuffer(data));
+		gate.readDesc(in);
 	}
 
 	@Override
 	public MCDataOutput getWriteStream(int disc) 
 	{
 		if(!worldObj.isRemote)
-			return out = (MCDataOutputImpl)(new MCDataOutputImpl(new ByteArrayOutputStream()).writeByte(disc));
+			return IntegratedCircuits.proxy.addStream(new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 0)).writeByte(disc);
 		throw new IllegalArgumentException("Cannot use getWriteStream on a client world");
 	}
 
@@ -109,5 +148,17 @@ public class TileEntityGate extends TileEntity implements IGateProvider
 	public int strongPowerLevel(int side) 
 	{
 		return 0;
+	}
+
+	@Override
+	public ItemStack getItemStack() 
+	{
+		return gate.getItemStack(gate.getItemType().getItem());
+	}
+
+	@Override
+	public boolean isMultipart() 
+	{
+		return false;
 	}
 }

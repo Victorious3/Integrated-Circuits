@@ -6,9 +6,9 @@ import vic.mod.integratedcircuits.gate.PartGate;
 
 public class ItemCircuit extends ItemPartGate
 {
-	public ItemCircuit(PartGate part, boolean isMultiPart)
+	public ItemCircuit(String name, PartGate part, boolean isMultiPart)
 	{
-		super("circuit", part, isMultiPart);
+		super(name, part, isMultiPart);
 		setMaxStackSize(1);
 		setCreativeTab(null);
 	}

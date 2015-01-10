@@ -1,7 +1,7 @@
 package vic.mod.integratedcircuits.client.model;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.client.PartRenderer;
+import vic.mod.integratedcircuits.client.PartGateRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
@@ -18,7 +18,7 @@ public class ModelBundledConnection implements IComponentModel
 		this.rotation = rotation;
 		CCModel model = generateModel(size);
 		for(int i = 0; i < 24; i++)
-			conModels[i] = PartRenderer.bakeCopy(model, i).shrinkUVs(0.002);
+			conModels[i] = PartGateRenderer.bakeCopy(model, i).shrinkUVs(0.002);
 	}
 
 	@Override

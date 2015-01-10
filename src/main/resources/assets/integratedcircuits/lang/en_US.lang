@@ -1,6 +1,5 @@
 # items
 item.integratedcircuits.floppy.name=Circuit Blueprint Disk
-item.integratedcircuits.circuit.name=Integrated Circuit (%s)
 item.integratedcircuits.laser.name=Laser
 item.integratedcircuits.pcb.name=Raw Circuit Board
 item.integratedcircuits.pcb.printed.name=Printed Circuit Board
@@ -8,8 +7,10 @@ item.integratedcircuits.pcb_chip.name=Circuit Board
 item.integratedcircuits.silicon.name=Silicon
 item.integratedcircuits.silicon_drop.name=Silicon Drop
 item.integratedcircuits.coalcompound.name=Sandy Coal Compound
-item.integratedcircuits.7segment.name=Segment
 item.integratedcircuits.screwdriver.name=Screwdriver
+
+item.integratedcircuits.7segment.name=Segment
+item.integratedcircuits.circuit.name=Integrated Circuit (%s)
 
 # blocks
 tile.integratedcircuits.pcblayoutcad.name=PCB Layout CAD

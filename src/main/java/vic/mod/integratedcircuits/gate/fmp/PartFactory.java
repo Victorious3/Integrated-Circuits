@@ -6,6 +6,7 @@ import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
 
+//TODO Use the GateRegistry instead, not sure if I'll ever create a part that is NOT a gate.
 public class PartFactory implements IPartFactory
 {
 	private static HashMap<String, FMPartGate> parts = new HashMap<String, FMPartGate>();

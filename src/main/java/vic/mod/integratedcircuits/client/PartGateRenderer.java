@@ -9,6 +9,7 @@ import vic.mod.integratedcircuits.client.model.ModelBase;
 import vic.mod.integratedcircuits.client.model.ModelBundledConnection;
 import vic.mod.integratedcircuits.client.model.ModelRedstoneConnection;
 import vic.mod.integratedcircuits.gate.PartGate;
+import vic.mod.integratedcircuits.item.ItemPartGate;
 import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
@@ -22,16 +23,18 @@ import codechicken.lib.vec.Vector3;
 
 import com.google.common.collect.Lists;
 
-public class PartRenderer <T extends PartGate> implements IItemRenderer
+public class PartGateRenderer <T extends PartGate> implements IItemRenderer
 {	
 	protected List<IComponentModel> models = Lists.newLinkedList();
+	protected ModelBase modelBase;
+	private boolean isFMP;
 	
 	private ModelBundledConnection[] bundledModels = new ModelBundledConnection[4];
 	private ModelRedstoneConnection[] redstoneModels = new ModelRedstoneConnection[4];
 	
-	public PartRenderer()
+	public PartGateRenderer()
 	{
-		models.add(new ModelBase());
+		models.add(modelBase = new ModelBase());
 	}
 	
 	public void addBundledConnections(int flag1, int... size)
@@ -111,28 +114,23 @@ public class PartRenderer <T extends PartGate> implements IItemRenderer
 
 	public void prepare(T part) 
 	{
-		
+		isFMP = part.getProvider().isMultipart();
 	}
 	
 	public void prepareInv(ItemStack stack)
 	{
-		
+		isFMP = ((ItemPartGate)stack.getItem()).isMultipartItem();
 	}
 	
-	public void prepareDynamic(T part, float partialTicks) 
-	{
-		
-	}
+	public void prepareDynamic(T part, float partialTicks) {}
 	
 	public void renderStatic(Transformation t, int orient)
 	{
+		modelBase.setIsFMP(isFMP);
 		for(IComponentModel m : models) m.renderModel(t, orient);
 	}
 	
-	public void renderDynamic(Transformation t)
-	{
-		
-	}
+	public void renderDynamic(Transformation t) {}
 	
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) 
