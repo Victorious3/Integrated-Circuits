@@ -23,15 +23,7 @@ import codechicken.multipart.TileMultipart;
 
 public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile
 {
-	private PartGate gate;
-	
-	public TileEntityGate() {}
-	
-	public TileEntityGate(PartGate part)
-	{
-		this.gate = part;
-		part.setProvider(this);
-	}
+	public PartGate gate;
 	
 	@Override
 	public void markRender() 
@@ -68,6 +60,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		NBTTagCompound comp = new NBTTagCompound();
 		PacketCustom packet = new PacketCustom("", 1);
 		gate.writeDesc(packet);
+		comp.setString("gate_id", gate.getName());
 		comp.setByteArray("data", packet.getByteBuf().array());
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, blockMetadata, comp);
 	}
@@ -78,6 +71,11 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		NBTTagCompound comp = pkt.func_148857_g();
 		byte[] data = comp.getByteArray("data");
 		PacketCustom in = new PacketCustom(Unpooled.copiedBuffer(data));
+		if(gate == null) 
+		{
+			gate = GateRegistry.createGateInstace(comp.getString("gate_id"));
+			gate.setProvider(this);
+		}
 		gate.readDesc(in);
 	}
 
@@ -153,6 +151,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	@Override
 	public boolean canConnectBundled(int side) 
 	{
+		System.out.println(side);
 		int rel = gate.getRotationRel(side);
 		
 		//Dirty hack for P:R, will only return true if something can connect from that side

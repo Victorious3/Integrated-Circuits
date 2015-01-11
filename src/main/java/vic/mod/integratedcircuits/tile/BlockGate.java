@@ -12,13 +12,14 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.vec.Cuboid6;
 
 public class BlockGate extends BlockContainer
 {
-	private PartGate gate;
+	public PartGate gate;
 	
 	public BlockGate(PartGate gate) 
 	{
@@ -48,26 +49,12 @@ public class BlockGate extends BlockContainer
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		te.getGate().onNeighborChanged();
 	}
-
-	@Override
-	public void onPostBlockPlaced(World world, int x, int y, int z, int meta) 
-	{
-		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		te.getGate().onAdded();
-	}
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		return te.getGate().activate(player, new MovingObjectPosition(x, y, z, side, Vec3.createVectorHelper(hitX, hitY, hitZ)), player.getHeldItem());
-	}
-	
-	@Override
-	public void onBlockAdded(World world, int x, int y, int z) 
-	{
-		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		te.getGate().onWorldJoin();
 	}
 
 	@Override
@@ -101,7 +88,7 @@ public class BlockGate extends BlockContainer
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) 
 	{
-		return new TileEntityGate(gate.newInstance());
+		return new TileEntityGate();
 	}
 
 	@Override
@@ -113,27 +100,14 @@ public class BlockGate extends BlockContainer
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) 
 	{
+		side = GateProvider.vanillaToSide(side);
+		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		PartGate gate = te.getGate();
-		
+
 		if((side & 6) == (gate.getSide() & 6)) return false;
 		int rel = gate.getSideRel(side);
-		System.out.println(rel);
-		
-		/*if(IntegratedCircuits.isFMPLoaded)
-		{
-			//Check if ANY multipart from that side can connect.
-			BlockCoord pos = new BlockCoord(te).offset(side);
-			TileEntity t = world.getTileEntity(pos.x, pos.y, pos.z);
-			System.out.println(t);
-			
-			if(t instanceof TileMultipart)
-			{
-				TMultiPart mp = ((TileMultipart)t).partMap(gate.getSide());
-				if(!(mp instanceof IRedstoneConnector)) return false;
-			}
-		}*/
-		
+
 		return gate.canConnectRedstoneImpl(rel);
 	}
 
@@ -146,8 +120,13 @@ public class BlockGate extends BlockContainer
 	@Override
 	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) 
 	{
+		if(side > 3) return 0;
+		side = GateProvider.vanillaToSide(side);
+		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		PartGate gate = te.getGate();
+		
+		System.out.println(gate.getRedstoneOutput(0) + " " + gate.getRedstoneOutput(1) + " " + gate.getRedstoneOutput(2) + " " + gate.getRedstoneOutput(3));
 		
 		if((side & 6) == (gate.getSide() & 6)) return 0;
 		int rot = gate.getSideRel(side);

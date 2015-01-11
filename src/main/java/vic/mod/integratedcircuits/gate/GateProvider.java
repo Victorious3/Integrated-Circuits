@@ -55,6 +55,13 @@ public class GateProvider
 		public boolean isMultipart();
 	}
 	
+	private static final int[] vanillaSideMap = {1, 2, 5, 3, 4};
+	
+	public static int vanillaToSide(int vside)
+	{
+		return vanillaSideMap[vside + 1];
+	}
+	
 	public static PartGate getGateAt(World world, BlockCoord pos, int side)
 	{
 		TileEntity te = world.getTileEntity(pos.x, pos.y, pos.z);
@@ -170,7 +177,6 @@ public class GateProvider
 		{
 			BlockCoord pos = provider.getPos().offset(abs);
 			power = provider.getWorld().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side ^ 1);
-			pos.offset(abs);
 			
 			if(power < 15 && provider.getWorld().getBlock(pos.x, pos.y, pos.z) == Blocks.redstone_wire)
 				power = Math.max(power, provider.getWorld().getBlockMetadata(pos.x, pos.y, pos.z));

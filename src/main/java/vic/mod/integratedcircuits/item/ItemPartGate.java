@@ -33,7 +33,7 @@ public class ItemPartGate extends Item implements TItemMultiPart
 {
 	private String fmpType;
 	private boolean isMultiPart;
-	private Block blockType;
+	private BlockGate blockType;
 	
 	public ItemPartGate(String name, PartGate part, boolean isMultiPart) 
 	{
@@ -83,16 +83,23 @@ public class ItemPartGate extends Item implements TItemMultiPart
 		if(isMultiPart) b = placeFMP(stack, player, world, pos, side, vhit);
 		else if(world.getBlock(pos.x, pos.y, pos.z).isReplaceable(world, pos.x, pos.y, pos.z))
 		{
+			PartGate gate = blockType.gate.newInstance();
+			gate.preparePlacement(player, pos, side, stack.getItemDamage());
 			world.setBlock(pos.x, pos.y, pos.z, blockType);
 			TileEntityGate te = (TileEntityGate)world.getTileEntity(pos.x, pos.y, pos.z);
-			te.getGate().preparePlacement(player, pos, side, stack.getItemDamage());
-			te.getGate().onAdded();
-			b = true;
+			
+			if(te != null)
+			{
+				te.gate = gate;
+				te.gate.setProvider(te);
+				gate.onAdded();
+				b = true;
+			}
 		}
 		if(!b) return false;
 		
 		if(!player.capabilities.isCreativeMode)
-			stack.stackSize -= 1;
+			stack.stackSize--;
 		
 		return true;
 	}

@@ -8,7 +8,6 @@ import net.minecraft.util.MovingObjectPosition;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.PartGateRenderer;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
-import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -138,7 +137,7 @@ public abstract class PartGate
 	
 	public void setRotation(int r)
 	{
-		orientation = (byte)(orientation & 252| r);
+		orientation = (byte)(orientation & 252 | r);
 	}
 	
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
@@ -245,7 +244,7 @@ public abstract class PartGate
 	{
 		if(!provider.getWorld().isRemote) 
 		{
-			BlockCoord pos = new BlockCoord(provider.getTileEntity()).offset(getSide());
+			BlockCoord pos = provider.getPos().offset(getSide());
 			if(!MiscUtils.canPlaceGateOnSide(provider.getWorld(), pos.x, pos.y, pos.z, getSide() ^ 1))
 			{
 				MiscUtils.dropItem(provider.getWorld(), provider.getItemStack(), pos.x, pos.y, pos.z);
