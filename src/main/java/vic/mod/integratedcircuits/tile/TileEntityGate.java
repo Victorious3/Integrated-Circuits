@@ -34,7 +34,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	@Override
 	public void updateEntity() 
 	{
-		gate.update();
+		if(gate != null) gate.update();
 	}
 	
 	@Override
@@ -97,7 +97,6 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	public void notifyBlocksAndChanges() 
 	{
 		markDirty();
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
 	}
 

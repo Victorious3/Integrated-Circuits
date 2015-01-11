@@ -1,12 +1,15 @@
 package vic.mod.integratedcircuits.tile;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -14,8 +17,11 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
+import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.vec.Cuboid6;
+
+import com.google.common.collect.Lists;
 
 public class BlockGate extends BlockContainer
 {
@@ -25,7 +31,48 @@ public class BlockGate extends BlockContainer
 	{
 		super(Material.circuits);
 		setBlockName(gate.getType());
+		setHardness(1);
 		this.gate = gate;
+	}
+
+	@Override
+	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) 
+	{
+		ArrayList<ItemStack> drops = Lists.newArrayList();
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		if(te != null) drops.add(te.getItemStack());
+		return drops;
+	}
+	
+	@Override
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		if(te != null)
+		{
+			if(!world.isRemote && !player.capabilities.isCreativeMode)
+				MiscUtils.dropItem(world, te.getItemStack(), x, y, z);
+		}
+		return world.setBlockToAir(x, y, z);
+	}
+
+	@Override
+	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		return te.getItemStack();
+	}
+
+	@Override
+	public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) 
+	{
+		return true;
+	}
+
+	@Override
+	public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) 
+	{
+		return true;
 	}
 
 	@Override
@@ -120,14 +167,11 @@ public class BlockGate extends BlockContainer
 	@Override
 	public int isProvidingStrongPower(IBlockAccess world, int x, int y, int z, int side) 
 	{
-		if(side > 3) return 0;
-		side = GateProvider.vanillaToSide(side);
+		side ^= 1;
 		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		PartGate gate = te.getGate();
-		
-		System.out.println(gate.getRedstoneOutput(0) + " " + gate.getRedstoneOutput(1) + " " + gate.getRedstoneOutput(2) + " " + gate.getRedstoneOutput(3));
-		
+
 		if((side & 6) == (gate.getSide() & 6)) return 0;
 		int rot = gate.getSideRel(side);
 		if(!gate.canConnectRedstoneImpl(rot)) return 0;

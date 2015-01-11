@@ -178,7 +178,7 @@ public class IntegratedCircuitsRecipes
 					}
 				}
 				if(stack == null) return null;
-				ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP());
+				ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit.getItem());
 				NBTTagCompound comp = (NBTTagCompound)stack.getTagCompound().copy();
 				ret.setTagCompound(comp);
 				return ret;
