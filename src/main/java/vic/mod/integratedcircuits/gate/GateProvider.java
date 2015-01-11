@@ -1,5 +1,6 @@
 package vic.mod.integratedcircuits.gate;
 
+import mods.immibis.redlogic.wires.RedAlloyTile;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.transmission.APIImpl_Transmission;
 import mrtjp.projectred.transmission.IRedwireEmitter;
@@ -82,12 +83,35 @@ public class GateProvider
 	
 	public static byte[] calculateBundledInput(IGateProvider provider, int side)
 	{
-		if(!IntegratedCircuits.isPRLoaded) return new byte[16];
-		return calculateBundledInputImpl(provider, side);
+		byte[] input = null;
+		if(IntegratedCircuits.isPRLoaded) input = calculateBundledInputProjectRed(provider, side);
+		if(IntegratedCircuits.isRLLoaded && input == null) input = calculateBundledInputRedLogic(provider, side);
+		if(input == null) input = new byte[16];
+		return input;
+	}
+	
+	@Method(modid = "RedLogic")
+	private static byte[] calculateBundledInputRedLogic(IGateProvider provider, int side)
+	{
+		int r = provider.getGate().getRotationAbs(side);
+		int face = provider.getGate().getSide();
+		int abs = Rotation.rotateSide(face, r);
+		BlockCoord pos = provider.getPos().offset(abs);
+		
+		byte[] power = null;
+		
+		TileEntity te = provider.getWorld().getTileEntity(pos.x, pos.y, pos.z);
+		if(te instanceof mods.immibis.redlogic.api.wiring.IBundledEmitter)
+		{
+			mods.immibis.redlogic.api.wiring.IBundledEmitter emitter = (mods.immibis.redlogic.api.wiring.IBundledEmitter) te;
+			power = emitter.getBundledCableStrength(0, abs ^ 1);
+		}
+		
+		return power;
 	}
 	
 	@Method(modid = "ProjRed|Transmission")
-	private static byte[] calculateBundledInputImpl(IGateProvider provider, int side)
+	private static byte[] calculateBundledInputProjectRed(IGateProvider provider, int side)
 	{
 		int r = provider.getGate().getRotationAbs(side);
 		int face = provider.getGate().getSide();
@@ -95,6 +119,7 @@ public class GateProvider
 		
 		byte[] power = null;
 
+		//Corner signal
 		if(provider.getTileEntity() instanceof TileMultipart)
 		{
 			if(((abs ^ 1) & 6) != ((face ^ 1) & 6))
@@ -107,6 +132,7 @@ public class GateProvider
 			}
 		}
 		
+		//Straight signal
 		BlockCoord pos = provider.getPos().offset(abs);
 		TileEntity t = provider.getWorld().getTileEntity(pos.x, pos.y, pos.z);
 		
@@ -118,6 +144,7 @@ public class GateProvider
 
 		if(power != null) return power;
 		
+		//Internal signal
 		if(provider.getTileEntity() instanceof TileMultipart)
 		{
 			if((abs & 6) != (face & 6))
@@ -128,7 +155,7 @@ public class GateProvider
 			}
 		}
 		
-		return new byte[16];
+		return null;
 	}
 	
 	@Method(modid = "ProjRed|Transmission")
@@ -148,6 +175,7 @@ public class GateProvider
 		
 		if(IntegratedCircuits.isFMPLoaded && provider.getTileEntity() instanceof TileMultipart)
 		{
+			//Corner signal
 			if(((abs ^ 1) & 6) != ((face ^ 1) & 6))
 			{
 				BlockCoord pos = provider.getPos().offset(abs).offset(face);
@@ -156,10 +184,12 @@ public class GateProvider
 					power = updatePartSignal(((TileMultipart)t).partMap(abs ^ 1), Rotation.rotationTo(abs ^ 1, face ^ 1));
 				if(power > 0) return power / 17;
 			}
-		
+			
+			//Straight signal
 			power = RedstoneInteractions.getPowerTo((TMultiPart)provider, abs);
 			if(power > 0) return power;
 			
+			//Internal signal
 			TMultiPart tp = ((TileMultipart)provider.getTileEntity()).partMap(abs);
 			if((abs & 6) != (face & 6))
 			{
@@ -176,8 +206,20 @@ public class GateProvider
 		else
 		{
 			BlockCoord pos = provider.getPos().offset(abs);
-			power = provider.getWorld().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, side ^ 1);
+			//Vanilla input
+			power = provider.getWorld().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, abs ^ 1);
 			
+			if(IntegratedCircuits.isRLLoaded)
+			{
+				//Exclude jacketed wire, they don't connect.
+				TileEntity te = provider.getWorld().getTileEntity(pos.x, pos.y, pos.z);
+				if(te instanceof RedAlloyTile)
+				{
+					if(((RedAlloyTile)te).hasJacketedWire()) power = 0;
+				}
+			}
+			
+			//Compatibility to redstone
 			if(power < 15 && provider.getWorld().getBlock(pos.x, pos.y, pos.z) == Blocks.redstone_wire)
 				power = Math.max(power, provider.getWorld().getBlockMetadata(pos.x, pos.y, pos.z));
 		}

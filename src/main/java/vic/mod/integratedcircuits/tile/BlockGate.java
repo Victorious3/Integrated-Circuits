@@ -15,6 +15,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
@@ -30,7 +31,7 @@ public class BlockGate extends BlockContainer
 	public BlockGate(PartGate gate) 
 	{
 		super(Material.circuits);
-		setBlockName(gate.getType());
+		setBlockName(IntegratedCircuits.modID + "." + gate.getName());
 		setHardness(1);
 		this.gate = gate;
 	}

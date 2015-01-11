@@ -36,6 +36,7 @@ public class IntegratedCircuits
 	public static boolean isAWLoaded = false;
 	public static boolean isBPLoaded = false;
 	public static boolean isFMPLoaded = false;
+	public static boolean isRLLoaded = false;
 	
 	public static final String modID = "integratedcircuits";
 	
@@ -69,6 +70,7 @@ public class IntegratedCircuits
 		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
 		isBPLoaded = Loader.isModLoaded("bluepower");
 		isFMPLoaded = Loader.isModLoaded("ForgeMultipart");
+		isRLLoaded = Loader.isModLoaded("RedLogic");
 		
 		Config.initialize(event.getSuggestedConfigurationFile());
 		proxy.preInitialize();

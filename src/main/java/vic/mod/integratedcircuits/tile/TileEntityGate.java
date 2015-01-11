@@ -1,6 +1,11 @@
 package vic.mod.integratedcircuits.tile;
 
 import io.netty.buffer.Unpooled;
+import mods.immibis.redlogic.api.wiring.IBundledEmitter;
+import mods.immibis.redlogic.api.wiring.IBundledUpdatable;
+import mods.immibis.redlogic.api.wiring.IBundledWire;
+import mods.immibis.redlogic.api.wiring.IConnectable;
+import mods.immibis.redlogic.api.wiring.IWire;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.transmission.BundledCablePart;
 import net.minecraft.item.ItemStack;
@@ -20,8 +25,10 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+import cpw.mods.fml.common.Optional.Interface;
 
-public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile
+@Interface(iface = "mrtjp.projectred.api.IBundledTile", modid = "ProjRed|Core")
+public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, IConnectable
 {
 	public PartGate gate;
 	
@@ -150,7 +157,6 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	@Override
 	public boolean canConnectBundled(int side) 
 	{
-		System.out.println(side);
 		int rel = gate.getRotationRel(side);
 		
 		//Dirty hack for P:R, will only return true if something can connect from that side
@@ -174,6 +180,38 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		int rot = gate.getRotationRel(arg0);
 		if(!gate.canConnectBundledImpl(rot)) return null;
 		return gate.output[rot];
+	}
+	
+	//RedLogic
+	
+	@Override
+	public byte[] getBundledCableStrength(int blockFace, int toDirection) 
+	{
+		return getBundledSignal(toDirection);
+	}
+
+	@Override
+	public void onBundledInputChanged() 
+	{
+		gate.updateInput();
+	}
+	
+	@Override
+	public boolean connects(IWire wire, int blockFace, int fromDirection) 
+	{
+		if((fromDirection & 6) == (gate.getSide() & 6)) return false;
+		int rel = gate.getSideRel(fromDirection);
+		
+		if(blockFace == -1) return false;
+		if(wire instanceof IBundledWire) return gate.canConnectBundledImpl(rel);
+		else return gate.canConnectRedstoneImpl(rel);
+	}
+
+	@Override
+	public boolean connectsAroundCorner(IWire wire, int blockFace, int fromDirection) 
+	{
+		//TODO I could do something about this.
+		return false;
 	}
 	
 	//---
