@@ -15,6 +15,7 @@ import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.item.ItemScrewdriver;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
+import vic.mod.integratedcircuits.tile.BlockGate;
 import vic.mod.integratedcircuits.tile.BlockPCBLayout;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
@@ -28,6 +29,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import dan200.computercraft.api.ComputerCraftAPI;
 
 @Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore;")
 public class IntegratedCircuits
@@ -53,6 +55,7 @@ public class IntegratedCircuits
 	public static ItemBase itemPCBChip;
 	public static ItemScrewdriver itemScrewdriver;
 	
+	public static BlockGate blockGate;
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
 	public static CreativeTabs creativeTab;
@@ -101,9 +104,11 @@ public class IntegratedCircuits
 			itemCoalCompound = new ItemBase("coalcompound");
 		}
 
+		blockGate = new BlockGate();
 		blockPCBLayout = new BlockPCBLayout();
 		blockAssembler = new BlockAssembler();
 		
+		GameRegistry.registerBlock(blockGate, modID + ".gate");
 		GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
 		GameRegistry.registerBlock(blockAssembler, modID + ".assembler");
 		
@@ -111,6 +116,8 @@ public class IntegratedCircuits
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
 		GameRegistry.registerTileEntity(TileEntityGate.class, modID + ".gate");
 		
+		//Computercraft
+		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
 		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
 	}
     

@@ -18,6 +18,7 @@ import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.Optional.Method;
+import dan200.computercraft.api.ComputerCraftAPI;
 
 public class GateProvider
 {
@@ -86,13 +87,39 @@ public class GateProvider
 		byte[] input = null;
 		if(IntegratedCircuits.isPRLoaded) input = calculateBundledInputProjectRed(provider, side);
 		if(IntegratedCircuits.isRLLoaded && input == null) input = calculateBundledInputRedLogic(provider, side);
+		if(input == null) input = calculateBundledInputComputercraft(provider, side);
 		if(input == null) input = new byte[16];
 		return input;
+	}
+	
+	private static byte[] calculateBundledInputComputercraft(IGateProvider provider, int side)
+	{
+		if(provider.isMultipart()) return null;
+		
+		int r = provider.getGate().getRotationAbs(side);
+		int face = provider.getGate().getSide();
+		int abs = Rotation.rotateSide(face, r);
+		BlockCoord pos = provider.getPos().offset(abs);
+		
+		int input = ComputerCraftAPI.getBundledRedstoneOutput(provider.getWorld(), pos.x, pos.y, pos.z, abs ^ 1);
+		if(input > 0)
+		{
+			byte[] convInput = new byte[16];
+			for(int i = 0; i < 16; i++)
+			{
+				convInput[i] = (byte)(input & 1);
+				input >>= 1;
+			}
+			return convInput;
+		}
+		return null;
 	}
 	
 	@Method(modid = "RedLogic")
 	private static byte[] calculateBundledInputRedLogic(IGateProvider provider, int side)
 	{
+		if(provider.isMultipart()) return null;
+		
 		int r = provider.getGate().getRotationAbs(side);
 		int face = provider.getGate().getSide();
 		int abs = Rotation.rotateSide(face, r);
@@ -120,7 +147,7 @@ public class GateProvider
 		byte[] power = null;
 
 		//Corner signal
-		if(provider.getTileEntity() instanceof TileMultipart)
+		if(provider.isMultipart())
 		{
 			if(((abs ^ 1) & 6) != ((face ^ 1) & 6))
 			{
@@ -145,7 +172,7 @@ public class GateProvider
 		if(power != null) return power;
 		
 		//Internal signal
-		if(provider.getTileEntity() instanceof TileMultipart)
+		if(provider.isMultipart())
 		{
 			if((abs & 6) != (face & 6))
 			{
@@ -173,7 +200,7 @@ public class GateProvider
 		if(provider.strongPowerLevel(abs) != 0) return 0;
 		int power = 0;
 		
-		if(IntegratedCircuits.isFMPLoaded && provider.getTileEntity() instanceof TileMultipart)
+		if(provider.isMultipart())
 		{
 			//Corner signal
 			if(((abs ^ 1) & 6) != ((face ^ 1) & 6))

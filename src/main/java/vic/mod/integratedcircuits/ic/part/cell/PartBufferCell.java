@@ -7,6 +7,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartBufferCell extends PartSimpleGate
 {
+	//FIXME Broken, see PartANDCell
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{

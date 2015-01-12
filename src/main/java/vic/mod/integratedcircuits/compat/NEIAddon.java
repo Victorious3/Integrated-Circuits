@@ -6,7 +6,7 @@ import vic.mod.integratedcircuits.misc.MiscUtils;
 import codechicken.nei.api.API;
 
 public class NEIAddon 
-{
+{	
 	public void initialize()
 	{
 		if(MiscUtils.isServer()) return;
@@ -15,6 +15,6 @@ public class NEIAddon
 		if(IntegratedCircuits.isFMPLoaded)
 			API.hideItem(new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP()));
 		
-		API.hideItem(new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP().getBlockType()));
+		API.hideItem(new ItemStack(IntegratedCircuits.blockGate));
 	}
 }

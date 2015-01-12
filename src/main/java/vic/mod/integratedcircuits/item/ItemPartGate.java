@@ -1,6 +1,5 @@
 package vic.mod.integratedcircuits.item;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -11,7 +10,6 @@ import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.gate.fmp.FMPartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
-import vic.mod.integratedcircuits.tile.BlockGate;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
@@ -31,23 +29,22 @@ import cpw.mods.fml.relauncher.SideOnly;
 @Interface(iface = "codechicken.multipart.TItemMultiPart", modid = "ForgeMultipart")
 public class ItemPartGate extends Item implements TItemMultiPart
 {
+	private PartGate gate;
 	private String fmpType;
 	private boolean isMultiPart;
-	private BlockGate blockType;
 	
-	public ItemPartGate(String name, PartGate part, boolean isMultiPart) 
+	public ItemPartGate(String name, PartGate gate, boolean isMultiPart) 
 	{
+		this.gate = gate;
 		this.isMultiPart = isMultiPart;
-		if(isMultiPart) fmpType = new FMPartGate(part).getType();
+		if(isMultiPart) fmpType = new FMPartGate(gate).getType();
 		
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setUnlocalizedName(IntegratedCircuits.modID + "." + name);
 		GameRegistry.registerItem(this, IntegratedCircuits.modID + "_" + name + (isMultiPart ? "_fmp" : ""), IntegratedCircuits.modID);
 		
 		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
-			MinecraftForgeClient.registerItemRenderer(this, part.getRenderer());
-		if(!isMultiPart) 
-			GameRegistry.registerBlock(blockType = new BlockGate(part), IntegratedCircuits.modID + "." + name);
+			MinecraftForgeClient.registerItemRenderer(this, gate.getRenderer());
 	}
 	
 	@Override
@@ -83,16 +80,16 @@ public class ItemPartGate extends Item implements TItemMultiPart
 		if(isMultiPart) b = placeFMP(stack, player, world, pos, side, vhit);
 		else if(world.getBlock(pos.x, pos.y, pos.z).isReplaceable(world, pos.x, pos.y, pos.z))
 		{
-			PartGate gate = blockType.gate.newInstance();
+			PartGate gate = this.gate.newInstance();
 			gate.preparePlacement(player, pos, side, stack.getItemDamage());
-			world.setBlock(pos.x, pos.y, pos.z, blockType);
+			world.setBlock(pos.x, pos.y, pos.z, IntegratedCircuits.blockGate);
 			TileEntityGate te = (TileEntityGate)world.getTileEntity(pos.x, pos.y, pos.z);
 			
 			if(te != null)
 			{
 				te.gate = gate;
 				te.gate.setProvider(te);
-				gate.onAdded();
+				te.gate.onAdded();
 				b = true;
 			}
 		}
@@ -131,10 +128,5 @@ public class ItemPartGate extends Item implements TItemMultiPart
 	public boolean isMultipartItem()
 	{
 		return isMultiPart;
-	}
-	
-	public Block getBlockType()
-	{
-		return blockType;
 	}
 }

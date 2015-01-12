@@ -157,7 +157,8 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	@Override
 	public boolean canConnectBundled(int side) 
 	{
-		int rel = gate.getRotationRel(side);
+		if((side & 6) == (gate.getSide() & 6)) return false;
+		int rel = gate.getSideRel(side);
 		
 		//Dirty hack for P:R, will only return true if something can connect from that side
 		//As there is no way to get the caller of this method, this will return true even
@@ -177,7 +178,8 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	@Override
 	public byte[] getBundledSignal(int arg0) 
 	{
-		int rot = gate.getRotationRel(arg0);
+		if((arg0 & 6) == (gate.getSide() & 6)) return null;
+		int rot = gate.getSideRel(arg0);
 		if(!gate.canConnectBundledImpl(rot)) return null;
 		return gate.output[rot];
 	}
@@ -198,7 +200,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	
 	@Override
 	public boolean connects(IWire wire, int blockFace, int fromDirection) 
-	{
+	{	
 		if((fromDirection & 6) == (gate.getSide() & 6)) return false;
 		int rel = gate.getSideRel(fromDirection);
 		

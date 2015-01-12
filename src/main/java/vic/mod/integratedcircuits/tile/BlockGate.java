@@ -24,16 +24,15 @@ import codechicken.lib.vec.Cuboid6;
 
 import com.google.common.collect.Lists;
 
-public class BlockGate extends BlockContainer
+import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
+
+public class BlockGate extends BlockContainer implements IBundledRedstoneProvider
 {
-	public PartGate gate;
-	
-	public BlockGate(PartGate gate) 
+	public BlockGate() 
 	{
 		super(Material.circuits);
-		setBlockName(IntegratedCircuits.modID + "." + gate.getName());
+		setBlockName(IntegratedCircuits.modID + ".gate");
 		setHardness(1);
-		this.gate = gate;
 	}
 
 	@Override
@@ -177,5 +176,21 @@ public class BlockGate extends BlockContainer
 		int rot = gate.getSideRel(side);
 		if(!gate.canConnectRedstoneImpl(rot)) return 0;
 		return gate.getRedstoneOutput(rot);
+	}
+
+	@Override
+	public int getBundledRedstoneOutput(World world, int x, int y, int z, int side) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		if((side & 6) == (gate.getSide() & 6)) return -1;
+		int rel = gate.getSideRel(side);
+		
+		//convert analog to digital
+		int out = 0;
+		for(int i = 0; i < 16; i++)
+			out |= (gate.output[side][i] != 0 ? 1 : 0) << i;
+		return out;
 	}
 }
