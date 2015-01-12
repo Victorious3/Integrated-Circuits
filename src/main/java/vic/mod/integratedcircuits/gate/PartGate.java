@@ -190,7 +190,7 @@ public abstract class PartGate
 
 	public void notifyChanges()
 	{
-		if(!provider.getWorld().isRemote) updateInput();
+		if(!provider.getWorld().isRemote) updateInputPayload();
 		provider.notifyBlocksAndChanges();
 	}
 	
@@ -250,7 +250,7 @@ public abstract class PartGate
 				MiscUtils.dropItem(provider.getWorld(), provider.getItemStack(), pos.x, pos.y, pos.z);
 				provider.destroy();
 			}
-			else updateInput();
+			else updateInputPayload();
 		}
 	}
 	
@@ -296,13 +296,21 @@ public abstract class PartGate
 	
 	public void scheduledTick() {}
 	
-	public void updateInput()
+	public final void updateInputPayload()
 	{
+		updateInputPre();
 		for(int i = 0; i < 4; i++)
 		{
 			if(canConnectRedstoneImpl(i)) input[i][0] = (byte)updateRedstoneInput(i);
-			else if(IntegratedCircuits.isPRLoaded && canConnectBundledImpl(i)) input[i] = updateBundledInput(i);
+			else if(canConnectBundledImpl(i)) input[i] = updateBundledInput(i);
 		}
+		updateInputPost();
+	}
+	
+	public void updateInputPre() {}
+	
+	public void updateInputPost() 
+	{
 		updateRedstoneIO();
 	}
 	

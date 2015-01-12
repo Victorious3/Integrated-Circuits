@@ -135,7 +135,7 @@ public class Part7Segment extends PartGate
 	{
 		updateConnections();
 		super.rotate();
-		updateInput();
+		updateInputPayload();
 		claimSlaves();
 	}
 	
@@ -357,9 +357,9 @@ public class Part7Segment extends PartGate
 	}
 
 	@Override
-	public void updateInput() 
+	public void updateInputPost() 
 	{
-		super.updateInput();
+		super.updateInputPost();
 		if(!isSlave) updateSlaves();
 	}
 

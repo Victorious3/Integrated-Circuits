@@ -11,10 +11,14 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import powercrystals.minefactoryreloaded.api.rednet.IRedNetOmniNode;
+import powercrystals.minefactoryreloaded.api.rednet.connectivity.RedNetConnectionType;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
@@ -26,7 +30,7 @@ import com.google.common.collect.Lists;
 
 import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 
-public class BlockGate extends BlockContainer implements IBundledRedstoneProvider
+public class BlockGate extends BlockContainer implements IBundledRedstoneProvider, IRedNetOmniNode
 {
 	public BlockGate() 
 	{
@@ -177,6 +181,8 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		if(!gate.canConnectRedstoneImpl(rot)) return 0;
 		return gate.getRedstoneOutput(rot);
 	}
+	
+	//Computercraft
 
 	@Override
 	public int getBundledRedstoneOutput(World world, int x, int y, int z, int side) 
@@ -192,5 +198,85 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		for(int i = 0; i < 16; i++)
 			out |= (gate.output[side][i] != 0 ? 1 : 0) << i;
 		return out;
+	}
+	
+	//MFR Rednet
+
+	@Override
+	public RedNetConnectionType getConnectionType(World world, int x, int y, int z, ForgeDirection fd) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		int side = fd.ordinal();
+		if((side & 6) == (gate.getSide() & 6)) return RedNetConnectionType.None;
+		int rel = gate.getSideRel(side);
+		
+		if(gate.canConnectBundledImpl(rel)) return RedNetConnectionType.PlateAll;
+		else if(gate.canConnectRedstoneImpl(rel)) return RedNetConnectionType.PlateSingle;
+		return RedNetConnectionType.None;
+	}
+	
+	@Override
+	public void onInputsChanged(World world, int x, int y, int z, ForgeDirection fd, int[] inputValues) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		int side = fd.ordinal();
+		if((side & 6) == (gate.getSide() & 6)) return;
+		int rel = gate.getSideRel(side);
+		
+		gate.updateInputPre();
+		for(int i = 0; i < 16; i++)
+			gate.input[rel][i] = (byte)MathHelper.clamp_int(inputValues[i], 0, 127);
+		gate.updateInputPost();		
+	}
+
+	@Override
+	public void onInputChanged(World world, int x, int y, int z, ForgeDirection fd, int inputValue) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		int side = fd.ordinal();
+		if((side & 6) == (gate.getSide() & 6)) return;
+		int rel = gate.getSideRel(side);
+		
+		gate.updateInputPre();
+		gate.input[rel][0] = (byte)MathHelper.clamp_int(inputValue, 0, 127);
+		gate.updateInputPost();
+	}
+
+	@Override
+	public int[] getOutputValues(World world, int x, int y, int z, ForgeDirection fd) 
+	{		
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		int side = fd.ordinal();
+		if((side & 6) == (gate.getSide() & 6)) return new int[16];
+		int rel = gate.getSideRel(side);
+		
+		//Convert byte array output to int array, just for you MFR
+		int[] out = new int[16];
+		byte[] bout = gate.output[rel];
+		for(int i = 0; i < 16; i++)
+			out[i] = bout[i] & 255;
+		
+		return out;
+	}
+
+	@Override
+	public int getOutputValue(World world, int x, int y, int z, ForgeDirection fd, int subnet) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		PartGate gate = te.getGate();
+		
+		int side = fd.ordinal() ^ 1;
+		if((side & 6) == (gate.getSide() & 6)) return 0;
+		int rel = gate.getSideRel(side);
+		
+		return gate.getRedstoneOutput(rel);
 	}
 }

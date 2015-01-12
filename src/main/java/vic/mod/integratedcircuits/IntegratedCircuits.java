@@ -39,6 +39,7 @@ public class IntegratedCircuits
 	public static boolean isBPLoaded = false;
 	public static boolean isFMPLoaded = false;
 	public static boolean isRLLoaded = false;
+	public static boolean isMFRLoaded = false;
 	
 	public static final String modID = "integratedcircuits";
 	
@@ -69,11 +70,13 @@ public class IntegratedCircuits
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
+		//Compatibility
 		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
 		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
 		isBPLoaded = Loader.isModLoaded("bluepower");
 		isFMPLoaded = Loader.isModLoaded("ForgeMultipart");
 		isRLLoaded = Loader.isModLoaded("RedLogic");
+		isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded");
 		
 		Config.initialize(event.getSuggestedConfigurationFile());
 		proxy.preInitialize();

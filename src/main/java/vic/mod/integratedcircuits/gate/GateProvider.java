@@ -4,10 +4,12 @@ import mods.immibis.redlogic.wires.RedAlloyTile;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.transmission.APIImpl_Transmission;
 import mrtjp.projectred.transmission.IRedwireEmitter;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import powercrystals.minefactoryreloaded.api.rednet.IRedNetNetworkContainer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
 import codechicken.lib.data.MCDataOutput;
@@ -84,26 +86,35 @@ public class GateProvider
 	
 	public static byte[] calculateBundledInput(IGateProvider provider, int side)
 	{
-		byte[] input = null;
-		if(IntegratedCircuits.isPRLoaded) input = calculateBundledInputProjectRed(provider, side);
-		if(IntegratedCircuits.isRLLoaded && input == null) input = calculateBundledInputRedLogic(provider, side);
-		if(input == null) input = calculateBundledInputComputercraft(provider, side);
-		if(input == null) input = new byte[16];
-		return input;
-	}
-	
-	private static byte[] calculateBundledInputComputercraft(IGateProvider provider, int side)
-	{
-		if(provider.isMultipart()) return null;
-		
 		int r = provider.getGate().getRotationAbs(side);
 		int face = provider.getGate().getSide();
 		int abs = Rotation.rotateSide(face, r);
 		BlockCoord pos = provider.getPos().offset(abs);
 		
+		byte[] input = null;
+		if(IntegratedCircuits.isMFRLoaded && input == null)
+		{
+			//Ignore MFR tiles, they update separately.
+			Block block = provider.getWorld().getBlock(pos.x, pos.y, pos.z);
+			if(block instanceof IRedNetNetworkContainer) return provider.getGate().input[side];
+		}
+		
+		if(IntegratedCircuits.isPRLoaded) input = calculateBundledInputProjectRed(provider, side);
+		if(IntegratedCircuits.isRLLoaded && input == null) input = calculateBundledInputRedLogic(provider, side, pos, abs);
+		if(input == null) input = calculateBundledInputComputercraft(provider, side, pos, abs);
+
+		if(input == null) input = new byte[16];
+		return input;
+	}
+	
+	private static byte[] calculateBundledInputComputercraft(IGateProvider provider, int side, BlockCoord pos, int abs)
+	{
+		if(provider.isMultipart()) return null;
+		
 		int input = ComputerCraftAPI.getBundledRedstoneOutput(provider.getWorld(), pos.x, pos.y, pos.z, abs ^ 1);
 		if(input > 0)
 		{
+			//digital to analog
 			byte[] convInput = new byte[16];
 			for(int i = 0; i < 16; i++)
 			{
@@ -116,14 +127,9 @@ public class GateProvider
 	}
 	
 	@Method(modid = "RedLogic")
-	private static byte[] calculateBundledInputRedLogic(IGateProvider provider, int side)
+	private static byte[] calculateBundledInputRedLogic(IGateProvider provider, int side, BlockCoord pos, int abs)
 	{
 		if(provider.isMultipart()) return null;
-		
-		int r = provider.getGate().getRotationAbs(side);
-		int face = provider.getGate().getSide();
-		int abs = Rotation.rotateSide(face, r);
-		BlockCoord pos = provider.getPos().offset(abs);
 		
 		byte[] power = null;
 		
@@ -202,6 +208,8 @@ public class GateProvider
 		
 		if(provider.isMultipart())
 		{
+			//ProjectRed
+			
 			//Corner signal
 			if(((abs ^ 1) & 6) != ((face ^ 1) & 6))
 			{
@@ -212,7 +220,7 @@ public class GateProvider
 				if(power > 0) return power / 17;
 			}
 			
-			//Straight signal
+			//Straight signal / Vanilla input
 			power = RedstoneInteractions.getPowerTo((TMultiPart)provider, abs);
 			if(power > 0) return power;
 			
@@ -236,7 +244,7 @@ public class GateProvider
 			//Vanilla input
 			power = provider.getWorld().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, abs ^ 1);
 			
-			if(IntegratedCircuits.isRLLoaded)
+			if(power == 0 && IntegratedCircuits.isRLLoaded)
 			{
 				//Exclude jacketed wire, they don't connect.
 				TileEntity te = provider.getWorld().getTileEntity(pos.x, pos.y, pos.z);
@@ -244,6 +252,12 @@ public class GateProvider
 				{
 					if(((RedAlloyTile)te).hasJacketedWire()) power = 0;
 				}
+			}
+			if(power == 0 && IntegratedCircuits.isMFRLoaded)
+			{
+				//Ignore MFR tiles, they update separately.
+				Block block = provider.getWorld().getBlock(pos.x, pos.y, pos.z);
+				if(block instanceof IRedNetNetworkContainer) power = provider.getGate().input[side][0];
 			}
 			
 			//Compatibility to redstone

@@ -112,16 +112,16 @@ public class PartCircuit extends PartGate implements ICircuit
 	{
 		if(!provider.getWorld().isRemote)
 		{
-			super.updateInput();
+			super.updateInputPayload();
 			circuitData.updateInput();
 			circuitData.updateOutput();
 		}
 	}
 
 	@Override
-	public void updateInput() 
+	public void updateInputPost() 
 	{
-		super.updateInput();
+		super.updateInputPost();
 		provider.scheduleTick(0);
 	}
 
