@@ -120,7 +120,7 @@ public class PropertyStitcher
 		@Override
 		public T get(int data) 
 		{
-			return (T)(Integer)((data & flag) >> offset);
+			return (T)(Integer)((data & flag) >>> offset);
 		}
 
 		@Override

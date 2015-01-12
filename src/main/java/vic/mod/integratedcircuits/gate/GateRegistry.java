@@ -33,10 +33,10 @@ public class GateRegistry
 		private ItemGatePair(PartGate gate, Class<? extends ItemPartGate> clazz)
 		{
 			try {
-				Constructor<? extends ItemPartGate> constr = clazz.getConstructor(String.class, PartGate.class, boolean.class);
-				item = constr.newInstance(gate.getName(), gate, false);
+				Constructor<? extends ItemPartGate> constr = clazz.getConstructor(String.class, PartGate.class, ItemGatePair.class, boolean.class);
+				item = constr.newInstance(gate.getName(), gate, this, false);
 				if(IntegratedCircuits.isFMPLoaded)
-					itemFMP = constr.newInstance(gate.getName(), gate, true);
+					itemFMP = constr.newInstance(gate.getName(), gate, this, true);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}

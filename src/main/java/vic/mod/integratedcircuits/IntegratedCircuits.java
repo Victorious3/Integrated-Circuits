@@ -127,7 +127,7 @@ public class IntegratedCircuits
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		PartFactory.initialize();
+		if(isFMPLoaded) PartFactory.initialize();
 		proxy.initialize();
 	}
 

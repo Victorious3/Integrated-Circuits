@@ -26,8 +26,14 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.InterfaceList;
 
-@Interface(iface = "mrtjp.projectred.api.IBundledTile", modid = "ProjRed|Core")
+@InterfaceList({
+	@Interface(iface = "mrtjp.projectred.api.IBundledTile", modid = "ProjRed|Core"),
+	@Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledUpdatable", modid = "RedLogic"),
+	@Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledEmitter", modid = "RedLogic"),
+	@Interface(iface = "mods.immibis.redlogic.api.wiring.IConnectable", modid = "RedLogic")
+})
 public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, IConnectable
 {
 	public PartGate gate;

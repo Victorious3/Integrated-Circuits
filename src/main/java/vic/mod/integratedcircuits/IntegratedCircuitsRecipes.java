@@ -1,21 +1,15 @@
 package vic.mod.integratedcircuits;
 
-import java.util.Arrays;
-
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import vic.mod.integratedcircuits.item.IDyeable;
-import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.item.recipe.RecipeCircuit;
+import vic.mod.integratedcircuits.item.recipe.RecipeDyeable;
+import vic.mod.integratedcircuits.item.recipe.RecipeFMPGate;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -42,7 +36,7 @@ public class IntegratedCircuitsRecipes
 						'c', Items.coal
 			);
 			
-			GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItemFMP()),
+			GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItem()),
 				"srs",
 				"r#r",
 				"sps",
@@ -162,94 +156,11 @@ public class IntegratedCircuitsRecipes
 					'p', IntegratedCircuits.itemPCBChip
 		);
 		
-		GameRegistry.addRecipe(new ShapelessRecipes(new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP()), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)))
-		{
-			@Override
-			public ItemStack getCraftingResult(InventoryCrafting crafting) 
-			{
-				ItemStack stack = null;
-				for(int i = 0; i < crafting.getSizeInventory(); i++)
-				{
-					ItemStack tmp = crafting.getStackInSlot(i);
-					if(tmp != null && tmp.getItem() == IntegratedCircuits.itemPCB && tmp.hasTagCompound() && tmp.getTagCompound().hasKey("circuit"))
-					{
-						stack = tmp;
-						break;
-					}
-				}
-				if(stack == null) return null;
-				ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit.getItem());
-				NBTTagCompound comp = (NBTTagCompound)stack.getTagCompound().copy();
-				ret.setTagCompound(comp);
-				return ret;
-			}
-		});
-		
 		//TODO NEI integration? Rewrite using multiple recipes?
-		GameRegistry.addRecipe(new IRecipe() 
-		{
-			int color = 0;
-			ItemStack stack = null;
-			
-			@Override
-			public int getRecipeSize() 
-			{
-				return 2;
-			}
-			
-			@Override
-			public ItemStack getRecipeOutput() 
-			{
-				return null;
-			}
-			
-			@Override
-			public boolean matches(InventoryCrafting crafting, World world) 
-			{
-				ItemStack colorStack = null;
-				color = -1;
-				for(int i = 0; i < crafting.getSizeInventory(); i++)
-				{
-					ItemStack stack = crafting.getStackInSlot(i);
-					if(stack == null) continue;
-					int color2 = MiscUtils.getColor(stack);
-					if(color2 > 0)
-					{
-						if(color < 0) 
-						{
-							color = color2;
-							colorStack = stack;
-						}
-						else return false;
-					}
-				}
-				if(color == -1) return false;
-				
-				stack = null;
-				for(int i = 0; i < crafting.getSizeInventory(); i++)
-				{
-					ItemStack stack = crafting.getStackInSlot(i);
-					if(stack == null || stack == colorStack) continue;
-					if(stack.getItem() instanceof IDyeable && this.stack == null)
-					{
-						IDyeable dyeable = (IDyeable)stack.getItem();
-						if(dyeable.canDye(color, stack))
-						{
-							this.stack = stack;
-						}
-						else return false;
-					}
-					else return false;
-				}
-				return true;
-			}
-
-			@Override
-			public ItemStack getCraftingResult(InventoryCrafting crafting) 
-			{
-				if(color == -1 || stack == null) return null;
-				return new ItemStack(stack.getItem(), 1, color);
-			}
-		});
+		GameRegistry.addRecipe(new RecipeDyeable());
+		GameRegistry.addRecipe(new RecipeCircuit());
+		
+		if(IntegratedCircuits.isFMPLoaded)
+			GameRegistry.addRecipe(new RecipeFMPGate());
 	}
 }

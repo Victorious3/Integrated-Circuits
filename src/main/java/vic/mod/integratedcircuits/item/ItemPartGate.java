@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.gate.fmp.FMPartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
@@ -29,12 +30,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 @Interface(iface = "codechicken.multipart.TItemMultiPart", modid = "ForgeMultipart")
 public class ItemPartGate extends Item implements TItemMultiPart
 {
-	private PartGate gate;
+	private final PartGate gate;
 	private String fmpType;
-	private boolean isMultiPart;
+	private final boolean isMultiPart;
+	private final ItemGatePair parent;
 	
-	public ItemPartGate(String name, PartGate gate, boolean isMultiPart) 
+	public ItemPartGate(String name, PartGate gate, ItemGatePair parent, boolean isMultiPart) 
 	{
+		this.parent = parent;
 		this.gate = gate;
 		this.isMultiPart = isMultiPart;
 		if(isMultiPart) fmpType = new FMPartGate(gate).getType();
@@ -128,5 +131,10 @@ public class ItemPartGate extends Item implements TItemMultiPart
 	public boolean isMultipartItem()
 	{
 		return isMultiPart;
+	}
+	
+	public ItemGatePair getParent()
+	{
+		return parent;
 	}
 }
