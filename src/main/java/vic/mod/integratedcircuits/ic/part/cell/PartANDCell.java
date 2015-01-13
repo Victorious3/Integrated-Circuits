@@ -7,14 +7,13 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartANDCell extends PartSimpleGate
 {
-	//FIXME Currently broken, probably related to the getInputFromSide call from getOutputToSide, the output should be buffered
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
 		super.onInputChange(pos, parent, side);
 		ForgeDirection fd = toInternal(pos, parent, side);
 		if(fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) 
-			getNeighbourOnSide(pos, parent, side.getOpposite()).onInputChange(pos.offset(side), parent, side);	
+			getNeighbourOnSide(pos, parent, side.getOpposite()).onInputChange(pos.offset(side.getOpposite()), parent, side);	
 		markForUpdate(pos, parent);
 	}
 

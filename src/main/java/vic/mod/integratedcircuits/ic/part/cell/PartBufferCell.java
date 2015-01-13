@@ -7,12 +7,13 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartBufferCell extends PartSimpleGate
 {
-	//FIXME Broken, see PartANDCell
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
 		super.onInputChange(pos, parent, side);
-		getNeighbourOnSide(pos, parent, side.getOpposite()).onInputChange(pos.offset(side), parent, side);
+		ForgeDirection dir = toInternal(pos, parent, side);
+		if(dir == ForgeDirection.NORTH || dir == ForgeDirection.SOUTH)
+			getNeighbourOnSide(pos, parent, side.getOpposite()).onInputChange(pos.offset(side.getOpposite()), parent, side);
 		markForUpdate(pos, parent);
 	}
 	

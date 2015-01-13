@@ -99,18 +99,29 @@ public class GateProvider
 			if(block instanceof IRedNetNetworkContainer) return provider.getGate().input[side];
 		}
 		
-		if(IntegratedCircuits.isPRLoaded) input = calculateBundledInputProjectRed(provider, side);
-		if(IntegratedCircuits.isRLLoaded && input == null) input = calculateBundledInputRedLogic(provider, side, pos, abs);
-		if(input == null) input = calculateBundledInputComputercraft(provider, side, pos, abs);
+		input = calculateBundledInputNative(provider, side, pos, abs);
+		if(input == null && IntegratedCircuits.isPRLoaded) input = calculateBundledInputProjectRed(provider, side);
+		
+		if(!provider.isMultipart())
+		{
+			if(IntegratedCircuits.isRLLoaded && input == null) input = calculateBundledInputRedLogic(provider, side, pos, abs);
+			if(input == null) input = calculateBundledInputComputercraft(provider, side, pos, abs);
+		}
 
 		if(input == null) input = new byte[16];
 		return input;
 	}
 	
+	/** Used to update the input coming from other gates, in case no API for bundled cabling is present **/
+	private static byte[] calculateBundledInputNative(IGateProvider provider, int side, BlockCoord pos, int abs)
+	{
+		PartGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
+		if(neighbour != null) return neighbour.output[side];
+		return null;
+	}
+	
 	private static byte[] calculateBundledInputComputercraft(IGateProvider provider, int side, BlockCoord pos, int abs)
 	{
-		if(provider.isMultipart()) return null;
-		
 		int input = ComputerCraftAPI.getBundledRedstoneOutput(provider.getWorld(), pos.x, pos.y, pos.z, abs ^ 1);
 		if(input > 0)
 		{
@@ -129,8 +140,6 @@ public class GateProvider
 	@Method(modid = "RedLogic")
 	private static byte[] calculateBundledInputRedLogic(IGateProvider provider, int side, BlockCoord pos, int abs)
 	{
-		if(provider.isMultipart()) return null;
-		
 		byte[] power = null;
 		
 		TileEntity te = provider.getWorld().getTileEntity(pos.x, pos.y, pos.z);

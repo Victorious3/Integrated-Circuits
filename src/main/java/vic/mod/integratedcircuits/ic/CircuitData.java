@@ -17,7 +17,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 import com.google.common.primitives.Ints;
 
-public class CircuitData implements Cloneable
+public class CircuitData
 {
 	private int size;
 	private int[][] meta;

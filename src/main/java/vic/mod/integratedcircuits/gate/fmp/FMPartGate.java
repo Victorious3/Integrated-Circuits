@@ -225,7 +225,6 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	@Override
 	public boolean connectStraight(IConnectable arg0, int arg1, int arg2) 
 	{
-		System.out.println(arg1);
 		int side = gate.getRotationRel(arg1);
 		if(arg0 instanceof IRedwireEmitter && gate.canConnectRedstoneImpl(side)) return true;
 		else if(arg0 instanceof IBundledEmitter && gate.canConnectBundledImpl(side)) return true;
