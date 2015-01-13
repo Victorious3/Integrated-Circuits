@@ -41,6 +41,9 @@ if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBE
 minecraft {
     version = "${mcVersion}-latest"
     runDir = "eclipse"
+    
+    replaceIn "Constants.java"
+    replace "\${version}", project.version
 }
 
 dependencies {

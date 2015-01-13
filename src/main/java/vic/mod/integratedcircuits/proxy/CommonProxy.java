@@ -1,14 +1,21 @@
 package vic.mod.integratedcircuits.proxy;
 
+import static vic.mod.integratedcircuits.IntegratedCircuits.logger;
+
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -18,6 +25,8 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import vic.mod.integratedcircuits.Config;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
@@ -52,6 +61,7 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -74,8 +84,9 @@ public class CommonProxy
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLCommonHandler.instance().bus().register(this);
 		
-		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(IntegratedCircuits.modID);
+		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Constants.MOD_ID);
 		
+		logger.debug("[Common Proxy]: Registering network packets");
 		AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
 		AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
 		AbstractPacket.registerPacket(PacketPCBClear.class, null, 2);
@@ -130,6 +141,25 @@ public class CommonProxy
 				}
 				map.clear();
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void onPlayerJoined(PlayerLoggedInEvent event)
+	{
+		if(Config.showStartupMessage)
+		{
+			ChatComponentText text = new ChatComponentText("[Integrated Circuits] This is an extremely early alpha version so please report any bugs occuring to the ");
+			ChatComponentText url = new ChatComponentText("GitHub");
+			url.getChatStyle().setUnderlined(true);
+			url.getChatStyle().setColor(EnumChatFormatting.BLUE);
+			url.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to visit ICs GitHub repo")));
+			url.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Victorious3/Integrated-Circuits"));
+			text.appendSibling(url);
+			text.appendText(" repo.");
+			if(event.player.canCommandSenderUseCommand(MinecraftServer.getServer().getOpPermissionLevel(), null))
+			text.appendText(" You can disable this message by changing the config file. Thanks for your attention.");
+			event.player.addChatComponentMessage(text);
 		}
 	}
 	

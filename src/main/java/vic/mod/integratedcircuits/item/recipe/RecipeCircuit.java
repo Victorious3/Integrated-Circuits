@@ -8,6 +8,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 
 public class RecipeCircuit extends ShapelessRecipes
@@ -15,7 +16,7 @@ public class RecipeCircuit extends ShapelessRecipes
 	public RecipeCircuit() 
 	{
 		super(new ItemStack(IntegratedCircuits.itemCircuit.getItem()), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)));
-		RecipeSorter.register(IntegratedCircuits.modID + ":circuit", getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
+		RecipeSorter.register(Constants.MOD_ID + ":circuit", getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetOmniNode;
 import powercrystals.minefactoryreloaded.api.rednet.connectivity.RedNetConnectionType;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
@@ -35,7 +35,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public BlockGate() 
 	{
 		super(Material.circuits);
-		setBlockName(IntegratedCircuits.modID + ".gate");
+		setBlockName(Constants.MOD_ID + ".gate");
 		setHardness(1);
 	}
 

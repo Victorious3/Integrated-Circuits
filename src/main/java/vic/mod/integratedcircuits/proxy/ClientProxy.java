@@ -66,7 +66,6 @@ public class ClientProxy extends CommonProxy
 	public void initialize() 
 	{
 		super.initialize();
-		
 		stRenderer = new SemiTransparentRenderer();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		

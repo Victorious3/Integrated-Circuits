@@ -7,7 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.item.ItemPartGate;
 import codechicken.microblock.ItemMicroPart;
 
@@ -17,7 +17,7 @@ public class RecipeFMPGate implements IRecipe
 	
 	public RecipeFMPGate() 
 	{
-		RecipeSorter.register(IntegratedCircuits.modID + ":fmpgate", getClass(), Category.SHAPED, "after:minecraft:shaped");
+		RecipeSorter.register(Constants.MOD_ID + ":fmpgate", getClass(), Category.SHAPED, "after:minecraft:shaped");
 	}
 	
 	@Override

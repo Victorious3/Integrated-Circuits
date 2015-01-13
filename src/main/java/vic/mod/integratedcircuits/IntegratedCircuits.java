@@ -2,6 +2,9 @@ package vic.mod.integratedcircuits;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+
+import org.apache.logging.log4j.Logger;
+
 import vic.mod.integratedcircuits.compat.NEIAddon;
 import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.Part7Segment;
@@ -41,7 +44,7 @@ public class IntegratedCircuits
 	public static boolean isRLLoaded = false;
 	public static boolean isMFRLoaded = false;
 	
-	public static final String modID = "integratedcircuits";
+	public static Logger logger;
 	
 	public static GateRegistry.ItemGatePair itemCircuit;
 	public static GateRegistry.ItemGatePair item7Segment;
@@ -61,27 +64,34 @@ public class IntegratedCircuits
 	public static BlockAssembler blockAssembler;
 	public static CreativeTabs creativeTab;
 	
-	@Instance(modID)
+	@Instance(Constants.MOD_ID)
 	public static IntegratedCircuits instance;
     
 	@SidedProxy(clientSide = "vic.mod.integratedcircuits.proxy.ClientProxy", serverSide = "vic.mod.integratedcircuits.proxy.CommonProxy")
 	public static CommonProxy proxy;
-
+	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
-		//Compatibility
-		isPRLoaded = Loader.isModLoaded("ProjRed|Transmission");
-		isAWLoaded = Loader.isModLoaded("armourersWorkshop");
-		isBPLoaded = Loader.isModLoaded("bluepower");
-		isFMPLoaded = Loader.isModLoaded("ForgeMultipart");
-		isRLLoaded = Loader.isModLoaded("RedLogic");
-		isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded");
+		logger = event.getModLog();
+		logger.info("Loading Integrated Circutis " + Constants.MOD_VERSION);
 		
 		Config.initialize(event.getSuggestedConfigurationFile());
+		
+		//Compatibility
+		logger.info("Searching for compatible mods");
+		logger.info("ProjRed|Transmission: " + (isPRLoaded  = Loader.isModLoaded("ProjRed|Transmission")));
+		logger.info("armourersWorkshop: "    + (isAWLoaded  = Loader.isModLoaded("armourersWorkshop")));
+		logger.info("bluepower: "            + (isBPLoaded  = Loader.isModLoaded("bluepower")));
+		logger.info("ForgeMultipart: "       + (isFMPLoaded = Loader.isModLoaded("ForgeMultipart")));
+		logger.info("RedLogic: "             + (isRLLoaded  = Loader.isModLoaded("RedLogic")));
+		logger.info("MineFactoryReloaded: "  + (isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded")));
+		
+		if(isFMPLoaded) logger.info("Forge Multi Part installation found! FMP Compatible gates will be added.");
+		
 		proxy.preInitialize();
 		
-		creativeTab = new CreativeTabs(modID + ".ctab") 
+		creativeTab = new CreativeTabs(Constants.MOD_ID + ".ctab") 
 		{
 			@Override
 			public Item getTabIconItem() 
@@ -111,13 +121,13 @@ public class IntegratedCircuits
 		blockPCBLayout = new BlockPCBLayout();
 		blockAssembler = new BlockAssembler();
 		
-		GameRegistry.registerBlock(blockGate, modID + ".gate");
-		GameRegistry.registerBlock(blockPCBLayout, modID + ".pcblayout");
-		GameRegistry.registerBlock(blockAssembler, modID + ".assembler");
+		GameRegistry.registerBlock(blockGate, Constants.MOD_ID + ".gate");
+		GameRegistry.registerBlock(blockPCBLayout, Constants.MOD_ID + ".pcblayout");
+		GameRegistry.registerBlock(blockAssembler, Constants.MOD_ID + ".assembler");
 		
-		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, modID + ".pcblayoutcad");
-		GameRegistry.registerTileEntity(TileEntityAssembler.class, modID + ".assembler");
-		GameRegistry.registerTileEntity(TileEntityGate.class, modID + ".gate");
+		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, Constants.MOD_ID + ".pcblayoutcad");
+		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");
+		GameRegistry.registerTileEntity(TileEntityGate.class, Constants.MOD_ID + ".gate");
 		
 		//Computercraft
 		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
@@ -135,5 +145,6 @@ public class IntegratedCircuits
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		IntegratedCircuitsRecipes.loadRecipes();
+		logger.info("Done! This is an extremely early alpha version so please report any bugs occuring to https://github.com/Victorious3/Integrated-Circuits");
 	}
 }

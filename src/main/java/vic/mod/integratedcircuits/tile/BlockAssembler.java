@@ -13,6 +13,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.Resources;
 import cpw.mods.fml.relauncher.Side;
@@ -23,7 +24,7 @@ public class BlockAssembler extends BlockContainer
 	public BlockAssembler() 
 	{
 		super(Material.iron);
-		setBlockName(IntegratedCircuits.modID + ".assembler");
+		setBlockName(Constants.MOD_ID + ".assembler");
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setHardness(2F);
 	}

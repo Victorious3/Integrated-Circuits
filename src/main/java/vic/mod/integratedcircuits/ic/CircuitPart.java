@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.ic.part.PartIOBit;
 import vic.mod.integratedcircuits.ic.part.PartMultiplexer;
 import vic.mod.integratedcircuits.ic.part.PartNull;
@@ -171,7 +171,7 @@ public abstract class CircuitPart
 	
 	public String getLocalizedName(Vec2 pos, ICircuit parent)
 	{
-		return I18n.format("part." + IntegratedCircuits.modID + "." + getName(pos, parent) + ".name");
+		return I18n.format("part." + Constants.MOD_ID + "." + getName(pos, parent) + ".name");
 	}
 	
 	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) 

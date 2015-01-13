@@ -6,7 +6,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.item.IDyeable;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
@@ -17,7 +17,7 @@ public class RecipeDyeable implements IRecipe
 	
 	public RecipeDyeable() 
 	{
-		RecipeSorter.register(IntegratedCircuits.modID + ":dyeable", getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
+		RecipeSorter.register(Constants.MOD_ID + ":dyeable", getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
 	}
 	
 	@Override

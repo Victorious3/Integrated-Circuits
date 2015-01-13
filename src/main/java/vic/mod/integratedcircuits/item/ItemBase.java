@@ -2,6 +2,7 @@ package vic.mod.integratedcircuits.item;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -12,9 +13,9 @@ public class ItemBase extends Item
 	public ItemBase(String name)
 	{
 		setCreativeTab(IntegratedCircuits.creativeTab);
-		setUnlocalizedName(IntegratedCircuits.modID + "." + name);
-		setTextureName(IntegratedCircuits.modID + ":" + name);
-		GameRegistry.registerItem(this, IntegratedCircuits.modID + "_" + name, IntegratedCircuits.modID);
+		setUnlocalizedName(Constants.MOD_ID + "." + name);
+		setTextureName(Constants.MOD_ID + ":" + name);
+		GameRegistry.registerItem(this, Constants.MOD_ID + "_" + name, Constants.MOD_ID);
 	}
 	
 	public ItemBase setHasIcon(boolean hasIcon)

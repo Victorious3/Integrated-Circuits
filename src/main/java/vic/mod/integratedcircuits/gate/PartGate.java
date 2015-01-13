@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.PartGateRenderer;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
@@ -53,7 +54,7 @@ public abstract class PartGate
 	
 	public String getType() 
 	{
-		return IntegratedCircuits.modID + "_" + name;
+		return Constants.MOD_ID + "_" + name;
 	}
 	
 	public String getName()

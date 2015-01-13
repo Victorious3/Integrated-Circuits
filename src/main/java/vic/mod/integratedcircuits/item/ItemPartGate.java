@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
 import vic.mod.integratedcircuits.gate.PartGate;
@@ -43,8 +44,8 @@ public class ItemPartGate extends Item implements TItemMultiPart
 		if(isMultiPart) fmpType = new FMPartGate(gate).getType();
 		
 		setCreativeTab(IntegratedCircuits.creativeTab);
-		setUnlocalizedName(IntegratedCircuits.modID + "." + name);
-		GameRegistry.registerItem(this, IntegratedCircuits.modID + "_" + name + (isMultiPart ? "_fmp" : ""), IntegratedCircuits.modID);
+		setUnlocalizedName(Constants.MOD_ID + "." + name);
+		GameRegistry.registerItem(this, Constants.MOD_ID + "_" + name + (isMultiPart ? "_fmp" : ""), Constants.MOD_ID);
 		
 		if(FMLCommonHandler.instance().getSide() == Side.CLIENT)
 			MinecraftForgeClient.registerItemRenderer(this, gate.getRenderer());

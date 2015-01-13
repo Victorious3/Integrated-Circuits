@@ -11,6 +11,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.client.Resources;
@@ -23,7 +24,7 @@ public class BlockPCBLayout extends BlockContainer
 	public BlockPCBLayout() 
 	{
 		super(Material.iron);
-		setBlockName(IntegratedCircuits.modID + ".pcblayoutcad");
+		setBlockName(Constants.MOD_ID + ".pcblayoutcad");
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setHardness(2F);
 	}
