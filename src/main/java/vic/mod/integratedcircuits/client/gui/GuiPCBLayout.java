@@ -57,6 +57,7 @@ import vic.mod.integratedcircuits.ic.part.timed.PartStateCell;
 import vic.mod.integratedcircuits.ic.part.timed.PartTimer;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.Vec2;
+import vic.mod.integratedcircuits.net.PacketPCBCache;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
 import vic.mod.integratedcircuits.net.PacketPCBClear;
@@ -145,6 +146,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
 		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
 		
+		this.buttonList.add(new GuiButtonExt(84, cx + 221, cy + 32, 10, 10, "\u21B6"));
+		this.buttonList.add(new GuiButtonExt(85, cx + 232, cy + 32, 10, 10, "\u21B7"));
+		
 		checkN = new GuiIOMode(65, cx + 26, cy + 35, this, 0);
 		checkE = new GuiIOMode(66, cx + 206, cy + 57, this, 1);
 		checkS = new GuiIOMode(67, cx + 26, cy + 237, this, 2);
@@ -205,7 +209,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			new CircuitRenderWrapper(PartRandomizer.class),
 			new CircuitRenderWrapper(PartRepeater.class),
 			new CircuitRenderWrapper(PartMultiplexer.class)), this));
-
+		
 		refreshUI();
 		super.initGui();
 	}
@@ -250,6 +254,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(true, te.xCoord, te.yCoord, te.zCoord));
 		else if(button.id == 12)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(false, te.xCoord, te.yCoord, te.zCoord));
+		else if(button.id == 84)
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, te.xCoord, te.yCoord, te.zCoord));
+		else if(button.id == 85)
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, te.xCoord, te.yCoord, te.zCoord));
 	}
 	
 	@Override
@@ -279,7 +287,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			conf.setConfigurableDelay(timedPart.getPos(), timedPart, delay);
 			labelTimed.setText(I18n.format("gui.integratedcitcuits.cad.callback.delay", conf.getConfigurableDelay(timedPart.getPos(), timedPart)));
 			CommonProxy.networkWrapper.sendToServer(
-				new PacketPCBChangePart(new int[]{timedPart.getPos().x, timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getState()}, -1, false, false, te.xCoord, te.yCoord, te.zCoord));
+				new PacketPCBChangePart(new int[]{timedPart.getPos().x, timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getState()}, true, te.xCoord, te.yCoord, te.zCoord));
 		}
 	}
 	
@@ -558,7 +566,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			else
 			{
 				CommonProxy.networkWrapper.sendToServer(
-					new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart.getPart()), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
+					new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart.getPart()), selectedPart.getState()}, !(selectedPart.getPart() instanceof PartNull), te.xCoord, te.yCoord, te.zCoord));
 			}
 		}
 		
@@ -583,7 +591,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				if(!(te.getCircuitData().getPart(pos) instanceof PartNull))
 				{
 					CommonProxy.networkWrapper.sendToServer(
-						new PacketPCBChangePart(new int[]{x2, y2, CircuitPart.getId(selectedPart.getPart()), selectedPart.getState()}, -1, false, te.xCoord, te.yCoord, te.zCoord));
+						new PacketPCBChangePart(new int[]{x2, y2, 0, 0}, false, te.xCoord, te.yCoord, te.zCoord));
 				}
 			}
 		}
@@ -648,7 +656,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			this.selectedChooser.mouseReleased(x, y);
 			this.selectedChooser = null;
 	    }
-		if(button != -1 && drag && selectedPart != null)
+		if(button != -1 && selectedPart != null && selectedPart.getPart() instanceof PartNull)
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.SNAPSHOT, te.xCoord, te.yCoord, te.zCoord));
+		else if(button != -1 && drag && selectedPart != null)
 		{
 			int id = CircuitPart.getId(selectedPart.getPart());
 			int state = selectedPart.getState();
@@ -677,7 +687,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					data[index + 3] = state;
 				}
 				CommonProxy.networkWrapper.sendToServer(
-					new PacketPCBChangePart(data, -1, false, te.xCoord, te.yCoord, te.zCoord));
+					new PacketPCBChangePart(data, true, te.xCoord, te.yCoord, te.zCoord));
 			}
 		}
 		drag = false;

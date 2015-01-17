@@ -201,7 +201,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	@Override
 	public void onBundledInputChanged() 
 	{
-		gate.updateInputPayload();
+		gate.updateInput();
 	}
 	
 	@Override

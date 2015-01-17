@@ -2,7 +2,7 @@ package vic.mod.integratedcircuits.ic;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-public class CircuitProperties 
+public class CircuitProperties implements Cloneable
 {
 	private String name, author;
 	private int con;

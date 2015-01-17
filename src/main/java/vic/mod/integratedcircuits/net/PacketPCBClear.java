@@ -53,8 +53,13 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear>
 				if(te.getCircuitData().getProperties().getModeAtSide(i) == CircuitProperties.ANALOG) te.i[i] = 1;
 			
 			if(side == side.SERVER)
+			{
+				//TODO Cache changes instead!
+				if(!te.getCircuitData().equals(te.cache.getCurrent(player.getGameProfile().getId())))
+					te.cache.capture(player.getGameProfile().getId());
 				CommonProxy.networkWrapper.sendToAllAround(this, 
 					new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+			}
 			else if(Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
 				((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshUI();
 		}

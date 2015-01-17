@@ -13,25 +13,24 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 {
 	private int size;
 	private int[] data;
-	private int button;
-	private boolean ctrl, placed = true;
+	private int button = -1;
+	private boolean flag, placed = true;
 	
 	public PacketPCBChangePart(){}
 	
-	//TODO I do absolutely not like this.
-	public PacketPCBChangePart(int data[], int button, boolean ctrl, boolean placed, int tx, int ty, int tz)
-	{
-		this(data, button, ctrl, tx, ty, tz);
-		this.placed = placed;
-	}
-	
 	public PacketPCBChangePart(int data[], int button, boolean ctrl, int tx, int ty, int tz)
 	{
-		super(tx, ty, tz);
+		this(data, ctrl, tx, ty, tz);
 		this.button = button;
-		this.ctrl = ctrl;
+		this.placed = true;
+	}
+	
+	public PacketPCBChangePart(int data[], boolean flag, int tx, int ty, int tz)
+	{
+		super(tx, ty, tz);
 		this.size = data.length;
 		this.data = data;
+		this.flag = flag;
 	}
 	
 	@Override
@@ -39,7 +38,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 	{
 		super.read(buffer);
 		button = buffer.readInt();
-		ctrl = buffer.readBoolean();
+		flag = buffer.readBoolean();
 		placed = buffer.readBoolean();
 		size = buffer.readInt();
 		data = new int[size];
@@ -52,7 +51,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 	{
 		super.write(buffer);
 		buffer.writeInt(button);
-		buffer.writeBoolean(ctrl);
+		buffer.writeBoolean(flag);
 		buffer.writeBoolean(placed);
 		buffer.writeInt(size);
 		for(int i : data)
@@ -66,10 +65,14 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 		if(te != null)
 		{
 			CircuitData cdata = te.getCircuitData();
+			
+			if(button == -1 && flag) 
+				te.cache.capture(player.getGameProfile().getId());
+			
 			for(int i = 0; i < size; i += 4)
 			{	
 				Vec2 pos = new Vec2(data[i], data[i + 1]);
-				if(button != -1) cdata.getPart(pos).onClick(pos, te, button, ctrl);
+				if(button != -1) cdata.getPart(pos).onClick(pos, te, button, flag);
 				else
 				{
 					//TODO Doesn't reset the meta properly

@@ -5,6 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
+import vic.mod.integratedcircuits.ic.CircuitCache;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
@@ -21,6 +22,7 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 {
 	private ItemStack floppyStack;
 	private CircuitData circuitData;
+	public CircuitCache cache = new CircuitCache(this);
 	
 	//Used for the GUI.
 	public float scale = 0.33F;

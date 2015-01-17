@@ -324,6 +324,7 @@ public class CircuitPartRenderer
 		else if(cell instanceof PartBufferCell) addQuad(x, y, 6 * 16, 2 * 16, 16, 16, rotation);
 	}
 	
+	//TODO incorrect state rendering
 	public static void renderPartANDCell(Vec2 pos, ICircuit parent, PartANDCell cell, double x, double y, int type)
 	{
 		Tessellator tes = Tessellator.instance;

@@ -199,7 +199,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	@Override
 	public void onPartChanged(TMultiPart part) 
 	{
-		if(!world().isRemote) gate.updateInputPayload();
+		if(!world().isRemote) gate.updateInput();
 	}
 	
 	//ProjectRed

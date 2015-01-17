@@ -135,7 +135,7 @@ public class Part7Segment extends PartGate
 	{
 		updateConnections();
 		super.rotate();
-		updateInputPayload();
+		updateInput();
 		claimSlaves();
 	}
 	

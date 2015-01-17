@@ -4,12 +4,17 @@ import static net.minecraftforge.common.util.ForgeDirection.EAST;
 import static net.minecraftforge.common.util.ForgeDirection.NORTH;
 import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
 import static net.minecraftforge.common.util.ForgeDirection.WEST;
+
+import java.util.UUID;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -70,6 +75,26 @@ public class MiscUtils
 	public static EntityPlayer thePlayer() 
 	{
 		return Minecraft.getMinecraft().thePlayer;
+	}
+	
+	public static EntityPlayerMP getPlayerByUUID(UUID uuid)
+	{
+		for(Object o : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+		{
+			EntityPlayerMP player = (EntityPlayerMP)o;
+			if(uuid.equals(player.getGameProfile().getId())) return player;
+		}
+		return null;
+	}
+	
+	public static EntityPlayerMP getPlayerByUsername(String username)
+	{
+		for(Object o : MinecraftServer.getServer().getConfigurationManager().playerEntityList)
+		{
+			EntityPlayerMP player = (EntityPlayerMP)o;
+			if(player.getCommandSenderName().equalsIgnoreCase(username)) return player;
+		}
+		return null;
 	}
 	
 	public static ForgeDirection rotn(ForgeDirection fd, int offset)

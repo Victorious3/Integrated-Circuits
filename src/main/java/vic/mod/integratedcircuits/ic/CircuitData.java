@@ -17,12 +17,12 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 import com.google.common.primitives.Ints;
 
-public class CircuitData
+public class CircuitData implements Cloneable
 {
 	private int size;
 	private int[][] meta;
 	private int[][] id;
-	private LinkedHashSet<Vec2> tickSchedule;
+	private LinkedHashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
 	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	
 	private CraftingAmount cost;
@@ -50,6 +50,57 @@ public class CircuitData
 		this.tickSchedule = tickSchedule;
 	}
 	
+	@Override
+	/** Deep copy **/
+	protected CircuitData clone()
+	{
+		CircuitData clone = new CircuitData();	
+		
+		clone.size = size;
+		clone.id = new int[size][size];
+		clone.meta = new int[size][size];
+		clone.amount = amount;
+		clone.queueEnabled = queueEnabled;
+		clone.cost = cost;
+		clone.parent = parent;
+		clone.prop = prop;
+		
+		for(int i = 0; i < size; i++)
+			clone.id[i] = id[i].clone();
+		for(int i = 0; i < size; i++)
+			clone.meta[i] = meta[i].clone();
+		
+		for(Vec2 vec : tickSchedule)
+			clone.tickSchedule.add(vec.clone());
+		for(Vec2 vec : updateQueue)
+			clone.tickSchedule.add(vec.clone());
+		
+		return clone;
+	}
+
+	@Override
+	public boolean equals(Object obj) 
+	{
+		if(obj == null) return false;
+		if(obj == this) return true;
+		if(!(obj instanceof CircuitData)) return false;
+		CircuitData cdata = (CircuitData)obj;
+		
+		if(cdata.size != size) return false;
+		if(cdata.parent != parent) return false;
+		
+		for(int x = 0; x < size; x++)
+		{
+			for(int y = 0; y < size; y++)
+			{
+				if(cdata.meta[x][y] != meta[x][y]) return false;
+				if(cdata.id[x][y] != id[x][y]) return false;
+			}
+		}
+		
+		return true;
+	}
+
 	public void setup()
 	{
 		int o = supportsBundled() ? size / 2 - 8 : 1;
@@ -185,8 +236,8 @@ public class CircuitData
 	{
 		this.id = new int[size][size];
 		this.meta = new int[size][size];
-		tickSchedule = new LinkedHashSet<Vec2>();
-		updateQueue = new LinkedHashSet<Vec2>();
+		tickSchedule.clear();
+		updateQueue.clear();
 		this.size = size;
 		setup();
 		if(!supportsBundled()) prop.setCon(0);	

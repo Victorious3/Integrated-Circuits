@@ -46,6 +46,7 @@ import vic.mod.integratedcircuits.net.PacketAssemblerUpdateInsufficient;
 import vic.mod.integratedcircuits.net.PacketChangeSetting;
 import vic.mod.integratedcircuits.net.PacketDataStream;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
+import vic.mod.integratedcircuits.net.PacketPCBCache;
 import vic.mod.integratedcircuits.net.PacketPCBChangeInput;
 import vic.mod.integratedcircuits.net.PacketPCBChangeName;
 import vic.mod.integratedcircuits.net.PacketPCBChangePart;
@@ -94,8 +95,9 @@ public class CommonProxy
 		AbstractPacket.registerPacket(PacketPCBIO.class, Side.SERVER, 4);
 		AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
 		AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
+		AbstractPacket.registerPacket(PacketPCBCache.class, Side.SERVER, 7);
 		
-		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 7);
+		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 8);
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
 		AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
 		AbstractPacket.registerPacket(PacketAssemblerChangeItem.class, Side.CLIENT, 11);

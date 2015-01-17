@@ -191,7 +191,7 @@ public abstract class PartGate
 
 	public void notifyChanges()
 	{
-		if(!provider.getWorld().isRemote) updateInputPayload();
+		if(!provider.getWorld().isRemote) updateInput();
 		provider.notifyBlocksAndChanges();
 	}
 	
@@ -251,7 +251,7 @@ public abstract class PartGate
 				MiscUtils.dropItem(provider.getWorld(), provider.getItemStack(), pos.x, pos.y, pos.z);
 				provider.destroy();
 			}
-			else updateInputPayload();
+			else updateInput();
 		}
 	}
 	
@@ -297,7 +297,7 @@ public abstract class PartGate
 	
 	public void scheduledTick() {}
 	
-	public final void updateInputPayload()
+	public final void updateInput()
 	{
 		updateInputPre();
 		for(int i = 0; i < 4; i++)
