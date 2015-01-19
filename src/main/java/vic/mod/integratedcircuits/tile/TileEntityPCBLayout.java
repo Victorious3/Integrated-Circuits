@@ -29,8 +29,8 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	public double offX = 63;
 	public double offY = 145;
 	
-	public int[] i = new int[4];
-	public int[] o = new int[4];
+	public int[] in = new int[4];
+	public int[] out = new int[4];
 	private boolean updateIO;
 	
 	public void setup(int size)
@@ -55,7 +55,7 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 			if(updateIO)
 			{
 				updateIO = false;
-				CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, o, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord), 
+				CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, out, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord), 
 					new TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
 			markDirty();
@@ -67,8 +67,8 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	{
 		super.readFromNBT(compound);
 		circuitData = CircuitData.readFromNBT(compound.getCompoundTag("circuit"), this);
-		i = compound.getIntArray("in");
-		o = compound.getIntArray("out");
+		in = compound.getIntArray("in");
+		out = compound.getIntArray("out");
 		NBTTagCompound stackCompound = compound.getCompoundTag("floppyStack");
 		floppyStack = ItemStack.loadItemStackFromNBT(stackCompound);
 	}
@@ -78,8 +78,8 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	{
 		super.writeToNBT(compound);
 		compound.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
-		compound.setIntArray("in", i);
-		compound.setIntArray("out", o);
+		compound.setIntArray("in", in);
+		compound.setIntArray("out", out);
 		NBTTagCompound stackCompound = new NBTTagCompound();
 		if(floppyStack != null) floppyStack.writeToNBT(stackCompound);
 		compound.setTag("floppyStack", stackCompound);
@@ -88,12 +88,12 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	@Override
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
-		return (i[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
+		return (in[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
 	}
 	
 	public boolean getOutputToSide(ForgeDirection dir, int frequency) 
 	{
-		return (o[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
+		return (out[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -102,7 +102,7 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 		int im = circuitData.getProperties().getModeAtSide(MiscUtils.getSide(dir));
 		if(im != CircuitProperties.SIMPLE || frequency == 0)
 		{
-			int[] i = this.i.clone();
+			int[] i = this.in.clone();
 			if(im == CircuitProperties.ANALOG) i[MiscUtils.getSide(dir)] = 0;
 			if(output) i[MiscUtils.getSide(dir)] |= 1 << frequency;
 			else
@@ -118,7 +118,7 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	public void setInputMode(int side, int mode)
 	{
 		int con = circuitData.getProperties().setModeAtSide(side, mode);
-		int i[] = this.i.clone();
+		int i[] = this.in.clone();
 		i[side] = mode == CircuitProperties.ANALOG ? 1 : 0;
 		CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
 	}
@@ -126,8 +126,8 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		if(output) o[MiscUtils.getSide(dir)] |= 1 << frequency;
-		else o[MiscUtils.getSide(dir)] &= ~(1 << frequency);
+		if(output) out[MiscUtils.getSide(dir)] |= 1 << frequency;
+		else out[MiscUtils.getSide(dir)] &= ~(1 << frequency);
 		updateIO = true;
 	}
 

@@ -28,7 +28,7 @@ public class CircuitCache
 	{
 		create(user);
 		CircuitCacheEntry entry = cache.get(user);
-		entry.undo(provider.getCircuitData());
+		entry.undo();
 		provider.setCircuitData(entry.current());
 	}
 	
@@ -46,10 +46,14 @@ public class CircuitCache
 		return cache.get(user).current();
 	}
 	
-	private void create(UUID user)
+	public void create(UUID user)
 	{
 		if(!cache.containsKey(user))
-			cache.put(user, new CircuitCacheEntry());
+		{
+			CircuitCacheEntry entry = new CircuitCacheEntry();
+			entry.capture(provider.getCircuitData());
+			cache.put(user, entry);
+		}
 	}
 	
 	public static class CircuitCacheEntry
@@ -61,36 +65,31 @@ public class CircuitCache
 		
 		public void capture(CircuitData data)
 		{
-			if(position < cache.size() - 1 && cache.size() > 0)
-				cache.subList(position, cache.size() - 1).clear();
+			if(position > 0 && cache.size() > 0)
+			{
+				cache.subList(cache.size() - position, cache.size()).clear();
+				position = 0;
+			}
 			if(cache.size() >= MAX_SIZE)
 				cache.remove(0);
-			else if(cache.size() > 0) position++;
 			cache.add(data.clone());
-			
-			System.out.println(position + " " + cache.size());
 		}
 		
-		public void undo(CircuitData data) throws ArrayIndexOutOfBoundsException
+		public void undo() throws ArrayIndexOutOfBoundsException
 		{
-			if(position == 0) throw new ArrayIndexOutOfBoundsException();
-			if(position == cache.size() - 1)
-				capture(data);
-			position--;
-			System.out.println(position + " " + cache.size());
+			if(position == cache.size() - 1) throw new ArrayIndexOutOfBoundsException();
+			position++;
 		}
 		
 		public void redo() throws ArrayIndexOutOfBoundsException
 		{
-			if(position >= cache.size() - 1) throw new ArrayIndexOutOfBoundsException();
-			else position++;
-			
-			System.out.println(position + " " + cache.size());
+			if(position == 0) throw new ArrayIndexOutOfBoundsException();
+			position--;
 		}
 		
 		public CircuitData current()
 		{
-			return cache.size() > position ? cache.get(position) : null;
+			return cache.get(cache.size() - position - 1).clone();
 		}
 	}
 }

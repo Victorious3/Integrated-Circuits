@@ -57,8 +57,8 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 	{
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te == null) return;
-		if(input) te.i = io;
-		else te.o = io;
+		if(input) te.in = io;
+		else te.out = io;
 		if(te.getCircuitData().supportsBundled()) te.getCircuitData().getProperties().setCon(con);
 		else  te.getCircuitData().getProperties().setCon(0);
 		if(input && side == Side.SERVER)

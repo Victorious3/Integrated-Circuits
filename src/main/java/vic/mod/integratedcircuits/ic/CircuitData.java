@@ -24,6 +24,7 @@ public class CircuitData implements Cloneable
 	private int[][] id;
 	private LinkedHashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
 	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
+	private boolean hasChanged;
 	
 	private CraftingAmount cost;
 	private int amount = -1;
@@ -48,6 +49,7 @@ public class CircuitData implements Cloneable
 		this.id = id;
 		this.meta = meta;
 		this.tickSchedule = tickSchedule;
+		this.hasChanged = !isEmpty();
 	}
 	
 	@Override
@@ -64,6 +66,7 @@ public class CircuitData implements Cloneable
 		clone.cost = cost;
 		clone.parent = parent;
 		clone.prop = prop;
+		clone.setChanged(hasChanged);
 		
 		for(int i = 0; i < size; i++)
 			clone.id[i] = id[i].clone();
@@ -202,6 +205,7 @@ public class CircuitData implements Cloneable
 	public void setMeta(Vec2 pos, int m)
 	{
 		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return;
+		if(m != meta[pos.x][pos.y]) setChanged(true);
 		meta[pos.x][pos.y] = m;
 	}
 	
@@ -214,6 +218,7 @@ public class CircuitData implements Cloneable
 	public void setID(Vec2 pos, int id)
 	{
 		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return;
+		if(id != this.id[pos.x][pos.y]) setChanged(true);
 		this.id[pos.x][pos.y] = id;
 	}
 	
@@ -240,7 +245,8 @@ public class CircuitData implements Cloneable
 		updateQueue.clear();
 		this.size = size;
 		setup();
-		if(!supportsBundled()) prop.setCon(0);	
+		if(!supportsBundled()) prop.setCon(0);
+		this.setChanged(false);
 	}
 
 	public CircuitPart getPart(Vec2 pos)
@@ -426,5 +432,27 @@ public class CircuitData implements Cloneable
 				amount++;
 			}
 		}
+	}
+
+	public boolean hasChanged() 
+	{
+		return hasChanged;
+	}
+
+	public void setChanged(boolean hasChanged) 
+	{
+		this.hasChanged = hasChanged;
+	}
+	
+	public boolean isEmpty()
+	{
+		for(int x = 1; x < size - 1; x++)
+		{
+			for(int y = 1; y < size - 1; y++)
+			{
+				if(id[x][y] != 0) return false;
+			}
+		}
+		return true;
 	}
 }

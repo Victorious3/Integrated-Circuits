@@ -44,19 +44,21 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear>
 		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(te != null)
 		{
+			if(side == side.SERVER)
+				te.cache.create(player.getGameProfile().getId());
+			
+			boolean changed = te.getCircuitData().hasChanged();
 			te.getCircuitData().clear(size);
 			if(!te.getCircuitData().supportsBundled()) te.getCircuitData().getProperties().setCon(0);
 			
-			te.i = new int[4];
-			te.o = new int[4];
+			te.in = new int[4];
+			te.out = new int[4];
 			for(int i = 0; i < 4; i++)
-				if(te.getCircuitData().getProperties().getModeAtSide(i) == CircuitProperties.ANALOG) te.i[i] = 1;
+				if(te.getCircuitData().getProperties().getModeAtSide(i) == CircuitProperties.ANALOG) te.in[i] = 1;
 			
-			if(side == side.SERVER)
+			if(side == side.SERVER && changed)
 			{
-				//TODO Cache changes instead!
-				if(!te.getCircuitData().equals(te.cache.getCurrent(player.getGameProfile().getId())))
-					te.cache.capture(player.getGameProfile().getId());
+				te.cache.capture(player.getGameProfile().getId());
 				CommonProxy.networkWrapper.sendToAllAround(this, 
 					new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 			}

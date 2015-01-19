@@ -14,17 +14,17 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 	private int size;
 	private int[] data;
 	private int button = -1;
-	private boolean flag, placed = true;
+	private boolean flag;
 	
 	public PacketPCBChangePart(){}
 	
-	public PacketPCBChangePart(int data[], int button, boolean ctrl, int tx, int ty, int tz)
+	public PacketPCBChangePart(int x, int y, int button, boolean ctrl, int tx, int ty, int tz)
 	{
-		this(data, ctrl, tx, ty, tz);
+		this(new int[]{x, y}, ctrl, tx, ty, tz);
 		this.button = button;
-		this.placed = true;
 	}
 	
+	/** The flag indicates weather a new snapshot should be taken before performing the action. **/
 	public PacketPCBChangePart(int data[], boolean flag, int tx, int ty, int tz)
 	{
 		super(tx, ty, tz);
@@ -39,7 +39,6 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 		super.read(buffer);
 		button = buffer.readInt();
 		flag = buffer.readBoolean();
-		placed = buffer.readBoolean();
 		size = buffer.readInt();
 		data = new int[size];
 		for(int i = 0; i < size; i++)
@@ -52,7 +51,6 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 		super.write(buffer);
 		buffer.writeInt(button);
 		buffer.writeBoolean(flag);
-		buffer.writeBoolean(placed);
 		buffer.writeInt(size);
 		for(int i : data)
 			buffer.writeInt(i);
@@ -65,9 +63,9 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 		if(te != null)
 		{
 			CircuitData cdata = te.getCircuitData();
-			
+		
 			if(button == -1 && flag) 
-				te.cache.capture(player.getGameProfile().getId());
+				te.cache.create(player.getGameProfile().getId());
 			
 			for(int i = 0; i < size; i += 4)
 			{	
@@ -75,13 +73,15 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart>
 				if(button != -1) cdata.getPart(pos).onClick(pos, te, button, flag);
 				else
 				{
-					//TODO Doesn't reset the meta properly
 					cdata.setID(pos, data[i + 2]);
 					cdata.setMeta(pos, data[i + 3]);
-					if(placed) cdata.getPart(pos).onPlaced(pos, te);
+					cdata.getPart(pos).onPlaced(pos, te);
 					cdata.markForUpdate(pos);
 				}
 			}
+			
+			if(button == -1 && flag) 
+				te.cache.capture(player.getGameProfile().getId());
 		}
 	}
 }

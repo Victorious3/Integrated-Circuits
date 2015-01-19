@@ -346,7 +346,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glScalef(te.scale, te.scale, 1F);
 		
 		CircuitPartRenderer.renderPerfboard(te.offX, te.offY, data);
-		CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.getCircuitData()), te.offX, te.offY);
+		CircuitPartRenderer.renderParts(te, te.offX, te.offY);
 		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -403,14 +403,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					{
 						if(y2 < ey) y2++;
 						else if(y2 > ey) y2--; 
-						else if(x2 < ex)
-						{
-							x2++;
-						}
-						else if(x2 > ex) 
-						{
-							x2--;
-						}
+						else if(x2 < ex) x2++;
+						else if(x2 > ex) x2--;
+						
 						if(y2 != ey) CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 6 * 16, 0, 16, 16);
 						else if(y2 == ey && x2 == sx) 
 						{
@@ -448,6 +443,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		int i1 = guiLeft + 17, i2 = guiTop + 44, i3 = 187, i4 = 4;
 		
+		//Draw inner gradient
 		tes.setColorRGBA_F(0, 0, 0, 0);
 		tes.addVertex(i1, i2 + i4, 0);
 		tes.addVertex(i1 + i3, i2 + i4, 0);
@@ -555,7 +551,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					callbackTimed.display();
 				}
 				else CommonProxy.networkWrapper.sendToServer(
-					new PacketPCBChangePart(new int[]{x2, y2, 0, 0}, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));
+					new PacketPCBChangePart(x2, y2, flag, ctrlDown, te.xCoord, te.yCoord, te.zCoord));
 			}	
 			else if(selectedPart.getPart() instanceof PartWire)
 			{
@@ -698,6 +694,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	{
 		String oname = nameField.getText();
 		if(nameField.isFocused()) nameField.textboxKeyTyped(par1, par2);
+		else if(par2 == Keyboard.KEY_Z && isCtrlKeyDown())
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, te.xCoord, te.yCoord, te.zCoord));
+		else if(par2 == Keyboard.KEY_Y && isCtrlKeyDown())
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, te.xCoord, te.yCoord, te.zCoord));
 		else super.keyTyped(par1, par2);
 		
 		if(!oname.equals(nameField.getText()))
