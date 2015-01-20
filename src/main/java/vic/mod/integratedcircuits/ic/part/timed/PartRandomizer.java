@@ -12,7 +12,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartRandomizer extends PartDelayedAction
 {
-	public final IntProperty PROP_RANDOM = new IntProperty(stitcher, 7);
+	public final IntProperty PROP_RANDOM = new IntProperty("PROP_RANDOM", stitcher, 7);
 	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) 

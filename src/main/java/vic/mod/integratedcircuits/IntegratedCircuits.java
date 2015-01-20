@@ -34,7 +34,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import dan200.computercraft.api.ComputerCraftAPI;
 
-@Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore;")
+@Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft")
 public class IntegratedCircuits
 {
 	public static boolean isPRLoaded = false;
@@ -63,7 +63,7 @@ public class IntegratedCircuits
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
 	public static CreativeTabs creativeTab;
-	
+
 	@Instance(Constants.MOD_ID)
 	public static IntegratedCircuits instance;
     
@@ -131,6 +131,8 @@ public class IntegratedCircuits
 		
 		//Computercraft
 		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
+		ComputerCraftAPI.registerPeripheralProvider(blockGate);
+		
 		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
 	}
     

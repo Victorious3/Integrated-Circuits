@@ -1,8 +1,24 @@
 package vic.mod.integratedcircuits.misc;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
 public class PropertyStitcher 
 {
 	private int offset;
+	private HashMap<String, IProperty> properties = Maps.newHashMap();
+	
+	private int shift(IProperty property, int bits)
+	{
+		int shift = shift(bits);
+		if(properties.containsKey(property.getName()))
+			throw new RuntimeException("There is a already a property by the name " + property.getName() + " registered!");
+		properties.put(property.getName(), property);
+		return shift;
+	}
 	
 	public int shift(int bits)
 	{
@@ -18,8 +34,20 @@ public class PropertyStitcher
 		return offset;
 	}
 	
+	public Map<String, IProperty> getProperties()
+	{
+		return Collections.unmodifiableMap(properties);
+	}
+	
+	public IProperty getPropertyByName(String name)
+	{
+		return properties.get(name);
+	}
+	
 	public static interface IProperty<T extends Comparable>
 	{
+		public String getName();
+		
 		public int getFlag();
 		
 		public int getOffset();
@@ -33,11 +61,11 @@ public class PropertyStitcher
 	
 	public static class EnumProperty<T extends Enum<T>> extends ValueProperty
 	{
-		private Class<T> clazz;
+		private final Class<T> clazz;
 		
-		public EnumProperty(PropertyStitcher stitcher, Class<T> base)
+		public EnumProperty(String name, PropertyStitcher stitcher, Class<T> base)
 		{
-			super(stitcher, (byte) validate(base.getEnumConstants().length, base));
+			super(name, stitcher, (byte)validate(base.getEnumConstants().length, base));
 			clazz = base;
 		}
 		
@@ -73,9 +101,9 @@ public class PropertyStitcher
 	
 	public static class IntProperty extends ValueProperty<Integer>
 	{
-		public IntProperty(PropertyStitcher stitcher, int max) 
+		public IntProperty(String name, PropertyStitcher stitcher, int max) 
 		{
-			super(stitcher, max);
+			super(name, stitcher, max);
 		}
 
 		@Override
@@ -87,15 +115,17 @@ public class PropertyStitcher
 
 	public static abstract class ValueProperty<T extends Comparable> implements IProperty<T>
 	{
-		private int flag;
-		private int offset;
-		private int max;
+		private final int flag;
+		private final int offset;
+		private final int max;
+		private final String name;
 		
-		public ValueProperty(PropertyStitcher stitcher, int max)
+		public ValueProperty(String name, PropertyStitcher stitcher, int max)
 		{
+			this.name = name;
 			int size = 1;
 			if(max > 0) size = Integer.SIZE - Integer.numberOfLeadingZeros(max);
-			this.offset = stitcher.shift(size);
+			this.offset = stitcher.shift(this, size);
 			this.flag = ((1 << size) - 1) << this.offset;
 			this.max = max;
 		}
@@ -134,15 +164,23 @@ public class PropertyStitcher
 		{
 			return (data ^ flag);
 		}
+
+		@Override
+		public String getName() 
+		{
+			return name;
+		}	
 	}
 	
 	public static class BooleanProperty implements IProperty<Boolean>
 	{
-		private int offset;
+		private final int offset;
+		private final String name;
 		
-		public BooleanProperty(PropertyStitcher stitcher)
+		public BooleanProperty(String name, PropertyStitcher stitcher)
 		{
-			offset = stitcher.shift(1);
+			this.name = name;
+			offset = stitcher.shift(this, 1);
 		}
 
 		@Override
@@ -174,6 +212,12 @@ public class PropertyStitcher
 		public int invert(int data)
 		{
 			return data ^ getFlag();
+		}
+
+		@Override
+		public String getName() 
+		{
+			return name;
 		}
 	}
 }

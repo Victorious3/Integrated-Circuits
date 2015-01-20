@@ -21,6 +21,7 @@ import powercrystals.minefactoryreloaded.api.rednet.IRedNetOmniNode;
 import powercrystals.minefactoryreloaded.api.rednet.connectivity.RedNetConnectionType;
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.gate.GateProvider;
+import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
@@ -28,9 +29,11 @@ import codechicken.lib.vec.Cuboid6;
 
 import com.google.common.collect.Lists;
 
+import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 
-public class BlockGate extends BlockContainer implements IBundledRedstoneProvider, IRedNetOmniNode
+public class BlockGate extends BlockContainer implements IBundledRedstoneProvider, IRedNetOmniNode, IPeripheralProvider
 {
 	public BlockGate() 
 	{
@@ -198,6 +201,15 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		for(int i = 0; i < 16; i++)
 			out |= (gate.output[side][i] != 0 ? 1 : 0) << i;
 		return out;
+	}
+	
+	@Override
+	public IPeripheral getPeripheral(World world, int x, int y, int z, int side) 
+	{
+		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		if(te.getGate() instanceof IGatePeripheralProvider)
+			return ((IGatePeripheralProvider)te.getGate()).getPeripheral(side);
+		return null;
 	}
 	
 	//MFR Rednet

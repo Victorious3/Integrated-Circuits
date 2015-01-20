@@ -17,6 +17,11 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 import com.google.common.primitives.Ints;
 
+/** 
+ * Only {@link #updateMatrix()} is thread safe, so keep in mind to {@code synchronize}
+ * any calls to the getters & setters that change the internal arrays 
+ * if you use them outside of the tick loop.
+*/
 public class CircuitData implements Cloneable
 {
 	private int size;
@@ -266,7 +271,7 @@ public class CircuitData implements Cloneable
 		updateQueue.add(pos.clone());
 	}
 	
-	public void updateMatrix()
+	public synchronized void updateMatrix()
 	{
 		LinkedHashSet<Vec2> tmp = (LinkedHashSet<Vec2>)tickSchedule.clone();
 		tickSchedule.clear();

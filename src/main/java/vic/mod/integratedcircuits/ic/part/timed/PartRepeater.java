@@ -10,8 +10,8 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartRepeater extends PartDelayedAction
 {
-	public final IntProperty PROP_DELAY = new IntProperty(stitcher, 255);
-	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);	
+	public final IntProperty PROP_DELAY = new IntProperty("PROP_DELAY", stitcher, 255);
+	public final BooleanProperty PROP_OUT = new BooleanProperty("PROP_OUT", stitcher);	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) 
 	{

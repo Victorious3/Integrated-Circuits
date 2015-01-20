@@ -13,8 +13,8 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartRSLatch extends PartCPGate
 {	
-	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
-	public final IntProperty PROP_MODE = new IntProperty(stitcher, 3);
+	public final BooleanProperty PROP_OUT = new BooleanProperty("PROP_OUT", stitcher);
+	public final IntProperty PROP_MODE = new IntProperty("PROP_MODE", stitcher, 3);
 	
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 

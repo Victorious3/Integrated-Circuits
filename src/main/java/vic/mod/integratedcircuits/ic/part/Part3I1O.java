@@ -10,7 +10,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public abstract class Part3I1O extends PartSimpleGate
 {
-	public final IntProperty PROP_CONNECTORS = new IntProperty(stitcher, 3);
+	public final IntProperty PROP_CONNECTORS = new IntProperty("PROP_CONNECTORS", stitcher, 3);
 	
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 

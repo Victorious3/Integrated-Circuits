@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 /** Rotateable Part **/
 public abstract class PartCPGate extends CircuitPart
 {
-	public final IntProperty PROP_ROTATION = new IntProperty(stitcher, 3);
+	public final IntProperty PROP_ROTATION = new IntProperty("PROP_ROTATION", stitcher, 3);
 	
 	public final int getRotation(Vec2 pos, ICircuit parent)
 	{

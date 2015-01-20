@@ -11,7 +11,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartToggleLatch extends PartCPGate
 {
-	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
+	public final BooleanProperty PROP_OUT = new BooleanProperty("PROP_OUT", stitcher);
 	
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 

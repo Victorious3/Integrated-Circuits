@@ -19,12 +19,14 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import dan200.computercraft.api.peripheral.IPeripheral;
 
-public class PartCircuit extends PartGate implements ICircuit
+public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralProvider
 {
 	public CircuitData circuitData;
 
 	private boolean update;
+	private CircuitPeripheral peripheral = new CircuitPeripheral(this);
 		
 	public PartCircuit() 
 	{
@@ -240,5 +242,11 @@ public class PartCircuit extends PartGate implements ICircuit
 	public PartGate newInstance() 
 	{
 		return new PartCircuit();
+	}
+
+	@Override
+	public IPeripheral getPeripheral(int side) 
+	{
+		return peripheral;
 	}
 }

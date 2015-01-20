@@ -7,7 +7,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartPulseFormer extends PartDelayedAction
 {
-	public BooleanProperty PROP_OUTPUT = new BooleanProperty(stitcher);
+	public BooleanProperty PROP_OUTPUT = new BooleanProperty("PROP_OUTPUT", stitcher);
 	
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 

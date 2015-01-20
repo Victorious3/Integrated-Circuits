@@ -8,9 +8,9 @@ import vic.mod.integratedcircuits.misc.Vec2;
 //TODO Is currently giving a one tick pulse, might cause problems with other gates.
 public class PartSynchronizer extends PartCPGate
 {
-	public final BooleanProperty PROP_IN_EAST = new BooleanProperty(stitcher);
-	public final BooleanProperty PROP_IN_WEST = new BooleanProperty(stitcher);
-	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
+	public final BooleanProperty PROP_IN_EAST = new BooleanProperty("PROP_IN_EAST", stitcher);
+	public final BooleanProperty PROP_IN_WEST = new BooleanProperty("PROP_IN_WEST", stitcher);
+	public final BooleanProperty PROP_OUT = new BooleanProperty("PROP_OUT", stitcher);
 	
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 

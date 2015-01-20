@@ -8,7 +8,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartTransparentLatch extends PartCPGate
 {
-	public final BooleanProperty PROP_OUT = new BooleanProperty(stitcher);
+	public final BooleanProperty PROP_OUT = new BooleanProperty("PROP_OUT", stitcher);
 	
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
