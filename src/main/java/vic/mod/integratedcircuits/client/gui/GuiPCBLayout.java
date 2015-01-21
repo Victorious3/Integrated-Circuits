@@ -184,8 +184,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, new CircuitRenderWrapper(PartTorch.class), this));
 		
 		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class), Arrays.asList(
-			new CircuitRenderWrapper(PartWire.class, 1 << 5),
-			new CircuitRenderWrapper(PartWire.class, 2 << 5)), this));
+			new CircuitRenderWrapper(PartWire.class, 1 << 4),
+			new CircuitRenderWrapper(PartWire.class, 2 << 4)), this));
 		
 		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, new CircuitRenderWrapper(PartToggleLatch.class), Arrays.asList(
 			new CircuitRenderWrapper(PartRSLatch.class),

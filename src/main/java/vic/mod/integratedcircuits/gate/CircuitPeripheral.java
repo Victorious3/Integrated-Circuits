@@ -3,6 +3,7 @@ package vic.mod.integratedcircuits.gate;
 import java.util.Map;
 
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.misc.PropertyStitcher.IProperty;
@@ -116,6 +117,12 @@ public class CircuitPeripheral extends GatePeripheral
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void attach(IComputerAccess computer) 
+	{
+		computer.mount("rom/programs/" + Constants.MOD_ID, new FileMount("lua"));
 	}
 
 	@Override

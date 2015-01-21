@@ -6,10 +6,13 @@ import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.CraftingAmount;
 import vic.mod.integratedcircuits.misc.ItemAmount;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartWire extends CircuitPart
 {
+	public final IntProperty PROP_COLOR = new IntProperty("PROP_COLOR", stitcher, 2);
+	
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
@@ -25,7 +28,7 @@ public class PartWire extends CircuitPart
 
 	public int getColor(Vec2 pos, ICircuit parent)
 	{
-		return (getState(pos, parent) & ~16) >> 5;
+		return getProperty(pos, parent, PROP_COLOR);
 	}
 
 	@Override

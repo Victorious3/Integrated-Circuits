@@ -1,9 +1,20 @@
 package vic.mod.integratedcircuits.gate;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
+import scala.actors.threadpool.Arrays;
+import vic.mod.integratedcircuits.Constants;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
 
+import dan200.computercraft.api.filesystem.IMount;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -81,6 +92,54 @@ public abstract class GatePeripheral implements IPeripheral
 		{
 			methods.add(new Method(name, parameters));
 			return this;
+		}
+	}
+	
+	public static class FileMount implements IMount
+	{
+		private File resourceFolder;
+		private String path;
+		
+		public FileMount(String path)
+		{
+			this.path = "/assets/" + Constants.MOD_ID + "/" + path;
+			try {
+				Builder<String> builder = ImmutableSortedSet.naturalOrder();	
+				resourceFolder = new File(IntegratedCircuits.class.getResource(this.path).toURI());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}	
+		}
+		
+		@Override
+		public boolean exists(String path) throws IOException 
+		{
+			return new File(resourceFolder + "/" + path).exists();
+		}
+
+		@Override
+		public boolean isDirectory(String path) throws IOException 
+		{
+			return new File(resourceFolder + "/" + path).isDirectory();
+		}
+
+		@Override
+		public void list(String path, List<String> contents) throws IOException 
+		{
+			contents.addAll(Arrays.asList(new File(resourceFolder + "/" + path).list()));
+		}
+
+		@Override
+		public long getSize(String path) throws IOException
+		{
+			return new File(resourceFolder + "/" + path).length();
+		}
+
+		@Override
+		public InputStream openForRead(String path) throws IOException 
+		{
+			if(!exists(path)) throw new IOException();
+			return IntegratedCircuits.class.getResourceAsStream(this.path + "/" + path);
 		}
 	}
 }
