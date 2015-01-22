@@ -1,3 +1,5 @@
+os.loadAPI("/rom/programs/integratedcircuits/framebuffer")
+
 local version = "0.1"
 local twidth, theight = term.getSize();
 local targs = {...}
@@ -22,15 +24,6 @@ if circuit == nil then
   error("No connected circuit peripheral found!")
 end
 
-local csize = circuit:getSize()
-local name = circuit:getName()
-local author = circuit:getAuthor()
-
-local autoRedraw = 0
-local redrawTimer = nil
-local curX = 1
-local curY = -5
-
 -- Function declaration
 -- Util functions
 function drawStringAt(x, y, string, tcolor, bcolor)
@@ -40,27 +33,45 @@ function drawStringAt(x, y, string, tcolor, bcolor)
   term.write(string)
 end
 
---Check if a gate receives power from any side
+-- Check if a gate receives power from any side
 function isPowered(x, y)
-  a, b, c, d = circuit:getPowerTo(x, y)
+  local a, b, c, d = circuit:getPowerTo(x, y)
   return a or b or c or d
 end
 
 function startswith(string, match) 
-    return string:find('^' .. match) ~= nil
+  return string:find('^' .. match) ~= nil
 end
+
+function getGateChar(id)
+  local ascii = id + 65 + 3
+  if ascii > 90 then ascii = ascii + 12 end
+  return string.char(ascii)
+end
+
+local csize = circuit:getSize()
+local name = circuit:getName()
+local author = circuit:getAuthor()
+
+local fbuffer = framebuffer.new(csize, csize, term.isColor(), 0, 0)
+local autoRedraw = 0
+local redrawTimer = nil
+local curX = 1
+local curY = -5
 
 -- Main functions
 function drawCircuit(ox, oy)
   for x = 0, csize - 1 do
     for y = 0, csize - 1 do
-      term.setCursorPos(x + ox, y + oy)
+      fbuffer:setCursorPos(x + ox, y + oy)
+      fbuffer:setBackgroundColor(colors.gray)
+      
       gname, gid, gmeta = circuit:getGateAt(x, y)
       
       if startswith(gname, "wire") then
         local gcolor = tonumber(gname:sub(6))
         local gpower = isPowered(x, y)
-        local color = colors.black
+        local color = 0
 
         if gcolor == 0 then 
           if gpower then color = colors.lime else color = colors.green end 
@@ -70,12 +81,27 @@ function drawCircuit(ox, oy)
           if gpower then color = colors.yellow else color = colors.orange end
         end
         
-        term.setBackgroundColor(color)
-        term.write(" ")
+        fbuffer:setBackgroundColor(color)
+        fbuffer:write(" ")
+      elseif gname == "iobit" then
+        local frequency = circuit:getGateProperty(x, y, "PROP_FREQUENCY")
+        local side = (circuit:getGateProperty(x, y, "PROP_ROTATION") + 2) % 4
+        
+        local input = {circuit:getInputFromSide(side)}
+        local output = {circuit:getOutputToSide(side)}
+        
+        local color = 0
+        local gpower = input[frequency + 1] ~= 0 or output[frequency + 1] ~= 0
+        if gpower then color = colors.lime else color = colors.green end 
+        
+        fbuffer:setBackgroundColor(color)
+        fbuffer:write(string.format("%X", frequency))
       elseif gname ~= "null" then
-        term.write("X")
+        fbuffer:setBackgroundColor(colors.black)
+        fbuffer:write(getGateChar(gid))
+      else
+        fbuffer:write(" ")
       end
-      term.setBackgroundColor(colors.black)
     end
   end
 end

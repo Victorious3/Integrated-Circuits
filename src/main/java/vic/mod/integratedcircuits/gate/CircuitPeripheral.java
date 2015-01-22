@@ -22,6 +22,7 @@ public class CircuitPeripheral extends GatePeripheral
 		.registerMethod("setGateProperty", Double.class, Double.class, String.class, Object.class)
 		.registerMethod("getOutputToSide", Double.class)
 		.registerMethod("getInputFromSide", Double.class)
+		.registerMethod("getGateName", Double.class)
 		.registerMethod("getSize")
 		.registerMethod("getName")
 		.registerMethod("getAuthor");
@@ -66,6 +67,12 @@ public class CircuitPeripheral extends GatePeripheral
 					ret[i] = Integer.valueOf(value[i]);
 				return ret;
 			}
+			else if(method.getName().equals("getGateName"))
+			{
+				int id = ((Double)arguments[1]).intValue();
+				CircuitPart cp = CircuitPart.getPart(id);
+				return new Object[]{cp};
+			}
 			else
 			{
 				int x = ((Double)arguments[1]).intValue();
@@ -104,7 +111,7 @@ public class CircuitPeripheral extends GatePeripheral
 					IProperty property = cp.stitcher.getPropertyByName((String)arguments[3]);
 					if(property == null) throw new LuaException(String.format("No property by the name of '&s' found for gate %s", arguments[3], cp.getName(pos, circuit)));
 					if(method.getName().contains("get"))
-						return new Object[]{property.getName() + " " + property.getClass().getSimpleName() + " " + property.get(state)};
+						return new Object[]{property.get(state), property.getName(), property.getClass().getSimpleName()};
 					else
 					{
 						try {

@@ -4,28 +4,32 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartIOBit extends CircuitPart
 {
+	public final IntProperty PROP_ROTATION = new IntProperty("PROP_ROTATION", stitcher, 3);
+	public final IntProperty PROP_FREQUENCY = new IntProperty("PROP_FREQUENCY", stitcher, 15);
+	
 	public final int getRotation(Vec2 pos, ICircuit parent)
 	{
-		return (getState(pos, parent) & 48) >> 4;
+		return getProperty(pos, parent, PROP_ROTATION);
 	}
 	
 	public final void setRotation(Vec2 pos, ICircuit parent, int rotation)
 	{
-		setState(pos, parent, getState(pos, parent) & ~48 | rotation << 4);
+		setProperty(pos, parent, PROP_ROTATION, rotation);
 	}
 	
 	public final int getFrequency(Vec2 pos, ICircuit parent)
 	{
-		return (getState(pos, parent) & 960) >> 6;
+		return getProperty(pos, parent, PROP_FREQUENCY);
 	}
 	
 	public final void setFrequency(Vec2 pos, ICircuit parent, int frequency)
 	{
-		setState(pos, parent, getState(pos, parent) & ~960 | frequency << 6);
+		setProperty(pos, parent, PROP_FREQUENCY, frequency);
 	}
 
 	@Override
