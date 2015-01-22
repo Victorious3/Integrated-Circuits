@@ -33,7 +33,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.filesystem.IMount;
 
 @Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft")
 public class IntegratedCircuits
@@ -70,8 +69,6 @@ public class IntegratedCircuits
     
 	@SidedProxy(clientSide = "vic.mod.integratedcircuits.proxy.ClientProxy", serverSide = "vic.mod.integratedcircuits.proxy.CommonProxy")
 	public static CommonProxy proxy;
-	
-	public static IMount resourceMount;
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
@@ -135,8 +132,6 @@ public class IntegratedCircuits
 		//Computercraft
 		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
 		ComputerCraftAPI.registerPeripheralProvider(blockGate);
-		resourceMount = ComputerCraftAPI.createResourceMount(IntegratedCircuits.class, Constants.MOD_ID, "lua");
-		System.out.println(resourceMount);
 		
 		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
 	}

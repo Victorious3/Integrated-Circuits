@@ -9,8 +9,8 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartIOBit extends CircuitPart
 {
-	public final IntProperty PROP_ROTATION = new IntProperty("PROP_ROTATION", stitcher, 3);
-	public final IntProperty PROP_FREQUENCY = new IntProperty("PROP_FREQUENCY", stitcher, 15);
+	public final IntProperty PROP_ROTATION = new IntProperty("ROTATION", stitcher, 3);
+	public final IntProperty PROP_FREQUENCY = new IntProperty("FREQUENCY", stitcher, 15);
 	
 	public final int getRotation(Vec2 pos, ICircuit parent)
 	{

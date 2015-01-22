@@ -8,7 +8,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartSequencer extends PartTimer
 {
-	public final IntProperty PROP_OUTPUT_SIDE = new IntProperty("PROP_OUTPUT_SIDE", stitcher, 3);
+	public final IntProperty PROP_OUTPUT_SIDE = new IntProperty("OUTPUT_SIDE", stitcher, 3);
 	
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side)

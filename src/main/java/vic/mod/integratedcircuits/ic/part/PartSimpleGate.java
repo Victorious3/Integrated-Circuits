@@ -8,8 +8,8 @@ import vic.mod.integratedcircuits.misc.Vec2;
 /** Has only one type of output **/
 public abstract class PartSimpleGate extends PartCPGate
 {
-	public final BooleanProperty PROP_OUT = new BooleanProperty("PROP_OUT", stitcher);
-	private final BooleanProperty PROP_TMP = new BooleanProperty("PROP_TMP", stitcher);
+	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
+	private final BooleanProperty PROP_TMP = new BooleanProperty("TMP", stitcher);
 	
 	protected final boolean getOutput(Vec2 pos, ICircuit parent)
 	{

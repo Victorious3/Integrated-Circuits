@@ -11,7 +11,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartWire extends CircuitPart
 {
-	public final IntProperty PROP_COLOR = new IntProperty("PROP_COLOR", stitcher, 2);
+	public final IntProperty PROP_COLOR = new IntProperty("COLOR", stitcher, 2);
 	
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)

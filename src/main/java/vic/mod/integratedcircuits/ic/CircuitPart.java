@@ -49,7 +49,7 @@ public abstract class CircuitPart
 	
 	private int id;
 	public final PropertyStitcher stitcher = new PropertyStitcher();
-	public final IntProperty PROP_INPUT = new IntProperty("PROP_INPUT", stitcher, 15);
+	public final IntProperty PROP_INPUT = new IntProperty("INPUT", stitcher, 15);
 	
 	static 
 	{

@@ -75,11 +75,11 @@ public abstract class GatePeripheral implements IPeripheral
 		
 		public void match(Object[] args) throws LuaException
 		{
-			if(args.length - 1 != parameters.length) throw new LuaException("Illegal amount of parameters!");
+			if(args.length != parameters.length) throw new LuaException("Illegal amount of parameters!");
 			for(int i = 0; i < parameters.length; i++)
 			{
-				if(!parameters[i].isAssignableFrom(args[i + 1].getClass())) 
-					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + parameters[i] + "', got '" + args[i + 1].getClass() + "'.");
+				if(!parameters[i].isAssignableFrom(args[i].getClass())) 
+					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + parameters[i] + "', got '" + args[i].getClass() + "'.");
 			}
 		}
 	}

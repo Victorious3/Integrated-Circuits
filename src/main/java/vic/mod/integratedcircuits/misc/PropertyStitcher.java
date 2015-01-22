@@ -109,6 +109,7 @@ public class PropertyStitcher
 		@Override
 		public int set(Integer value, int data) 
 		{
+			if(value > getLimit()) throw new IllegalArgumentException("Exceeded maximum value of " + getLimit());
 			return super.set(value, data);
 		}
 	}

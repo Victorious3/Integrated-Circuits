@@ -54,7 +54,7 @@ public class CircuitPeripheral extends GatePeripheral
 				return new Object[]{cdata.getProperties().getAuthor()};
 			else if(method.getName().equals("getOutputToSide") || method.getName().equals("getInputFromSide"))
 			{
-				int side = ((Double)arguments[1]).intValue();
+				int side = ((Double)arguments[0]).intValue();
 				if(side < 0 || side > 3) throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
 				
 				byte[] value = circuit.output[side];
@@ -69,14 +69,14 @@ public class CircuitPeripheral extends GatePeripheral
 			}
 			else if(method.getName().equals("getGateName"))
 			{
-				int id = ((Double)arguments[1]).intValue();
+				int id = ((Double)arguments[0]).intValue();
 				CircuitPart cp = CircuitPart.getPart(id);
 				return new Object[]{cp};
 			}
 			else
 			{
-				int x = ((Double)arguments[1]).intValue();
-				int y = ((Double)arguments[2]).intValue();
+				int x = ((Double)arguments[0]).intValue();
+				int y = ((Double)arguments[1]).intValue();
 				
 				Vec2 pos = new Vec2(x, y);
 				int size = cdata.getSize();
@@ -108,14 +108,17 @@ public class CircuitPeripheral extends GatePeripheral
 				else if(method.getName().contains("GateProperty"))
 				{
 					int state = cp.getState(pos, circuit);
-					IProperty property = cp.stitcher.getPropertyByName((String)arguments[3]);
+					IProperty property = cp.stitcher.getPropertyByName((String)arguments[2]);
 					if(property == null) throw new LuaException(String.format("No property by the name of '&s' found for gate %s", arguments[3], cp.getName(pos, circuit)));
 					if(method.getName().contains("get"))
-						return new Object[]{property.get(state), property.getName(), property.getClass().getSimpleName()};
+						return new Object[]{property.get(state), property.getClass().getSimpleName()};
 					else
 					{
 						try {
-							cp.setProperty(pos, circuit, property, (Comparable)arguments[4]);
+							Object obj = arguments[3];
+							if(obj instanceof Double) obj = ((Double)obj).intValue();
+							cp.setProperty(pos, circuit, property, (Comparable)obj);
+							cp.notifyNeighbours(pos, circuit);
 						} catch (Exception e) {
 							throw new LuaException(e.getMessage());
 						}

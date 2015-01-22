@@ -15,8 +15,8 @@ import vic.mod.integratedcircuits.misc.Vec2;
 //TODO The timer should really use the tick method instead of scheduled ticks.
 public class PartTimer extends PartDelayedAction implements IConfigurableDelay
 {
-	public final BooleanProperty PROP_OUT = new BooleanProperty("PROP_OUT", stitcher);
-	public final IntProperty PROP_DELAY = new IntProperty("PROP_DELAY", stitcher, 255);
+	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
+	public final IntProperty PROP_DELAY = new IntProperty("DELAY", stitcher, 255);
 	
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) 

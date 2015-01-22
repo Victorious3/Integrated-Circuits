@@ -9,8 +9,8 @@ import vic.mod.integratedcircuits.misc.Vec2;
 /** Uses 8 bits for the delay. 255 ticks = 12.75 seconds*/
 public abstract class PartDelayedAction extends PartCPGate
 {
-	public final BooleanProperty PROP_ACTIVE = new BooleanProperty("PROP_ACTIVE", stitcher);
-	public final IntProperty PROP_CURRENT_DELAY = new IntProperty("PROP_CURRENT_DELAY", stitcher, 255);
+	public final BooleanProperty PROP_ACTIVE = new BooleanProperty("ACTIVE", stitcher);
+	public final IntProperty PROP_CURRENT_DELAY = new IntProperty("CURRENT_DELAY", stitcher, 255);
 	
 	protected abstract int getDelay(Vec2 pos, ICircuit parent);
 	

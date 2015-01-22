@@ -14,9 +14,9 @@ import vic.mod.integratedcircuits.misc.Vec2;
 
 public class PartStateCell extends PartDelayedAction implements IConfigurableDelay
 {
-	public final IntProperty PROP_DELAY = new IntProperty("PROP_DELAY", stitcher, 255);
-	private final BooleanProperty PROP_OUT_WEST = new BooleanProperty("PROP_OUT_WEST", stitcher);
-	private final BooleanProperty PROP_OUT_NORTH = new BooleanProperty("PROP_OUT_NORTH", stitcher);
+	public final IntProperty PROP_DELAY = new IntProperty("DELAY", stitcher, 255);
+	private final BooleanProperty PROP_OUT_WEST = new BooleanProperty("OUT_WEST", stitcher);
+	private final BooleanProperty PROP_OUT_NORTH = new BooleanProperty("OUT_NORTH", stitcher);
 
 	@Override
 	public int getConfigurableDelay(Vec2 pos, ICircuit parent) 
