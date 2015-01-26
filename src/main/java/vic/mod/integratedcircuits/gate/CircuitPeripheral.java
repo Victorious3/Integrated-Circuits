@@ -3,6 +3,7 @@ package vic.mod.integratedcircuits.gate;
 import java.util.Map;
 
 import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.Config;
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
@@ -114,6 +115,7 @@ public class CircuitPeripheral extends GatePeripheral
 						return new Object[]{property.get(state), property.getClass().getSimpleName()};
 					else
 					{
+						if(!Config.enablePropertyEdit) throw new LuaException("Property editing is disabled from the config file.");
 						try {
 							Object obj = arguments[3];
 							if(obj instanceof Double) obj = ((Double)obj).intValue();
