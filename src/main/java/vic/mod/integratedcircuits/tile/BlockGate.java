@@ -208,7 +208,10 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		if(te.getGate() instanceof IGatePeripheralProvider)
-			return ((IGatePeripheralProvider)te.getGate()).getPeripheral(side);
+		{
+			IGatePeripheralProvider provider = (IGatePeripheralProvider)te.getGate();
+			return provider.hasPeripheral(side) ? provider.getPeripheral() : null;
+		}
 		return null;
 	}
 	

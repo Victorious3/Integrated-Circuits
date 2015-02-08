@@ -19,7 +19,6 @@ import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import dan200.computercraft.api.peripheral.IPeripheral;
 
 public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralProvider
 {
@@ -245,7 +244,13 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	}
 
 	@Override
-	public IPeripheral getPeripheral(int side) 
+	public boolean hasPeripheral(int side) 
+	{
+		return true;
+	}
+
+	@Override
+	public GatePeripheral getPeripheral() 
 	{
 		return peripheral;
 	}

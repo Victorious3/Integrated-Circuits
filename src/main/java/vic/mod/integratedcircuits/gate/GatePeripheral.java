@@ -38,11 +38,23 @@ public abstract class GatePeripheral implements IPeripheral
 		MethodProvider provider = getMethodProvider();
 		Method m = provider.methods.get(method);
 		m.match(arguments);
-		return callMethod(m, computer, context, arguments);
+		return callMethod(m, arguments);
 	}
 	
-	public abstract Object[] callMethod(Method method, IComputerAccess computer, ILuaContext context, Object[] arguments) throws LuaException, InterruptedException;
-
+	public final Object[] callMethod(String method, Object[] arguments) throws LuaException, InterruptedException 
+	{
+		MethodProvider provider = getMethodProvider();
+		for(int i = 0; i < provider.methods.size(); i++) {
+			Method m = provider.methods.get(i);
+			if(m.name.equals(method)) {
+				return callMethod(m, arguments);
+			}
+		}
+		return null;
+	}
+	
+	public abstract Object[] callMethod(Method method, Object[] arguments) throws LuaException, InterruptedException;
+	
 	public abstract MethodProvider getMethodProvider();
 	
 	@Override

@@ -1,6 +1,11 @@
 package vic.mod.integratedcircuits.tile;
 
 import io.netty.buffer.Unpooled;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.ManagedPeripheral;
+import li.cil.oc.api.network.SidedComponent;
+import li.cil.oc.api.network.SimpleComponent;
 import mods.immibis.redlogic.api.wiring.IBundledEmitter;
 import mods.immibis.redlogic.api.wiring.IBundledUpdatable;
 import mods.immibis.redlogic.api.wiring.IBundledWire;
@@ -15,10 +20,13 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.gate.GatePeripheral;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
 import vic.mod.integratedcircuits.gate.GateRegistry;
+import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
@@ -27,14 +35,18 @@ import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
+import cpw.mods.fml.common.Optional.Method;
 
 @InterfaceList({
 	@Interface(iface = "mrtjp.projectred.api.IBundledTile", modid = "ProjRed|Core"),
 	@Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledUpdatable", modid = "RedLogic"),
 	@Interface(iface = "mods.immibis.redlogic.api.wiring.IBundledEmitter", modid = "RedLogic"),
-	@Interface(iface = "mods.immibis.redlogic.api.wiring.IConnectable", modid = "RedLogic")
+	@Interface(iface = "mods.immibis.redlogic.api.wiring.IConnectable", modid = "RedLogic"),
+	@Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
+	@Interface(iface = "li.cil.oc.api.network.SidedComponent", modid = "OpenComputers"),
+	@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers")
 })
-public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, IConnectable
+public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, IConnectable, SimpleComponent, SidedComponent, ManagedPeripheral
 {
 	public PartGate gate;
 	
@@ -240,5 +252,51 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	public boolean isMultipart() 
 	{
 		return false;
+	}
+	
+	//Open Computers
+	
+	@Override
+	public boolean canConnectNode(ForgeDirection side) 
+	{
+		if(getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider)getGate();
+			return provider.hasPeripheral(side.ordinal());
+		}
+		return false;
+	}
+
+	@Override
+	public String getComponentName() 
+	{
+		if(getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider)getGate();
+			GatePeripheral peripheral = provider.getPeripheral();
+			return peripheral.getType();
+		}
+		return null;
+	}
+
+	@Override
+	public String[] methods() 
+	{
+		if(getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider)getGate();
+			GatePeripheral peripheral = provider.getPeripheral();
+			return peripheral.getMethodNames();
+		}
+		return null;
+	}
+
+	@Override
+	@Method(modid = "OpenComputers")
+	public Object[] invoke(String method, Context context, Arguments args) throws Exception 
+	{
+		if(getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider)getGate();
+			GatePeripheral peripheral = provider.getPeripheral();
+			return peripheral.callMethod(method, args.toArray());
+		}
+		return null;
 	}
 }

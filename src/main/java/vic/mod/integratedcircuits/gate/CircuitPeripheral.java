@@ -9,7 +9,6 @@ import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.CircuitPart;
 import vic.mod.integratedcircuits.misc.PropertyStitcher.IProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
-import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
@@ -38,11 +37,11 @@ public class CircuitPeripheral extends GatePeripheral
 	@Override
 	public String getType() 
 	{
-		return "IC Circuit";
+		return "ic_circuit";
 	}
 
 	@Override
-	public Object[] callMethod(Method method, IComputerAccess computer, ILuaContext context, Object[] arguments) throws LuaException, InterruptedException 
+	public Object[] callMethod(Method method, Object[] arguments) throws LuaException, InterruptedException 
 	{
 		CircuitData cdata = circuit.getCircuitData();
 		synchronized(cdata) 

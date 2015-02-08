@@ -20,6 +20,10 @@ repositories {
         name "rx14"
         url "http://mvn.rx14.co.uk/repo/"
     }
+    maven {
+        name "oc"
+        url "http://maven.cil.li/"
+    }
     ivy {
         name "redlogic"
         artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/redlogic/[module]-[revision].[ext]"
@@ -60,6 +64,7 @@ dependencies {
 
     compile "com.bluepowermod:BluePower:${bluepowerVersion}:deobf"
     compile "com.mod-buildcraft:buildcraft:${buildcraftVersion}:api"
+    compile "li.cil.oc:OpenComputers:MC${mcVersion}-${ocVersion}:dev"
     compile name: "redlogic", version: "${redlogicVersion}", ext: "jar"
     compile name: "immibis-core", version: "${imcVersion}", ext: "jar"
 }
