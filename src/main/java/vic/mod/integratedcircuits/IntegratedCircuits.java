@@ -16,6 +16,7 @@ import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
 import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.item.ItemScrewdriver;
+import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
 import vic.mod.integratedcircuits.tile.BlockGate;
@@ -133,7 +134,8 @@ public class IntegratedCircuits
 		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
 		ComputerCraftAPI.registerPeripheralProvider(blockGate);
 		
-		if(Loader.isModLoaded("NotEnoughItems")) new NEIAddon().initialize();
+		if(Loader.isModLoaded("NotEnoughItems") && !MiscUtils.isServer()) 
+			new NEIAddon().initialize();
 	}
     
 	@EventHandler
