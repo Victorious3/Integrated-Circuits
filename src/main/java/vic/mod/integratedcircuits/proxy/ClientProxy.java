@@ -26,6 +26,7 @@ import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
 import vic.mod.integratedcircuits.IntegratedCircuits;
@@ -62,8 +63,6 @@ public class ClientProxy extends CommonProxy
 	public static PartCircuitRenderer circuitRenderer;
 	public static Part7SegmentRenderer segmentRenderer;
 	
-	public static int GATE_RENDER_ID;
-
 	@Override
 	public void initialize() 
 	{
@@ -71,10 +70,10 @@ public class ClientProxy extends CommonProxy
 		stRenderer = new SemiTransparentRenderer();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		
-		GATE_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
+		Constants.GATE_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
 		
 		TileEntityGateRenderer gateRenderer = new TileEntityGateRenderer();
-		RenderingRegistry.registerBlockHandler(GATE_RENDER_ID, gateRenderer);
+		RenderingRegistry.registerBlockHandler(Constants.GATE_RENDER_ID, gateRenderer);
 		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());

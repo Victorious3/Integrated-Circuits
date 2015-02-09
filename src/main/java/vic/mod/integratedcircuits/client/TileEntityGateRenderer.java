@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
-import vic.mod.integratedcircuits.proxy.ClientProxy;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Vector3;
@@ -37,7 +37,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	@Override
 	public int getRenderId() 
 	{
-		return ClientProxy.GATE_RENDER_ID;
+		return Constants.GATE_RENDER_ID;
 	}
 
 	@Override

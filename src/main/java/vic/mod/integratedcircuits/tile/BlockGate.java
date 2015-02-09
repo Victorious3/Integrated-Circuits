@@ -24,7 +24,6 @@ import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
-import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.vec.Cuboid6;
 
 import com.google.common.collect.Lists;
@@ -133,7 +132,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	@Override
 	public int getRenderType() 
 	{
-		return ClientProxy.GATE_RENDER_ID;
+		return Constants.GATE_RENDER_ID;
 	}
 
 	@Override
