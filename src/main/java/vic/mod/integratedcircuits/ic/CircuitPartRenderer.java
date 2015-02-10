@@ -133,20 +133,20 @@ public class CircuitPartRenderer
 			d3 = v + h2;
 			d4 = v + 0;
 			
-			tes.addVertexWithUV(x + w, y + h, 0, d1 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scalew, d3 * scaleh);
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + w, y + h, 0, d2 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + 0, 0, d1 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + 0, y + h, 0, d2 * scalew, d3 * scaleh);
 		}
 		else if(rotation == 2)
 		{
 			d3 = v + h2;
 			d4 = v + 0;
 			
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + h, 0, d2 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d3 * scaleh);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + 0, y + h, 0, d2 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + h, 0, d1 * scalew, d4 * scaleh);
+			tes.addVertexWithUV(x + w, y + 0, 0, d1 * scalew, d3 * scaleh);
+			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scalew, d3 * scaleh);
 		}
 		else if(rotation == 3)
 		{
@@ -324,7 +324,6 @@ public class CircuitPartRenderer
 		else if(cell instanceof PartBufferCell) addQuad(x, y, 6 * 16, 2 * 16, 16, 16, rotation);
 	}
 	
-	//TODO incorrect state rendering
 	public static void renderPartANDCell(Vec2 pos, ICircuit parent, PartANDCell cell, double x, double y, int type)
 	{
 		Tessellator tes = Tessellator.instance;
@@ -339,19 +338,19 @@ public class CircuitPartRenderer
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 		addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
 		
+		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
+		if(type == 0 && (cell.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite())
+			|| cell.getInputFromSide(pos, parent, fd)))
+			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);
+		
 		fd = MiscUtils.rotn(ForgeDirection.WEST, rotation);
 		if(type == 0 && (cell.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite())
 			|| cell.getInputFromSide(pos, parent, fd)))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
 		addQuad(x, y, 7 * 16, 2 * 16, 16, 16, rotation);
-		
-		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
-		if(type == 0 && (cell.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite())
-			|| cell.getInputFromSide(pos, parent, fd)))
-			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-		else tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);	
 	}
 	
 	public static void renderPartGate(Vec2 pos, ICircuit parent, PartCPGate gate, double x, double y, int type) 
