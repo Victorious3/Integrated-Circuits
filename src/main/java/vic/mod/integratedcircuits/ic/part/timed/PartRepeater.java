@@ -22,7 +22,7 @@ public class PartRepeater extends PartDelayedAction
 	public void onPlaced(Vec2 pos, ICircuit parent)
 	{
 		setProperty(pos, parent, PROP_DELAY, 2);
-		setProperty(pos, parent, PROP_OUT, true);
+		setProperty(pos, parent, PROP_OUT, false);
 	}
 
 	@Override

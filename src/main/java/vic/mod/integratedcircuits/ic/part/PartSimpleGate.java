@@ -46,7 +46,6 @@ public abstract class PartSimpleGate extends PartCPGate
 	public void onScheduledTick(Vec2 pos, ICircuit parent)
 	{
 		setProperty(pos, parent, PROP_TMP, getProperty(pos, parent, PROP_OUT));
-		setProperty(pos, parent, PROP_OUT, false);
 		notifyNeighbours(pos, parent);
 	}
 

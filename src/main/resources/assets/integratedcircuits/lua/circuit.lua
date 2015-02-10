@@ -11,11 +11,11 @@ local curY = 2
 -- Get circuit peripheral
 if validSides[targs[1]] ~= nil then 
   local type = peripheral.getType(targs[1])
-  if type == "IC Circuit" then circuit = peripheral.wrap(targs[1]) end
+  if type == "ic_circuit" then circuit = peripheral.wrap(targs[1]) end
 else
   for k, s in pairs(validSides) do
     local type = peripheral.getType(s)
-    if type == "IC Circuit" then circuit = peripheral.wrap(s) end
+    if type == "ic_circuit" then circuit = peripheral.wrap(s) end
     if circuit ~= nil then break end
   end
 end
