@@ -131,21 +131,6 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	{
 		circuitData.updateInput();
 	}
-
-	@Override
-	public int strongPowerLevel(int arg0) 
-	{
-		if((arg0 & 6) == (getSide() & 6)) return 0;
-		int rot = getSideRel(arg0);
-		if(!canConnectRedstoneImpl(rot)) return 0;
-		if(getModeAtSide(rot) == CircuitProperties.ANALOG)
-		{
-			byte[] out = output[rot];
-			for(int i = 15; i >= 0; i--)
-				if(out[i] != 0) return i;
-		}
-		return output[rot][0];
-	}
 	
 	@Override
 	public int updateRedstoneInput(int side) 
@@ -231,8 +216,18 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
 		int mode = getModeAtSide(side);
 		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;
-		else if(mode == CircuitProperties.ANALOG && this.input[side][0] != 0) return;
+		
 		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
+		
+		if(mode == CircuitProperties.ANALOG)
+		{
+			//TODO This is terrible. Find a better way. I insist on it.
+			byte[] out = this.output[side].clone();
+			this.output[side] = new byte[16];
+			for(byte i = 15; i >= 0; i--)
+				if(out[i] != 0) this.output[side][0] = i;
+		}
+		
 		provider.notifyBlocksAndChanges();
 		updateRedstoneIO();
 	}

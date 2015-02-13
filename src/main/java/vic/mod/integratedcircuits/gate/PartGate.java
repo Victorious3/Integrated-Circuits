@@ -275,24 +275,6 @@ public abstract class PartGate
 	{
 		return output[side][frequency];
 	}
-
-	public void setRedstoneOutput(int side, byte output) 
-	{
-		this.output[side][0] = output;
-	}
-
-	public void setBundledOutput(int side, byte output, int frequency) 
-	{
-		this.output[side][frequency] = output;
-	}
-	
-	public int strongPowerLevel(int arg0) 
-	{
-		if((arg0 & 6) == (getSide() & 6)) return 0;
-		int rot = getSideRel(arg0);
-		if(!canConnectRedstoneImpl(rot)) return 0;
-		return output[rot][0];
-	}
 	
 	public void update() {}
 	
