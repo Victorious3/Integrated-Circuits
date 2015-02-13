@@ -167,6 +167,7 @@ public abstract class PartGate
 		setRotation((getRotation() + 1) % 4);
 		provider.getWriteStream(0).writeByte(orientation);
 		provider.notifyBlocksAndChanges();
+		updateInput();
 	}
 
 	public void onAdded() 
