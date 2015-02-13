@@ -287,7 +287,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			conf.setConfigurableDelay(timedPart.getPos(), timedPart, delay);
 			labelTimed.setText(I18n.format("gui.integratedcitcuits.cad.callback.delay", conf.getConfigurableDelay(timedPart.getPos(), timedPart)));
 			CommonProxy.networkWrapper.sendToServer(
-				new PacketPCBChangePart(new int[]{timedPart.getPos().x, timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getState()}, true, te.xCoord, te.yCoord, te.zCoord));
+				new PacketPCBChangePart(new int[]{timedPart.getPos().x, timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getState()}, false, te.xCoord, te.yCoord, te.zCoord));
 		}
 	}
 	
