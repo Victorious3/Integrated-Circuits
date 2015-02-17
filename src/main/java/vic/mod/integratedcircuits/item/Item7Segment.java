@@ -2,10 +2,10 @@ package vic.mod.integratedcircuits.item;
 
 import java.util.List;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
 import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
@@ -33,6 +33,6 @@ public class Item7Segment extends ItemPartGate implements IDyeable
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) 
 	{
-		return I18n.format(MiscUtils.getLocalizedColor(stack.getItemDamage()) + " " + I18n.format(stack.getUnlocalizedName() + ".name"));
+		return MiscUtils.getLocalizedColor(stack.getItemDamage()) + " " + StatCollector.translateToLocal(stack.getUnlocalizedName() + ".name");
 	}
 }

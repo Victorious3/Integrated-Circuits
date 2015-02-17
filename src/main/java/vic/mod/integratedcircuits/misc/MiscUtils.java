@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
@@ -67,8 +68,8 @@ public class MiscUtils
 	public static String getLocalizedColor(int color)
 	{
 		if(color == 8)
-			return I18n.format("item.fireworksCharge.silver");
-		else return I18n.format("item.fireworksCharge." + WordUtils.uncapitalize(colors.inverse().get(color).substring(3)));
+			return StatCollector.translateToLocal("item.fireworksCharge.silver");
+		else return StatCollector.translateToLocal("item.fireworksCharge." + WordUtils.uncapitalize(colors.inverse().get(color).substring(3)));
 	}
 	
 	@SideOnly(Side.CLIENT)

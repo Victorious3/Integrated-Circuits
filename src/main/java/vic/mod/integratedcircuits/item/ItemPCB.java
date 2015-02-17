@@ -2,11 +2,11 @@ package vic.mod.integratedcircuits.item;
 
 import java.util.List;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import vic.mod.integratedcircuits.client.Resources;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -35,8 +35,8 @@ public class ItemPCB extends ItemBase
 	public String getItemStackDisplayName(ItemStack stack) 
 	{
 		if(stack.getItemDamage() == 0)
-			return I18n.format(getUnlocalizedName() + ".name");
-		else return I18n.format(getUnlocalizedName() + ".printed.name");
+			return StatCollector.translateToLocal((getUnlocalizedName() + ".name"));
+		else return StatCollector.translateToLocal((getUnlocalizedName() + ".printed.name"));
 	}
 
 	@Override
