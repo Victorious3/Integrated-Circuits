@@ -15,7 +15,7 @@ public interface IOptionsProvider
 	
 	public static class OptionSet <T extends TileEntity & IOptionsProvider>
 	{
-		private int[] options;
+		private int[] options = new int[0];
 		private T parent;
 		
 		public OptionSet(T parent)
