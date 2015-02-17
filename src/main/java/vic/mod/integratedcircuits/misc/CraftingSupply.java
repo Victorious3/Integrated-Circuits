@@ -67,7 +67,7 @@ public class CraftingSupply
 		return false;
 	}
 	
-	public static CraftingSupply readFromNBT(NBTTagCompound compound, TileEntityContainer provider, CraftingAmount base, int from, int to)
+	public static CraftingSupply readFromNBT(NBTTagCompound compound, TileEntityContainer provider, int from, int to)
 	{
 		CraftingSupply supply = new CraftingSupply(provider, from, to);
 		NBTTagList list = compound.getTagList("supply", NBT.TAG_COMPOUND);

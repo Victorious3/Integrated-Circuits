@@ -5,6 +5,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 
@@ -16,6 +17,7 @@ import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
+import vic.mod.integratedcircuits.misc.ItemAmount;
 import vic.mod.integratedcircuits.misc.Vec2;
 import vic.mod.integratedcircuits.net.PacketAssemblerStart;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
@@ -188,7 +190,13 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler
 						RenderHelper.enableStandardItemLighting();
 						GL11.glColor3f(color / 255F, color / 255F, color / 255F);
 						RenderItem.getInstance().renderWithColor = false;
-						RenderItem.getInstance().renderItemIntoGUI(fontRendererObj, mc.renderEngine, te.craftingSupply.getInsufficient().convertToItemStack(1), guiLeft + i5, guiTop + 71, true);
+						ItemAmount amount = te.craftingSupply.getInsufficient();
+						if(amount != null) 
+						{
+							ItemStack stack = amount.convertToItemStack(1);
+							if(stack != null) RenderItem.getInstance().renderItemIntoGUI(fontRendererObj, mc.renderEngine, stack, guiLeft + i5, guiTop + 71, true);
+						}
+						
 						RenderItem.getInstance().renderWithColor = true;
 						GL11.glColor3f(1, 1, 1);
 						RenderHelper.disableStandardItemLighting();

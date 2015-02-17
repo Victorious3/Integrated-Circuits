@@ -27,7 +27,6 @@ import vic.mod.integratedcircuits.net.PacketFloppyDisk;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import buildcraft.api.tiles.IControllable;
 import buildcraft.api.tiles.IHasWork;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.relauncher.Side;
@@ -65,7 +64,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	public LaserHelper laserHelper = new LaserHelper(this, 9);
 	
 	public ItemStack[] contents = new ItemStack[13];
-	public CraftingSupply craftingSupply;
+	public CraftingSupply craftingSupply = new CraftingSupply(this, 2, 9);
 	private OptionSet<TileEntityAssembler> optionSet = new OptionSet<TileEntityAssembler>(this);
 	
 	@Override
@@ -464,7 +463,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 		{
 			NBTTagCompound circuit = compound.getCompoundTag("circuit");
 			cdata = CircuitData.readFromNBT(circuit);
-			craftingSupply = CraftingSupply.readFromNBT(compound, this, cdata.getCost(), 2, 9);
+			craftingSupply = CraftingSupply.readFromNBT(compound, this, 2, 9);
 			size = cdata.getSize();
 			
 			refMatrix = new int[size][size];
