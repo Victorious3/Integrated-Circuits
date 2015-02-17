@@ -42,6 +42,8 @@ public class Part7Segment extends PartGate
 	public int mode = MODE_SIMPLE;
 	
 	public BlockCoord parent;
+	
+	// TODO Relative positions, will break upon moving like this
 	public ArrayList<BlockCoord> slaves = Lists.newArrayList();
 	
 	//    0

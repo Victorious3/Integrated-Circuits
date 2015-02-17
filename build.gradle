@@ -24,6 +24,10 @@ repositories {
         name "oc"
         url "http://maven.cil.li/"
     }
+    maven {
+        name "Mobius"
+        url "http://mobiusstrip.eu/maven"
+    }
     ivy {
         name "redlogic"
         artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/redlogic/[module]-[revision].[ext]"
@@ -55,6 +59,8 @@ dependencies {
     compile "codechicken:CodeChickenCore:${mcVersion}-${cccVersion}:dev"
     compile "codechicken:ForgeMultipart:${mcVersion}-${fmpVersion}:dev"
     compile "codechicken:NotEnoughItems:${mcVersion}-${neiVersion}:dev"
+    
+    compile "mcp.mobius.waila:Waila:${wailaVersion}_${mcVersion}"
 
     compile("mrtjp:ProjectRed:${mcVersion}-${projectredVersion}:dev") {
         exclude group: "cofh"
