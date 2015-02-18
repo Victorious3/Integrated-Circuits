@@ -88,6 +88,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		if(te == null) return;
 		Cuboid6 bounds = PartGate.box.copy().apply(te.getGate().getRotationTransformation());
 		bounds.setBlockBounds(this);
 	}

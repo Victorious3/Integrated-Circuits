@@ -26,7 +26,15 @@ repositories {
     }
     maven {
         name "Mobius"
-        url "http://mobiusstrip.eu/maven"
+        url "http://mobiusstrip.eu/maven/"
+    }
+    maven {
+        name "chickenbones"
+        url "http://chickenbones.net/maven/"
+    }
+    maven {
+        name "projectred"
+        url "http://projectredwiki.com/maven/"
     }
     ivy {
         name "redlogic"
@@ -68,7 +76,7 @@ dependencies {
         exclude group: "tconstruct"
     }
 
-    compile "com.bluepowermod:BluePower:${bluepowerVersion}:deobf"
+    // compile "com.bluepowermod:BluePower:${bluepowerVersion}:deobf"
     compile "com.mod-buildcraft:buildcraft:${buildcraftVersion}:api"
     compile "li.cil.oc:OpenComputers:MC${mcVersion}-${ocVersion}:dev"
     compile name: "redlogic", version: "${redlogicVersion}", ext: "jar"
