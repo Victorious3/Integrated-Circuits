@@ -35,7 +35,7 @@ public class RecipeFMPGate implements IRecipe
 		}
 		
 		ItemStack stack = crafting.getStackInRowAndColumn(1, 1);
-		if(stack.getItem() instanceof ItemPartGate)
+		if(stack != null && stack.getItem() instanceof ItemPartGate)
 		{
 			ItemPartGate partItem = (ItemPartGate)stack.getItem();
 			if(!partItem.isMultipartItem()) return true;
