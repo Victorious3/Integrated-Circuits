@@ -199,7 +199,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		if((arg0 & 6) == (gate.getSide() & 6)) return null;
 		int rot = gate.getSideRel(arg0);
 		if(!gate.canConnectBundledImpl(rot)) return null;
-		return gate.output[rot];
+		return gate.getBundledOutput(rot);
 	}
 	
 	//RedLogic

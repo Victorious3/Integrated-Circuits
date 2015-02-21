@@ -12,7 +12,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
@@ -209,7 +208,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		//convert analog to digital
 		int out = 0;
 		for(int i = 0; i < 16; i++)
-			out |= (gate.output[side][i] != 0 ? 1 : 0) << i;
+			out |= (gate.getBundledOutput(side, i) != 0 ? 1 : 0) << i;
 		return out;
 	}
 	
@@ -254,7 +253,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		
 		gate.updateInputPre();
 		for(int i = 0; i < 16; i++)
-			gate.input[rel][i] = (byte)MathHelper.clamp_int(inputValues[i], 0, 127);
+			gate.setInput(rel, i, (byte)(inputValues[i] & 0xFF));
 		gate.updateInputPost();		
 	}
 
@@ -269,7 +268,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		int rel = gate.getSideRel(side);
 		
 		gate.updateInputPre();
-		gate.input[rel][0] = (byte)MathHelper.clamp_int(inputValue, 0, 127);
+		gate.setInput(rel, 0, (byte)(inputValue & 0xFF));
 		gate.updateInputPost();
 	}
 
@@ -285,7 +284,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		
 		//Convert byte array output to int array, just for you MFR
 		int[] out = new int[16];
-		byte[] bout = gate.output[rel];
+		byte[] bout = gate.getBundledOutput(rel);
 		for(int i = 0; i < 16; i++)
 			out[i] = bout[i] & 255;
 		

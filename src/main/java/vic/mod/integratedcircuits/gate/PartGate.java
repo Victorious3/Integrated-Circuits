@@ -32,8 +32,8 @@ public abstract class PartGate
 	
 	//Used by the client, redstone IO
 	public byte io;
-	public byte[][] output = new byte[4][16];
-	public byte[][] input = new byte[4][16];
+	protected byte[][] output = new byte[4][16];
+	protected byte[][] input = new byte[4][16];
 	
 	public byte orientation;
 	
@@ -261,6 +261,11 @@ public abstract class PartGate
 		return getBundledInput(side, 0);
 	}
 	
+	public byte[] getBundledInput(int side) 
+	{
+		return input[side];
+	}
+	
 	public byte getBundledInput(int side, int frequency)
 	{
 		return input[side][frequency];
@@ -270,10 +275,45 @@ public abstract class PartGate
 	{
 		return getBundledOutput(side, 0);
 	}
+	
+	public byte[] getBundledOutput(int side) 
+	{
+		return output[side];
+	}
 
 	public byte getBundledOutput(int side, int frequency) 
 	{
 		return output[side][frequency];
+	}
+	
+	public void setInput(byte[][] input) 
+	{
+		this.input = input;
+	}
+	
+	public void setOutput(byte[][] output)
+	{
+		this.output = output;
+	}
+	
+	public void setInput(int side, byte[] input) 
+	{
+		this.input[side] = input;
+	}
+	
+	public void setOutput(int side, byte[] output)
+	{
+		this.output[side] = output;
+	}
+	
+	public void setInput(int side, int frequency, byte input) 
+	{
+		this.input[side][frequency] = input;
+	}
+	
+	public void setOutput(int side, int frequency, byte output) 
+	{
+		this.output[side][frequency] = output;
 	}
 	
 	public void update() {}

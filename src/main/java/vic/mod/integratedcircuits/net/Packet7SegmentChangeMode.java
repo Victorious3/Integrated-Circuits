@@ -62,7 +62,7 @@ public class Packet7SegmentChangeMode extends PacketGate<Packet7SegmentChangeMod
 			
 			isSlave = part.isSlave;
 			part.getProvider().notifyBlocksAndChanges();
-			part.input = new byte[4][16];
+			part.setInput(new byte[4][16]);
 			part.updateInput();
 			
 			CommonProxy.networkWrapper.sendToAllAround(this, 

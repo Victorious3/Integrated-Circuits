@@ -161,6 +161,19 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 		}
 	}
 	
+	@Override
+	public byte getRedstoneOutput(int side) 
+	{
+		//TODO Move over to PartGate!
+		if(getModeAtSide(side) == CircuitProperties.ANALOG)
+		{
+			byte[] out = output[side];
+			for(byte i = 15; i >= 0; i--)
+				if(out[i] != 0) return i;
+		}
+		return super.getRedstoneOutput(side);
+	}
+
 	public boolean hasComparatorInput(int side)
 	{
 		int r = getRotationAbs(side);
@@ -215,18 +228,8 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	{
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
 		int mode = getModeAtSide(side);
-		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;
-		
+		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;	
 		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
-		
-		if(mode == CircuitProperties.ANALOG)
-		{
-			//TODO This is terrible. Find a better way. I insist on it.
-			byte[] out = this.output[side].clone();
-			this.output[side] = new byte[16];
-			for(byte i = 15; i >= 0; i--)
-				if(out[i] != 0) this.output[side][0] = i;
-		}
 		
 		provider.notifyBlocksAndChanges();
 		updateRedstoneIO();

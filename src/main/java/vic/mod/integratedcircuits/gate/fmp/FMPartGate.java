@@ -236,7 +236,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	{
 		int rot = gate.getRotationRel(arg0);
 		if(!gate.canConnectBundledImpl(rot)) return null;
-		return gate.output[rot];
+		return gate.getBundledOutput(rot);
 	}
 	
 	//---
