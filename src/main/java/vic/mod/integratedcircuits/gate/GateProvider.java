@@ -251,7 +251,7 @@ public class GateProvider
 		{
 			BlockCoord pos = provider.getPos().offset(abs);
 			//Vanilla input
-			power = provider.getWorld().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, abs ^ 1);
+			power = provider.getWorld().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, abs);
 			
 			if(power == 0 && IntegratedCircuits.isRLLoaded)
 			{

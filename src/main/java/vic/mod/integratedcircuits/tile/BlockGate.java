@@ -187,10 +187,11 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		PartGate gate = te.getGate();
-
+		
 		if((side & 6) == (gate.getSide() & 6)) return 0;
 		int rot = gate.getSideRel(side);
 		if(!gate.canConnectRedstoneImpl(rot)) return 0;
+		
 		return gate.getRedstoneOutput(rot);
 	}
 	

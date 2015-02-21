@@ -219,7 +219,7 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	{
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
 		if(getModeAtSide(side) == CircuitProperties.ANALOG)
-			return input[side][0] == frequency && output[side][0] == 0;
+			return input[side][0] == frequency && getRedstoneOutput(side) == 0;
 		return input[side][frequency] != 0 && output[side][frequency] == 0;
 	}
 
@@ -229,9 +229,10 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
 		int mode = getModeAtSide(side);
 		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;	
+
 		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
-		
 		provider.notifyBlocksAndChanges();
+		
 		updateRedstoneIO();
 	}
 

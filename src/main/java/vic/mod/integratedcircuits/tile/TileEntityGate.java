@@ -122,11 +122,16 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	public void notifyBlocksAndChanges() 
 	{
 		markDirty();
-		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
+		notifyPartChange();
+		BlockCoord pos = getPos().copy().offset(gate.getSide());
+		worldObj.notifyBlocksOfNeighborChange(pos.x, pos.y, pos.z, getBlockType());
 	}
 
 	@Override
-	public void notifyPartChange() {}
+	public void notifyPartChange() 
+	{
+		worldObj.notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
+	}
 
 	@Override
 	public BlockCoord getPos() 

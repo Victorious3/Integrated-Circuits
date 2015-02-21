@@ -27,7 +27,8 @@ public class WailaAddon implements IWailaDataProvider
 	public ItemStack getWailaStack(IWailaDataAccessor accessor, IWailaConfigHandler config) 
 	{
 		MovingObjectPosition pos = accessor.getPosition();
-		return accessor.getBlock().getPickBlock(pos, accessor.getWorld(), pos.blockX, pos.blockY, pos.blockZ, accessor.getPlayer());
+		ItemStack stack = accessor.getBlock().getPickBlock(pos, accessor.getWorld(), pos.blockX, pos.blockY, pos.blockZ, accessor.getPlayer());
+		return stack != null ? stack : accessor.getStack();
 	}
 
 	@Override
