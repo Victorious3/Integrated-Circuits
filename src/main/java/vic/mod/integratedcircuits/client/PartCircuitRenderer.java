@@ -53,13 +53,13 @@ public class PartCircuitRenderer extends PartGateRenderer<PartCircuit>
 		prepareRedstone(~bundled, 0);
 		
 		name = comp2.getString("name");
-		tier = (byte) (comp.getCompoundTag("circuit").getInteger("size") / 16);
+		tier = (byte) (Math.log(comp.getCompoundTag("circuit").getInteger("size")) / Math.log(2) - 3);
 	}
 	
 	@Override
 	public void prepareDynamic(PartCircuit part, float partialTicks) 
 	{
-		tier = (byte)(part.circuitData.getSize() / 16);
+		tier = (byte) (Math.log(part.circuitData.getSize()) / Math.log(2) - 3);
 		name = part.circuitData.getProperties().getName();
 	}
 
