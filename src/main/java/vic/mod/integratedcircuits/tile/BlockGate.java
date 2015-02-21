@@ -28,10 +28,13 @@ import codechicken.lib.vec.Cuboid6;
 
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.Method;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 
+@Interface(iface = "powercrystals.minefactoryreloaded.api.rednet.IRedNetOmniNode", modid = "MineFactoryReloaded")
 public class BlockGate extends BlockContainer implements IBundledRedstoneProvider, IRedNetOmniNode, IPeripheralProvider
 {
 	public BlockGate() 
@@ -228,6 +231,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	//MFR Rednet
 
 	@Override
+	@Method(modid = "MineFactoryReloaded")
 	public RedNetConnectionType getConnectionType(World world, int x, int y, int z, ForgeDirection fd) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
@@ -243,6 +247,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	}
 	
 	@Override
+	@Method(modid = "MineFactoryReloaded")
 	public void onInputsChanged(World world, int x, int y, int z, ForgeDirection fd, int[] inputValues) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
@@ -259,6 +264,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	}
 
 	@Override
+	@Method(modid = "MineFactoryReloaded")
 	public void onInputChanged(World world, int x, int y, int z, ForgeDirection fd, int inputValue) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
@@ -274,6 +280,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	}
 
 	@Override
+	@Method(modid = "MineFactoryReloaded")
 	public int[] getOutputValues(World world, int x, int y, int z, ForgeDirection fd) 
 	{		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
@@ -293,6 +300,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	}
 
 	@Override
+	@Method(modid = "MineFactoryReloaded")
 	public int getOutputValue(World world, int x, int y, int z, ForgeDirection fd, int subnet) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
