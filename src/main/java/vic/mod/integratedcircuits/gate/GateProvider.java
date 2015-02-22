@@ -141,14 +141,12 @@ public class GateProvider
 	private static byte[] calculateBundledInputRedLogic(IGateProvider provider, int side, BlockCoord pos, int abs)
 	{
 		byte[] power = null;
-		
 		TileEntity te = provider.getWorld().getTileEntity(pos.x, pos.y, pos.z);
 		if(te instanceof mods.immibis.redlogic.api.wiring.IBundledEmitter)
 		{
 			mods.immibis.redlogic.api.wiring.IBundledEmitter emitter = (mods.immibis.redlogic.api.wiring.IBundledEmitter) te;
-			power = emitter.getBundledCableStrength(0, abs ^ 1);
-		}
-		
+			power = emitter.getBundledCableStrength(provider.getGate().getSide(), abs ^ 1);
+		}	
 		return power;
 	}
 	
