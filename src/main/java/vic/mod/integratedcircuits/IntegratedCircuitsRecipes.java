@@ -62,7 +62,7 @@ public class IntegratedCircuitsRecipes
 				OreDictionary.registerOre("stoneWire", new ItemStack(prCorePart, 1, 2));
 			}
 			
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItemFMP()),
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItem()),
 				"srs",
 				"r#r",
 				"sps",
