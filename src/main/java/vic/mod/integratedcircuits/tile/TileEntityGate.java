@@ -178,6 +178,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	//ProjectRed
 	
 	@Override
+	@Method(modid = "ProjRed|Core")
 	public boolean canConnectBundled(int side) 
 	{
 		if((side & 6) == (gate.getSide() & 6)) return false;
@@ -199,6 +200,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	}
 	
 	@Override
+	@Method(modid = "ProjRed|Core")
 	public byte[] getBundledSignal(int arg0) 
 	{
 		if((arg0 & 6) == (gate.getSide() & 6)) return null;
@@ -210,18 +212,21 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	//RedLogic
 	
 	@Override
+	@Method(modid = "RedLogic")
 	public byte[] getBundledCableStrength(int blockFace, int toDirection) 
 	{
 		return getBundledSignal(toDirection);
 	}
 
 	@Override
+	@Method(modid = "RedLogic")
 	public void onBundledInputChanged() 
 	{
 		gate.updateInput();
 	}
 	
 	@Override
+	@Method(modid = "RedLogic")
 	public boolean connects(IWire wire, int blockFace, int fromDirection) 
 	{	
 		if((fromDirection & 6) == (gate.getSide() & 6)) return false;
@@ -233,6 +238,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	}
 
 	@Override
+	@Method(modid = "RedLogic")
 	public boolean connectsAroundCorner(IWire wire, int blockFace, int fromDirection) 
 	{
 		//TODO I could do something about this.
@@ -262,6 +268,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	//Open Computers
 	
 	@Override
+	@Method(modid = "OpenComputers")
 	public boolean canConnectNode(ForgeDirection side) 
 	{
 		if(getGate() instanceof IGatePeripheralProvider) {
@@ -272,6 +279,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	}
 
 	@Override
+	@Method(modid = "OpenComputers")
 	public String getComponentName() 
 	{
 		if(getGate() instanceof IGatePeripheralProvider) {
@@ -283,6 +291,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	}
 
 	@Override
+	@Method(modid = "OpenComputers")
 	public String[] methods() 
 	{
 		if(getGate() instanceof IGatePeripheralProvider) {
