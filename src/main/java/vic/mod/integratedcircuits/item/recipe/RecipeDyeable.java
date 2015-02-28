@@ -63,14 +63,12 @@ public class RecipeDyeable implements IRecipe
 			{
 				IDyeable dyeable = (IDyeable)stack.getItem();
 				if(dyeable.canDye(color, stack))
-				{
 					this.stack = stack;
-				}
 				else return false;
 			}
 			else return false;
 		}
-		return true;
+		return stack != null;
 	}
 
 	@Override
