@@ -113,7 +113,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		te.getGate().onNeighborChanged();
+		if(!te.isDestroyed) te.getGate().onNeighborChanged();
 	}
 	
 	@Override

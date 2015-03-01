@@ -49,6 +49,7 @@ import cpw.mods.fml.common.Optional.Method;
 public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, IConnectable, SimpleComponent, SidedComponent, ManagedPeripheral
 {
 	public PartGate gate;
+	public boolean isDestroyed;
 	
 	@Override
 	public void markRender() 
@@ -148,6 +149,7 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 	@Override
 	public void destroy() 
 	{
+		isDestroyed = true;
 		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 	}
 
