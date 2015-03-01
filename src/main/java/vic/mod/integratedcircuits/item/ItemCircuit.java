@@ -17,7 +17,7 @@ public class ItemCircuit extends ItemPartGate
 	@Override
 	public String getItemStackDisplayName(ItemStack stack) 
 	{
-		if(stack.getTagCompound() == null) I18n.format(getUnlocalizedName() + ".name", "INVALID!");
+		if(stack.getTagCompound() == null) return I18n.format(getUnlocalizedName() + ".name", "INVALID!");
 		String name = stack.getTagCompound().getCompoundTag("circuit").getCompoundTag("properties").getString("name");
 		return I18n.format(getUnlocalizedName() + ".name", name);
 	}
