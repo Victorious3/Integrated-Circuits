@@ -53,7 +53,7 @@ public class IntegratedCircuitsRecipes
 			Item bpStoneWafer = GameData.getItemRegistry().getObject("bluepower:stone_tile");
 			if(bpStoneWafer != null) OreDictionary.registerOre("stoneWafer", bpStoneWafer);
 			
-			Item bpStoneWire= GameData.getItemRegistry().getObject("bluepower:stone_wire");
+			Item bpStoneWire = GameData.getItemRegistry().getObject("bluepower:redstone_wire_tile");
 			if(bpStoneWafer != null) OreDictionary.registerOre("stoneWire", bpStoneWire);
 
 			if(prCorePart != null) 
