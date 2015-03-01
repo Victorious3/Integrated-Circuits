@@ -71,6 +71,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		if(te == null || te.getGate() == null) return null;
 		return te.getItemStack();
 	}	
 
