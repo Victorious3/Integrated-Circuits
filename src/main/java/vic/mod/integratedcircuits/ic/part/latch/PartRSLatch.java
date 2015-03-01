@@ -6,14 +6,11 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
-import vic.mod.integratedcircuits.ic.part.PartCPGate;
-import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import vic.mod.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
-public class PartRSLatch extends PartCPGate
-{	
-	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
+public class PartRSLatch extends PartLatch
+{
 	public final IntProperty PROP_MODE = new IntProperty("MODE", stitcher, 3);
 	
 	@Override
@@ -58,12 +55,12 @@ public class PartRSLatch extends PartCPGate
 			|| s2 == ForgeDirection.WEST && isMirrored(pos, parent)) 
 			|| (s2 == ForgeDirection.NORTH && isSpecial(pos, parent) 
 			&& !getInputFromSide(pos, parent, s3.getOpposite()))) 
-			&& b1 && getProperty(pos, parent, PROP_OUT)) return true;
+			&& b1 && getProperty(pos, parent, PROP_TMP)) return true;
 		if(((s2 == ForgeDirection.WEST && !isMirrored(pos, parent) 
 			|| s2 == ForgeDirection.EAST && isMirrored(pos, parent)) 
 			|| (s2 == ForgeDirection.SOUTH && isSpecial(pos, parent) 
 			&& !getInputFromSide(pos, parent, s3))) 
-			&& b1 && !getProperty(pos, parent, PROP_OUT)) return true;
+			&& b1 && !getProperty(pos, parent, PROP_TMP)) return true;
 		return false;
 	}
 

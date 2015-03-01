@@ -5,21 +5,17 @@ import java.util.ArrayList;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.ic.ICircuit;
-import vic.mod.integratedcircuits.ic.part.PartCPGate;
-import vic.mod.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import vic.mod.integratedcircuits.misc.Vec2;
 
-public class PartToggleLatch extends PartCPGate
-{
-	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
-	
+public class PartToggleLatch extends PartLatch
+{	
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 
 	{
 		super.onClick(pos, parent, button, ctrl);
 		if(button == 0 && ctrl) 
 		{
-			invertProperty(pos, parent, PROP_OUT);
+			invertProperty(pos, parent, PROP_TMP);
 			notifyNeighbours(pos, parent);
 		}
 	}
@@ -40,8 +36,8 @@ public class PartToggleLatch extends PartCPGate
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		if(s2 == ForgeDirection.EAST) return getProperty(pos, parent, PROP_OUT);
-		if(s2 == ForgeDirection.WEST) return !getProperty(pos, parent, PROP_OUT);
+		if(s2 == ForgeDirection.EAST) return getProperty(pos, parent, PROP_TMP);
+		if(s2 == ForgeDirection.WEST) return !getProperty(pos, parent, PROP_TMP);
 		return false;
 	}
 
