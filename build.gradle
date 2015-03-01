@@ -40,7 +40,7 @@ repositories {
         name "immibis-core"
         artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/[module]-[revision].[ext]"
     }
-	// Dear RX14, this is a bad idea.  Dear Thog, fix your VPS!
+    // Dear RX14, this is a bad idea.  Dear Thog, fix your VPS!
     maven {
         name "rx14"
         url "http://mvn.rx14.co.uk/repo/"
