@@ -4,7 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class CircuitProperties implements Cloneable
 {
-	private String name, author;
+	private String name = "NO_NAME", author = "unknown";
 	private int con;
 	
 	public static final int SIMPLE = 0;
@@ -28,12 +28,12 @@ public class CircuitProperties implements Cloneable
 	
 	public String getName()
 	{
-		return name != null ? name : "NO_NAME";
+		return name;
 	}
 	
 	public String getAuthor()
 	{
-		return author != null ? author : "unknown";
+		return author;
 	}
 	
 	public int getCon()
@@ -65,8 +65,8 @@ public class CircuitProperties implements Cloneable
 	
 	public NBTTagCompound writeToNBT(NBTTagCompound comp)
 	{
-		if(name != null) comp.setString("name", name);
-		if(author != null) comp.setString("author", author);
+		comp.setString("name", name);
+		comp.setString("author", author);
 		comp.setInteger("con", con);
 		return comp;
 	}
