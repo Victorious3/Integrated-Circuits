@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
@@ -152,44 +154,63 @@ public class ClientProxy extends CommonProxy
 			if(gui == null || !gui.doesGuiPauseGame()) clientTicks++;
 		}
 	}
+
+	/** Needed because of reflection. */
+	public static void open7SegmentGUI(Part7Segment part)
+	{
+		Minecraft.getMinecraft().displayGuiScreen(new Gui7Segment(part));
+	}
+
 	
 	// Don't even look at what's coming now. Not related at all.
+
+	private enum FancyThing { NONE, SHIRO, JIBRIL, STEPH, MAMI, NANO, CIRNO }
+	private FancyThing getFancyThing(UUID uuid, String skinID)
+	{
+		String uuidStr = uuid.toString();
+		// Is this someone who has deserved it?
+		if (uuidStr.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
+			uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
+			uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
+			uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
+			uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") || // skyem
+			uuidStr.equals("771422e7-904c-4952-bb55-de9590f97739")) { // andrejsavikin
+				// Work out what skin they have
+				if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro skin
+					return FancyThing.SHIRO;
+				else if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) // Jibril skin
+					return FancyThing.JIBRIL;
+				else if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) // Steph skin
+					return FancyThing.STEPH;
+				else if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) // Mami skin
+					return FancyThing.MAMI;
+				else if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) // Nano skin
+					return FancyThing.JIBRIL;
+				else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno skin
+					return FancyThing.CIRNO;
+		}
+		// You do not get a fancy thing, sorry. :(
+		return FancyThing.NONE;
+	}
+	private FancyThing getFancyThing(AbstractClientPlayer player)
+	{
+		return getFancyThing(player.getUniqueID(), player.getLocationSkin().getResourcePath());
+	}
+
 	@SubscribeEvent
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
 	{
 		EntityPlayer player = event.entityPlayer;
-		String uuid = player.getUniqueID().toString();
 		Minecraft mc = Minecraft.getMinecraft();
 
-		// Get the ID of the skin
-		String skinID = "";
-		if (player instanceof EntityClientPlayerMP)
-			skinID = ((EntityClientPlayerMP) player).getLocationSkin().getResourcePath();
-
-		int renderType = 0;
-		// Is this someone who has deserved it?
-		if (uuid.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
-			uuid.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
-			uuid.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
-			uuid.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
-			uuid.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758")) { // skyem
-				// Work out what skin they have
-				if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro
-					renderType = 1;
-				else if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) // Jibril
-					renderType = 2;
-				else if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) // Steph
-					renderType = 3;
-				else if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) // Mami
-					renderType = 4;
-				else if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) // Nano
-					renderType = 5;
-				else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno
-					renderType = 6;
-				else return;
-		} else return;
+		// Get fancy thing of the player
+		FancyThing fancyThing = FancyThing.NONE;
+		if (player instanceof AbstractClientPlayer)
+			fancyThing = getFancyThing((AbstractClientPlayer)player);
+		if (fancyThing == FancyThing.NONE) return;
 		
-		boolean hideArmor = player.inventory.armorItemInSlot(3) != null && (renderType == 1 || renderType == 4 || renderType == 3);
+		boolean headArmour = player.inventory.armorItemInSlot(3) != null &&
+				(fancyThing == FancyThing.SHIRO || fancyThing == FancyThing.STEPH || fancyThing == FancyThing.MAMI);
 		
 		//Test if AW is hiding the headgear
 		if(IntegratedCircuits.isAWLoaded)
@@ -204,12 +225,12 @@ public class ClientProxy extends CommonProxy
 					Object skinInfo = skinMap.get(player.getPersistentID());
 					Object nakedInfo = skinInfo.getClass().getMethod("getNakedInfo").invoke(skinInfo);
 					BitSet armourOverride = (BitSet)nakedInfo.getClass().getDeclaredField("armourOverride").get(nakedInfo);
-					if(armourOverride.get(0)) hideArmor = false;
+					if(armourOverride.get(0)) headArmour = false;
 				}	
 			} catch (Exception e) {}
 		}
 
-		if(hideArmor) return;
+		if(headArmour) return;
 
 		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
 		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
@@ -227,10 +248,10 @@ public class ClientProxy extends CommonProxy
 		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
 		Tessellator tes = Tessellator.instance;
 
-		switch (renderType)
+		switch (fancyThing)
 		{
-			case 2:
-				//Jibril
+			case JIBRIL:
+				// Jibril
 				GL11.glPushMatrix();
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glShadeModel(GL11.GL_SMOOTH);
@@ -258,7 +279,7 @@ public class ClientProxy extends CommonProxy
 				GL11.glPopMatrix();
 				RenderUtils.resetBrightness();
 				break;
-			case 1:
+			case SHIRO:
 				//Shiro Nai
 				GL11.glPushMatrix();
 				float scale = 1 / 64F;
@@ -274,13 +295,13 @@ public class ClientProxy extends CommonProxy
 				GL11.glDisable(GL11.GL_CULL_FACE);
 				GL11.glPopMatrix();
 				break;
-			case 3:
+			case STEPH:
 				//Stephanie Dola
 				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_EARS);
 				ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
 				GameData.getBlockRegistry().getObject(player.getCommandSenderName());
 				break;
-			case 4:
+			case MAMI:
 				//Mami Tomoe
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				renderCurl();
@@ -320,12 +341,6 @@ public class ClientProxy extends CommonProxy
 				break;
 		}
 		GL11.glPopMatrix();
-	}
-	
-	/** Needed because of reflection. */
-	public static void open7SegmentGUI(Part7Segment part) 
-	{
-		Minecraft.getMinecraft().displayGuiScreen(new Gui7Segment(part));
 	}
 
 	public static void renderCurl()
