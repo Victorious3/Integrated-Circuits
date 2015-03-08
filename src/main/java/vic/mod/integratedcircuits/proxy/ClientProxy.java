@@ -158,7 +158,7 @@ public class ClientProxy extends CommonProxy
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
 	{
 		EntityPlayer player = event.entityPlayer;
-		String name = player.getCommandSenderName();
+		String uuid = player.getUniqueID().toString();
 		Minecraft mc = Minecraft.getMinecraft();
 
 		// Get the ID of the skin
@@ -166,17 +166,30 @@ public class ClientProxy extends CommonProxy
 		if (player instanceof EntityClientPlayerMP)
 			skinID = ((EntityClientPlayerMP) player).getLocationSkin().getResourcePath();
 
-		// Match the skin ID to the render type
 		int renderType = 0;
-		if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) renderType = 1; // Shiro
-		if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) renderType = 2; // Jibril
-		if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) renderType = 3; // Steph
-		if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) renderType = 4; // Mami
-		if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) renderType = 5; // Nano
-		if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) renderType = 6; // Cirno
-		if(renderType == 0) return;	
+		// Is this someone who has deserved it?
+		if (uuid.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
+			uuid.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
+			uuid.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
+			uuid.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
+			uuid.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758")) { // skyem
+				// Work out what skin they have
+				if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro
+					renderType = 1;
+				else if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) // Jibril
+					renderType = 2;
+				else if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) // Steph
+					renderType = 3;
+				else if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) // Mami
+					renderType = 4;
+				else if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) // Nano
+					renderType = 5;
+				else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno
+					renderType = 6;
+				else return;
+		} else return;
 		
-		boolean hideArmor = player.inventory.armorItemInSlot(3) != null;
+		boolean hideArmor = player.inventory.armorItemInSlot(3) != null && (renderType == 1 || renderType == 4 || renderType == 3);
 		
 		//Test if AW is hiding the headgear
 		if(IntegratedCircuits.isAWLoaded)
@@ -195,9 +208,9 @@ public class ClientProxy extends CommonProxy
 				}	
 			} catch (Exception e) {}
 		}
-		
-		if(renderType != 2 && hideArmor) return;
-		
+
+		if(hideArmor) return;
+
 		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
 		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
 		float pitch = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * event.partialRenderTick;
@@ -213,99 +226,98 @@ public class ClientProxy extends CommonProxy
 		
 		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
 		Tessellator tes = Tessellator.instance;
-		
-		if(renderType == 2)
+
+		switch (renderType)
 		{
-			//Jibril
-			GL11.glPushMatrix();
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			RenderUtils.setBrightness(240, 240);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GL11.glColor4f(1F, 1F, 1F, 1F);
-			
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_HALO);
-			
-			GL11.glRotated(30, 1, 0, -1);
-			GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
-			GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
-			
-			tes.startDrawingQuads();	
-			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
-			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
-			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
-			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);	
-			tes.draw();
-			
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glShadeModel(GL11.GL_FLAT);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glPopMatrix();
-			RenderUtils.resetBrightness();
-		}
-		else if(renderType == 1)
-		{
-			//Shiro Nai
-			GL11.glPushMatrix();
-			float scale = 1 / 64F;
-			
-			GL11.glTranslated(15 * scale, -0.78, 15 * scale);			
-			float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
-			GL11.glTranslatef(-f1, 0, -f1);
-			GL11.glRotated(-25, 1, 0, -1);
-			GL11.glTranslatef(f1, 0, f1);
-			
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			ModelCrown.instance.render(scale);
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			GL11.glPopMatrix();
-		}
-		else if(renderType == 3)
-		{
-			//Stephanie Dola
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_EARS);
-			ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
-			GameData.getBlockRegistry().getObject(name);
-		}
-		else if(renderType == 4) 
-		{
-			//Mami Tomoe
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			renderCurl();
-			GL11.glScalef(1, 1, -1);
-			renderCurl();
-			GL11.glScalef(1, 1, -1);
-			renderHat();
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLOWER);
-			GL11.glPushMatrix();
-			GL11.glTranslatef(0, -9 / 16F, 0);
-			GL11.glTranslatef(2 / 16F, 0, -3.3F / 16F);
-			GL11.glRotatef(85, 1, 0, 0);
-			GL11.glRotatef(30, 0, 0, 1);
-			tes.startDrawingQuads();
-			tes.addVertexWithUV(-2 / 16F, 0, -2 / 16F, 0, 0);
-			tes.addVertexWithUV(-2 / 16F, 0, 2 / 16F, 0, 1);
-			tes.addVertexWithUV(2 / 16F, 0, 2 / 16F, 1, 1);
-			tes.addVertexWithUV(2 / 16F, 0, -2 / 16F, 1, 0);
-			tes.draw();
-			GL11.glPopMatrix();
-			
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLUFF);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glPushMatrix();
-			GL11.glTranslatef(-1 / 16F, -8 / 16F, -5F / 16F);
-			GL11.glRotatef(0, 1, 0, 0);
-			tes.startDrawingQuads();
-			tes.addVertexWithUV(0, -3 / 16F, -3 / 16F, 0, 0);
-			tes.addVertexWithUV(0, 3 / 16F, -3 / 16F, 0, 1);
-			tes.addVertexWithUV(0, 3 / 16F, 3 / 16F, 1, 1);
-			tes.addVertexWithUV(0, -3 / 16F, 3 / 16F, 1, 0);
-			tes.draw();
-			GL11.glPopMatrix();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			case 2:
+				//Jibril
+				GL11.glPushMatrix();
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				RenderUtils.setBrightness(240, 240);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GL11.glColor4f(1F, 1F, 1F, 1F);
+
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_HALO);
+
+				GL11.glRotated(30, 1, 0, -1);
+				GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
+				GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
+
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
+				tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
+				tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
+				tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
+				tes.draw();
+
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glShadeModel(GL11.GL_FLAT);
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glPopMatrix();
+				RenderUtils.resetBrightness();
+				break;
+			case 1:
+				//Shiro Nai
+				GL11.glPushMatrix();
+				float scale = 1 / 64F;
+
+				GL11.glTranslated(15 * scale, -0.78, 15 * scale);
+				float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
+				GL11.glTranslatef(-f1, 0, -f1);
+				GL11.glRotated(-25, 1, 0, -1);
+				GL11.glTranslatef(f1, 0, f1);
+
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				ModelCrown.instance.render(scale);
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				GL11.glPopMatrix();
+				break;
+			case 3:
+				//Stephanie Dola
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_EARS);
+				ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
+				GameData.getBlockRegistry().getObject(player.getCommandSenderName());
+				break;
+			case 4:
+				//Mami Tomoe
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				renderCurl();
+				GL11.glScalef(1, 1, -1);
+				renderCurl();
+				GL11.glScalef(1, 1, -1);
+				renderHat();
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLOWER);
+				GL11.glPushMatrix();
+				GL11.glTranslatef(0, -9 / 16F, 0);
+				GL11.glTranslatef(2 / 16F, 0, -3.3F / 16F);
+				GL11.glRotatef(85, 1, 0, 0);
+				GL11.glRotatef(30, 0, 0, 1);
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(-2 / 16F, 0, -2 / 16F, 0, 0);
+				tes.addVertexWithUV(-2 / 16F, 0, 2 / 16F, 0, 1);
+				tes.addVertexWithUV(2 / 16F, 0, 2 / 16F, 1, 1);
+				tes.addVertexWithUV(2 / 16F, 0, -2 / 16F, 1, 0);
+				tes.draw();
+				GL11.glPopMatrix();
+
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLUFF);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glPushMatrix();
+				GL11.glTranslatef(-1 / 16F, -8 / 16F, -5F / 16F);
+				GL11.glRotatef(0, 1, 0, 0);
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(0, -3 / 16F, -3 / 16F, 0, 0);
+				tes.addVertexWithUV(0, 3 / 16F, -3 / 16F, 0, 1);
+				tes.addVertexWithUV(0, 3 / 16F, 3 / 16F, 1, 1);
+				tes.addVertexWithUV(0, -3 / 16F, 3 / 16F, 1, 0);
+				tes.draw();
+				GL11.glPopMatrix();
+				GL11.glEnable(GL11.GL_LIGHTING);
+				break;
 		}
 		GL11.glPopMatrix();
 	}
