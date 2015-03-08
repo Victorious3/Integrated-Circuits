@@ -7,6 +7,7 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -115,7 +116,7 @@ public class ClientProxy extends CommonProxy
 		double yOff = event.player.lastTickPosY + (event.player.posY - event.player.lastTickPosY) * event.partialTicks;
 		double zOff = event.player.lastTickPosZ + (event.player.posZ - event.player.lastTickPosZ) * event.partialTicks;
 		box = box.offset(-xOff, -yOff, -zOff).expand(0.002, 0.002, 0.002);
-        
+		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
@@ -152,20 +153,27 @@ public class ClientProxy extends CommonProxy
 		}
 	}
 	
-	//Don't even look at what's coming now. Not related at all
-	
+	// Don't even look at what's coming now. Not related at all.
 	@SubscribeEvent
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
 	{
 		EntityPlayer player = event.entityPlayer;
 		String name = player.getCommandSenderName();
 		Minecraft mc = Minecraft.getMinecraft();
-		
+
+		// Get the ID of the skin
+		String skinID = "";
+		if (player instanceof EntityClientPlayerMP)
+			skinID = ((EntityClientPlayerMP) player).getLocationSkin().getResourcePath();
+
+		// Match the skin ID to the render type
 		int renderType = 0;
-		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
-		else if(name.equalsIgnoreCase("thog92")) renderType = 2;
-		else if(name.equalsIgnoreCase("rx14")) renderType = 3;
-		else if(name.equalsIgnoreCase("riskyken")) renderType = 4;
+		if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) renderType = 1; // Shiro
+		if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) renderType = 2; // Jibril
+		if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) renderType = 3; // Steph
+		if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) renderType = 4; // Mami
+		if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) renderType = 5; // Nano
+		if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) renderType = 6; // Cirno
 		if(renderType == 0) return;	
 		
 		boolean hideArmor = player.inventory.armorItemInSlot(3) != null;
