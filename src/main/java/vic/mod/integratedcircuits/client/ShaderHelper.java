@@ -3,17 +3,20 @@ package vic.mod.integratedcircuits.client;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.IntBuffer;
 
 import net.minecraft.client.renderer.OpenGlHelper;
 
-import org.apache.logging.log4j.Level;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL20;
 
-import cpw.mods.fml.common.FMLLog;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -25,7 +28,9 @@ public class ShaderHelper
 	
 	public static void loadShaders()
 	{
-		if(!OpenGlHelper.shadersSupported) return;
+		IntegratedCircuits.logger.info("Loading shaders, GLSL version supported: " + GL11.glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+		if(!OpenGlHelper.shadersSupported)
+			return;
 		SHADER_BLUR = createProgramm("/assets/integratedcircuits/shader/blur.vert", "/assets/integratedcircuits/shader/blur.frag");
 	}
 	
@@ -49,14 +54,14 @@ public class ShaderHelper
 		ARBShaderObjects.glLinkProgramARB(program);
 		if(ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_LINK_STATUS_ARB) == GL11.GL_FALSE) 
 		{
-			FMLLog.log(Level.ERROR, ARBShaderObjects.glGetInfoLogARB(program, ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB)));
+			IntegratedCircuits.logger.fatal(ARBShaderObjects.glGetInfoLogARB(program, ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB)));
 			return 0;
 		}
 
 		ARBShaderObjects.glValidateProgramARB(program);
 		if(ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_VALIDATE_STATUS_ARB) == GL11.GL_FALSE) 
 		{
-			FMLLog.log(Level.ERROR, ARBShaderObjects.glGetInfoLogARB(program, ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB)));
+			IntegratedCircuits.logger.fatal(ARBShaderObjects.glGetInfoLogARB(program, ARBShaderObjects.glGetObjectParameteriARB(program, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB)));
 			return 0;
 		}
 		
@@ -90,6 +95,24 @@ public class ShaderHelper
 			throw exc;
 		}
 	}
+	
+    public static void printErrorLog(int program)
+    {
+    	IntBuffer intBuffer = BufferUtils.createIntBuffer(1);
+    	ARBShaderObjects.glGetObjectParameterARB(program, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB, intBuffer);
+
+    	int length = intBuffer.get();
+    	if(length > 1)
+    	{
+    	    ByteBuffer infoLog = BufferUtils.createByteBuffer(length);
+    	    intBuffer.flip();
+    	    ARBShaderObjects.glGetInfoLogARB(program, intBuffer, infoLog);
+    	    byte[] infoBytes = new byte[length];
+    	    infoLog.get(infoBytes);
+    	    String out = new String(infoBytes);
+    	    IntegratedCircuits.logger.fatal("Shader info log:\n" + out);
+    	}
+    }
 	
 	public static void bindShader(int program)
 	{

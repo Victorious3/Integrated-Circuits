@@ -174,17 +174,18 @@ public class ClientProxy extends CommonProxy
 	
 	Framebuffer fbo;
 	Framebuffer fbo2;
+	private boolean shaders = OpenGlHelper.shadersSupported;
 	
 	//Don't even look at what's coming now. Not related at all
 	
 	public void renderPlayer(float partial, RenderGlobal context)
 	{
-		//Cirno
+		// Cirno
 		try {
 			Minecraft mc = Minecraft.getMinecraft();
 			Framebuffer mcfbo = mc.getFramebuffer();
-			
-			if(OpenGlHelper.isFramebufferEnabled())
+
+			if(OpenGlHelper.isFramebufferEnabled() && shaders && ShaderHelper.SHADER_BLUR != 0)
 			{
 				if(fbo == null || fbo2 == null)
 				{
@@ -197,7 +198,7 @@ public class ClientProxy extends CommonProxy
 					fbo2.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
 					fbo2.unbindFramebuffer();
 					mcfbo.bindFramebuffer(false);
-				}
+				} 
 				else if(mc.displayWidth != fbo.framebufferWidth || mc.displayHeight != fbo.framebufferHeight)
 				{
 					fbo.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
@@ -206,42 +207,60 @@ public class ClientProxy extends CommonProxy
 					fbo2.unbindFramebuffer();
 					mcfbo.bindFramebuffer(false);
 				}
-				
-				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, fbo.framebufferTexture, 0);
-				
+
+				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553,
+						fbo.framebufferTexture, 0);
+
 				GL11.glClearColor(0, 0, 0, 1);
+
+				int error = GL11.glGetError();
+				if(error != 0)
+				{
+					IntegratedCircuits.logger.warn("Shaders not supported, disabling aura effect :(");
+					shaders = false;
+					return;
+				}
+			} 
+			else
+			{
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
 			}
-			
+
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glDepthMask(false);
 
 			WorldClient world = mc.theWorld;
 			EntityLivingBase entityLiving = mc.renderViewEntity;
-	
+
 			double x = entityLiving.prevPosX + (entityLiving.posX - entityLiving.prevPosX) * partial;
 			double y = entityLiving.prevPosY + (entityLiving.posY - entityLiving.prevPosY) * partial;
 			double z = entityLiving.prevPosZ + (entityLiving.posZ - entityLiving.prevPosZ) * partial;
-	
+
 			Frustrum frustrum = new Frustrum();
 			frustrum.setPosition(x, y, z);
-	
+
 			boolean found = false;
 			List<Entity> list = world.loadedEntityList;
-			for(Entity entity : list) 
+			for(Entity entity : list)
 			{
-				if(!(entity instanceof EntityPlayer)) continue;
+				if(!(entity instanceof EntityPlayer))
+					continue;
 				EntityPlayer player = (EntityPlayer) entity;
-				if(player.isInvisible()) return;
-				if(!entity.getCommandSenderName().equalsIgnoreCase("victorious3")) continue;
+				if(player.isInvisible())
+					return;
+				if(!entity.getCommandSenderName().equalsIgnoreCase("victorious3"))
+					continue;
 				found = true;
-				
+
 				boolean flag = entity.isInRangeToRender3d(x, y, z) && (entity.ignoreFrustumCheck || frustrum.isBoundingBoxInFrustum(entity.boundingBox) || entity.riddenByEntity == mc.thePlayer);
-	
-				if(!flag && entity instanceof EntityLiving) 
+
+				if(!flag && entity instanceof EntityLiving)
 				{
 					EntityLiving entityliving = (EntityLiving) entity;
-					if(entityliving.getLeashed() && entityliving.getLeashedToEntity() != null) 
+					if (entityliving.getLeashed() && entityliving.getLeashedToEntity() != null)
 					{
 						Entity entity1 = entityliving.getLeashedToEntity();
 						flag = frustrum.isBoundingBoxInFrustum(entity1.boundingBox);
@@ -252,123 +271,135 @@ public class ClientProxy extends CommonProxy
 					GL11.glPushMatrix();
 					double scale = 1.2 + (Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.02;
 					GL11.glScaled(scale, scale, scale);
-					GL11.glColor3f(0, (float)((Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.2), 1);
-					
+					GL11.glColor3f(0, (float) ((Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.2), 1);
+
 					RenderManager rm = RenderManager.instance;
-					
+
 					double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partial - rm.renderPosX;
 					double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partial - rm.renderPosY;
 					double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partial - rm.renderPosZ;
-	
+
 					float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partial;
-					
+
 					int i = entity.getBrightnessForRender(partial);
-	
+
 					int j = i % 65536;
 					int k = i / 65536;
 					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j / 1.0F, k / 1.0F);
 
-					RenderPlayer render = (RenderPlayer)RenderManager.instance.getEntityRenderObject(entity);
+					RenderPlayer render = (RenderPlayer) RenderManager.instance.getEntityRenderObject(entity);
 					if(render != null && rm.renderEngine != null && !render.isStaticEntity())
-					{	
+					{
 						ItemStack itemstack = player.inventory.getCurrentItem();
-			            render.modelBipedMain.heldItemRight = itemstack != null ? 1 : 0;
+						render.modelBipedMain.heldItemRight = itemstack != null ? 1 : 0;
 
-			            if (itemstack != null && player.getItemInUseCount() > 0)
-			            {
-			                EnumAction enumaction = itemstack.getItemUseAction();
+						if(itemstack != null && player.getItemInUseCount() > 0)
+						{
+							EnumAction enumaction = itemstack.getItemUseAction();
 
-			                if (enumaction == EnumAction.block) render.modelBipedMain.heldItemRight = 3;
-			                else if (enumaction == EnumAction.bow) render.modelBipedMain.aimedBow = true;
-			            }
+							if(enumaction == EnumAction.block)
+								render.modelBipedMain.heldItemRight = 3;
+							else if(enumaction == EnumAction.bow)
+								render.modelBipedMain.aimedBow = true;
+						}
 
-			            render.modelBipedMain.isSneak = player.isSneaking();
-			            if (player.isSneaking() && !(player instanceof EntityPlayerSP)) y2 -= 0.125D;
-						
+						render.modelBipedMain.isSneak = player.isSneaking();
+						if(player.isSneaking() && !(player instanceof EntityPlayerSP))
+							y2 -= 0.125D;
+
 						float f2 = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * partial;
-			            float f3 = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * partial;
-			            float f4;
-	
-			            if (player.isRiding() && player.ridingEntity instanceof EntityLivingBase)
-			            {
-			                EntityLivingBase entitylivingbase1 = (EntityLivingBase)player.ridingEntity;
-			                f2 = player.prevRenderYawOffset + (entitylivingbase1.renderYawOffset - entitylivingbase1.prevRenderYawOffset) * partial;
-			                f4 = MathHelper.wrapAngleTo180_float(f3 - f2);
-			                f4 = MathHelper.clamp_float(f4, -85, 85);
-			                f2 = f3 - f4;
-			                if (f4 * f4 > 2500.0F) f2 += f4 * 0.2F;
-			            }
-	
-			            float f13 = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partial;
-			            f4 = player.ticksExisted + partial;
-			            
-			            ReflectionHelper.findMethod(RenderPlayer.class, render, new String[]{"renderLivingAt", "func_77039_a"}, EntityLivingBase.class, double.class, double.class, double.class).invoke(render, entity, x2, y2, z2);
-			            ReflectionHelper.findMethod(RenderPlayer.class, render, new String[]{"rotateCorpse", "func_77043_a"}, EntityLivingBase.class, float.class, float.class, float.class).invoke(render, entity, f4, f2, partial);
-			            			            
-			            float titlt = 0.0625F;
-			            float limbSwing = player.prevLimbSwingAmount + (player.limbSwingAmount - player.prevLimbSwingAmount) * partial;
-			            float limbSwing2 = player.limbSwing - player.limbSwingAmount * (1.0F - partial);
-	
-			            if (player.isChild()) limbSwing2 *= 3.0F;
-			            if (limbSwing > 1.0F) limbSwing = 1.0F;
-			            
-			            GL11.glRotatef(180, 1, 0, 0);
-			            GL11.glRotatef(180, 0, 1, 0);
-			            GL11.glTranslatef(0, player.eyeHeight, 0);
-			            
-			            render.modelBipedMain.setRotationAngles(limbSwing2, limbSwing, f4, f3 - f2, f13, titlt, entity);
-			            
-			            render.modelBipedMain.bipedBody.render(titlt);
-			            
-			            render.modelBipedMain.bipedRightArm.offsetX = 1 / 16F;
-			            render.modelBipedMain.bipedRightArm.render(titlt);
-			            
-			            render.modelBipedMain.bipedLeftArm.offsetX = -1 / 16F;
-			            render.modelBipedMain.bipedLeftArm.render(titlt);
-			            
-			            render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = -2 / 16F;
-			            if(player.isSneaking()) 
-			            	render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = -1 / 16F;
-			            render.modelBipedMain.bipedRightLeg.render(titlt);
-			            render.modelBipedMain.bipedLeftLeg.render(titlt);
-			            
-			            render.modelBipedMain.bipedHeadwear.offsetY = 1 / 16F;
-			            render.modelBipedMain.bipedHeadwear.render(titlt);
-			            
-			            render.modelBipedMain.bipedRightArm.offsetX = render.modelBipedMain.bipedLeftArm.offsetX = 0;
-			            render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = 0;
-			            render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = 0;
-			            render.modelBipedMain.bipedHeadwear.offsetY = 0;
-			        }
-					
+						float f3 = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * partial;
+						float f4;
+
+						if(player.isRiding() && player.ridingEntity instanceof EntityLivingBase)
+						{
+							EntityLivingBase entitylivingbase1 = (EntityLivingBase) player.ridingEntity;
+							f2 = player.prevRenderYawOffset
+									+ (entitylivingbase1.renderYawOffset - entitylivingbase1.prevRenderYawOffset)
+									* partial;
+							f4 = MathHelper.wrapAngleTo180_float(f3 - f2);
+							f4 = MathHelper.clamp_float(f4, -85, 85);
+							f2 = f3 - f4;
+							if(f4 * f4 > 2500.0F) f2 += f4 * 0.2F;
+						}
+
+						float f13 = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partial;
+						f4 = player.ticksExisted + partial;
+
+						ReflectionHelper.findMethod(RenderPlayer.class, render, new String[] { "renderLivingAt", "func_77039_a" }, EntityLivingBase.class, double.class, double.class, double.class).invoke(render, entity, x2, y2, z2);
+						ReflectionHelper.findMethod(RenderPlayer.class, render, new String[] { "rotateCorpse", "func_77043_a" }, EntityLivingBase.class, float.class, float.class, float.class).invoke(render, entity, f4, f2, partial);
+
+						float tilt = 0.0625F;
+						float limbSwing = player.prevLimbSwingAmount
+								+ (player.limbSwingAmount - player.prevLimbSwingAmount) * partial;
+						float limbSwing2 = player.limbSwing - player.limbSwingAmount * (1.0F - partial);
+
+						if (player.isChild())
+							limbSwing2 *= 3.0F;
+						if (limbSwing > 1.0F)
+							limbSwing = 1.0F;
+
+						GL11.glRotatef(180, 1, 0, 0);
+						GL11.glRotatef(180, 0, 1, 0);
+						GL11.glTranslatef(0, player.eyeHeight, 0);
+
+						// Various hardcoded offsets to make it look a little
+						// bit more natural
+
+						render.modelBipedMain.setRotationAngles(limbSwing2, limbSwing, f4, f3 - f2, f13, tilt, entity);
+
+						render.modelBipedMain.bipedBody.render(tilt);
+
+						render.modelBipedMain.bipedRightArm.offsetX = 1 / 16F;
+						render.modelBipedMain.bipedRightArm.render(tilt);
+
+						render.modelBipedMain.bipedLeftArm.offsetX = -1 / 16F;
+						render.modelBipedMain.bipedLeftArm.render(tilt);
+
+						render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = -2 / 16F;
+						if (player.isSneaking())
+							render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = -1 / 16F;
+						render.modelBipedMain.bipedRightLeg.render(tilt);
+						render.modelBipedMain.bipedLeftLeg.render(tilt);
+
+						render.modelBipedMain.bipedHeadwear.offsetY = 1 / 16F;
+						render.modelBipedMain.bipedHeadwear.render(tilt);
+
+						render.modelBipedMain.bipedRightArm.offsetX = render.modelBipedMain.bipedLeftArm.offsetX = 0;
+						render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = 0;
+						render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = 0;
+						render.modelBipedMain.bipedHeadwear.offsetY = 0;
+					}
+
 					GL11.glColor3f(1, 1, 1);
 					GL11.glPopMatrix();
 				}
 			}
-			if(!found) return;
+			if (!found) return;
 
 			GL11.glDepthMask(true);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GL11.glEnable(GL11.GL_LIGHTING);
-			
-			if(OpenGlHelper.isFramebufferEnabled())
+
+			if(OpenGlHelper.isFramebufferEnabled() && shaders && ShaderHelper.SHADER_BLUR != 0)
 			{
 				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, mcfbo.framebufferTexture, 0);
-				
+
 				GL11.glMatrixMode(GL11.GL_PROJECTION);
 				GL11.glLoadIdentity();
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				GL11.glLoadIdentity();
-				
+
 				fbo2.bindFramebuffer(false);
 				fbo.bindFramebufferTexture();
-				
+
 				ShaderHelper.bindShader(ShaderHelper.SHADER_BLUR);
 				ARBShaderObjects.glUniform2fARB(ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLUR, "uShift"), 2F / fbo.framebufferWidth, 0);
+				
 				for(int i = 0; i < 6; i++)
 				{
-					if(i == 1) fbo2.bindFramebufferTexture();
-					if(i == 3) ARBShaderObjects.glUniform2fARB(ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLUR, "uShift"), 0, 2F / fbo.framebufferHeight);
+					if (i == 1) fbo2.bindFramebufferTexture();
+					if (i == 3) ARBShaderObjects.glUniform2fARB( ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLUR, "uShift"), 0, 2F / fbo.framebufferHeight);
 					Tessellator tes = Tessellator.instance;
 					tes.startDrawingQuads();
 					tes.addVertexWithUV(-1, -1, 0, 0, 0);
@@ -377,16 +408,18 @@ public class ClientProxy extends CommonProxy
 					tes.addVertexWithUV(-1, 1, 0, 0, 1);
 					tes.draw();
 				}
+				
+				ShaderHelper.printErrorLog(ShaderHelper.SHADER_BLUR);
 				ShaderHelper.releaseShader();
 				fbo.framebufferClear();
-				
+
 				mcfbo.bindFramebuffer(false);
 				fbo2.bindFramebufferTexture();
-				
+
 				GL11.glShadeModel(GL11.GL_SMOOTH);
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
-				
+
 				Tessellator tes = Tessellator.instance;
 				tes.startDrawingQuads();
 				tes.addVertexWithUV(-1, -1, 0, 0, 0);
@@ -394,12 +427,26 @@ public class ClientProxy extends CommonProxy
 				tes.addVertexWithUV(1, 1, 0, 1, 1);
 				tes.addVertexWithUV(-1, 1, 0, 0, 1);
 				tes.draw();
-				
+
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GL11.glShadeModel(GL11.GL_FLAT);
+
+				int error = GL11.glGetError();
+				if(error != 0)
+				{
+					IntegratedCircuits.logger.warn("Shaders not supported, disabling aura effect :(");
+					shaders = false;
+					return;
+				}
+			} 
+			else
+			{
 				GL11.glDisable(GL11.GL_BLEND);
 				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 				GL11.glShadeModel(GL11.GL_FLAT);
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
