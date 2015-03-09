@@ -446,7 +446,7 @@ public class ClientProxy extends CommonProxy
 					tes.draw();
 				}
 				
-				ShaderHelper.printErrorLog(ShaderHelper.SHADER_BLUR);
+				//ShaderHelper.printErrorLog(ShaderHelper.SHADER_BLUR);
 				ShaderHelper.releaseShader();
 				fbo.framebufferClear();
 
