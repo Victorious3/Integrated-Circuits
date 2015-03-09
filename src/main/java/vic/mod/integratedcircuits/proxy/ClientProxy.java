@@ -208,8 +208,7 @@ public class ClientProxy extends CommonProxy
 					mcfbo.bindFramebuffer(false);
 				}
 
-				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553,
-						fbo.framebufferTexture, 0);
+				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, fbo.framebufferTexture, 0);
 
 				GL11.glClearColor(0, 0, 0, 1);
 
@@ -249,12 +248,9 @@ public class ClientProxy extends CommonProxy
 				if(!(entity instanceof EntityPlayer))
 					continue;
 				EntityPlayer player = (EntityPlayer) entity;
-				if(player.isInvisible())
-					return;
-				if(!entity.getCommandSenderName().equalsIgnoreCase("victorious3"))
+				if(player.isInvisible() || !entity.getCommandSenderName().equalsIgnoreCase("victorious3"))
 					continue;
-				found = true;
-
+				
 				boolean flag = entity.isInRangeToRender3d(x, y, z) && (entity.ignoreFrustumCheck || frustrum.isBoundingBoxInFrustum(entity.boundingBox) || entity.riddenByEntity == mc.thePlayer);
 
 				if(!flag && entity instanceof EntityLiving)
@@ -268,6 +264,7 @@ public class ClientProxy extends CommonProxy
 				}
 				if(flag && (entity != mc.renderViewEntity || mc.gameSettings.thirdPersonView != 0 || mc.renderViewEntity.isPlayerSleeping()) && world.blockExists(MathHelper.floor_double(entity.posX), 0, MathHelper.floor_double(entity.posZ)))
 				{
+					found = true;
 					GL11.glPushMatrix();
 					double scale = 1.2 + (Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.02;
 					GL11.glScaled(scale, scale, scale);
@@ -375,19 +372,18 @@ public class ClientProxy extends CommonProxy
 					GL11.glPopMatrix();
 				}
 			}
-			if (!found) return;
-
-			GL11.glDepthMask(true);
+			
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glEnable(GL11.GL_LIGHTING);
-
-			if(OpenGlHelper.isFramebufferEnabled() && shaders && ShaderHelper.SHADER_BLUR != 0)
+			
+			OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, mcfbo.framebufferTexture, 0);
+			
+			if(OpenGlHelper.isFramebufferEnabled() && shaders && ShaderHelper.SHADER_BLUR != 0 && found)
 			{
-				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, mcfbo.framebufferTexture, 0);
-
 				GL11.glMatrixMode(GL11.GL_PROJECTION);
+				GL11.glPushMatrix();
 				GL11.glLoadIdentity();
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glPushMatrix();
 				GL11.glLoadIdentity();
 
 				fbo2.bindFramebuffer(false);
@@ -428,10 +424,6 @@ public class ClientProxy extends CommonProxy
 				tes.addVertexWithUV(-1, 1, 0, 0, 1);
 				tes.draw();
 
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				GL11.glShadeModel(GL11.GL_FLAT);
-
 				int error = GL11.glGetError();
 				if(error != 0)
 				{
@@ -439,13 +431,18 @@ public class ClientProxy extends CommonProxy
 					shaders = false;
 					return;
 				}
-			} 
-			else
-			{
-				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				GL11.glShadeModel(GL11.GL_FLAT);
+				
+				GL11.glPopMatrix();
+				GL11.glMatrixMode(GL11.GL_PROJECTION);
+				GL11.glPopMatrix();
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			}
+			
+			GL11.glDepthMask(true);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glShadeModel(GL11.GL_FLAT);
 
 		} catch (Exception e) {
 			e.printStackTrace();
