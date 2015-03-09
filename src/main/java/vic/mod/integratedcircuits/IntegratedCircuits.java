@@ -68,7 +68,7 @@ public class IntegratedCircuits
 
 	@Instance(Constants.MOD_ID)
 	public static IntegratedCircuits instance;
-    
+
 	@SidedProxy(clientSide = "vic.mod.integratedcircuits.proxy.ClientProxy", serverSide = "vic.mod.integratedcircuits.proxy.CommonProxy")
 	public static CommonProxy proxy;
 	
@@ -138,7 +138,7 @@ public class IntegratedCircuits
 		if(Loader.isModLoaded("NotEnoughItems") && !MiscUtils.isServer()) 
 			new NEIAddon().initialize();
 	}
-    
+
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
@@ -152,6 +152,6 @@ public class IntegratedCircuits
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		IntegratedCircuitsRecipes.loadRecipes();
-		logger.info("Done! This is an extremely early alpha version so please report any bugs occuring to https://github.com/Victorious3/Integrated-Circuits");
+		logger.info("Done! This is an extremely early alpha version so please report any bugs occurring to https://github.com/Victorious3/Integrated-Circuits");
 	}
 }

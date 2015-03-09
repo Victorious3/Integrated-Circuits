@@ -5,10 +5,12 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -135,7 +137,7 @@ public class ClientProxy extends CommonProxy
 		double yOff = event.player.lastTickPosY + (event.player.posY - event.player.lastTickPosY) * event.partialTicks;
 		double zOff = event.player.lastTickPosZ + (event.player.posZ - event.player.lastTickPosZ) * event.partialTicks;
 		box = box.offset(-xOff, -yOff, -zOff).expand(0.002, 0.002, 0.002);
-        
+		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.4F);
@@ -171,12 +173,51 @@ public class ClientProxy extends CommonProxy
 			if(gui == null || !gui.doesGuiPauseGame()) clientTicks++;
 		}
 	}
+
+	/** Needed because of reflection. */
+	public static void open7SegmentGUI(Part7Segment part)
+	{
+		Minecraft.getMinecraft().displayGuiScreen(new Gui7Segment(part));
+	}
+	
+	//Don't even look at what's coming now. Not related at all
+	
+	private enum FancyThing { NONE, SHIRO, JIBRIL, STEPH, MAMI, NANO, CIRNO }
+	private FancyThing getFancyThing(UUID uuid, String skinID)
+	{
+		String uuidStr = uuid.toString();
+		// Is this someone who has deserved it?
+		if (uuidStr.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
+			uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
+			uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
+			uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
+			uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") || // skyem
+			uuidStr.equals("771422e7-904c-4952-bb55-de9590f97739")) { // andrejsavikin
+			// Work out what skin they have
+			if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro skin
+				return FancyThing.SHIRO;
+			else if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) // Jibril skin
+				return FancyThing.JIBRIL;
+			else if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) // Steph skin
+				return FancyThing.STEPH;
+			else if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) // Mami skin
+				return FancyThing.MAMI;
+			else if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) // Nano skin
+				return FancyThing.NANO;
+			else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno skin
+				return FancyThing.CIRNO;
+		}
+		// You do not get a fancy thing, sorry. :(
+		return FancyThing.NONE;
+	}
+	private FancyThing getFancyThing(AbstractClientPlayer player)
+	{
+		return getFancyThing(player.getUniqueID(), player.getLocationSkin().getResourcePath());
+	}
 	
 	Framebuffer fbo;
 	Framebuffer fbo2;
 	private boolean shaders = OpenGlHelper.shadersSupported;
-	
-	//Don't even look at what's coming now. Not related at all
 	
 	public void renderPlayer(float partial, RenderGlobal context)
 	{
@@ -245,10 +286,10 @@ public class ClientProxy extends CommonProxy
 			List<Entity> list = world.loadedEntityList;
 			for(Entity entity : list)
 			{
-				if(!(entity instanceof EntityPlayer))
+				if(!(entity instanceof AbstractClientPlayer))
 					continue;
-				EntityPlayer player = (EntityPlayer) entity;
-				if(player.isInvisible() || !entity.getCommandSenderName().equalsIgnoreCase("victorious3"))
+				AbstractClientPlayer player = (AbstractClientPlayer) entity;
+				if(player.isInvisible() || getFancyThing(player) != FancyThing.CIRNO)
 					continue;
 				
 				boolean flag = entity.isInRangeToRender3d(x, y, z) && (entity.ignoreFrustumCheck || frustrum.isBoundingBoxInFrustum(entity.boundingBox) || entity.riddenByEntity == mc.thePlayer);
@@ -405,7 +446,7 @@ public class ClientProxy extends CommonProxy
 					tes.draw();
 				}
 				
-				ShaderHelper.printErrorLog(ShaderHelper.SHADER_BLUR);
+				//ShaderHelper.printErrorLog(ShaderHelper.SHADER_BLUR);
 				ShaderHelper.releaseShader();
 				fbo.framebufferClear();
 
@@ -448,23 +489,21 @@ public class ClientProxy extends CommonProxy
 			e.printStackTrace();
 		}
 	}
-	
+
 	@SubscribeEvent
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
 	{
 		EntityPlayer player = event.entityPlayer;
-		String name = player.getCommandSenderName();
 		Minecraft mc = Minecraft.getMinecraft();
+
+		// Get fancy thing of the player
+		FancyThing fancyThing = FancyThing.NONE;
+		if (player instanceof AbstractClientPlayer)
+			fancyThing = getFancyThing((AbstractClientPlayer)player);
+		if (fancyThing == FancyThing.NONE) return;
 		
-		int renderType = 0;
-		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
-		else if(name.equalsIgnoreCase("thog")) renderType = 2;
-		else if(name.equalsIgnoreCase("rx14")) renderType = 3;
-		else if(name.equalsIgnoreCase("riskyken")) renderType = 4;
-		else if(name.equalsIgnoreCase("skyem")) renderType = 5;
-		if(renderType == 0) return;	
-		
-		boolean hideArmor = player.inventory.armorItemInSlot(3) != null;
+		boolean hideThing = player.inventory.armorItemInSlot(3) != null &&
+				(fancyThing == FancyThing.SHIRO || fancyThing == FancyThing.STEPH || fancyThing == FancyThing.MAMI);
 		
 		//Test if AW is hiding the headgear
 		if(IntegratedCircuits.isAWLoaded)
@@ -479,18 +518,18 @@ public class ClientProxy extends CommonProxy
 					Object skinInfo = skinMap.get(player.getPersistentID());
 					Object nakedInfo = skinInfo.getClass().getMethod("getNakedInfo").invoke(skinInfo);
 					BitSet armourOverride = (BitSet)nakedInfo.getClass().getDeclaredField("armourOverride").get(nakedInfo);
-					if(armourOverride.get(0)) hideArmor = false;
+					if(armourOverride.get(0)) hideThing = false;
 				}	
 			} catch (Exception e) {}
 		}
+
+		if(hideThing) return;
 		
-		if(renderType != 2 && hideArmor) return;
-		
-		if(renderType == 5) 
+		if(fancyThing == FancyThing.NANO) // We do this here because there is code before the switch block that breaks this.
 		{
-			long time = System.currentTimeMillis();
-			
 			//Nano Shinonome
+			long time = System.currentTimeMillis();
+
 			NanoProperties properties = (NanoProperties) event.entityPlayer.getExtendedProperties("nano");	
 			if(properties == null)
 				event.entityPlayer.registerExtendedProperties("nano", properties = new NanoProperties());
@@ -546,107 +585,100 @@ public class ClientProxy extends CommonProxy
 		
 		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
 		Tessellator tes = Tessellator.instance;
-		
-		if(renderType == 2)
+
+		switch (fancyThing)
 		{
-			//Jibril
-			GL11.glPushMatrix();
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			RenderUtils.setBrightness(240, 240);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-			GL11.glColor4f(1F, 1F, 1F, 1F);
-			
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_HALO);
-			
-			GL11.glRotated(30, 1, 0, -1);
-			GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
-			GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
-			
-			tes.startDrawingQuads();	
-			tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
-			tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
-			tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
-			tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);	
-			tes.draw();
-			
-			GL11.glEnable(GL11.GL_LIGHTING);
-			GL11.glShadeModel(GL11.GL_FLAT);
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glPopMatrix();
-			RenderUtils.resetBrightness();
-		}
-		else if(renderType == 1)
-		{
-			//Shiro Nai
-			GL11.glPushMatrix();
-			float scale = 1 / 64F;
-			
-			GL11.glTranslated(15 * scale, -0.78, 15 * scale);			
-			float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
-			GL11.glTranslatef(-f1, 0, -f1);
-			GL11.glRotated(-25, 1, 0, -1);
-			GL11.glTranslatef(f1, 0, f1);
-			
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			ModelCrown.instance.render(scale);
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			GL11.glPopMatrix();
-		}
-		else if(renderType == 3)
-		{
-			//Stephanie Dola
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_EARS);
-			ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
-			GameData.getBlockRegistry().getObject(name);
-		}
-		else if(renderType == 4) 
-		{	
-			//Mami Tomoe
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			renderCurl();
-			GL11.glScalef(1, 1, -1);
-			renderCurl();
-			GL11.glScalef(1, 1, -1);
-			renderHat();
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLOWER);
-			GL11.glPushMatrix();
-			GL11.glTranslatef(0, -9 / 16F, 0);
-			GL11.glTranslatef(2 / 16F, 0, -3.3F / 16F);
-			GL11.glRotatef(85, 1, 0, 0);
-			GL11.glRotatef(30, 0, 0, 1);
-			tes.startDrawingQuads();
-			tes.addVertexWithUV(-2 / 16F, 0, -2 / 16F, 0, 0);
-			tes.addVertexWithUV(-2 / 16F, 0, 2 / 16F, 0, 1);
-			tes.addVertexWithUV(2 / 16F, 0, 2 / 16F, 1, 1);
-			tes.addVertexWithUV(2 / 16F, 0, -2 / 16F, 1, 0);
-			tes.draw();
-			GL11.glPopMatrix();
-			
-			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLUFF);
-			GL11.glDisable(GL11.GL_LIGHTING);
-			GL11.glPushMatrix();
-			GL11.glTranslatef(-1 / 16F, -8 / 16F, -5F / 16F);
-			GL11.glRotatef(0, 1, 0, 0);
-			tes.startDrawingQuads();
-			tes.addVertexWithUV(0, -3 / 16F, -3 / 16F, 0, 0);
-			tes.addVertexWithUV(0, 3 / 16F, -3 / 16F, 0, 1);
-			tes.addVertexWithUV(0, 3 / 16F, 3 / 16F, 1, 1);
-			tes.addVertexWithUV(0, -3 / 16F, 3 / 16F, 1, 0);
-			tes.draw();
-			GL11.glPopMatrix();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			case JIBRIL:
+				// Jibril
+				GL11.glPushMatrix();
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				RenderUtils.setBrightness(240, 240);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GL11.glColor4f(1F, 1F, 1F, 1F);
+
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_HALO);
+
+				GL11.glRotated(30, 1, 0, -1);
+				GL11.glTranslatef(-0.1F, -0.62F, -0.1F);
+				GL11.glRotatef(player.ticksExisted + event.partialRenderTick, 0, 1, 0);
+
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(-0.5, 0, -0.5, 0, 0);
+				tes.addVertexWithUV(-0.5, 0, 0.5, 0, 1);
+				tes.addVertexWithUV(0.5, 0, 0.5, 1, 1);
+				tes.addVertexWithUV(0.5, 0, -0.5, 1, 0);
+				tes.draw();
+
+				GL11.glEnable(GL11.GL_LIGHTING);
+				GL11.glShadeModel(GL11.GL_FLAT);
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glPopMatrix();
+				RenderUtils.resetBrightness();
+				break;
+			case SHIRO:
+				//Shiro Nai
+				GL11.glPushMatrix();
+				float scale = 1 / 64F;
+
+				GL11.glTranslated(15 * scale, -0.78, 15 * scale);
+				float f1 = (float)(7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
+				GL11.glTranslatef(-f1, 0, -f1);
+				GL11.glRotated(-25, 1, 0, -1);
+				GL11.glTranslatef(f1, 0, f1);
+
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				ModelCrown.instance.render(scale);
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				GL11.glPopMatrix();
+				break;
+			case STEPH:
+				//Stephanie Dola
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_EARS);
+				ModelDogEars.instance.render(pitch, player.rotationYawHead - player.prevRotationYawHead);
+				GameData.getBlockRegistry().getObject(player.getCommandSenderName());
+				break;
+			case MAMI:
+				//Mami Tomoe
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				renderCurl();
+				GL11.glScalef(1, 1, -1);
+				renderCurl();
+				GL11.glScalef(1, 1, -1);
+				renderHat();
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLOWER);
+				GL11.glPushMatrix();
+				GL11.glTranslatef(0, -9 / 16F, 0);
+				GL11.glTranslatef(2 / 16F, 0, -3.3F / 16F);
+				GL11.glRotatef(85, 1, 0, 0);
+				GL11.glRotatef(30, 0, 0, 1);
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(-2 / 16F, 0, -2 / 16F, 0, 0);
+				tes.addVertexWithUV(-2 / 16F, 0, 2 / 16F, 0, 1);
+				tes.addVertexWithUV(2 / 16F, 0, 2 / 16F, 1, 1);
+				tes.addVertexWithUV(2 / 16F, 0, -2 / 16F, 1, 0);
+				tes.draw();
+				GL11.glPopMatrix();
+
+				mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_FLUFF);
+				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glPushMatrix();
+				GL11.glTranslatef(-1 / 16F, -8 / 16F, -5F / 16F);
+				GL11.glRotatef(0, 1, 0, 0);
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(0, -3 / 16F, -3 / 16F, 0, 0);
+				tes.addVertexWithUV(0, 3 / 16F, -3 / 16F, 0, 1);
+				tes.addVertexWithUV(0, 3 / 16F, 3 / 16F, 1, 1);
+				tes.addVertexWithUV(0, -3 / 16F, 3 / 16F, 1, 0);
+				tes.draw();
+				GL11.glPopMatrix();
+				GL11.glEnable(GL11.GL_LIGHTING);
+				break;
 		}
 		GL11.glPopMatrix();
-	}
-	
-	/** Needed because of reflection. */
-	public static void open7SegmentGUI(Part7Segment part) 
-	{
-		Minecraft.getMinecraft().displayGuiScreen(new Gui7Segment(part));
 	}
 
 	public static void renderCurl()
