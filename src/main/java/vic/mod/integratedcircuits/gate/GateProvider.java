@@ -116,7 +116,7 @@ public class GateProvider
 	private static byte[] calculateBundledInputNative(IGateProvider provider, int side, BlockCoord pos, int abs)
 	{
 		PartGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
-		if(neighbour != null) return neighbour.output[side];
+		if(neighbour != null) return neighbour.output[(side + 2) % 4];
 		return null;
 	}
 	
