@@ -9,8 +9,8 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
@@ -182,8 +182,9 @@ public class ClientProxy extends CommonProxy
 	
 	//Don't even look at what's coming now. Not related at all
 	
-	private enum FancyThing { NONE, SHIRO, JIBRIL, STEPH, MAMI, NANO, CIRNO }
-	private FancyThing getFancyThing(UUID uuid, String skinID)
+	private enum Cosplay { NONE, SHIRO, JIBRIL, STEPH, MAMI, NANO, CIRNO }
+	
+	private Cosplay getCosplay(UUID uuid, String skinID)
 	{
 		String uuidStr = uuid.toString();
 		// Is this someone who has deserved it?
@@ -191,28 +192,28 @@ public class ClientProxy extends CommonProxy
 			uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
 			uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
 			uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
-			uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") || // skyem
-			uuidStr.equals("771422e7-904c-4952-bb55-de9590f97739")) { // andrejsavikin
+			uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") /*|| // skyem
+			*uuidStr.equals("771422e7-904c-4952-bb55-de9590f97739")*/) { // andrejsavikin
 			// Work out what skin they have
 			if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro skin
-				return FancyThing.SHIRO;
+				return Cosplay.SHIRO;
 			else if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) // Jibril skin
-				return FancyThing.JIBRIL;
+				return Cosplay.JIBRIL;
 			else if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) // Steph skin
-				return FancyThing.STEPH;
+				return Cosplay.STEPH;
 			else if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) // Mami skin
-				return FancyThing.MAMI;
+				return Cosplay.MAMI;
 			else if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) // Nano skin
-				return FancyThing.NANO;
+				return Cosplay.NANO;
 			else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno skin
-				return FancyThing.CIRNO;
+				return Cosplay.CIRNO;
 		}
-		// You do not get a fancy thing, sorry. :(
-		return FancyThing.NONE;
+		return Cosplay.NONE;
 	}
-	private FancyThing getFancyThing(AbstractClientPlayer player)
+	
+	private Cosplay getCosplay(AbstractClientPlayer player)
 	{
-		return getFancyThing(player.getUniqueID(), player.getLocationSkin().getResourcePath());
+		return getCosplay(player.getUniqueID(), player.getLocationSkin().getResourcePath());
 	}
 	
 	Framebuffer fbo;
@@ -289,7 +290,7 @@ public class ClientProxy extends CommonProxy
 				if(!(entity instanceof AbstractClientPlayer))
 					continue;
 				AbstractClientPlayer player = (AbstractClientPlayer) entity;
-				if(player.isInvisible() || getFancyThing(player) != FancyThing.CIRNO)
+				if(player.isInvisible() || getCosplay(player) != Cosplay.CIRNO)
 					continue;
 				
 				boolean flag = entity.isInRangeToRender3d(x, y, z) && (entity.ignoreFrustumCheck || frustrum.isBoundingBoxInFrustum(entity.boundingBox) || entity.riddenByEntity == mc.thePlayer);
@@ -496,14 +497,14 @@ public class ClientProxy extends CommonProxy
 		EntityPlayer player = event.entityPlayer;
 		Minecraft mc = Minecraft.getMinecraft();
 
-		// Get fancy thing of the player
-		FancyThing fancyThing = FancyThing.NONE;
+		// Get cosplay of the player
+		Cosplay cosplay = Cosplay.NONE;
 		if (player instanceof AbstractClientPlayer)
-			fancyThing = getFancyThing((AbstractClientPlayer)player);
-		if (fancyThing == FancyThing.NONE) return;
+			cosplay = getCosplay((AbstractClientPlayer)player);
+		if (cosplay == Cosplay.NONE) return;
 		
 		boolean hideThing = player.inventory.armorItemInSlot(3) != null &&
-				(fancyThing == FancyThing.SHIRO || fancyThing == FancyThing.STEPH || fancyThing == FancyThing.MAMI);
+				(cosplay == Cosplay.SHIRO || cosplay == Cosplay.STEPH || cosplay == Cosplay.MAMI);
 		
 		//Test if AW is hiding the headgear
 		if(IntegratedCircuits.isAWLoaded)
@@ -525,7 +526,7 @@ public class ClientProxy extends CommonProxy
 
 		if(hideThing) return;
 		
-		if(fancyThing == FancyThing.NANO) // We do this here because there is code before the switch block that breaks this.
+		if(cosplay == Cosplay.NANO) // We do this here because there is code before the switch block that breaks this.
 		{
 			//Nano Shinonome
 			long time = System.currentTimeMillis();
@@ -586,7 +587,7 @@ public class ClientProxy extends CommonProxy
 		GL11.glTranslated(0, (player.isSneaking() ? 0.0625 : 0), 0);
 		Tessellator tes = Tessellator.instance;
 
-		switch (fancyThing)
+		switch (cosplay)
 		{
 			case JIBRIL:
 				// Jibril
@@ -676,6 +677,8 @@ public class ClientProxy extends CommonProxy
 				tes.draw();
 				GL11.glPopMatrix();
 				GL11.glEnable(GL11.GL_LIGHTING);
+				break;
+			default:
 				break;
 		}
 		GL11.glPopMatrix();
