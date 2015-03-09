@@ -209,7 +209,7 @@ public class ClientProxy extends CommonProxy
 			fancyThing = getFancyThing((AbstractClientPlayer)player);
 		if (fancyThing == FancyThing.NONE) return;
 		
-		boolean headArmour = player.inventory.armorItemInSlot(3) != null &&
+		boolean hideThing = player.inventory.armorItemInSlot(3) != null &&
 				(fancyThing == FancyThing.SHIRO || fancyThing == FancyThing.STEPH || fancyThing == FancyThing.MAMI);
 		
 		//Test if AW is hiding the headgear
@@ -225,12 +225,12 @@ public class ClientProxy extends CommonProxy
 					Object skinInfo = skinMap.get(player.getPersistentID());
 					Object nakedInfo = skinInfo.getClass().getMethod("getNakedInfo").invoke(skinInfo);
 					BitSet armourOverride = (BitSet)nakedInfo.getClass().getDeclaredField("armourOverride").get(nakedInfo);
-					if(armourOverride.get(0)) headArmour = false;
+					if(armourOverride.get(0)) hideThing = false;
 				}	
 			} catch (Exception e) {}
 		}
 
-		if(headArmour) return;
+		if(hideThing) return;
 
 		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
 		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
