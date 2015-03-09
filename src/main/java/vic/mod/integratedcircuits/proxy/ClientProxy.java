@@ -544,7 +544,6 @@ public class ClientProxy extends CommonProxy
 					{
 						properties.lastSpin = time;
 						properties.isSpinning = true;
-						//System.out.println(properties.isSpinning);
 					}
 					properties.lastJump = time;
 				}
