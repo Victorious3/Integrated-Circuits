@@ -3,6 +3,7 @@ package vic.mod.integratedcircuits.client;
 import java.util.LinkedList;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -12,6 +13,8 @@ import net.minecraftforge.common.MinecraftForge;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -39,14 +42,14 @@ public class SemiTransparentRenderer
 		
 		// First draw call, without the depth buffer.
 		GL11.glDepthMask(false);
-		dispatchRender(event.partialTicks, 1);
+		dispatchRender(event.partialTicks, 1, event.context);
 		GL11.glDepthMask(true);
 		
 		// Second draw call, only to the depth buffer.
 		GL11.glColorMask(false, false, false, false);
-		dispatchRender(event.partialTicks, 2);
+		dispatchRender(event.partialTicks, 2, event.context);
 		GL11.glColorMask(true, true, true, true);
-		
+
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_BLEND);
@@ -56,9 +59,11 @@ public class SemiTransparentRenderer
 		GL11.glPopMatrix();
 		
 		queued.clear();
+		
+		((ClientProxy)IntegratedCircuits.proxy).renderPlayer(event.partialTicks, event.context);
 	}
 	
-	private void dispatchRender(float partialTicks, int pass)
+	private void dispatchRender(float partialTicks, int pass, RenderGlobal context)
 	{
 		for(Vec3 pos : queued)
 		{

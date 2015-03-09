@@ -3,27 +3,44 @@ package vic.mod.integratedcircuits.proxy;
 import java.lang.reflect.Field;
 import java.util.BitSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.culling.Frustrum;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.event.world.WorldEvent;
 
+import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.Constants;
@@ -35,6 +52,7 @@ import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
+import vic.mod.integratedcircuits.client.ShaderHelper;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityGateRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
@@ -50,6 +68,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -69,6 +88,7 @@ public class ClientProxy extends CommonProxy
 		super.initialize();
 		stRenderer = new SemiTransparentRenderer();
 		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
+		ShaderHelper.loadShaders();
 		
 		Constants.GATE_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
 		
@@ -152,7 +172,238 @@ public class ClientProxy extends CommonProxy
 		}
 	}
 	
+	Framebuffer fbo;
+	Framebuffer fbo2;
+	
 	//Don't even look at what's coming now. Not related at all
+	
+	public void renderPlayer(float partial, RenderGlobal context)
+	{
+		//Cirno
+		try {
+			Minecraft mc = Minecraft.getMinecraft();
+			Framebuffer mcfbo = mc.getFramebuffer();
+			
+			if(OpenGlHelper.isFramebufferEnabled())
+			{
+				if(fbo == null || fbo2 == null)
+				{
+					fbo = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
+					fbo.setFramebufferColor(0, 0, 0, 1);
+					fbo.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
+					fbo.unbindFramebuffer();
+					fbo2 = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
+					fbo2.setFramebufferColor(0, 0, 0, 1);
+					fbo2.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
+					fbo2.unbindFramebuffer();
+					mcfbo.bindFramebuffer(false);
+				}
+				else if(mc.displayWidth != fbo.framebufferWidth || mc.displayHeight != fbo.framebufferHeight)
+				{
+					fbo.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
+					fbo.unbindFramebuffer();
+					fbo2.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
+					fbo2.unbindFramebuffer();
+					mcfbo.bindFramebuffer(false);
+				}
+				
+				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, fbo.framebufferTexture, 0);
+				
+				GL11.glClearColor(0, 0, 0, 1);
+			}
+			
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDepthMask(false);
+
+			WorldClient world = mc.theWorld;
+			EntityLivingBase entityLiving = mc.renderViewEntity;
+	
+			double x = entityLiving.prevPosX + (entityLiving.posX - entityLiving.prevPosX) * partial;
+			double y = entityLiving.prevPosY + (entityLiving.posY - entityLiving.prevPosY) * partial;
+			double z = entityLiving.prevPosZ + (entityLiving.posZ - entityLiving.prevPosZ) * partial;
+	
+			Frustrum frustrum = new Frustrum();
+			frustrum.setPosition(x, y, z);
+	
+			boolean found = false;
+			List<Entity> list = world.loadedEntityList;
+			for(Entity entity : list) 
+			{
+				if(!(entity instanceof EntityPlayer)) continue;
+				EntityPlayer player = (EntityPlayer) entity;
+				if(player.isInvisible()) return;
+				if(!entity.getCommandSenderName().equalsIgnoreCase("victorious3")) continue;
+				found = true;
+				
+				boolean flag = entity.isInRangeToRender3d(x, y, z) && (entity.ignoreFrustumCheck || frustrum.isBoundingBoxInFrustum(entity.boundingBox) || entity.riddenByEntity == mc.thePlayer);
+	
+				if(!flag && entity instanceof EntityLiving) 
+				{
+					EntityLiving entityliving = (EntityLiving) entity;
+					if(entityliving.getLeashed() && entityliving.getLeashedToEntity() != null) 
+					{
+						Entity entity1 = entityliving.getLeashedToEntity();
+						flag = frustrum.isBoundingBoxInFrustum(entity1.boundingBox);
+					}
+				}
+				if(flag && (entity != mc.renderViewEntity || mc.gameSettings.thirdPersonView != 0 || mc.renderViewEntity.isPlayerSleeping()) && world.blockExists(MathHelper.floor_double(entity.posX), 0, MathHelper.floor_double(entity.posZ)))
+				{
+					GL11.glPushMatrix();
+					double scale = 1.2 + (Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.02;
+					GL11.glScaled(scale, scale, scale);
+					GL11.glColor3f(0, (float)((Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.2), 1);
+					
+					RenderManager rm = RenderManager.instance;
+					
+					double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partial - rm.renderPosX;
+					double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partial - rm.renderPosY;
+					double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partial - rm.renderPosZ;
+	
+					float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partial;
+					
+					int i = entity.getBrightnessForRender(partial);
+	
+					int j = i % 65536;
+					int k = i / 65536;
+					OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, j / 1.0F, k / 1.0F);
+
+					RenderPlayer render = (RenderPlayer)RenderManager.instance.getEntityRenderObject(entity);
+					if(render != null && rm.renderEngine != null && !render.isStaticEntity())
+					{	
+						ItemStack itemstack = player.inventory.getCurrentItem();
+			            render.modelBipedMain.heldItemRight = itemstack != null ? 1 : 0;
+
+			            if (itemstack != null && player.getItemInUseCount() > 0)
+			            {
+			                EnumAction enumaction = itemstack.getItemUseAction();
+
+			                if (enumaction == EnumAction.block) render.modelBipedMain.heldItemRight = 3;
+			                else if (enumaction == EnumAction.bow) render.modelBipedMain.aimedBow = true;
+			            }
+
+			            render.modelBipedMain.isSneak = player.isSneaking();
+			            if (player.isSneaking() && !(player instanceof EntityPlayerSP)) y2 -= 0.125D;
+						
+						float f2 = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * partial;
+			            float f3 = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * partial;
+			            float f4;
+	
+			            if (player.isRiding() && player.ridingEntity instanceof EntityLivingBase)
+			            {
+			                EntityLivingBase entitylivingbase1 = (EntityLivingBase)player.ridingEntity;
+			                f2 = player.prevRenderYawOffset + (entitylivingbase1.renderYawOffset - entitylivingbase1.prevRenderYawOffset) * partial;
+			                f4 = MathHelper.wrapAngleTo180_float(f3 - f2);
+			                f4 = MathHelper.clamp_float(f4, -85, 85);
+			                f2 = f3 - f4;
+			                if (f4 * f4 > 2500.0F) f2 += f4 * 0.2F;
+			            }
+	
+			            float f13 = player.prevRotationPitch + (player.rotationPitch - player.prevRotationPitch) * partial;
+			            f4 = player.ticksExisted + partial;
+			            
+			            ReflectionHelper.findMethod(RenderPlayer.class, render, new String[]{"renderLivingAt", "func_77039_a"}, EntityLivingBase.class, double.class, double.class, double.class).invoke(render, entity, x2, y2, z2);
+			            ReflectionHelper.findMethod(RenderPlayer.class, render, new String[]{"rotateCorpse", "func_77043_a"}, EntityLivingBase.class, float.class, float.class, float.class).invoke(render, entity, f4, f2, partial);
+			            			            
+			            float titlt = 0.0625F;
+			            float limbSwing = player.prevLimbSwingAmount + (player.limbSwingAmount - player.prevLimbSwingAmount) * partial;
+			            float limbSwing2 = player.limbSwing - player.limbSwingAmount * (1.0F - partial);
+	
+			            if (player.isChild()) limbSwing2 *= 3.0F;
+			            if (limbSwing > 1.0F) limbSwing = 1.0F;
+			            
+			            GL11.glRotatef(180, 1, 0, 0);
+			            GL11.glRotatef(180, 0, 1, 0);
+			            GL11.glTranslatef(0, player.eyeHeight, 0);
+			            
+			            render.modelBipedMain.setRotationAngles(limbSwing2, limbSwing, f4, f3 - f2, f13, titlt, entity);
+			            
+			            render.modelBipedMain.bipedBody.render(titlt);
+			            
+			            render.modelBipedMain.bipedRightArm.offsetX = 1 / 16F;
+			            render.modelBipedMain.bipedRightArm.render(titlt);
+			            
+			            render.modelBipedMain.bipedLeftArm.offsetX = -1 / 16F;
+			            render.modelBipedMain.bipedLeftArm.render(titlt);
+			            
+			            render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = -2 / 16F;
+			            if(player.isSneaking()) 
+			            	render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = -1 / 16F;
+			            render.modelBipedMain.bipedRightLeg.render(titlt);
+			            render.modelBipedMain.bipedLeftLeg.render(titlt);
+			            
+			            render.modelBipedMain.bipedHeadwear.offsetY = 1 / 16F;
+			            render.modelBipedMain.bipedHeadwear.render(titlt);
+			            
+			            render.modelBipedMain.bipedRightArm.offsetX = render.modelBipedMain.bipedLeftArm.offsetX = 0;
+			            render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = 0;
+			            render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = 0;
+			            render.modelBipedMain.bipedHeadwear.offsetY = 0;
+			        }
+					
+					GL11.glColor3f(1, 1, 1);
+					GL11.glPopMatrix();
+				}
+			}
+			if(!found) return;
+
+			GL11.glDepthMask(true);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_LIGHTING);
+			
+			if(OpenGlHelper.isFramebufferEnabled())
+			{
+				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, mcfbo.framebufferTexture, 0);
+				
+				GL11.glMatrixMode(GL11.GL_PROJECTION);
+				GL11.glLoadIdentity();
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glLoadIdentity();
+				
+				fbo2.bindFramebuffer(false);
+				fbo.bindFramebufferTexture();
+				
+				ShaderHelper.bindShader(ShaderHelper.SHADER_BLUR);
+				ARBShaderObjects.glUniform2fARB(ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLUR, "uShift"), 2F / fbo.framebufferWidth, 0);
+				for(int i = 0; i < 6; i++)
+				{
+					if(i == 1) fbo2.bindFramebufferTexture();
+					if(i == 3) ARBShaderObjects.glUniform2fARB(ARBShaderObjects.glGetUniformLocationARB(ShaderHelper.SHADER_BLUR, "uShift"), 0, 2F / fbo.framebufferHeight);
+					Tessellator tes = Tessellator.instance;
+					tes.startDrawingQuads();
+					tes.addVertexWithUV(-1, -1, 0, 0, 0);
+					tes.addVertexWithUV(1, -1, 0, 1, 0);
+					tes.addVertexWithUV(1, 1, 0, 1, 1);
+					tes.addVertexWithUV(-1, 1, 0, 0, 1);
+					tes.draw();
+				}
+				ShaderHelper.releaseShader();
+				fbo.framebufferClear();
+				
+				mcfbo.bindFramebuffer(false);
+				fbo2.bindFramebufferTexture();
+				
+				GL11.glShadeModel(GL11.GL_SMOOTH);
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
+				
+				Tessellator tes = Tessellator.instance;
+				tes.startDrawingQuads();
+				tes.addVertexWithUV(-1, -1, 0, 0, 0);
+				tes.addVertexWithUV(1, -1, 0, 1, 0);
+				tes.addVertexWithUV(1, 1, 0, 1, 1);
+				tes.addVertexWithUV(-1, 1, 0, 0, 1);
+				tes.draw();
+				
+				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				GL11.glShadeModel(GL11.GL_FLAT);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@SubscribeEvent
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event)
@@ -163,9 +414,10 @@ public class ClientProxy extends CommonProxy
 		
 		int renderType = 0;
 		if(name.equalsIgnoreCase("victorious3")) renderType = 1;
-		else if(name.equalsIgnoreCase("thog92")) renderType = 2;
+		else if(name.equalsIgnoreCase("thog")) renderType = 2;
 		else if(name.equalsIgnoreCase("rx14")) renderType = 3;
 		else if(name.equalsIgnoreCase("riskyken")) renderType = 4;
+		else if(name.equalsIgnoreCase("skyem")) renderType = 5;
 		if(renderType == 0) return;	
 		
 		boolean hideArmor = player.inventory.armorItemInSlot(3) != null;
@@ -189,6 +441,52 @@ public class ClientProxy extends CommonProxy
 		}
 		
 		if(renderType != 2 && hideArmor) return;
+		
+		if(renderType == 5) 
+		{
+			long time = System.currentTimeMillis();
+			
+			//Nano Shinonome
+			NanoProperties properties = (NanoProperties) event.entityPlayer.getExtendedProperties("nano");	
+			if(properties == null)
+				event.entityPlayer.registerExtendedProperties("nano", properties = new NanoProperties());
+			boolean isJumping = player.motionY > player.jumpMovementFactor;
+			if(isJumping && !properties.isJumping) properties.lastJumpStart = System.currentTimeMillis();
+			else if(!isJumping && properties.isJumping)
+			{
+				int jumpTime = (int)(time - properties.lastJumpStart);
+				if(jumpTime > 150 && jumpTime < 450)
+				{
+					if(!properties.isSpinning && time - properties.lastJump < 1200 && Math.random() < 0.5 && time - properties.lastSpin > 10000)
+					{
+						properties.lastSpin = time;
+						properties.isSpinning = true;
+						System.out.println(properties.isSpinning);
+					}
+					properties.lastJump = time;
+				}
+			}
+			properties.isJumping = isJumping;
+			
+			GL11.glPushMatrix();
+			GL11.glScalef(0.6F, 0.6F, 0.6F);
+			GL11.glRotatef(-90, 0, 1, 0);
+			GL11.glRotatef((float)Math.toDegrees(-event.renderer.modelBipedMain.bipedBody.rotateAngleX), 0, 0, 1);
+			GL11.glTranslatef(3 / 16F, 0, 1 / 16F);
+			GL11.glTranslatef(0, 1 / 2F, -1 / 16F);
+			if(properties.isSpinning)
+			{
+				double t = time - properties.lastSpin;
+				float angle = (float)(Math.sin(t / 50D) * 20D + 0.2 * t);
+				GL11.glRotatef(angle, 1, 0, 0);
+				if(angle >= 360F) properties.isSpinning = false;
+			}	
+			GL11.glTranslatef(0, -1 / 2F, 1 / 16F);
+			mc.renderEngine.bindTexture(Resources.RESOURCE_MISC_NANO);
+			ItemRenderer.renderItemIn2D(Tessellator.instance, 0, 0, 1, 1, 32, 32, 2 / 16F);
+			GL11.glPopMatrix();
+			return;
+		}
 		
 		float yaw = player.prevRotationYawHead + (player.rotationYawHead - player.prevRotationYawHead) * event.partialRenderTick;
 		float yawOffset = player.prevRenderYawOffset + (player.renderYawOffset - player.prevRenderYawOffset) * event.partialRenderTick;
@@ -261,7 +559,7 @@ public class ClientProxy extends CommonProxy
 			GameData.getBlockRegistry().getObject(name);
 		}
 		else if(renderType == 4) 
-		{
+		{	
 			//Mami Tomoe
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			renderCurl();
@@ -459,5 +757,18 @@ public class ClientProxy extends CommonProxy
 			ear.render(1 / 16F);
 			GL11.glPopMatrix();
 		}
+	}
+	
+	private static class NanoProperties implements IExtendedEntityProperties {
+		
+		private boolean isJumping;
+		private long lastJumpStart;
+		private long lastJump;
+		private long lastSpin;
+		private boolean isSpinning;
+
+		@Override public void saveNBTData(NBTTagCompound compound) {}
+		@Override public void loadNBTData(NBTTagCompound compound) {}
+		@Override public void init(Entity entity, World world) {}	
 	}
 }

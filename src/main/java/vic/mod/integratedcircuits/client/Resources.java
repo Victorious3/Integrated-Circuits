@@ -61,6 +61,7 @@ public class Resources
 	public static final ResourceLocation RESOURCE_MISC_EARS = new ResourceLocation(Constants.MOD_ID, "textures/ears.png");
 	public static final ResourceLocation RESOURCE_MISC_FLOWER = new ResourceLocation(Constants.MOD_ID, "textures/mami_flower.png");
 	public static final ResourceLocation RESOURCE_MISC_FLUFF = new ResourceLocation(Constants.MOD_ID, "textures/mami_fluff.png");
+	public static final ResourceLocation RESOURCE_MISC_NANO = new ResourceLocation(Constants.MOD_ID, "textures/nanokey.png");
 	
 	public Resources()
 	{

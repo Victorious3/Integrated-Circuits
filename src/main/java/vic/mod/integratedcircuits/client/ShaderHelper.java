@@ -19,14 +19,14 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 /** See http://lwjgl.org/wiki/index.php?title=GLSL_Shaders_with_LWJGL **/
 @SideOnly(Side.CLIENT)
-@Deprecated
 public class ShaderHelper
 {
-	//TODO No shaders so far, I don't know if I ever need one.
+	public static int SHADER_BLUR;
+	
 	public static void loadShaders()
 	{
 		if(!OpenGlHelper.shadersSupported) return;
-//		SHADER_BLOOM = createProgramm(null, "/assets/integratedcircuits/shader/bloom.frag");
+		SHADER_BLUR = createProgramm("/assets/integratedcircuits/shader/blur.vert", "/assets/integratedcircuits/shader/blur.frag");
 	}
 	
 	public static int createProgramm(String vertexShader, String fragmentShader)
