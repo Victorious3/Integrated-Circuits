@@ -188,11 +188,11 @@ public class ClientProxy extends CommonProxy
 		String uuidStr = uuid.toString();
 		// Is this someone who has deserved it?
 		if (uuidStr.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
-				uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
-				uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
-				uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
-				uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") || // skyem
-				uuidStr.equals("771422e7-904c-4952-bb55-de9590f97739")) { // andrejsavikin
+			uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
+			uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
+			uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
+			uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") || // skyem
+			uuidStr.equals("771422e7-904c-4952-bb55-de9590f97739")) { // andrejsavikin
 			// Work out what skin they have
 			if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro skin
 				return FancyThing.SHIRO;
