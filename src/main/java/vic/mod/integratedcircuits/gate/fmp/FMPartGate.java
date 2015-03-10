@@ -147,12 +147,6 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	}
 
 	@Override
-	public void onWorldJoin() 
-	{
-		gate.onWorldJoin();
-	}
-
-	@Override
 	public void onRemoved()
 	{
 		gate.onRemoved();

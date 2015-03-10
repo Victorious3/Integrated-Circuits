@@ -1,10 +1,15 @@
 package vic.mod.integratedcircuits.gate;
 
+import java.util.Arrays;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.PartGateRenderer;
@@ -72,12 +77,44 @@ public abstract class PartGate
 	{
 		orientation = tag.getByte("orientation");
 		io = tag.getByte("io");
+		
+		byte[] input = tag.getByteArray("input");
+		byte[] output = tag.getByteArray("output");
+		
+		try {
+    		for(int i = 0; i < 4; i++)
+    		{
+    			this.input[i] = Arrays.copyOfRange(input, i * 16, (i + 1) * 16);
+    			this.output[i] = Arrays.copyOfRange(output, i * 16, (i + 1) * 16);
+    		}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//--Legacy code--
+			//We couldn't get a proper array, so output a warning.
+			IntegratedCircuits.logger.warn("Couldn't retrieve gate io for circuit at " + getProvider().getPos() + ". "
+				+ "This can be caused by a version update, if this happens on the next world load please report it!");
+			
+			//Reset to old configuration
+			this.input = new byte[4][16];
+			this.output = new byte[4][16];
+		}
 	}
 	
 	public void save(NBTTagCompound tag)
 	{
 		tag.setByte("orientation", orientation);
 		tag.setByte("io", io);
+		
+		byte[] input = null;
+		byte[] output = null;
+		
+		for(int i = 0; i < 4; i++)
+		{
+			input = ArrayUtils.addAll(input, this.input[i]);
+			output = ArrayUtils.addAll(output, this.output[i]);
+		}
+		
+		tag.setByteArray("input", input);
+		tag.setByteArray("output", output);
 	}
 
 	public void readDesc(MCDataInput packet)
@@ -171,11 +208,6 @@ public abstract class PartGate
 	}
 
 	public void onAdded() 
-	{
-		notifyChanges();
-	}
-
-	public void onWorldJoin() 
 	{
 		notifyChanges();
 	}
