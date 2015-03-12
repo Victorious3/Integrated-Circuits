@@ -22,7 +22,7 @@ public abstract class Config
 		
 		showConfirmMessage = config.get("GENERAL", "showConfirmMessage", true, "Show the CAD's confirm promt.");
 		showStartupMessage = config.getBoolean("showStartupMessage", "GENERAL", true, "Show a message on startup warning your players from the risk they are undertaking by playing with this mod.");
-		enablePropertyEdit = config.getBoolean("enablePropertyEdit", "GEBERAL", true, "Enable property editing for the circuit peripheral. I don't take any warranty for crashes that might arise because of this.");
+		enablePropertyEdit = config.getBoolean("enablePropertyEdit", "GENERAL", true, "Enable property editing for the circuit peripheral. I don't take any warranty for crashes that might arise because of this.");
 		
 		config.save();
 	}
