@@ -112,7 +112,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public byte getRedstonePower(ForgeDirection side)
 	{
-		return (byte) (gate.getRedstoneOutput(gate.getSideRel(side.ordinal())) != 0 ? -1 : 0);
+		return (byte)(gate.getRedstoneOutput(gate.getSideRel(side.ordinal())) != 0 ? -1 : 0);
 	}
 
 	@Override

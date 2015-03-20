@@ -9,6 +9,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetNetworkContainer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
@@ -19,6 +20,11 @@ import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+
+import com.bluepowermod.api.BPApi;
+import com.bluepowermod.api.wire.redstone.IBundledDevice;
+import com.bluepowermod.api.wire.redstone.IRedstoneApi;
+
 import cpw.mods.fml.common.Optional.Method;
 import dan200.computercraft.api.ComputerCraftAPI;
 
@@ -101,6 +107,7 @@ public class GateProvider
 		
 		input = calculateBundledInputNative(provider, side, pos, abs);
 		if(input == null && IntegratedCircuits.isPRLoaded) input = calculateBundledInputProjectRed(provider, side);
+		if(input == null && IntegratedCircuits.isBPLoaded) input = calculateBundledInputBluePower(provider, side, pos, abs);
 		
 		if(!provider.isMultipart())
 		{
@@ -117,6 +124,15 @@ public class GateProvider
 	{
 		PartGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
 		if(neighbour != null) return neighbour.output[(side + 2) % 4];
+		return null;
+	}
+	
+	@Method(modid = "bluepower")
+	private static byte[] calculateBundledInputBluePower(IGateProvider provider, int side, BlockCoord pos, int abs)
+	{
+		IRedstoneApi redstoneAPI = BPApi.getInstance().getRedstoneApi();
+		IBundledDevice device = redstoneAPI.getBundledDevice(provider.getWorld(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(provider.getGate().getSide()), ForgeDirection.UNKNOWN);
+		if(device != null) return device.getBundledOutput(ForgeDirection.getOrientation(abs ^ 1));
 		return null;
 	}
 	
