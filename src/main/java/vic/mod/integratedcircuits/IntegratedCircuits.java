@@ -2,13 +2,17 @@ package vic.mod.integratedcircuits;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.logging.log4j.Logger;
 
 import vic.mod.integratedcircuits.compat.NEIAddon;
+import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.gate.PartCircuit;
+import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.gate.fmp.PartFactory;
 import vic.mod.integratedcircuits.item.Item7Segment;
 import vic.mod.integratedcircuits.item.ItemBase;
@@ -24,6 +28,14 @@ import vic.mod.integratedcircuits.tile.BlockPCBLayout;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
+import codechicken.lib.vec.BlockCoord;
+
+import com.bluepowermod.api.BPApi;
+import com.bluepowermod.api.wire.redstone.IBundledDevice;
+import com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper;
+import com.bluepowermod.api.wire.redstone.IRedstoneDevice;
+import com.bluepowermod.api.wire.redstone.IRedstoneProvider;
+
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -152,6 +164,29 @@ public class IntegratedCircuits
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		IntegratedCircuitsRecipes.loadRecipes();
+		
+		//Register provider for bluepower
+		if(isBPLoaded) 
+		{
+			BPApi.getInstance().getRedstoneApi().registerRedstoneProvider(new IRedstoneProvider()
+			{	
+				@Override
+				public IRedstoneDevice getRedstoneDeviceAt(World world, int x, int y, int z, ForgeDirection side, ForgeDirection face)
+				{
+					return (IRedstoneDevice)getBundledDeviceAt(world, x, y, z, side, face);
+				}
+				
+				@Override
+				public IBundledDevice getBundledDeviceAt(World world, int x, int y, int z, ForgeDirection side, ForgeDirection face)
+				{
+					PartGate gate = GateProvider.getGateAt(world, new BlockCoord(x, y, z), side.ordinal());
+					if(gate != null && gate.getProvider() instanceof IBundledDeviceWrapper) 
+						return ((IBundledDeviceWrapper)gate.getProvider()).getBundledDeviceOnSide(face);
+					return null;
+				}
+			});
+		}
+		
 		logger.info("Done! This is an extremely early alpha version so please report any bugs occurring to https://github.com/Victorious3/Integrated-Circuits");
 	}
 }

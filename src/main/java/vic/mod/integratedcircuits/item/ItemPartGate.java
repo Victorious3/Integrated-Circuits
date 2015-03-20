@@ -91,9 +91,7 @@ public class ItemPartGate extends Item implements TItemMultiPart
 			
 			if(te != null)
 			{
-				te.gate = gate;
-				te.gate.setProvider(te);
-				te.gate.onAdded();
+				te.setGate(gate);
 				b = true;
 			}
 		}

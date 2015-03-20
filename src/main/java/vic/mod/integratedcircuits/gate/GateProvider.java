@@ -26,7 +26,7 @@ public class GateProvider
 {
 	private GateProvider() {}
 	
-	public interface IGateProvider 
+	public interface IGateProvider
 	{
 		public void markRender();
 		

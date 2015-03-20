@@ -11,6 +11,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.gate.BPDevice;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
@@ -25,18 +28,27 @@ import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
+
+import com.bluepowermod.api.wire.redstone.IBundledDevice;
+import com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper;
+
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
+import cpw.mods.fml.common.Optional.Method;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @InterfaceList(value = {
 	@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),
-	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core")
+	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core"),
+	@Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 })
-public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, IBundledEmitter, IGateProvider
+public class FMPartGate extends JCuboidPart implements 
+	JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, 
+	IBundledEmitter, IGateProvider, IBundledDeviceWrapper
 {
-	private PartGate gate;
+	private final PartGate gate;
+	private BPDevice bpDevice;
 
 	public FMPartGate(PartGate gate)
 	{
@@ -267,6 +279,8 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	{
 		FMPartGate fmpgate = new FMPartGate(gate.newInstance());
 		fmpgate.gate.setProvider(fmpgate);
+		if(IntegratedCircuits.isBPLoaded)
+			fmpgate.bpDevice = new BPDevice(fmpgate.gate);
 		return fmpgate;
 	}
 
@@ -342,5 +356,12 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	public boolean isMultipart() 
 	{
 		return true;
+	}
+
+	@Override
+	@Method(modid = "bluepower")
+	public IBundledDevice getBundledDeviceOnSide(ForgeDirection side)
+	{
+		return bpDevice;
 	}
 }

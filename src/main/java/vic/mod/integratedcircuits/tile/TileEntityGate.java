@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.gate.BPDevice;
 import vic.mod.integratedcircuits.gate.GatePeripheral;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
@@ -33,6 +34,10 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
+
+import com.bluepowermod.api.wire.redstone.IBundledDevice;
+import com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper;
+
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.common.Optional.Method;
@@ -44,11 +49,16 @@ import cpw.mods.fml.common.Optional.Method;
 	@Interface(iface = "mods.immibis.redlogic.api.wiring.IConnectable", modid = "RedLogic"),
 	@Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
 	@Interface(iface = "li.cil.oc.api.network.SidedComponent", modid = "OpenComputers"),
-	@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers")
+	@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers"),
+	@Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 })
-public class TileEntityGate extends TileEntity implements IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, IConnectable, SimpleComponent, SidedComponent, ManagedPeripheral
+public class TileEntityGate extends TileEntity implements 
+	IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, 
+	IConnectable, SimpleComponent, SidedComponent, ManagedPeripheral,
+	IBundledDeviceWrapper
 {
 	public PartGate gate;
+	public BPDevice bpDevice;
 	public boolean isDestroyed;
 	
 	@Override
@@ -63,6 +73,15 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		if(gate != null) gate.update();
 	}
 	
+	public void setGate(PartGate gate) 
+	{
+		this.gate = gate;
+		if(IntegratedCircuits.isBPLoaded)
+			this.bpDevice = new BPDevice(gate);
+		this.gate.setProvider(this);
+		this.gate.onAdded();
+	}
+	
 	@Override
 	public void readFromNBT(NBTTagCompound compound) 
 	{
@@ -70,6 +89,8 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		gate = GateRegistry.createGateInstace(compound.getString("gate_id"));
 		gate.setProvider(this);
 		gate.load(compound);
+		if (IntegratedCircuits.isBPLoaded)
+			bpDevice = new BPDevice(gate);
 	}
 
 	@Override
@@ -101,6 +122,8 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		{
 			gate = GateRegistry.createGateInstace(comp.getString("gate_id"));
 			gate.setProvider(this);
+			if (IntegratedCircuits.isBPLoaded)
+				bpDevice = new BPDevice(gate);
 		}
 		gate.readDesc(in);
 	}
@@ -177,6 +200,24 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		return gate;
 	}
 	
+	@Override
+	public int strongPowerLevel(int side) 
+	{
+		return 0;
+	}
+
+	@Override
+	public ItemStack getItemStack() 
+	{
+		return gate.getItemStack(gate.getItemType().getItem());
+	}
+
+	@Override
+	public boolean isMultipart() 
+	{
+		return false;
+	}
+	
 	//ProjectRed
 	
 	@Override
@@ -247,26 +288,6 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 		return false;
 	}
 	
-	//---
-
-	@Override
-	public int strongPowerLevel(int side) 
-	{
-		return 0;
-	}
-
-	@Override
-	public ItemStack getItemStack() 
-	{
-		return gate.getItemStack(gate.getItemType().getItem());
-	}
-
-	@Override
-	public boolean isMultipart() 
-	{
-		return false;
-	}
-	
 	//Open Computers
 	
 	@Override
@@ -314,5 +335,12 @@ public class TileEntityGate extends TileEntity implements IGateProvider, IBundle
 			return peripheral.callMethod(method, args.toArray());
 		}
 		return null;
+	}
+
+	@Override
+	@Method(modid = "bluepower")
+	public IBundledDevice getBundledDeviceOnSide(ForgeDirection side)
+	{
+		return bpDevice;
 	}
 }

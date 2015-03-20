@@ -5,8 +5,10 @@ import java.io.File;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
-public abstract class Config 
+public class Config 
 {
+	private Config() {}
+	
 	public static Configuration config;
 	
 	public static Property showConfirmMessage;
