@@ -114,6 +114,13 @@ gui.integratedcircuits.7segment.mode.manual.tooltip=Allows to modify the individ
 # misc
 itemGroup.integratedcircuits.ctab=Integrated Circuits
 
+# Item tooltips
+item.integratedcircuits.floppy.tooltip.name=Name:
+item.integratedcircuits.floppy.tooltip.size=Size:
+item.integratedcircuits.floppy.tooltip.author=Author:
+item.integratedcircuits.floppy.tooltip.idiot.line1=Right click on the drive (the black bar)
+item.integratedcircuits.floppy.tooltip.idiot.line2=on the bottom of the assembler or CAD...
+
 # Forge Direction
 fdirection.north.name=NORTH
 fdirection.east.name=EAST
