@@ -5,6 +5,7 @@ import static net.minecraftforge.common.util.ForgeDirection.NORTH;
 import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
 import static net.minecraftforge.common.util.ForgeDirection.WEST;
 
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -28,6 +29,7 @@ import com.google.common.collect.HashBiMap;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import java.util.Arrays;
 
 public class MiscUtils 
 {
@@ -185,5 +187,29 @@ public class MiscUtils
 			mant &= 0x3FF;
 		}
 		return Float.intBitsToFloat((bits & 0x8000) << 16 | (exp | mant) << 13);
+	}
+
+	public static String[] stringNewlineSplit(String toSplit)
+	{
+		// ASCII is strange.
+		return toSplit.split("\\r\\n|\\n\\r|\\r|\\n");
+	}
+
+	public static String[] stringSplitFormat(String toFormat, Object... toInsert)
+	{
+		return stringNewlineSplit(String.format(toFormat, toInsert));
+	}
+
+	public static List<String> splitTranslateToLocalFormatted(String toTranslate, Object... toInsert)
+	{
+		return Arrays.asList(stringNewlineSplit(StatCollector.translateToLocalFormatted(toTranslate, toInsert)));
+	}
+
+	public static List<String> appendToAll(Object toAppend, List<String> list)
+	{
+		for(int i = list.size()-1; i >= 0; i--) {
+			list.set(i, toAppend + list.get(i));
+		}
+		return list;
 	}
 }
