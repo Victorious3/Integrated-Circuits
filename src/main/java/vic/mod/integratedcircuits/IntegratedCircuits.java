@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 
 import org.apache.logging.log4j.Logger;
@@ -49,8 +50,8 @@ public class IntegratedCircuits
 	
 	public static Logger logger;
 	
-	public static GateRegistry.ItemGatePair itemCircuit;
-	public static GateRegistry.ItemGatePair item7Segment;
+	public static ItemCircuit itemCircuit;
+	public static Item7Segment item7Segment;
 	
 	public static ItemFloppyDisk itemFloppyDisk;
 	public static ItemPCB itemPCB;
@@ -99,12 +100,16 @@ public class IntegratedCircuits
 			@Override
 			public Item getTabIconItem() 
 			{
-				return itemCircuit.getItem();
+				// TODO
+				return Item.getItemFromBlock(Blocks.redstone_block);
 			}
 		};
 		
-		itemCircuit = GateRegistry.registerGate(new PartCircuit(), ItemCircuit.class);
-		item7Segment = GateRegistry.registerGate(new Part7Segment(), Item7Segment.class);
+		GateRegistry.registerGate(new PartCircuit());
+		GateRegistry.registerGate(new Part7Segment());
+		
+		itemCircuit = new ItemCircuit();
+		item7Segment = new Item7Segment();
 		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();

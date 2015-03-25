@@ -3,7 +3,6 @@ package vic.mod.integratedcircuits.gate;
 import java.util.Arrays;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
@@ -228,16 +227,11 @@ public abstract class PartGate
 		provider.notifyBlocksAndChanges();
 	}
 	
-	public abstract GateRegistry.ItemGatePair getItemType();
-	
-	public ItemStack getItemStack(Item item)
-	{
-		return new ItemStack(item);
-	}
+	public abstract ItemStack getItemStack();
 
 	public ItemStack pickItem(MovingObjectPosition hit) 
 	{
-		return provider.getItemStack();
+		return getItemStack();
 	}
 
 	public Transformation getRotationTransformation()

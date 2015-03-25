@@ -2,14 +2,12 @@ package vic.mod.integratedcircuits.item;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
-import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
-import vic.mod.integratedcircuits.gate.PartGate;
 
-public class ItemCircuit extends ItemPartGate
+public class ItemCircuit extends ItemBase
 {
-	public ItemCircuit(String name, PartGate part, ItemGatePair parent, boolean isMultiPart)
+	public ItemCircuit()
 	{
-		super(name, part, parent, isMultiPart);
+		super("circuit");
 		setMaxStackSize(1);
 		setCreativeTab(null);
 	}

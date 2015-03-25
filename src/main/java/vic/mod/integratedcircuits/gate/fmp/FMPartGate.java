@@ -173,7 +173,7 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public Iterable<ItemStack> getDrops() 
 	{
-		return Arrays.asList(getItemStack());
+		return Arrays.asList(gate.getItemStack());
 	}
 	
 	@Override
@@ -344,18 +344,6 @@ public class FMPartGate extends JCuboidPart implements
 	public PartGate getGate() 
 	{
 		return gate;
-	}
-
-	@Override
-	public ItemStack getItemStack() 
-	{
-		return gate.getItemStack(gate.getItemType().getItemFMP());
-	}
-
-	@Override
-	public boolean isMultipart() 
-	{
-		return true;
 	}
 
 	@Override

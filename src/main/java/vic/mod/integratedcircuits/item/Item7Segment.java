@@ -6,15 +6,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
-import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
-import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 
-public class Item7Segment extends ItemPartGate implements IDyeable
+public class Item7Segment extends ItemBase implements IDyeable
 {
-	public Item7Segment(String name, PartGate gate, ItemGatePair parent, boolean isMultiPart) 
+	public Item7Segment() 
 	{
-		super(name, gate, parent, isMultiPart);
+		super("7segment");
 	}
 
 	@Override
