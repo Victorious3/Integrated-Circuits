@@ -25,9 +25,9 @@ public class ItemFloppyDisk extends ItemBase
 		{
 			comp = comp.getCompoundTag("circuit");
 			Integer size = comp.getInteger("size");
-			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("name"));
-			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);
-			itemInformation.add(ChatFormatting.GRAY + "Author: " + ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("author"));
+			itemInformation.add(ChatFormatting.GRAY + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.name") + " " + ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("name"));
+			itemInformation.add(ChatFormatting.GRAY + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.size") + " " + ChatFormatting.WHITE + size + "x" + size);
+			itemInformation.add(ChatFormatting.GRAY + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.author") + " " + ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("author"));
 			/*itemInformation.add(ChatFormatting.WHITE + "" + ChatFormatting.ITALIC + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.idiot.line1"));
 			itemInformation.add(ChatFormatting.WHITE + "" + ChatFormatting.ITALIC + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.idiot.line2"));*/
 		} else {
