@@ -95,25 +95,25 @@ public class ShaderHelper
 			throw exc;
 		}
 	}
-	
-    public static void printErrorLog(int program)
-    {
-    	IntBuffer intBuffer = BufferUtils.createIntBuffer(1);
-    	ARBShaderObjects.glGetObjectParameterARB(program, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB, intBuffer);
 
-    	int length = intBuffer.get();
-    	if(length > 1)
-    	{
-    	    ByteBuffer infoLog = BufferUtils.createByteBuffer(length);
-    	    intBuffer.flip();
-    	    ARBShaderObjects.glGetInfoLogARB(program, intBuffer, infoLog);
-    	    byte[] infoBytes = new byte[length];
-    	    infoLog.get(infoBytes);
-    	    String out = new String(infoBytes);
-    	    IntegratedCircuits.logger.fatal("Shader info log:\n" + out);
-    	}
-    }
-	
+	public static void printErrorLog(int program)
+	{
+		IntBuffer intBuffer = BufferUtils.createIntBuffer(1);
+		ARBShaderObjects.glGetObjectParameterARB(program, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB, intBuffer);
+
+		int length = intBuffer.get();
+		if(length > 1)
+		{
+			ByteBuffer infoLog = BufferUtils.createByteBuffer(length);
+			intBuffer.flip();
+			ARBShaderObjects.glGetInfoLogARB(program, intBuffer, infoLog);
+			byte[] infoBytes = new byte[length];
+			infoLog.get(infoBytes);
+			String out = new String(infoBytes);
+			IntegratedCircuits.logger.fatal("Shader info log:\n" + out);
+		}
+	}
+
 	public static void bindShader(int program)
 	{
 		if(!OpenGlHelper.shadersSupported) return;
