@@ -55,6 +55,7 @@ import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.SemiTransparentRenderer;
 import vic.mod.integratedcircuits.client.ShaderHelper;
+import vic.mod.integratedcircuits.client.SocketRenderer;
 import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityGateRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
@@ -84,6 +85,9 @@ public class ClientProxy extends CommonProxy
 	public static PartCircuitRenderer circuitRenderer;
 	public static Part7SegmentRenderer segmentRenderer;
 	
+	public static SocketRenderer socketRenderer;
+	public static SocketRenderer socketRendererFMP;
+	
 	@Override
 	public void initialize() 
 	{
@@ -111,6 +115,10 @@ public class ClientProxy extends CommonProxy
 		
 		circuitRenderer = new PartCircuitRenderer();
 		segmentRenderer = new Part7SegmentRenderer();
+		
+		socketRenderer = new SocketRenderer(Resources.ICON_IC_BASE);
+		socketRendererFMP = new SocketRenderer(Resources.ICON_IC_BASE_FMP);
+		
 		resources = new Resources();
 	}
 	

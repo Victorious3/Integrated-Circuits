@@ -11,6 +11,7 @@ import vic.mod.integratedcircuits.compat.NEIAddon;
 import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.gate.PartCircuit;
+import vic.mod.integratedcircuits.gate.fmp.FMPartGate;
 import vic.mod.integratedcircuits.gate.fmp.PartFactory;
 import vic.mod.integratedcircuits.item.Item7Segment;
 import vic.mod.integratedcircuits.item.ItemBase;
@@ -110,6 +111,8 @@ public class IntegratedCircuits
 		
 		itemCircuit = new ItemCircuit();
 		item7Segment = new Item7Segment();
+		
+		if(isFMPLoaded) PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartGate.class);
 		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();

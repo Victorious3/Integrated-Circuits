@@ -6,13 +6,11 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.client.IPartRenderer.IGateRenderer;
 import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
-import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
 
-public class Part7SegmentRenderer implements IGateRenderer<Part7Segment>
+public class Part7SegmentRenderer implements IPartRenderer<Part7Segment>
 {	
 	private int display;
 	private int color;
@@ -119,12 +117,5 @@ public class Part7SegmentRenderer implements IGateRenderer<Part7Segment>
 		tes.draw();
 		
 		if(enabled) RenderUtils.resetBrightness();
-	}
-
-	@Override
-	public Cuboid6 getDimensions()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

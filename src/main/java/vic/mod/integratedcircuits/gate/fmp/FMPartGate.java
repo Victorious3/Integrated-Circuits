@@ -12,15 +12,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.IntegratedCircuits;
+import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.gate.BPDevice;
 import vic.mod.integratedcircuits.gate.GateProvider;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
 import codechicken.multipart.JCuboidPart;
@@ -47,19 +49,16 @@ public class FMPartGate extends JCuboidPart implements
 	JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, 
 	IBundledEmitter, IGateProvider, IBundledDeviceWrapper
 {
-	private final PartGate gate;
-	private BPDevice bpDevice;
 
-	public FMPartGate(PartGate gate)
-	{
-		this.gate = gate;
-		PartFactory.register(this);
-	}
+	private PartGate gate;
+	
+	//TODO Re-implement
+	private BPDevice bpDevice;
 	
 	@Override
 	public String getType() 
 	{
-		return gate.getType();
+		return Constants.MOD_ID + ".socket_fmp";
 	}
 	
 	@Override
@@ -186,14 +185,24 @@ public class FMPartGate extends JCuboidPart implements
 	@SideOnly(Side.CLIENT)
 	public boolean renderStatic(Vector3 pos, int pass) 
 	{
-		return gate.renderStatic(pos, pass);
+		if(pass == 0) 
+		{
+			ClientProxy.socketRendererFMP.prepare(this);
+			ClientProxy.socketRendererFMP.renderStatic(new Translation(pos), 0);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderDynamic(Vector3 pos, float frame, int pass) 
 	{
-		gate.renderDynamic(pos, frame, pass);
+		if(pass == 0) 
+		{
+    		ClientProxy.socketRendererFMP.prepareDynamic(this, frame);
+    		ClientProxy.socketRendererFMP.renderDynamic(new Translation(pos));
+		}
 	}
 	
 	@Override
@@ -273,15 +282,6 @@ public class FMPartGate extends JCuboidPart implements
 	public int getFace() 
 	{
 		return gate.getSide();
-	}
-
-	public FMPartGate newInstance()
-	{
-		FMPartGate fmpgate = new FMPartGate(gate.newInstance());
-		fmpgate.gate.setProvider(fmpgate);
-		if(IntegratedCircuits.isBPLoaded)
-			fmpgate.bpDevice = new BPDevice(fmpgate.gate);
-		return fmpgate;
 	}
 
 	@Override

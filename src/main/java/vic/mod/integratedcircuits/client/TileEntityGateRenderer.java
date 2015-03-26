@@ -6,8 +6,11 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import vic.mod.integratedcircuits.Constants;
+import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
@@ -23,7 +26,9 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 		
 		CCRenderState.reset();
 		CCRenderState.lightMatrix.locate(world, x, y, z);
-		te.getGate().renderStatic(new Vector3(x, y, z), 0);
+		
+		ClientProxy.socketRenderer.prepare(te);
+		ClientProxy.socketRenderer.renderStatic(new Translation(new Vector3(x, y, z)), 0);
 		
 		return true;
 	} 
@@ -47,6 +52,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 		CCRenderState.pullLightmap();
 		CCRenderState.useNormals = true;
 		
-		((TileEntityGate)te).getGate().renderDynamic(new Vector3(x, y, z), par5, 0);
+		ClientProxy.socketRenderer.prepareDynamic((IGateProvider) te, par5);
+		ClientProxy.socketRenderer.renderDynamic(new Translation(new Vector3(x, y, z)));
 	}
 }

@@ -9,15 +9,12 @@ import net.minecraft.util.MovingObjectPosition;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.client.IPartRenderer.IGateRenderer;
+import vic.mod.integratedcircuits.client.IPartRenderer;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -56,11 +53,6 @@ public abstract class PartGate
 		this.provider = provider;
 	}
 	
-	public String getType() 
-	{
-		return Constants.MOD_ID + "_" + name;
-	}
-	
 	public String getName()
 	{
 		return name;
@@ -80,21 +72,10 @@ public abstract class PartGate
 		byte[] input = tag.getByteArray("input");
 		byte[] output = tag.getByteArray("output");
 		
-		try {
-    		for(int i = 0; i < 4; i++)
-    		{
-    			this.input[i] = Arrays.copyOfRange(input, i * 16, (i + 1) * 16);
-    			this.output[i] = Arrays.copyOfRange(output, i * 16, (i + 1) * 16);
-    		}
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//--Legacy code--
-			//We couldn't get a proper array, so output a warning.
-			IntegratedCircuits.logger.warn("Couldn't retrieve gate io for circuit at " + getProvider().getPos() + ". "
-				+ "This can be caused by a version update, if this happens on the next world load please report it!");
-			
-			//Reset to old configuration
-			this.input = new byte[4][16];
-			this.output = new byte[4][16];
+		for(int i = 0; i < 4; i++)
+		{
+			this.input[i] = Arrays.copyOfRange(input, i * 16, (i + 1) * 16);
+			this.output[i] = Arrays.copyOfRange(output, i * 16, (i + 1) * 16);
 		}
 	}
 	
@@ -240,33 +221,9 @@ public abstract class PartGate
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public abstract IGateRenderer getRenderer();
+	public abstract IPartRenderer getRenderer();
 	
-	@SideOnly(Side.CLIENT)
-	public boolean renderStatic(Vector3 pos, int pass) 
-	{
-		if(pass == 0)
-		{
-			TextureUtils.bindAtlas(0);
-			BlockCoord blockPos = provider.getPos();
-			CCRenderState.setBrightness(provider.getWorld(), blockPos.x, blockPos.y, blockPos.z);
-			getRenderer().prepare(this);
-			getRenderer().renderStatic(pos.translation(), orientation & 255);
-			return true;
-		}	
-		else return false;
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public void renderDynamic(Vector3 pos, float frame, int pass) 
-	{
-		if(pass == 0)
-		{
-			TextureUtils.bindAtlas(0);
-			getRenderer().prepareDynamic(this, frame);
-			getRenderer().renderDynamic(this.getRotationTransformation().with(pos.translation()));
-		}	
-	}
+	public abstract Cuboid6 getDimension();
 	
 	public void onNeighborChanged() 
 	{

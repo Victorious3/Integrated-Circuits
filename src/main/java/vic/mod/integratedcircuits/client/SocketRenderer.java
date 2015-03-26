@@ -7,7 +7,8 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 import vic.mod.integratedcircuits.client.model.IComponentModel;
 import vic.mod.integratedcircuits.client.model.ModelBase;
-import vic.mod.integratedcircuits.gate.GateProvider;
+import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
@@ -16,27 +17,39 @@ import codechicken.lib.vec.Translation;
 
 import com.google.common.collect.Lists;
 
-public abstract class SocketRenderer<T extends GateProvider> implements IItemRenderer, IPartRenderer<T>
+public class SocketRenderer implements IItemRenderer, IPartRenderer<IGateProvider>
 {	
 	protected List<IComponentModel> models = Lists.newLinkedList();
+	
+	private PartGate part;
 	
 	public SocketRenderer(IIcon icon)
 	{
 		models.add(new ModelBase(icon));
 	}
 
-	public void prepare(T part) {}
+	public void prepare(IGateProvider part) 
+	{
+		this.part = part.getGate();
+	}
 	
 	public void prepareInv(ItemStack stack) {}
 	
-	public void prepareDynamic(T part, float partialTicks) {}
+	public void prepareDynamic(IGateProvider part, float partialTicks) 
+	{
+		this.part = part.getGate();
+	}
 	
 	public void renderStatic(Transformation t, int orient)
 	{
 		for(IComponentModel m : models) m.renderModel(t, orient);
+		if(part != null) part.getRenderer().renderStatic(t, orient);
 	}
 	
-	public void renderDynamic(Transformation t) {}
+	public void renderDynamic(Transformation t) 
+	{
+		if(part != null) part.getRenderer().renderDynamic(t);
+	}
 	
 	@Override
 	public boolean handleRenderType(ItemStack item, ItemRenderType type) 

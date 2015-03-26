@@ -7,13 +7,11 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.client.IPartRenderer.IGateRenderer;
 import vic.mod.integratedcircuits.gate.PartCircuit;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
-import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
 
-public class PartCircuitRenderer implements IGateRenderer<PartCircuit>
+public class PartCircuitRenderer implements IPartRenderer<PartCircuit>
 {
 	private byte tier;
 	private String name = "NO_NAME";
@@ -84,12 +82,5 @@ public class PartCircuitRenderer implements IGateRenderer<PartCircuit>
 		
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_LIGHTING);
-	}
-
-	@Override
-	public Cuboid6 getDimensions()
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 }

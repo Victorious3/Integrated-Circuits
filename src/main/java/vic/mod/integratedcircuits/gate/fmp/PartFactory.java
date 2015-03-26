@@ -6,25 +6,31 @@ import codechicken.multipart.MultiPartRegistry;
 import codechicken.multipart.MultiPartRegistry.IPartFactory;
 import codechicken.multipart.TMultiPart;
 
+import com.google.common.collect.Maps;
+
 //TODO Use the GateRegistry instead, not sure if I'll ever create a part that is NOT a gate.
 public class PartFactory implements IPartFactory
 {
-	private static HashMap<String, FMPartGate> parts = new HashMap<String, FMPartGate>();
+	private static HashMap<String, Class<? extends FMPartGate>> parts = Maps.newHashMap();
 	private static PartFactory instance = new PartFactory();
 	
 	private PartFactory() {}
 	
-	public static void register(FMPartGate fmPartGate)
+	public static void register(String type, Class<? extends FMPartGate> clazz)
 	{
-		parts.put(fmPartGate.getType(), fmPartGate);
+		parts.put(type, clazz);
 	}
 	
 	@Override
 	public TMultiPart createPart(String arg0, boolean arg1) 
 	{
-		FMPartGate part = parts.get(arg0);
-		if(part == null) return null;
-		return part.newInstance();
+		Class clazz = parts.get(arg0);
+		if(clazz == null) return null;
+		try {
+			return (TMultiPart) clazz.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	public static void initialize()
