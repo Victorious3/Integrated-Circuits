@@ -189,22 +189,26 @@ public class MiscUtils
 		return Float.intBitsToFloat((bits & 0x8000) << 16 | (exp | mant) << 13);
 	}
 
-	public static String[] stringNewlineSplit(String string) {
+	public static String[] stringNewlineSplit(String toSplit)
+	{
 		// ASCII is strange.
-		return string.split("\\r\\n|\\n\\r|\\r|\\n");
+		return toSplit.split("\\r\\n|\\n\\r|\\r|\\n");
 	}
 
-	public static String[] stringSplitFormat(String string, Object... objects) {
-		return stringNewlineSplit(String.format(string, objects));
+	public static String[] stringSplitFormat(String toFormat, Object... toInsert)
+	{
+		return stringNewlineSplit(String.format(toFormat, toInsert));
 	}
 
-	public static List<String> splitTranslateToLocalFormatted(String string, Object... objects) {
-		return Arrays.asList(stringNewlineSplit(StatCollector.translateToLocalFormatted(string, objects)));
+	public static List<String> splitTranslateToLocalFormatted(String toTranslate, Object... toInsert)
+	{
+		return Arrays.asList(stringNewlineSplit(StatCollector.translateToLocalFormatted(toTranslate, toInsert)));
 	}
 
-	public static List<String> appendToAll(Object thing, List<String> list) {
+	public static List<String> appendToAll(Object toAppend, List<String> list)
+	{
 		for(int i = list.size()-1; i >= 0; i--) {
-			list.set(i, thing + list.get(i));
+			list.set(i, toAppend + list.get(i));
 		}
 		return list;
 	}
