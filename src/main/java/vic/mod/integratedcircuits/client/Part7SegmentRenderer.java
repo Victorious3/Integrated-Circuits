@@ -6,27 +6,21 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.client.model.ModelSocket;
+import vic.mod.integratedcircuits.client.IPartRenderer.IGateRenderer;
 import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
 
-public class Part7SegmentRenderer extends PartGateRenderer<Part7Segment>
-{
-	public Part7SegmentRenderer()
-	{
-		models.add(new ModelSocket());
-		addBundledConnections(15, 1, 2, 1, 2);
-		addRedstoneConnections(15, 2, 2, 2, 2);
-	}
-	
+public class Part7SegmentRenderer implements IGateRenderer<Part7Segment>
+{	
 	private int display;
 	private int color;
 	
 	@Override
 	public void prepare(Part7Segment part) 
 	{
-		super.prepare(part);
+		/*super.prepare(part);
 		if(part.isSlave)
 		{
 			prepareBundled(0);
@@ -46,17 +40,17 @@ public class Part7SegmentRenderer extends PartGateRenderer<Part7Segment>
 				prepareBundled(0);
 				prepareRedstone(i1, part.io);
 			}
-		}
+		}*/
 	}
 
 	@Override
 	public void prepareInv(ItemStack stack) 
 	{
-		super.prepareInv(stack);
+		/*super.prepareInv(stack);
 		display = 127;
 		color = stack.getItemDamage();
 		prepareBundled(0);
-		prepareRedstone(15, 0);
+		prepareRedstone(15, 0);*/
 	}
 	
 	@Override
@@ -65,6 +59,9 @@ public class Part7SegmentRenderer extends PartGateRenderer<Part7Segment>
 		display = part.digit;
 		color = part.color;
 	}
+	
+	@Override
+	public void renderStatic(Transformation t, int orient) {}
 
 	@Override
 	public void renderDynamic(Transformation t) 
@@ -122,5 +119,12 @@ public class Part7SegmentRenderer extends PartGateRenderer<Part7Segment>
 		tes.draw();
 		
 		if(enabled) RenderUtils.resetBrightness();
+	}
+
+	@Override
+	public Cuboid6 getDimensions()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

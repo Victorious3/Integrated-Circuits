@@ -8,7 +8,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.gate.GateRegistry.ItemGatePair;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.gate.fmp.FMPartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
@@ -21,21 +20,13 @@ import codechicken.multipart.TItemMultiPart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.Method;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-/** https://github.com/Chicken-Bones/ForgeMultipart/blob/7bb9ca045df4b6a96bef249fbe81d8ce707de028/src/codechicken/multipart/ItemMultiPart.scala **/
-@Interface(iface = "codechicken.multipart.TItemMultiPart", modid = "ForgeMultipart")
 public class ItemPartGate extends Item implements TItemMultiPart
-{
-	private final PartGate gate;
-	private String fmpType;
-	private final boolean isMultiPart;
-	private final ItemGatePair parent;
-	
+{	
 	public ItemPartGate(String name, PartGate gate, ItemGatePair parent, boolean isMultiPart) 
 	{
 		this.parent = parent;
@@ -125,15 +116,5 @@ public class ItemPartGate extends Item implements TItemMultiPart
 	public void registerIcons(IIconRegister ir) 
 	{
 		
-	}
-	
-	public boolean isMultipartItem()
-	{
-		return isMultiPart;
-	}
-	
-	public ItemGatePair getParent()
-	{
-		return parent;
 	}
 }

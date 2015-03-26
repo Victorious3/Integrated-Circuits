@@ -13,7 +13,6 @@ import mods.immibis.redlogic.api.wiring.IConnectable;
 import mods.immibis.redlogic.api.wiring.IWire;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.transmission.BundledCablePart;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -205,18 +204,6 @@ public class TileEntityGate extends TileEntity implements
 	{
 		return 0;
 	}
-
-	@Override
-	public ItemStack getItemStack() 
-	{
-		return gate.getItemStack(gate.getItemType().getItem());
-	}
-
-	@Override
-	public boolean isMultipart() 
-	{
-		return false;
-	}
 	
 	//ProjectRed
 	
@@ -243,7 +230,6 @@ public class TileEntityGate extends TileEntity implements
 	}
 	
 	@Override
-	@Method(modid = "ProjRed|Core")
 	public byte[] getBundledSignal(int arg0) 
 	{
 		if((arg0 & 6) == (gate.getSide() & 6)) return null;

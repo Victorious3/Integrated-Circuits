@@ -11,7 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.client.PartGateRenderer;
+import vic.mod.integratedcircuits.client.IPartRenderer.IGateRenderer;
 import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import codechicken.lib.data.MCDataInput;
@@ -240,7 +240,7 @@ public abstract class PartGate
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public abstract <T extends PartGate> PartGateRenderer<T> getRenderer();
+	public abstract IGateRenderer getRenderer();
 	
 	@SideOnly(Side.CLIENT)
 	public boolean renderStatic(Vector3 pos, int pass) 
@@ -275,7 +275,7 @@ public abstract class PartGate
 			BlockCoord pos = provider.getPos().offset(getSide());
 			if(!MiscUtils.canPlaceGateOnSide(provider.getWorld(), pos.x, pos.y, pos.z, getSide() ^ 1))
 			{
-				MiscUtils.dropItem(provider.getWorld(), provider.getItemStack(), pos.x, pos.y, pos.z);
+				MiscUtils.dropItem(provider.getWorld(), getItemStack(), pos.x, pos.y, pos.z);
 				provider.destroy();
 			}
 			else updateInput();

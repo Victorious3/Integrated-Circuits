@@ -1,6 +1,5 @@
 package vic.mod.integratedcircuits.client.model;
 
-import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
@@ -8,14 +7,7 @@ import codechicken.lib.vec.Transformation;
 
 public class ModelSocket implements IComponentModel
 {
-	private static CCModel[] models = new CCModel[24];
-	private static CCModel base = generateModel();
-	
-	static
-	{
-		for(int i = 0; i < 24; i++)
-			models[i] = Part7SegmentRenderer.bakeCopy(base, i);
-	}
+	private static CCModel[] models = ModelHelper.generate(generateModel(), 24);
 
 	@Override
 	public void renderModel(Transformation t, int orient)

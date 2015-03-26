@@ -1,24 +1,22 @@
 package vic.mod.integratedcircuits.client.model;
 
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.client.PartGateRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Transformation;
 
+@Deprecated //TODO Dynamic replacement, move inside SocketRenderer
 public class ModelBundledConnection implements IComponentModel
 {
-	private CCModel[] conModels = new CCModel[24];
+	private CCModel[] conModels;
 	private final int rotation;
 	public boolean rendered = true;
 	
 	public ModelBundledConnection(int rotation, int size)
 	{
 		this.rotation = rotation;
-		CCModel model = generateModel(size);
-		for(int i = 0; i < 24; i++)
-			conModels[i] = PartGateRenderer.bakeCopy(model, i).shrinkUVs(0.002);
+		conModels = ModelHelper.generate(generateModel(size), 24);
 	}
 
 	@Override

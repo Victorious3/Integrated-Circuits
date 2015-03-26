@@ -7,40 +7,31 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.client.model.ModelChip;
+import vic.mod.integratedcircuits.client.IPartRenderer.IGateRenderer;
 import vic.mod.integratedcircuits.gate.PartCircuit;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Transformation;
 
-/** https://github.com/MrTJP/ProjectRed/ **/
-public class PartCircuitRenderer extends PartGateRenderer<PartCircuit>
+public class PartCircuitRenderer implements IGateRenderer<PartCircuit>
 {
-	public PartCircuitRenderer()
-	{
-		models.add(new ModelChip());
-		addBundledConnections(15, 2, 2, 2, 2);
-		addRedstoneConnections(15, 2, 2, 2, 2);
-	}
-
 	private byte tier;
 	private String name = "NO_NAME";
 
 	@Override
 	public void prepare(PartCircuit part) 
 	{
-		super.prepare(part);
 		CircuitProperties prop = part.getCircuitData().getProperties();
 		int bundled = 0;
 		for(int i = 0; i < 4; i++)
 			bundled |= prop.getModeAtSide((i + 2) % 4) == CircuitProperties.BUNDLED ? 1 << i : 0;
-		prepareBundled(bundled);
-		prepareRedstone(~bundled, part.io);
+//		prepareBundled(bundled);
+//		prepareRedstone(~bundled, part.io);
 	}
 	
 	@Override
 	public void prepareInv(ItemStack stack)
 	{
-		super.prepareInv(stack);
 		NBTTagCompound comp = stack.getTagCompound();	
 		if(comp == null) return;
 		NBTTagCompound comp2 = comp.getCompoundTag("circuit").getCompoundTag("properties");
@@ -49,8 +40,8 @@ public class PartCircuitRenderer extends PartGateRenderer<PartCircuit>
 		int bundled = 0;
 		for(int i = 0; i < 4; i++)
 			bundled |= (con >> ((i + 2) % 4) * 2 & 3) == CircuitProperties.BUNDLED ? 1 << i : 0;
-		prepareBundled(bundled);
-		prepareRedstone(~bundled, 0);
+//		prepareBundled(bundled);
+//		prepareRedstone(~bundled, 0);
 		
 		name = comp2.getString("name");
 		tier = (byte) (Math.log(comp.getCompoundTag("circuit").getInteger("size")) / Math.log(2) - 3);
@@ -62,6 +53,9 @@ public class PartCircuitRenderer extends PartGateRenderer<PartCircuit>
 		tier = (byte) (Math.log(part.circuitData.getSize()) / Math.log(2) - 3);
 		name = part.circuitData.getProperties().getName();
 	}
+	
+	@Override
+	public void renderStatic(Transformation t, int orient) {}
 
 	@Override
 	public void renderDynamic(Transformation t)
@@ -90,5 +84,12 @@ public class PartCircuitRenderer extends PartGateRenderer<PartCircuit>
 		
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_LIGHTING);
+	}
+
+	@Override
+	public Cuboid6 getDimensions()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

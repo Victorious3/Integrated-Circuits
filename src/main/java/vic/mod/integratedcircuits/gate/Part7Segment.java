@@ -7,7 +7,6 @@ import java.util.Locale;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -438,17 +437,11 @@ public class Part7Segment extends PartGate
 		}
 		else super.read(discr, packet);
 	}
-
-	@Override
-	public GateRegistry.ItemGatePair getItemType() 
-	{
-		return IntegratedCircuits.item7Segment;
-	}
 	
 	@Override
-	public ItemStack getItemStack(Item item) 
+	public ItemStack getItemStack() 
 	{
-		return new ItemStack(item, 1, color);
+		return new ItemStack(IntegratedCircuits.item7Segment, 1, color);
 	}
 
 	@Override

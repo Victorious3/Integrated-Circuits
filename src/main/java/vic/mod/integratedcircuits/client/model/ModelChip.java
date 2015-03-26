@@ -1,6 +1,5 @@
 package vic.mod.integratedcircuits.client.model;
 
-import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
@@ -9,13 +8,7 @@ import codechicken.lib.vec.Translation;
 
 public class ModelChip implements IComponentModel
 {
-	private static CCModel[] models = new CCModel[24];
-	private static CCModel base = generateModel();
-	
-	static
-	{
-		for(int i = 0; i < 24; i++) models[i] = PartCircuitRenderer.bakeCopy(base, i);
-	}
+	private static CCModel[] models = ModelHelper.generate(generateModel(), 24);
 
 	@Override
 	public void renderModel(Transformation arg0, int arg1)

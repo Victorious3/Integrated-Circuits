@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits.gate;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -82,19 +81,13 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	}
 	
 	@Override
-	public ItemStack getItemStack(Item item)
+	public ItemStack getItemStack()
 	{
-		ItemStack stack = new ItemStack(item);
+		ItemStack stack = new ItemStack(IntegratedCircuits.item7Segment);
 		NBTTagCompound comp = new NBTTagCompound();
 		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
 		stack.stackTagCompound = comp;
 		return stack;
-	}
-	
-	@Override
-	public GateRegistry.ItemGatePair getItemType()
-	{
-		return IntegratedCircuits.itemCircuit;
 	}
 
 	private int getModeAtSide(int s)
