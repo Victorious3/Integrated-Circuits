@@ -243,7 +243,6 @@ public class TileEntityGate extends TileEntity implements
 	}
 	
 	@Override
-	@Method(modid = "ProjRed|Core")
 	public byte[] getBundledSignal(int arg0) 
 	{
 		if((arg0 & 6) == (gate.getSide() & 6)) return null;
