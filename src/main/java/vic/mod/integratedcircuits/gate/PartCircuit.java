@@ -15,6 +15,7 @@ import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -245,5 +246,12 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	public GatePeripheral getPeripheral() 
 	{
 		return peripheral;
+	}
+
+	@Override
+	public Cuboid6 getDimension()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

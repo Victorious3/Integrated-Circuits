@@ -12,7 +12,7 @@ import com.google.common.collect.Maps;
 public class PartFactory implements IPartFactory
 {
 	private static HashMap<String, Class<? extends FMPartGate>> parts = Maps.newHashMap();
-	private static PartFactory instance = new PartFactory();
+	public static PartFactory instance = new PartFactory();
 	
 	private PartFactory() {}
 	

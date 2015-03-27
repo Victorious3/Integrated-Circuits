@@ -12,6 +12,7 @@ import vic.mod.integratedcircuits.misc.Vec2;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
+// TODO TODO TODO Cleanup!
 public class CircuitPeripheral extends GatePeripheral
 {
 	private static MethodProvider methodProvider = new MethodProvider()

@@ -25,6 +25,7 @@ import vic.mod.integratedcircuits.proxy.CommonProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 
 import com.google.common.collect.Lists;
@@ -467,5 +468,12 @@ public class Part7Segment extends PartGate
 	public PartGate newInstance() 
 	{
 		return new Part7Segment();
+	}
+
+	@Override
+	public Cuboid6 getDimension()
+	{
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
