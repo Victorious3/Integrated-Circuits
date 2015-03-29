@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.client.gui.Gui7Segment;
-import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.gate.Part7Segment;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -19,7 +19,7 @@ public class Packet7SegmentChangeMode extends PacketGate<Packet7SegmentChangeMod
 	
 	public Packet7SegmentChangeMode() {}
 	
-	public Packet7SegmentChangeMode(IGateProvider part, int mode, boolean isSlave)
+	public Packet7SegmentChangeMode(ISocket part, int mode, boolean isSlave)
 	{
 		super(part);
 		this.mode = mode;

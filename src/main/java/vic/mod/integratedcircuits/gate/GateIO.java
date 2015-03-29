@@ -12,7 +12,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetNetworkContainer;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
-import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.multipart.IRedstonePart;
@@ -27,38 +26,9 @@ import com.bluepowermod.api.wire.redstone.IRedstoneApi;
 import cpw.mods.fml.common.Optional.Method;
 import dan200.computercraft.api.ComputerCraftAPI;
 
-public class GateProvider
+public final class GateIO
 {
-	private GateProvider() {}
-	
-	public interface IGateProvider
-	{
-		public void markRender();
-		
-		public MCDataOutput getWriteStream(int disc);
-		
-		public World getWorld();
-		
-		public void notifyBlocksAndChanges();
-		
-		public void notifyPartChange();
-		
-		public BlockCoord getPos();
-		
-		public TileEntity getTileEntity();
-		
-		public void destroy();
-		
-		public int updateRedstoneInput(int side);
-		
-		public byte[] updateBundledInput(int side);
-		
-		public void scheduleTick(int delay);
-		
-		public PartGate getGate();
-		
-		public int strongPowerLevel(int side);
-	}
+	private GateIO() {}
 	
 	private static final int[] vanillaSideMap = {1, 2, 5, 3, 4};
 	
@@ -74,8 +44,8 @@ public class GateProvider
 		{
 			TileMultipart tm = (TileMultipart)te;
 			TMultiPart multipart = tm.partMap(side);
-			if(multipart instanceof IGateProvider) 
-				return ((IGateProvider)multipart).getGate();
+			if(multipart instanceof ISocket) 
+				return ((ISocket)multipart).getGate();
 		}
 		else if(te instanceof TileEntityGate)
 		{
@@ -85,9 +55,10 @@ public class GateProvider
 		return null;
 	}
 	
-	public static byte[] calculateBundledInput(IGateProvider provider, int side)
+	public static byte[] calculateBundledInput(ISocket provider, int side)
 	{
-		int r = provider.getGate().getRotationAbs(side);
+		// TODO rewrite
+		/*int r = provider.getGate().getRotationAbs(side);
 		int face = provider.getGate().getSide();
 		int abs = Rotation.rotateSide(face, r);
 		BlockCoord pos = provider.getPos().offset(abs);
@@ -111,11 +82,12 @@ public class GateProvider
 		}
 
 		if(input == null) input = new byte[16];
-		return input;
+		return input;*/
+		return null;
 	}
 	
 	/** Used to update the input coming from other gates, in case no API for bundled cabling is present **/
-	private static byte[] calculateBundledInputNative(IGateProvider provider, int side, BlockCoord pos, int abs)
+	private static byte[] calculateBundledInputNative(ISocket provider, int side, BlockCoord pos, int abs)
 	{
 		PartGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
 		if(neighbour != null) return neighbour.output[(side + 2) % 4];
@@ -123,7 +95,7 @@ public class GateProvider
 	}
 	
 	@Method(modid = "bluepower")
-	private static byte[] calculateBundledInputBluePower(IGateProvider provider, int side, BlockCoord pos, int abs)
+	private static byte[] calculateBundledInputBluePower(ISocket provider, int side, BlockCoord pos, int abs)
 	{
 		IRedstoneApi redstoneAPI = BPApi.getInstance().getRedstoneApi();
 		IBundledDevice device = redstoneAPI.getBundledDevice(provider.getWorld(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(provider.getGate().getSide()), ForgeDirection.UNKNOWN);
@@ -131,7 +103,7 @@ public class GateProvider
 		return null;
 	}
 	
-	private static byte[] calculateBundledInputComputercraft(IGateProvider provider, int side, BlockCoord pos, int abs)
+	private static byte[] calculateBundledInputComputercraft(ISocket provider, int side, BlockCoord pos, int abs)
 	{
 		int input = ComputerCraftAPI.getBundledRedstoneOutput(provider.getWorld(), pos.x, pos.y, pos.z, abs ^ 1);
 		if(input > 0)
@@ -149,7 +121,7 @@ public class GateProvider
 	}
 	
 	@Method(modid = "RedLogic")
-	private static byte[] calculateBundledInputRedLogic(IGateProvider provider, int side, BlockCoord pos, int abs)
+	private static byte[] calculateBundledInputRedLogic(ISocket provider, int side, BlockCoord pos, int abs)
 	{
 		byte[] power = null;
 		TileEntity te = provider.getWorld().getTileEntity(pos.x, pos.y, pos.z);
@@ -162,7 +134,7 @@ public class GateProvider
 	}
 	
 	@Method(modid = "ProjRed|Transmission")
-	private static byte[] calculateBundledInputProjectRed(IGateProvider provider, int side)
+	private static byte[] calculateBundledInputProjectRed(ISocket provider, int side)
 	{
 		int r = provider.getGate().getRotationAbs(side);
 		int face = provider.getGate().getSide();
@@ -216,7 +188,7 @@ public class GateProvider
 		return null;
 	}
 	
-	public static int calculateRedstoneInput(IGateProvider provider, int side)
+	public static int calculateRedstoneInput(ISocket provider, int side)
 	{
 		int r = provider.getGate().getRotationAbs(side);
 		int face = provider.getGate().getSide();

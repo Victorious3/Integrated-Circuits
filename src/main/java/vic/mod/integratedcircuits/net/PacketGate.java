@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
-import vic.mod.integratedcircuits.gate.GateProvider;
+import vic.mod.integratedcircuits.gate.Socket;
+import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.gate.PartGate;
-import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
 import codechicken.lib.vec.BlockCoord;
 
 public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTileEntity<T>
@@ -15,7 +15,7 @@ public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTile
 	
 	public PacketGate() {}
 	
-	public PacketGate(IGateProvider part)
+	public PacketGate(ISocket part)
 	{
 		BlockCoord pos = part.getPos();
 		this.xCoord = pos.x;
@@ -40,6 +40,6 @@ public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTile
 	
 	protected PartGate getPart(World world)
 	{
-		return GateProvider.getGateAt(world, new BlockCoord(xCoord, yCoord, zCoord), facing);
+		return Socket.getGateAt(world, new BlockCoord(xCoord, yCoord, zCoord), facing);
 	}
 }

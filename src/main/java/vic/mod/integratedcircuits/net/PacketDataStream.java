@@ -46,6 +46,7 @@ public class PacketDataStream extends PacketTileEntity<PacketDataStream>
 	@Override
 	public void process(EntityPlayer player, Side side) 
 	{
+		// TODO Change this
 		TileEntityGate gate = (TileEntityGate)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(gate == null) return;
 		byte discr = in.readByte();

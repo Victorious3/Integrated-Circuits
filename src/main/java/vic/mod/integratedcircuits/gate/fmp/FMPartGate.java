@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.gate.BPDevice;
-import vic.mod.integratedcircuits.gate.GateProvider;
-import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.Socket;
+import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
@@ -47,7 +47,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 })
 public class FMPartGate extends JCuboidPart implements 
 	JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, 
-	IBundledEmitter, IGateProvider, IBundledDeviceWrapper
+	IBundledEmitter, ISocket, IBundledDeviceWrapper
 {
 
 	private PartGate gate;
@@ -241,8 +241,8 @@ public class FMPartGate extends JCuboidPart implements
 	public boolean connectStraight(IConnectable arg0, int arg1, int arg2) 
 	{
 		int side = gate.getRotationRel(arg1);
-		if(arg0 instanceof IRedwireEmitter && gate.canConnectRedstoneImpl(side)) return true;
-		else if(arg0 instanceof IBundledEmitter && gate.canConnectBundledImpl(side)) return true;
+		if(arg0 instanceof IRedwireEmitter && gate.canConnectRedstone(side)) return true;
+		else if(arg0 instanceof IBundledEmitter && gate.canConnectBundledl(side)) return true;
 		return false;
 	}
 	
@@ -250,7 +250,7 @@ public class FMPartGate extends JCuboidPart implements
 	public byte[] getBundledSignal(int arg0) 
 	{
 		int rot = gate.getRotationRel(arg0);
-		if(!gate.canConnectBundledImpl(rot)) return null;
+		if(!gate.canConnectBundledl(rot)) return null;
 		return gate.getBundledOutput(rot);
 	}
 	
@@ -260,7 +260,7 @@ public class FMPartGate extends JCuboidPart implements
 	public final boolean canConnectRedstone(int arg0) 
 	{
 		if((arg0 & 6) == (gate.getSide() & 6)) return false;
-		return gate.canConnectRedstoneImpl(gate.getSideRel(arg0));
+		return gate.canConnectRedstone(gate.getSideRel(arg0));
 	}
 	
 	@Override
@@ -268,7 +268,7 @@ public class FMPartGate extends JCuboidPart implements
 	{
 		if((arg0 & 6) == (gate.getSide() & 6)) return 0;
 		int rot = gate.getSideRel(arg0);
-		if(!gate.canConnectRedstoneImpl(rot)) return 0;
+		if(!gate.canConnectRedstone(rot)) return 0;
 		return gate.getRedstoneOutput(rot);
 	}
 
@@ -331,13 +331,13 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public byte[] updateBundledInput(int side)
 	{
-		return GateProvider.calculateBundledInput(this, side);
+		return Socket.calculateBundledInput(this, side);
 	}
 	
 	@Override
 	public int updateRedstoneInput(int side)
 	{
-		return GateProvider.calculateRedstoneInput(this, side);
+		return Socket.calculateRedstoneInput(this, side);
 	}
 
 	@Override

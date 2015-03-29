@@ -105,20 +105,23 @@ public class ClientProxy extends CommonProxy
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGate.class, gateRenderer);
 		
+		circuitRenderer = new PartCircuitRenderer();
+		segmentRenderer = new Part7SegmentRenderer();
+		
+		socketRenderer = new SocketRenderer(Constants.MOD_ID + ":ic_base");
+		socketRendererFMP = new SocketRenderer(Constants.MOD_ID + ":ic_base_fmp");
+		
+		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemSocket, socketRenderer);
+		if(IntegratedCircuits.isFMPLoaded) 	
+			MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemSocketFMP, socketRendererFMP);
+		
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemLaser, new ItemLaserRenderer());
 	}
 	
 	@Override
 	public void preInitialize() 
 	{
-		super.preInitialize();
-		
-		circuitRenderer = new PartCircuitRenderer();
-		segmentRenderer = new Part7SegmentRenderer();
-		
-		socketRenderer = new SocketRenderer(Resources.ICON_IC_BASE);
-		socketRendererFMP = new SocketRenderer(Resources.ICON_IC_BASE_FMP);
-		
+		super.preInitialize();	
 		resources = new Resources();
 	}
 	

@@ -23,10 +23,10 @@ import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.gate.BPDevice;
 import vic.mod.integratedcircuits.gate.GatePeripheral;
-import vic.mod.integratedcircuits.gate.GateProvider;
-import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.Socket;
 import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
+import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
@@ -52,7 +52,7 @@ import cpw.mods.fml.common.Optional.Method;
 	@Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 })
 public class TileEntityGate extends TileEntity implements 
-	IGateProvider, IBundledTile, IBundledUpdatable, IBundledEmitter, 
+	ISocket, IBundledTile, IBundledUpdatable, IBundledEmitter, 
 	IConnectable, SimpleComponent, SidedComponent, ManagedPeripheral,
 	IBundledDeviceWrapper
 {
@@ -85,29 +85,40 @@ public class TileEntityGate extends TileEntity implements
 	public void readFromNBT(NBTTagCompound compound) 
 	{
 		super.readFromNBT(compound);
-		gate = GateRegistry.createGateInstace(compound.getString("gate_id"));
-		gate.setProvider(this);
-		gate.load(compound);
-		if (IntegratedCircuits.isBPLoaded)
-			bpDevice = new BPDevice(gate);
+		if(compound.hasKey("gate_id")) 
+		{
+    		gate = GateRegistry.createGateInstace(compound.getString("gate_id"));
+    		gate.setProvider(this);
+    		gate.load(compound);
+    		if (IntegratedCircuits.isBPLoaded)
+    			bpDevice = new BPDevice(gate);
+		}
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound compound) 
 	{
 		super.writeToNBT(compound);
-		compound.setString("gate_id", gate.getName());
-		gate.save(compound);
+		if(gate != null) 
+		{
+			compound.setString("gate_id", gate.getName());
+			gate.save(compound);
+		}	
 	}
 
 	@Override
 	public Packet getDescriptionPacket() 
 	{
 		NBTTagCompound comp = new NBTTagCompound();
-		PacketCustom packet = new PacketCustom("", 1);
-		gate.writeDesc(packet);
-		comp.setString("gate_id", gate.getName());
-		comp.setByteArray("data", packet.getByteBuf().array());
+		
+		if(gate != null) 
+		{
+			PacketCustom packet = new PacketCustom("", 1);
+			gate.writeDesc(packet);
+			comp.setString("gate_id", gate.getName());
+			comp.setByteArray("data", packet.getByteBuf().array());
+		}
+		
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, blockMetadata, comp);
 	}
 
@@ -115,16 +126,18 @@ public class TileEntityGate extends TileEntity implements
 	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) 
 	{
 		NBTTagCompound comp = pkt.func_148857_g();
-		byte[] data = comp.getByteArray("data");
-		PacketCustom in = new PacketCustom(Unpooled.copiedBuffer(data));
-		if(gate == null) 
+		
+		if(comp.hasKey("gate_id"))
 		{
+			byte[] data = comp.getByteArray("data");
+			PacketCustom in = new PacketCustom(Unpooled.copiedBuffer(data));
+			
 			gate = GateRegistry.createGateInstace(comp.getString("gate_id"));
 			gate.setProvider(this);
 			if (IntegratedCircuits.isBPLoaded)
 				bpDevice = new BPDevice(gate);
+			gate.readDesc(in);
 		}
-		gate.readDesc(in);
 	}
 
 	@Override
@@ -178,13 +191,13 @@ public class TileEntityGate extends TileEntity implements
 	@Override
 	public byte[] updateBundledInput(int side)
 	{
-		return GateProvider.calculateBundledInput(this, side);
+		return Socket.calculateBundledInput(this, side);
 	}
 	
 	@Override
 	public int updateRedstoneInput(int side)
 	{
-		return GateProvider.calculateRedstoneInput(this, side);
+		return Socket.calculateRedstoneInput(this, side);
 	}
 
 	@Override
@@ -226,7 +239,7 @@ public class TileEntityGate extends TileEntity implements
 			if(!(mp instanceof BundledCablePart)) return false;
 		}
 		
-		return gate.canConnectBundledImpl(rel);
+		return gate.canConnectBundledl(rel);
 	}
 	
 	@Override
@@ -234,7 +247,7 @@ public class TileEntityGate extends TileEntity implements
 	{
 		if((arg0 & 6) == (gate.getSide() & 6)) return null;
 		int rot = gate.getSideRel(arg0);
-		if(!gate.canConnectBundledImpl(rot)) return null;
+		if(!gate.canConnectBundledl(rot)) return null;
 		return gate.getBundledOutput(rot);
 	}
 	
@@ -262,8 +275,8 @@ public class TileEntityGate extends TileEntity implements
 		int rel = gate.getSideRel(fromDirection);
 		
 		if(blockFace == -1) return false;
-		if(wire instanceof IBundledWire) return gate.canConnectBundledImpl(rel);
-		else return gate.canConnectRedstoneImpl(rel);
+		if(wire instanceof IBundledWire) return gate.canConnectBundledl(rel);
+		else return gate.canConnectRedstone(rel);
 	}
 
 	@Override

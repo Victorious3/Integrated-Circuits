@@ -2,7 +2,7 @@ package vic.mod.integratedcircuits.compat;
 
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
-import vic.mod.integratedcircuits.gate.GateProvider;
+import vic.mod.integratedcircuits.gate.Socket;
 import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.vec.BlockCoord;
 
@@ -28,7 +28,7 @@ public class BPRedstoneProvider implements IRedstoneProvider
 	@Override
 	public IBundledDevice getBundledDeviceAt(World world, int x, int y, int z, ForgeDirection side, ForgeDirection face)
 	{
-		PartGate gate = GateProvider.getGateAt(world, new BlockCoord(x, y, z), side.ordinal());
+		PartGate gate = Socket.getGateAt(world, new BlockCoord(x, y, z), side.ordinal());
 		if(gate != null && gate.getProvider() instanceof IBundledDeviceWrapper) 
 			return ((IBundledDeviceWrapper)gate.getProvider()).getBundledDeviceOnSide(face);
 		return null;

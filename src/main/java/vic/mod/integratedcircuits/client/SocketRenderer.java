@@ -3,11 +3,10 @@ package vic.mod.integratedcircuits.client;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 import vic.mod.integratedcircuits.client.model.IComponentModel;
 import vic.mod.integratedcircuits.client.model.ModelBase;
-import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
@@ -17,25 +16,25 @@ import codechicken.lib.vec.Translation;
 
 import com.google.common.collect.Lists;
 
-public class SocketRenderer implements IItemRenderer, IPartRenderer<IGateProvider>
+public class SocketRenderer implements IItemRenderer, IPartRenderer<ISocket>
 {	
 	protected List<IComponentModel> models = Lists.newLinkedList();
 	
 	private PartGate part;
 	
-	public SocketRenderer(IIcon icon)
+	public SocketRenderer(String iconName)
 	{
-		models.add(new ModelBase(icon));
+		models.add(new ModelBase(iconName));
 	}
 
-	public void prepare(IGateProvider part) 
+	public void prepare(ISocket part) 
 	{
 		this.part = part.getGate();
 	}
 	
 	public void prepareInv(ItemStack stack) {}
 	
-	public void prepareDynamic(IGateProvider part, float partialTicks) 
+	public void prepareDynamic(ISocket part, float partialTicks) 
 	{
 		this.part = part.getGate();
 	}

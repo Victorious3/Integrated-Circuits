@@ -20,7 +20,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetOmniNode;
 import powercrystals.minefactoryreloaded.api.rednet.connectivity.RedNetConnectionType;
 import vic.mod.integratedcircuits.Constants;
-import vic.mod.integratedcircuits.gate.GateProvider;
+import vic.mod.integratedcircuits.gate.Socket;
 import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
 import vic.mod.integratedcircuits.gate.PartGate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
@@ -72,7 +72,8 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		if(te == null || te.getGate() == null) return null;
-		return te.pickItem(target);
+//		return te.pickItem(target);
+		return null;
 	}	
 
 	@Override
@@ -167,7 +168,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) 
 	{
-		side = GateProvider.vanillaToSide(side);
+		side = Socket.vanillaToSide(side);
 		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		PartGate gate = te.getGate();
@@ -175,7 +176,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		if((side & 6) == (gate.getSide() & 6)) return false;
 		int rel = gate.getSideRel(side);
 
-		return gate.canConnectRedstoneImpl(rel);
+		return gate.canConnectRedstone(rel);
 	}
 
 	@Override
@@ -194,7 +195,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		
 		if((side & 6) == (gate.getSide() & 6)) return 0;
 		int rot = gate.getSideRel(side);
-		if(!gate.canConnectRedstoneImpl(rot)) return 0;
+		if(!gate.canConnectRedstone(rot)) return 0;
 		
 		return gate.getRedstoneOutput(rot);
 	}
@@ -242,8 +243,8 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		if((side & 6) == (gate.getSide() & 6)) return RedNetConnectionType.None;
 		int rel = gate.getSideRel(side);
 		
-		if(gate.canConnectBundledImpl(rel)) return RedNetConnectionType.PlateAll;
-		else if(gate.canConnectRedstoneImpl(rel)) return RedNetConnectionType.PlateSingle;
+		if(gate.canConnectBundledl(rel)) return RedNetConnectionType.PlateAll;
+		else if(gate.canConnectRedstone(rel)) return RedNetConnectionType.PlateSingle;
 		return RedNetConnectionType.None;
 	}
 	

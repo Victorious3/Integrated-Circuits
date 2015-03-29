@@ -8,9 +8,9 @@ public class NEIAddon
 {	
 	public void initialize()
 	{	
-		API.hideItem(new ItemStack(IntegratedCircuits.itemCircuit.getItem()));
+		API.hideItem(new ItemStack(IntegratedCircuits.itemSocket));
 		if(IntegratedCircuits.isFMPLoaded)
-			API.hideItem(new ItemStack(IntegratedCircuits.itemCircuit.getItemFMP()));
+			API.hideItem(new ItemStack(IntegratedCircuits.itemSocketFMP));
 		
 		API.hideItem(new ItemStack(IntegratedCircuits.blockGate));
 	}

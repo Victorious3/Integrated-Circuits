@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import vic.mod.integratedcircuits.Constants;
-import vic.mod.integratedcircuits.gate.GateProvider.IGateProvider;
+import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
 import codechicken.lib.render.CCRenderState;
@@ -52,7 +52,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 		CCRenderState.pullLightmap();
 		CCRenderState.useNormals = true;
 		
-		ClientProxy.socketRenderer.prepareDynamic((IGateProvider) te, par5);
+		ClientProxy.socketRenderer.prepareDynamic((ISocket) te, par5);
 		ClientProxy.socketRenderer.renderDynamic(new Translation(new Vector3(x, y, z)));
 	}
 }

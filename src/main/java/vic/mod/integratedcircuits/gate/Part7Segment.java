@@ -100,7 +100,7 @@ public class Part7Segment extends PartGate
 		if(provider.getWorld().isRemote) return;
 		
 		isSlave = false;
-		int abs = Rotation.rotateSide(getSide(), getRotationAbs(3));
+		int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(3));
 		BlockCoord pos = provider.getPos();
 		BlockCoord pos2 = pos.copy();
 		Part7Segment seg;
@@ -110,7 +110,7 @@ public class Part7Segment extends PartGate
 			off++;
 			pos2.offset(abs);
 			seg = getSegment(pos2);
-			if(seg == null || seg.getRotation() != getRotation()) break;
+			if(seg == null || seg.provider.getRotation() != seg.provider.getRotation()) break;
 			if(seg.isSlave) continue;
 			
 			parent = pos2;
@@ -133,11 +133,9 @@ public class Part7Segment extends PartGate
 	}
 	
 	@Override
-	public void rotate() 
+	public void onRotated() 
 	{
 		updateConnections();
-		super.rotate();
-		updateInput();
 		claimSlaves();
 	}
 	
@@ -150,14 +148,14 @@ public class Part7Segment extends PartGate
 			
 			Part7Segment master = getSegment(parent);
 			if(master != null) master.claimSlaves();
-			int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
+			int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(1));
 			crd.offset(abs);
 			Part7Segment seg = getSegment(crd);
 			if(seg != null) seg.claimSlaves();
 		}
 		else
 		{
-			int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));
+			int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(1));
 			BlockCoord crd = provider.getPos().offset(abs);
 			if(slaves.contains(crd))
 			{
@@ -173,7 +171,7 @@ public class Part7Segment extends PartGate
 		isSlave = false;
 		slaves.clear();
 		
-		int abs = Rotation.rotateSide(getSide(), getRotationAbs(1));	
+		int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(1));	
 		BlockCoord pos = provider.getPos();
 		BlockCoord pos2 = pos.copy();
 		Part7Segment seg;
@@ -184,7 +182,7 @@ public class Part7Segment extends PartGate
 			pos2.offset(abs);
 			seg = getSegment(pos2);
 			if(seg == null) break;
-			if(seg.isSlave && seg.getRotation() == getRotation()) 
+			if(seg.isSlave && seg.provider.getRotation() == provider.getRotation()) 
 				slaves.add(pos2.copy());
 			else break;
 		} while (off < MAX_DIGITS);
@@ -195,7 +193,7 @@ public class Part7Segment extends PartGate
 	
 	public Part7Segment getSegment(BlockCoord crd)
 	{
-		PartGate gate = GateProvider.getGateAt(provider.getWorld(), crd, getSide());
+		PartGate gate = GateIO.getGateAt(provider.getWorld(), crd, provider.getSide());
 		if(gate instanceof Part7Segment) return (Part7Segment)gate;
 		return null;
 	}
@@ -210,12 +208,12 @@ public class Part7Segment extends PartGate
 		{
 			if(mode == MODE_SIMPLE)
 			{
-				for(byte[] in : this.input)
+				for(byte[] in : provider.input)
 					input |= in[0] != 0 ? 1 : 0;
 			}
 			else
 			{
-				for(byte[] in : this.input)
+				for(byte[] in : provider.input)
 					if(in[0] > input) input = in[0];
 			}
 			
@@ -235,7 +233,7 @@ public class Part7Segment extends PartGate
 			boolean sign = false;
 			int length = 16;
 			
-			for(byte[] in : this.input)
+			for(byte[] in : provider.input)
 			{
 				int i2 = 0;
 				for(int i = 0; i < 16; i++)
@@ -453,13 +451,13 @@ public class Part7Segment extends PartGate
 	}
 
 	@Override
-	public boolean canConnectRedstoneImpl(int arg0) 
+	public boolean canConnectRedstone(int arg0) 
 	{
 		return !isSlave && mode < 2;
 	}
 
 	@Override
-	public boolean canConnectBundledImpl(int arg0) 
+	public boolean canConnectBundled(int arg0) 
 	{
 		return !isSlave && mode > 1;
 	}

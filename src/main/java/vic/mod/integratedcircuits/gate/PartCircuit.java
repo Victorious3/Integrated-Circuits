@@ -107,7 +107,7 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	{
 		if(!provider.getWorld().isRemote)
 		{
-			super.updateInput();
+			provider.updateInput();
 			circuitData.updateInput();
 			circuitData.updateOutput();
 		}
@@ -191,13 +191,13 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	}
 
 	@Override
-	public boolean canConnectRedstoneImpl(int arg0) 
+	public boolean canConnectRedstone(int arg0) 
 	{
 		return getModeAtSide(arg0) != CircuitProperties.BUNDLED;
 	}
 	
 	@Override
-	public boolean canConnectBundledImpl(int arg0) 
+	public boolean canConnectBundledl(int arg0) 
 	{
 		return getModeAtSide(arg0) == CircuitProperties.BUNDLED;
 	}

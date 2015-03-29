@@ -51,7 +51,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public boolean canConnect(ForgeDirection side, IBundledDevice dev, ConnectionType type)
 	{
-		return gate.canConnectBundledImpl(gate.getSideRel(side.ordinal()));
+		return gate.canConnectBundledl(gate.getSideRel(side.ordinal()));
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public boolean canConnect(ForgeDirection side, IRedstoneDevice dev, ConnectionType type)
 	{
-		return gate.canConnectRedstoneImpl(gate.getSideRel(side.ordinal()));
+		return gate.canConnectRedstone(gate.getSideRel(side.ordinal()));
 	}
 
 	@Override

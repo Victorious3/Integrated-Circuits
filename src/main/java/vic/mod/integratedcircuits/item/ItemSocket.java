@@ -14,7 +14,6 @@ public class ItemSocket extends ItemBase
 	public ItemSocket()
 	{
 		super("socket");
-		setCreativeTab(null);
 	}
 	
 	@Override

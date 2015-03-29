@@ -19,6 +19,8 @@ import vic.mod.integratedcircuits.item.ItemCircuit;
 import vic.mod.integratedcircuits.item.ItemFloppyDisk;
 import vic.mod.integratedcircuits.item.ItemPCB;
 import vic.mod.integratedcircuits.item.ItemScrewdriver;
+import vic.mod.integratedcircuits.item.ItemSocket;
+import vic.mod.integratedcircuits.item.ItemSocketFMP;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.BlockAssembler;
@@ -50,6 +52,9 @@ public class IntegratedCircuits
 	public static boolean isMFRLoaded = false;
 	
 	public static Logger logger;
+	
+	public static ItemSocket itemSocket;
+	public static ItemSocketFMP itemSocketFMP;
 	
 	public static ItemCircuit itemCircuit;
 	public static Item7Segment item7Segment;
@@ -108,6 +113,9 @@ public class IntegratedCircuits
 		
 		GateRegistry.registerGate(new PartCircuit());
 		GateRegistry.registerGate(new Part7Segment());
+		
+		itemSocket = new ItemSocket();
+		if(isFMPLoaded) itemSocketFMP = new ItemSocketFMP();
 		
 		itemCircuit = new ItemCircuit();
 		item7Segment = new Item7Segment();

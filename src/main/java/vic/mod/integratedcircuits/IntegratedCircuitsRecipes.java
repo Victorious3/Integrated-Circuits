@@ -9,7 +9,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import vic.mod.integratedcircuits.item.recipe.RecipeCircuit;
 import vic.mod.integratedcircuits.item.recipe.RecipeDyeable;
-import vic.mod.integratedcircuits.item.recipe.RecipeFMPGate;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -36,7 +35,7 @@ public class IntegratedCircuitsRecipes
 						'c', Items.coal
 			);
 			
-			GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItem()),
+			GameRegistry.addRecipe(new ItemStack(IntegratedCircuits.item7Segment),
 				"srs",
 				"r#r",
 				"sps",
@@ -62,7 +61,7 @@ public class IntegratedCircuitsRecipes
 				OreDictionary.registerOre("stoneWire", new ItemStack(prCorePart, 1, 2));
 			}
 			
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(IntegratedCircuits.item7Segment.getItem()),
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(IntegratedCircuits.item7Segment),
 				"srs",
 				"r#r",
 				"sps",
@@ -159,8 +158,5 @@ public class IntegratedCircuitsRecipes
 		//TODO NEI integration? Rewrite using multiple recipes?
 		GameRegistry.addRecipe(new RecipeDyeable());
 		GameRegistry.addRecipe(new RecipeCircuit());
-		
-		if(IntegratedCircuits.isFMPLoaded)
-			GameRegistry.addRecipe(new RecipeFMPGate());
 	}
 }

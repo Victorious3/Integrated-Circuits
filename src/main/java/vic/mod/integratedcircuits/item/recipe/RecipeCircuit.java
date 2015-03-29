@@ -15,7 +15,7 @@ public class RecipeCircuit extends ShapelessRecipes
 {
 	public RecipeCircuit() 
 	{
-		super(new ItemStack(IntegratedCircuits.itemCircuit.getItem()), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)));
+		super(new ItemStack(IntegratedCircuits.itemCircuit), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1, 1)));
 		RecipeSorter.register(Constants.MOD_ID + ":circuit", getClass(), Category.SHAPELESS, "after:minecraft:shapeless");
 	}
 
@@ -33,7 +33,7 @@ public class RecipeCircuit extends ShapelessRecipes
 			}
 		}
 		if(stack == null) return null;
-		ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit.getItem());
+		ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit);
 		NBTTagCompound comp = (NBTTagCompound)stack.getTagCompound().copy();
 		ret.setTagCompound(comp);
 		return ret;

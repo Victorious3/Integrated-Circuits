@@ -5,6 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.Constants;
+import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.gate.fmp.FMPartGate;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
@@ -17,7 +18,8 @@ public class ItemSocketFMP extends JItemMultiPart
 {
 	public ItemSocketFMP()
 	{
-		setUnlocalizedName("socket_fmp");
+		setUnlocalizedName(Constants.MOD_ID + ".socket_fmp");
+		setCreativeTab(IntegratedCircuits.creativeTab);
 		GameRegistry.registerItem(this, Constants.MOD_ID + "_socket_fmp", Constants.MOD_ID);
 	}
 	
@@ -25,7 +27,6 @@ public class ItemSocketFMP extends JItemMultiPart
 	public TMultiPart newPart(ItemStack stack, EntityPlayer player, World world, BlockCoord crd, int arg4, Vector3 arg5)
 	{
 		FMPartGate part = (FMPartGate)MultiPartRegistry.createPart(Constants.MOD_ID + ".socket_fmp", false);
-		part.getGate().preparePlacement(player, crd, arg4, stack.getItemDamage());
 		return part;
 	}
 
