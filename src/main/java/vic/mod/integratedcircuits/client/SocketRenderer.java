@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import vic.mod.integratedcircuits.client.model.IComponentModel;
 import vic.mod.integratedcircuits.client.model.ModelBase;
+import vic.mod.integratedcircuits.gate.IGate;
 import vic.mod.integratedcircuits.gate.ISocket;
-import vic.mod.integratedcircuits.gate.PartGate;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Scale;
@@ -20,7 +20,7 @@ public class SocketRenderer implements IItemRenderer, IPartRenderer<ISocket>
 {	
 	protected List<IComponentModel> models = Lists.newLinkedList();
 	
-	private PartGate part;
+	private IGate part;
 	
 	public SocketRenderer(String iconName)
 	{

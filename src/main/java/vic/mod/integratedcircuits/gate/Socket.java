@@ -30,8 +30,8 @@ public class Socket implements ISocket
 	//Collision box
 	public static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
 		
-	protected final ISocket provider;
-	protected PartGate gate;
+	protected final ISocketWrapper provider;
+	protected IGate gate;
 	
 	//Used by the client, redstone IO
 	protected byte io;
@@ -40,7 +40,7 @@ public class Socket implements ISocket
 	
 	protected byte orientation;
 	
-	private Socket(ISocket provider) 
+	private Socket(ISocketWrapper provider) 
 	{
 		this.provider = provider;
 	}
@@ -136,7 +136,7 @@ public class Socket implements ISocket
 	}
 	
 	@Override
-	public void setGate(PartGate gate)
+	public void setGate(IGate gate)
 	{
 		this.gate = gate;
 		this.gate.setProvider(this);
@@ -144,7 +144,7 @@ public class Socket implements ISocket
 	}
 
 	@Override
-	public PartGate getGate()
+	public IGate getGate()
 	{
 		return gate;
 	}
@@ -303,6 +303,18 @@ public class Socket implements ISocket
 	}
 	
 	//Redstone IO
+	
+	@Override
+	public byte[][] getInput()
+	{
+		return input;
+	}
+
+	@Override
+	public byte[][] getOutput()
+	{
+		return output;
+	}
 	
 	public byte getRedstoneInput(int side)
 	{

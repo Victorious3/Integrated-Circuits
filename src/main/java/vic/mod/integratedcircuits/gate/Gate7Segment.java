@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class Part7Segment extends PartGate
+public class Gate7Segment extends Gate
 {
 	public int digit = NUMBERS[0];
 	public int color;
@@ -73,7 +73,7 @@ public class Part7Segment extends PartGate
 	public static final int MODE_BINARY_STRING = 5;
 	public static final int MODE_MANUAL = 6;
 	
-	public Part7Segment() 
+	public Gate7Segment() 
 	{
 		super("7segment");
 	}
@@ -103,7 +103,7 @@ public class Part7Segment extends PartGate
 		int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(3));
 		BlockCoord pos = provider.getPos();
 		BlockCoord pos2 = pos.copy();
-		Part7Segment seg;
+		Gate7Segment seg;
 		
 		int off = 0;
 		do {
@@ -146,11 +146,11 @@ public class Part7Segment extends PartGate
 			BlockCoord crd = provider.getPos();
 			isSlave = false;
 			
-			Part7Segment master = getSegment(parent);
+			Gate7Segment master = getSegment(parent);
 			if(master != null) master.claimSlaves();
 			int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(1));
 			crd.offset(abs);
-			Part7Segment seg = getSegment(crd);
+			Gate7Segment seg = getSegment(crd);
 			if(seg != null) seg.claimSlaves();
 		}
 		else
@@ -159,7 +159,7 @@ public class Part7Segment extends PartGate
 			BlockCoord crd = provider.getPos().offset(abs);
 			if(slaves.contains(crd))
 			{
-				Part7Segment seg = getSegment(crd);
+				Gate7Segment seg = getSegment(crd);
 				if(seg != null) seg.claimSlaves();
 			}
 			slaves.clear();
@@ -174,7 +174,7 @@ public class Part7Segment extends PartGate
 		int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(1));	
 		BlockCoord pos = provider.getPos();
 		BlockCoord pos2 = pos.copy();
-		Part7Segment seg;
+		Gate7Segment seg;
 		
 		int off = 0;
 		do {
@@ -191,10 +191,10 @@ public class Part7Segment extends PartGate
 		sendChangesToClient();
 	}
 	
-	public Part7Segment getSegment(BlockCoord crd)
+	public Gate7Segment getSegment(BlockCoord crd)
 	{
-		PartGate gate = GateIO.getGateAt(provider.getWorld(), crd, provider.getSide());
-		if(gate instanceof Part7Segment) return (Part7Segment)gate;
+		IGate gate = GateIO.getGateAt(provider.getWorld(), crd, provider.getSide());
+		if(gate instanceof Gate7Segment) return (Gate7Segment)gate;
 		return null;
 	}
 	
@@ -208,12 +208,12 @@ public class Part7Segment extends PartGate
 		{
 			if(mode == MODE_SIMPLE)
 			{
-				for(byte[] in : provider.input)
+				for(byte[] in : provider.getInput())
 					input |= in[0] != 0 ? 1 : 0;
 			}
 			else
 			{
-				for(byte[] in : provider.input)
+				for(byte[] in : provider.getInput())
 					if(in[0] > input) input = in[0];
 			}
 			
@@ -233,7 +233,7 @@ public class Part7Segment extends PartGate
 			boolean sign = false;
 			int length = 16;
 			
-			for(byte[] in : provider.input)
+			for(byte[] in : provider.getInput())
 			{
 				int i2 = 0;
 				for(int i = 0; i < 16; i++)
@@ -275,7 +275,7 @@ public class Part7Segment extends PartGate
 						writeDigits(digits);
 						if(sign && Float.isInfinite(conv))
 						{
-							Part7Segment slave = getSegment(slaves.get(slaves.size() - 1));
+							Gate7Segment slave = getSegment(slaves.get(slaves.size() - 1));
 							if(slave != null) slave.writeDigit(SIGN);
 						}
 						return;
@@ -304,7 +304,7 @@ public class Part7Segment extends PartGate
 			for(int i = 0; i <= slaves.size(); i++)
 			{
 				int decimal = i < dispString.length() ? Integer.valueOf(String.valueOf(dispString.charAt(i))) : 0;
-				Part7Segment slave = this;
+				Gate7Segment slave = this;
 				if(i > 0)
 				{
 					BlockCoord bc = slaves.get(i - 1);
@@ -324,7 +324,7 @@ public class Part7Segment extends PartGate
 	{
 		for(int i = 0; i <= slaves.size(); i++)
 		{
-			Part7Segment slave = this;
+			Gate7Segment slave = this;
 			int digit = digits != null && i < digits.length ? digits[i] : 0;	
 			if(i > 0)
 			{
@@ -463,9 +463,9 @@ public class Part7Segment extends PartGate
 	}
 
 	@Override
-	public PartGate newInstance() 
+	public Gate newInstance() 
 	{
-		return new Part7Segment();
+		return new Gate7Segment();
 	}
 
 	@Override

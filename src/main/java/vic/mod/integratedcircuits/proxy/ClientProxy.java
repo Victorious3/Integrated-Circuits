@@ -60,7 +60,7 @@ import vic.mod.integratedcircuits.client.TileEntityAssemblerRenderer;
 import vic.mod.integratedcircuits.client.TileEntityGateRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import vic.mod.integratedcircuits.client.gui.Gui7Segment;
-import vic.mod.integratedcircuits.gate.Part7Segment;
+import vic.mod.integratedcircuits.gate.Gate7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
@@ -186,7 +186,7 @@ public class ClientProxy extends CommonProxy
 	}
 
 	/** Needed because of reflection. */
-	public static void open7SegmentGUI(Part7Segment part)
+	public static void open7SegmentGUI(Gate7Segment part)
 	{
 		Minecraft.getMinecraft().displayGuiScreen(new Gui7Segment(part));
 	}

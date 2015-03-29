@@ -6,16 +6,16 @@ import com.google.common.collect.Maps;
 
 public class GateRegistry
 {
-	private static HashMap<String, PartGate> registry = Maps.newHashMap();
+	private static HashMap<String, IGate> registry = Maps.newHashMap();
 	
 	private GateRegistry() {}
 	
-	public static void registerGate(PartGate gate)
+	public static void registerGate(IGate gate)
 	{
 		registry.put(gate.getName(), gate);
 	}
 	
-	public static PartGate createGateInstace(String name)
+	public static IGate createGateInstace(String name)
 	{
 		return registry.get(name).newInstance();
 	}

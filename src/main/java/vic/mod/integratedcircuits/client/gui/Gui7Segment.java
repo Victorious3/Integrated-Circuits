@@ -13,19 +13,19 @@ import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
-import vic.mod.integratedcircuits.gate.Part7Segment;
+import vic.mod.integratedcircuits.gate.Gate7Segment;
 import vic.mod.integratedcircuits.net.Packet7SegmentChangeMode;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 
 public class Gui7Segment extends GuiScreen implements IHoverableHandler
 {
-	private Part7Segment part;
+	private Gate7Segment part;
 	private int xSize, ySize, guiLeft, guiTop;
 	private IHoverable hoverable;
 	private GuiDropdown dropdown;
 	private GuiCheckBoxExt cbMaster, cbSlave;
 
-	public Gui7Segment(Part7Segment part) 
+	public Gui7Segment(Gate7Segment part) 
 	{
 		this.part = part;
 		this.xSize = 150;

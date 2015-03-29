@@ -4,70 +4,81 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
-import vic.mod.integratedcircuits.client.IPartRenderer;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Cuboid6;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class PartGate
+public abstract class Gate implements IGate
 {
 	private String name;
-	protected Socket provider;
+	protected ISocket provider;
 	
-	public PartGate(String name)
+	public Gate(String name)
 	{
 		this.name = name;
 	}
 	
+	@Override
 	public ISocket getProvider()
 	{
 		return provider;
 	}
 	
+	@Override
 	public void setProvider(Socket provider)
 	{
 		this.provider = provider;
 	}
 	
+	@Override
 	public String getName()
 	{
 		return name;
 	}
 	
+	@Override
 	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) {}
 	
+	@Override
 	public void load(NBTTagCompound tag) {}
 	
+	@Override
 	public void save(NBTTagCompound tag) {}
 
+	@Override
 	public void readDesc(MCDataInput packet) {}
 	
+	@Override
 	public void writeDesc(MCDataOutput packet) {}
 
+	@Override
 	public void read(byte discr, MCDataInput packet) {}
 	
+	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
 	{
 		return false;
 	}
 
+	@Override
 	public void onActivatedWithScrewdriver(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {}
 	
+	@Override
 	public void onRotated() {}
 
+	@Override
 	public void onAdded() 
 	{
 		notifyChanges();
 	}
 
+	@Override
 	public void onRemoved()
 	{
 		provider.notifyBlocksAndChanges();
 	}
 
+	@Override
 	public void onMoved() 
 	{
 		notifyChanges();
@@ -78,31 +89,25 @@ public abstract class PartGate
 		if(!provider.getWorld().isRemote) provider.updateInput();
 		provider.notifyBlocksAndChanges();
 	}
-	
-	public abstract ItemStack getItemStack();
 
+	@Override
 	public ItemStack pickItem(MovingObjectPosition hit) 
 	{
 		return getItemStack();
 	}
 	
-	@SideOnly(Side.CLIENT)
-	public abstract IPartRenderer getRenderer();
-	
-	public abstract Cuboid6 getDimension();
-	
+	@Override
 	public void onNeighborChanged() {}
 	
+	@Override
 	public void update() {}
 	
+	@Override
 	public void scheduledTick() {}
 	
+	@Override
 	public void updateInputPre() {}
 	
+	@Override
 	public void updateInputPost() {}
-
-	public abstract boolean canConnectRedstone(int arg0);
-	public abstract boolean canConnectBundled(int arg0);
-
-	public abstract PartGate newInstance();
 }

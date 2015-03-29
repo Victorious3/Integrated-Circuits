@@ -27,7 +27,7 @@ import vic.mod.integratedcircuits.gate.Socket;
 import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
 import vic.mod.integratedcircuits.gate.ISocket;
-import vic.mod.integratedcircuits.gate.PartGate;
+import vic.mod.integratedcircuits.gate.Gate;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
@@ -56,7 +56,7 @@ public class TileEntityGate extends TileEntity implements
 	IConnectable, SimpleComponent, SidedComponent, ManagedPeripheral,
 	IBundledDeviceWrapper
 {
-	public PartGate gate;
+	public Gate gate;
 	public BPDevice bpDevice;
 	public boolean isDestroyed;
 	
@@ -72,7 +72,7 @@ public class TileEntityGate extends TileEntity implements
 		if(gate != null) gate.update();
 	}
 	
-	public void setGate(PartGate gate) 
+	public void setGate(Gate gate) 
 	{
 		this.gate = gate;
 		if(IntegratedCircuits.isBPLoaded)
@@ -207,7 +207,7 @@ public class TileEntityGate extends TileEntity implements
 	}
 
 	@Override
-	public PartGate getGate() 
+	public Gate getGate() 
 	{
 		return gate;
 	}

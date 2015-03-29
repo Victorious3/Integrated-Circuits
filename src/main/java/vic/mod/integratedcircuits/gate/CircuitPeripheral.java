@@ -28,9 +28,9 @@ public class CircuitPeripheral extends GatePeripheral
 		.registerMethod("getName")
 		.registerMethod("getAuthor");
 	
-	private PartCircuit circuit;
+	private GateCircuit circuit;
 	
-	public CircuitPeripheral(PartCircuit circuit)
+	public CircuitPeripheral(GateCircuit circuit)
 	{
 		this.circuit = circuit;
 	}

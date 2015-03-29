@@ -16,7 +16,7 @@ import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.gate.BPDevice;
 import vic.mod.integratedcircuits.gate.Socket;
 import vic.mod.integratedcircuits.gate.ISocket;
-import vic.mod.integratedcircuits.gate.PartGate;
+import vic.mod.integratedcircuits.gate.Gate;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -50,7 +50,7 @@ public class FMPartGate extends JCuboidPart implements
 	IBundledEmitter, ISocket, IBundledDeviceWrapper
 {
 
-	private PartGate gate;
+	private Gate gate;
 	
 	//TODO Re-implement
 	private BPDevice bpDevice;
@@ -100,7 +100,7 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public Cuboid6 getBounds()
 	{
-		return PartGate.box.copy().apply(gate.getRotationTransformation());
+		return Gate.box.copy().apply(gate.getRotationTransformation());
 	}
 	
 	@Override
@@ -341,7 +341,7 @@ public class FMPartGate extends JCuboidPart implements
 	}
 
 	@Override
-	public PartGate getGate() 
+	public Gate getGate() 
 	{
 		return gate;
 	}

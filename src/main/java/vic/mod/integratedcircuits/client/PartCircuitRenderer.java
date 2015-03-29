@@ -7,17 +7,17 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.gate.PartCircuit;
+import vic.mod.integratedcircuits.gate.GateCircuit;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import codechicken.lib.vec.Transformation;
 
-public class PartCircuitRenderer implements IPartRenderer<PartCircuit>
+public class PartCircuitRenderer implements IPartRenderer<GateCircuit>
 {
 	private byte tier;
 	private String name = "NO_NAME";
 
 	@Override
-	public void prepare(PartCircuit part) 
+	public void prepare(GateCircuit part) 
 	{
 		CircuitProperties prop = part.getCircuitData().getProperties();
 		int bundled = 0;
@@ -46,7 +46,7 @@ public class PartCircuitRenderer implements IPartRenderer<PartCircuit>
 	}
 	
 	@Override
-	public void prepareDynamic(PartCircuit part, float partialTicks) 
+	public void prepareDynamic(GateCircuit part, float partialTicks) 
 	{
 		tier = (byte) (Math.log(part.circuitData.getSize()) / Math.log(2) - 3);
 		name = part.circuitData.getProperties().getName();

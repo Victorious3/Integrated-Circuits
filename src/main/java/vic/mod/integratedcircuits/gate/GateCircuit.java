@@ -20,14 +20,14 @@ import codechicken.lib.vec.Rotation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralProvider
+public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvider
 {
 	public CircuitData circuitData;
 
 	private boolean update;
 	private CircuitPeripheral peripheral = new CircuitPeripheral(this);
 		
-	public PartCircuit() 
+	public GateCircuit() 
 	{
 		super("circuit");
 	}
@@ -197,7 +197,7 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	}
 	
 	@Override
-	public boolean canConnectBundledl(int arg0) 
+	public boolean canConnectBundled(int arg0) 
 	{
 		return getModeAtSide(arg0) == CircuitProperties.BUNDLED;
 	}
@@ -231,9 +231,9 @@ public class PartCircuit extends PartGate implements ICircuit, IGatePeripheralPr
 	}
 
 	@Override
-	public PartGate newInstance() 
+	public IGate newInstance() 
 	{
-		return new PartCircuit();
+		return new GateCircuit();
 	}
 
 	@Override

@@ -1,37 +1,14 @@
 package vic.mod.integratedcircuits.gate;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.BlockCoord;
+import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
 
-public interface ISocket
+/**
+ * Contains all methods that have to be called by 
+ * an {@link ISocketWrapper} and documentation.
+ * 
+ * @author Vic Nightfall
+ */
+public interface ISocket extends ISocketBase
 {
-	public void markRender();
 	
-	public MCDataOutput getWriteStream(int disc);
-	
-	public World getWorld();
-	
-	public void notifyBlocksAndChanges();
-	
-	public void notifyPartChange();
-	
-	public BlockCoord getPos();
-	
-	public TileEntity getTileEntity();
-	
-	public void destroy();
-	
-	public int updateRedstoneInput(int side);
-	
-	public byte[] updateBundledInput(int side);
-	
-	public void scheduleTick(int delay);
-	
-	public void setGate(PartGate gate);
-	
-	public PartGate getGate();
-	
-	public int strongPowerLevel(int side);
 }

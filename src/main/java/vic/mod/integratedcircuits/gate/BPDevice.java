@@ -12,14 +12,14 @@ import com.bluepowermod.api.wire.redstone.IRedstoneDevice;
 
 public class BPDevice implements IBundledDevice, IRedstoneDevice
 {
-	private final PartGate gate;
+	private final ISocket socket;
 	
 	private final IConnectionCache<IBundledDevice> cacheBundled;
 	private final IConnectionCache<IRedstoneDevice> cacheSimple;
 	
-	public BPDevice(PartGate gate) 
+	public BPDevice(ISocket socket) 
 	{
-		this.gate = gate;
+		this.socket = socket;
 		this.cacheBundled = BPApi.getInstance().getRedstoneApi().createBundledConnectionCache(this);
 		this.cacheSimple = BPApi.getInstance().getRedstoneApi().createRedstoneConnectionCache(this);
 	}
@@ -27,31 +27,31 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public int getX()
 	{
-		return gate.getProvider().getPos().x;
+		return socket.getPos().x;
 	}
 
 	@Override
 	public int getY()
 	{
-		return gate.getProvider().getPos().y;
+		return socket.getPos().y;
 	}
 
 	@Override
 	public int getZ()
 	{
-		return gate.getProvider().getPos().z;
+		return socket.getPos().z;
 	}
 	
 	@Override
 	public World getWorld()
 	{
-		return gate.getProvider().getWorld();
+		return socket.getWorld();
 	}
 
 	@Override
 	public boolean canConnect(ForgeDirection side, IBundledDevice dev, ConnectionType type)
 	{
-		return gate.canConnectBundledl(gate.getSideRel(side.ordinal()));
+		return socket.canConnectBundled(socket.getSideRel(side.ordinal()));
 	}
 
 	@Override
@@ -63,26 +63,26 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public byte[] getBundledOutput(ForgeDirection side)
 	{
-		return gate.getBundledOutput(gate.getSideRel(side.ordinal()));
+		return socket.getBundledOutput(socket.getSideRel(side.ordinal()));
 	}
 
 	@Override
 	public void setBundledPower(ForgeDirection side, byte[] power)
 	{
-		gate.updateInputPre();
-		gate.setInput(gate.getSideRel(side.ordinal()), power);
+		socket.updateInputPre();
+		socket.setInput(socket.getSideRel(side.ordinal()), power);
 	}
 
 	@Override
 	public byte[] getBundledPower(ForgeDirection side)
 	{
-		return gate.getBundledInput(gate.getSideRel(side.ordinal()));
+		return socket.getBundledInput(socket.getSideRel(side.ordinal()));
 	}
 
 	@Override
 	public void onBundledUpdate()
 	{
-		gate.updateInputPost();
+		socket.updateInputPost();
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public boolean canConnect(ForgeDirection side, IRedstoneDevice dev, ConnectionType type)
 	{
-		return gate.canConnectRedstone(gate.getSideRel(side.ordinal()));
+		return socket.canConnectRedstone(socket.getSideRel(side.ordinal()));
 	}
 
 	@Override
@@ -112,19 +112,19 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public byte getRedstonePower(ForgeDirection side)
 	{
-		return (byte)(gate.getRedstoneOutput(gate.getSideRel(side.ordinal())) != 0 ? -1 : 0);
+		return (byte)(socket.getRedstoneOutput(socket.getSideRel(side.ordinal())) != 0 ? -1 : 0);
 	}
 
 	@Override
 	public void setRedstonePower(ForgeDirection side, byte power)
 	{
-		gate.updateInputPre();
-		gate.setInput(gate.getSideRel(side.ordinal()), 0, power);
+		socket.updateInputPre();
+		socket.setInput(socket.getSideRel(side.ordinal()), 0, power);
 	}
 
 	@Override
 	public void onRedstoneUpdate()
 	{
-		gate.updateInputPost();
+		socket.updateInputPost();
 	}
 }

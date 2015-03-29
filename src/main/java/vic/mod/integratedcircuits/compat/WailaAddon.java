@@ -16,7 +16,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.Constants;
-import vic.mod.integratedcircuits.gate.PartCircuit;
+import vic.mod.integratedcircuits.gate.GateCircuit;
 import vic.mod.integratedcircuits.tile.BlockGate;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
 
@@ -70,7 +70,7 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) 
 	{
 		TileEntityGate te = (TileEntityGate) accessor.getTileEntity();
-		if(te.getGate() instanceof PartCircuit) 
+		if(te.getGate() instanceof GateCircuit) 
 			return getCircuitInformation(itemStack, currenttip);
 		else return currenttip;
 	}

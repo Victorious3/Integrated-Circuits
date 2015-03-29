@@ -6,17 +6,17 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-import vic.mod.integratedcircuits.gate.Part7Segment;
+import vic.mod.integratedcircuits.gate.Gate7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import codechicken.lib.vec.Transformation;
 
-public class Part7SegmentRenderer implements IPartRenderer<Part7Segment>
+public class Part7SegmentRenderer implements IPartRenderer<Gate7Segment>
 {	
 	private int display;
 	private int color;
 	
 	@Override
-	public void prepare(Part7Segment part) 
+	public void prepare(Gate7Segment part) 
 	{
 		/*super.prepare(part);
 		if(part.isSlave)
@@ -52,7 +52,7 @@ public class Part7SegmentRenderer implements IPartRenderer<Part7Segment>
 	}
 	
 	@Override
-	public void prepareDynamic(Part7Segment part, float partialTicks) 
+	public void prepareDynamic(Gate7Segment part, float partialTicks) 
 	{
 		display = part.digit;
 		color = part.color;

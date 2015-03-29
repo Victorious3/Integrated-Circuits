@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.client.gui.Gui7Segment;
 import vic.mod.integratedcircuits.gate.ISocket;
-import vic.mod.integratedcircuits.gate.Part7Segment;
+import vic.mod.integratedcircuits.gate.Gate7Segment;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
@@ -45,7 +45,7 @@ public class Packet7SegmentChangeMode extends PacketGate<Packet7SegmentChangeMod
 	@Override
 	public void process(EntityPlayer player, Side side) 
 	{
-		Part7Segment part = (Part7Segment)getPart(player.worldObj);
+		Gate7Segment part = (Gate7Segment)getPart(player.worldObj);
 		if(part == null) return;
 		if(side == Side.SERVER)
 		{

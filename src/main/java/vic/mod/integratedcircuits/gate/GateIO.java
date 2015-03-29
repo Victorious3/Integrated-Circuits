@@ -37,7 +37,7 @@ public final class GateIO
 		return vanillaSideMap[vside + 1];
 	}
 	
-	public static PartGate getGateAt(World world, BlockCoord pos, int side)
+	public static IGate getGateAt(World world, BlockCoord pos, int side)
 	{
 		TileEntity te = world.getTileEntity(pos.x, pos.y, pos.z);
 		if(IntegratedCircuits.isFMPLoaded && te instanceof TileMultipart)
@@ -50,7 +50,7 @@ public final class GateIO
 		else if(te instanceof TileEntityGate)
 		{
 			TileEntityGate gate = (TileEntityGate)te;
-			if(gate.getGate().getSide() == side) return gate.getGate();
+			if(gate.getSide() == side) return gate.getGate();
 		}
 		return null;
 	}
@@ -89,7 +89,7 @@ public final class GateIO
 	/** Used to update the input coming from other gates, in case no API for bundled cabling is present **/
 	private static byte[] calculateBundledInputNative(ISocket provider, int side, BlockCoord pos, int abs)
 	{
-		PartGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
+		IGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
 		if(neighbour != null) return neighbour.output[(side + 2) % 4];
 		return null;
 	}

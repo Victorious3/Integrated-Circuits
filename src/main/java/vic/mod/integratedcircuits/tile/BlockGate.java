@@ -22,7 +22,7 @@ import powercrystals.minefactoryreloaded.api.rednet.connectivity.RedNetConnectio
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.gate.Socket;
 import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
-import vic.mod.integratedcircuits.gate.PartGate;
+import vic.mod.integratedcircuits.gate.Gate;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import codechicken.lib.vec.Cuboid6;
 
@@ -43,7 +43,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		setBlockName(Constants.MOD_ID + ".gate");
 		setHardness(1);
 		
-		PartGate.box.setBlockBounds(this);
+		Gate.box.setBlockBounds(this);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		if(te == null || te.getGate() == null) return;
-		Cuboid6 bounds = PartGate.box.copy().apply(te.getGate().getRotationTransformation());
+		Cuboid6 bounds = Gate.box.copy().apply(te.getGate().getRotationTransformation());
 		bounds.setBlockBounds(this);
 	}
 	
@@ -171,7 +171,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		side = Socket.vanillaToSide(side);
 		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 
 		if((side & 6) == (gate.getSide() & 6)) return false;
 		int rel = gate.getSideRel(side);
@@ -191,7 +191,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		side ^= 1;
 		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 		
 		if((side & 6) == (gate.getSide() & 6)) return 0;
 		int rot = gate.getSideRel(side);
@@ -206,7 +206,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public int getBundledRedstoneOutput(World world, int x, int y, int z, int side) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 		
 		if((side & 6) == (gate.getSide() & 6)) return -1;
 		int rel = gate.getSideRel(side);
@@ -237,7 +237,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public RedNetConnectionType getConnectionType(World world, int x, int y, int z, ForgeDirection fd) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 		
 		int side = fd.ordinal();
 		if((side & 6) == (gate.getSide() & 6)) return RedNetConnectionType.None;
@@ -253,7 +253,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void onInputsChanged(World world, int x, int y, int z, ForgeDirection fd, int[] inputValues) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 		
 		int side = fd.ordinal();
 		if((side & 6) == (gate.getSide() & 6)) return;
@@ -270,7 +270,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void onInputChanged(World world, int x, int y, int z, ForgeDirection fd, int inputValue) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 		
 		int side = fd.ordinal();
 		if((side & 6) == (gate.getSide() & 6)) return;
@@ -286,7 +286,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public int[] getOutputValues(World world, int x, int y, int z, ForgeDirection fd) 
 	{		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 		
 		int side = fd.ordinal();
 		if((side & 6) == (gate.getSide() & 6)) return new int[16];
@@ -306,7 +306,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public int getOutputValue(World world, int x, int y, int z, ForgeDirection fd, int subnet) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		PartGate gate = te.getGate();
+		Gate gate = te.getGate();
 		
 		int side = fd.ordinal() ^ 1;
 		if((side & 6) == (gate.getSide() & 6)) return 0;
