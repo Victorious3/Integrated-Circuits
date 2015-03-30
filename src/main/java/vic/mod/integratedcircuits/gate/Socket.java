@@ -3,6 +3,7 @@ package vic.mod.integratedcircuits.gate;
 import io.netty.buffer.Unpooled;
 
 import java.util.Arrays;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -40,7 +41,7 @@ public class Socket implements ISocket
 	
 	protected byte orientation;
 	
-	private Socket(ISocketWrapper provider) 
+	public Socket(ISocketWrapper provider) 
 	{
 		this.provider = provider;
 	}
@@ -159,6 +160,7 @@ public class Socket implements ISocket
 	
 	//IO
 	
+	@Override
 	public void readFromNBT(NBTTagCompound compound)
 	{
 		// Read orientation and IO
@@ -183,6 +185,7 @@ public class Socket implements ISocket
 		}
 	}
 	
+	@Override
 	public void writeToNBT(NBTTagCompound compound)
 	{
 		// Write orientation and IO
@@ -211,16 +214,17 @@ public class Socket implements ISocket
 		}
 	}
 	
-	private void writeDesc(MCDataOutput packet)
+	public void writeDesc(MCDataOutput packet)
 	{
 		if(gate != null) gate.writeDesc(packet);
 	}
 	
-	private void readDesc(MCDataInput packet)
+	public void readDesc(MCDataInput packet)
 	{
 		if(gate != null) gate.readDesc(packet);
 	}
 	
+	@Override
 	public void writeDesc(NBTTagCompound compound)
 	{
 		compound.setByte("orientation", orientation);
@@ -234,7 +238,8 @@ public class Socket implements ISocket
 			compound.setByteArray("data", packet.getByteBuf().array());
 		}
 	}
-	
+
+	@Override
 	public void readDesc(NBTTagCompound compound)
 	{
 		orientation = compound.getByte("orientation");
@@ -251,6 +256,7 @@ public class Socket implements ISocket
 		}
 	}
 	
+	@Override
 	public void read(MCDataInput packet)
 	{
 		byte discr = packet.readByte();
@@ -392,17 +398,19 @@ public class Socket implements ISocket
 		for(int i = 0; i < 4; i++)
 		{
 			EnumConnectionType type = getConnectionTypeAtSide(i);
-			if(type == EnumConnectionType.SIMPLE) input[i][0] = (byte) updateRedstoneInput(i);
-			else if(type == EnumConnectionType.BUNDLED) input[i] = updateBundledInput(i);
+			if(type.isRedstone()) input[i][0] = (byte) updateRedstoneInput(i);
+			else if(type.isBundled()) input[i] = updateBundledInput(i);
 		}
 		updateInputPost();
 	}
 	
+	@Override
 	public void updateInputPre()
 	{
 		if(gate != null) gate.updateInputPre();
 	}
 	
+	@Override
 	public void updateInputPost()
 	{
 		if(gate != null) 
@@ -412,12 +420,12 @@ public class Socket implements ISocket
 		}
 	}
 	
+	@Override
 	public EnumConnectionType getConnectionTypeAtSide(int side)
 	{
 		return gate != null ? gate.getConnectionTypeAtSide(side) : EnumConnectionType.NONE;
 	}
 	
-	// TODO Call this more often, is going to be needed
 	private void updateRedstoneIO()
 	{
 		byte oio = io;
@@ -430,12 +438,14 @@ public class Socket implements ISocket
 	
 	//Interaction
 	
+	@Override
 	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
 	{
 		setSide(side ^ 1);
 		setRotation(Rotation.getSidedRotation(player, side));
 	}
 	
+	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack)
 	{
 		if(stack != null)
@@ -475,6 +485,7 @@ public class Socket implements ISocket
 		}
 	}
 	
+	@Override
 	public void onNeighborChanged()
 	{
 		if(!getWorld().isRemote) 
@@ -489,6 +500,31 @@ public class Socket implements ISocket
 		if(gate != null) gate.onNeighborChanged();
 	}
 	
+	@Override
+	public void addDrops(List<ItemStack> list) 
+	{
+		if(gate != null) list.add(gate.getItemStack());
+	}
+	
+	@Override
+	public ItemStack pickItem(MovingObjectPosition mop)
+	{
+		if(gate != null) return gate.pickItem(mop);
+		return null;
+	}
+	
+	@Override
+	public void scheduledTick()
+	{
+		if(gate != null) gate.scheduledTick();
+	}
+	
+	@Override
+	public void onRemoved()
+	{
+		if(gate != null) gate.onRemoved();
+	}
+
 	public Transformation getRotationTransformation()
 	{
 		return Rotation.sideOrientation(getSide(), getRotation()).at(Vector3.center);

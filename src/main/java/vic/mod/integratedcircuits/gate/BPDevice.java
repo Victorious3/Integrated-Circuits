@@ -51,7 +51,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public boolean canConnect(ForgeDirection side, IBundledDevice dev, ConnectionType type)
 	{
-		return socket.canConnectBundled(socket.getSideRel(side.ordinal()));
+		return socket.getConnectionTypeAtSide(socket.getSideRel(side.ordinal())).isBundled();
 	}
 
 	@Override
@@ -63,20 +63,20 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public byte[] getBundledOutput(ForgeDirection side)
 	{
-		return socket.getBundledOutput(socket.getSideRel(side.ordinal()));
+		return socket.getOutput()[(socket.getSideRel(side.ordinal()))];
 	}
 
 	@Override
 	public void setBundledPower(ForgeDirection side, byte[] power)
 	{
 		socket.updateInputPre();
-		socket.setInput(socket.getSideRel(side.ordinal()), power);
+		socket.getInput()[socket.getSideRel(side.ordinal())] = power;
 	}
 
 	@Override
 	public byte[] getBundledPower(ForgeDirection side)
 	{
-		return socket.getBundledInput(socket.getSideRel(side.ordinal()));
+		return socket.getInput()[socket.getSideRel(side.ordinal())];
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice
 	@Override
 	public boolean canConnect(ForgeDirection side, IRedstoneDevice dev, ConnectionType type)
 	{
-		return socket.canConnectRedstone(socket.getSideRel(side.ordinal()));
+		return socket.getConnectionTypeAtSide(socket.getSideRel(side.ordinal())).isRedstone();
 	}
 
 	@Override

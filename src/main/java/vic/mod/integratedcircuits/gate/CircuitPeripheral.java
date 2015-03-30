@@ -58,10 +58,10 @@ public class CircuitPeripheral extends GatePeripheral
 				int side = ((Double)arguments[0]).intValue();
 				if(side < 0 || side > 3) throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
 				
-				byte[] value = circuit.output[side];
+				byte[] value = circuit.provider.getOutput()[side];
 				if(method.getName().equals("getOutputToSide"))
-					value = circuit.output[side];
-				else value = circuit.input[side];
+					value = circuit.provider.getOutput()[side];
+				else value = circuit.provider.getInput()[side];
 				
 				Object[] ret = new Object[value.length];
 				for(int i = 0; i < value.length; i++)

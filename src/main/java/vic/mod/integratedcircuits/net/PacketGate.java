@@ -6,7 +6,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.gate.GateIO;
 import vic.mod.integratedcircuits.gate.IGate;
-import vic.mod.integratedcircuits.gate.ISocket;
+import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
 import codechicken.lib.vec.BlockCoord;
 
 public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTileEntity<T>
@@ -15,7 +15,7 @@ public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTile
 	
 	public PacketGate() {}
 	
-	public PacketGate(ISocket part)
+	public PacketGate(ISocketBase part)
 	{
 		BlockCoord pos = part.getPos();
 		this.xCoord = pos.x;

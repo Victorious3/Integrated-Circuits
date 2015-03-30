@@ -20,10 +20,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetOmniNode;
 import powercrystals.minefactoryreloaded.api.rednet.connectivity.RedNetConnectionType;
 import vic.mod.integratedcircuits.Constants;
-import vic.mod.integratedcircuits.gate.Socket;
+import vic.mod.integratedcircuits.gate.GateIO;
 import vic.mod.integratedcircuits.gate.IGatePeripheralProvider;
-import vic.mod.integratedcircuits.gate.Gate;
-import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.gate.ISocket;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
+import vic.mod.integratedcircuits.gate.Socket;
 import codechicken.lib.vec.Cuboid6;
 
 import com.google.common.collect.Lists;
@@ -43,7 +44,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		setBlockName(Constants.MOD_ID + ".gate");
 		setHardness(1);
 		
-		Gate.box.setBlockBounds(this);
+		Socket.box.setBlockBounds(this);
 	}
 
 	@Override
@@ -51,29 +52,16 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	{
 		ArrayList<ItemStack> drops = Lists.newArrayList();
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		if(te != null) drops.add(te.getItemStack());
+		if(te != null) te.getSocket().addDrops(drops);
 		return drops;
-	}
-	
-	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) 
-	{
-		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		if(te != null)
-		{
-			if(!world.isRemote && !player.capabilities.isCreativeMode)
-				MiscUtils.dropItem(world, te.getItemStack(), x, y, z);
-		}
-		return world.setBlockToAir(x, y, z);
 	}
 
 	@Override
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer player) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		if(te == null || te.getGate() == null) return null;
-//		return te.pickItem(target);
-		return null;
+		if(te == null) return null;
+		return te.getSocket().pickItem(target);
 	}	
 
 	@Override
@@ -92,8 +80,8 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		if(te == null || te.getGate() == null) return;
-		Cuboid6 bounds = Gate.box.copy().apply(te.getGate().getRotationTransformation());
+		if(te == null) return;
+		Cuboid6 bounds = Socket.box.copy().apply(te.getSocket().getRotationTransformation());
 		bounds.setBlockBounds(this);
 	}
 	
@@ -108,28 +96,28 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void updateTick(World world, int x, int y, int z, Random random) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		te.getGate().scheduledTick();
+		te.getSocket().scheduledTick();
 	}
 	
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		if(!te.isDestroyed) te.getGate().onNeighborChanged();
+		if(!te.isDestroyed) te.getSocket().onNeighborChanged();
 	}
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		return te.getGate().activate(player, new MovingObjectPosition(x, y, z, side, Vec3.createVectorHelper(hitX, hitY, hitZ)), player.getHeldItem());
+		return te.getSocket().activate(player, new MovingObjectPosition(x, y, z, side, Vec3.createVectorHelper(hitX, hitY, hitZ)), player.getHeldItem());
 	}
 
 	@Override
 	public void onBlockPreDestroy(World world, int x, int y, int z, int meta) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		te.getGate().onRemoved();
+		te.getSocket().onRemoved();
 	}
 
 	@Override
@@ -168,15 +156,15 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) 
 	{
-		side = Socket.vanillaToSide(side);
+		side = GateIO.vanillaToSide(side);
 		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 
-		if((side & 6) == (gate.getSide() & 6)) return false;
-		int rel = gate.getSideRel(side);
+		if((side & 6) == (socket.getSide() & 6)) return false;
+		int rel = socket.getSideRel(side);
 
-		return gate.canConnectRedstone(rel);
+		return socket.getConnectionTypeAtSide(rel).isRedstone();
 	}
 
 	@Override
@@ -191,13 +179,13 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		side ^= 1;
 		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 		
-		if((side & 6) == (gate.getSide() & 6)) return 0;
-		int rot = gate.getSideRel(side);
-		if(!gate.canConnectRedstone(rot)) return 0;
+		if((side & 6) == (socket.getSide() & 6)) return 0;
+		int rot = socket.getSideRel(side);
+		if(!socket.getConnectionTypeAtSide(side).isRedstone()) return 0;
 		
-		return gate.getRedstoneOutput(rot);
+		return socket.getRedstoneOutput(rot);
 	}
 	
 	//Computercraft
@@ -206,25 +194,25 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public int getBundledRedstoneOutput(World world, int x, int y, int z, int side) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 		
-		if((side & 6) == (gate.getSide() & 6)) return -1;
-		int rel = gate.getSideRel(side);
+		if((side & 6) == (socket.getSide() & 6)) return -1;
+		int rel = socket.getSideRel(side);
 		
 		//convert analog to digital
 		int out = 0;
 		for(int i = 0; i < 16; i++)
-			out |= (gate.getBundledOutput(side, i) != 0 ? 1 : 0) << i;
+			out |= (socket.getBundledOutput(side, i) != 0 ? 1 : 0) << i;
 		return out;
 	}
 	
 	@Override
 	public IPeripheral getPeripheral(World world, int x, int y, int z, int side) 
 	{
-		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		if(te.getGate() instanceof IGatePeripheralProvider)
+		ISocket socket = ((TileEntityGate)world.getTileEntity(x, y, z)).getSocket();
+		if(socket.getGate() != null && socket.getGate() instanceof IGatePeripheralProvider)
 		{
-			IGatePeripheralProvider provider = (IGatePeripheralProvider)te.getGate();
+			IGatePeripheralProvider provider = (IGatePeripheralProvider)socket.getGate();
 			return provider.hasPeripheral(side) ? provider.getPeripheral() : null;
 		}
 		return null;
@@ -237,14 +225,15 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public RedNetConnectionType getConnectionType(World world, int x, int y, int z, ForgeDirection fd) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 		
 		int side = fd.ordinal();
-		if((side & 6) == (gate.getSide() & 6)) return RedNetConnectionType.None;
-		int rel = gate.getSideRel(side);
+		if((side & 6) == (socket.getSide() & 6)) return RedNetConnectionType.None;
+		int rel = socket.getSideRel(side);
 		
-		if(gate.canConnectBundledl(rel)) return RedNetConnectionType.PlateAll;
-		else if(gate.canConnectRedstone(rel)) return RedNetConnectionType.PlateSingle;
+		EnumConnectionType type = socket.getConnectionTypeAtSide(rel);
+		if(type.isBundled()) return RedNetConnectionType.PlateAll;
+		else if(type.isRedstone()) return RedNetConnectionType.PlateSingle;
 		return RedNetConnectionType.None;
 	}
 	
@@ -253,16 +242,16 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void onInputsChanged(World world, int x, int y, int z, ForgeDirection fd, int[] inputValues) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 		
 		int side = fd.ordinal();
-		if((side & 6) == (gate.getSide() & 6)) return;
-		int rel = gate.getSideRel(side);
+		if((side & 6) == (socket.getSide() & 6)) return;
+		int rel = socket.getSideRel(side);
 		
-		gate.updateInputPre();
+		socket.updateInputPre();
 		for(int i = 0; i < 16; i++)
-			gate.setInput(rel, i, (byte)(inputValues[i] & 0xFF));
-		gate.updateInputPost();		
+			socket.setInput(rel, i, (byte)(inputValues[i] & 0xFF));
+		socket.updateInputPost();	
 	}
 
 	@Override
@@ -270,15 +259,15 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public void onInputChanged(World world, int x, int y, int z, ForgeDirection fd, int inputValue) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 		
 		int side = fd.ordinal();
-		if((side & 6) == (gate.getSide() & 6)) return;
-		int rel = gate.getSideRel(side);
+		if((side & 6) == (socket.getSide() & 6)) return;
+		int rel = socket.getSideRel(side);
 		
-		gate.updateInputPre();
-		gate.setInput(rel, 0, (byte)(inputValue & 0xFF));
-		gate.updateInputPost();
+		socket.updateInputPre();
+		socket.setInput(rel, 0, (byte)(inputValue & 0xFF));
+		socket.updateInputPost();
 	}
 
 	@Override
@@ -286,15 +275,15 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public int[] getOutputValues(World world, int x, int y, int z, ForgeDirection fd) 
 	{		
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 		
 		int side = fd.ordinal();
-		if((side & 6) == (gate.getSide() & 6)) return new int[16];
-		int rel = gate.getSideRel(side);
+		if((side & 6) == (socket.getSide() & 6)) return new int[16];
+		int rel = socket.getSideRel(side);
 		
 		//Convert byte array output to int array, just for you MFR
 		int[] out = new int[16];
-		byte[] bout = gate.getBundledOutput(rel);
+		byte[] bout = socket.getOutput()[rel];
 		for(int i = 0; i < 16; i++)
 			out[i] = bout[i] & 255;
 		
@@ -306,12 +295,12 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public int getOutputValue(World world, int x, int y, int z, ForgeDirection fd, int subnet) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
-		Gate gate = te.getGate();
+		ISocket socket = te.getSocket();
 		
 		int side = fd.ordinal() ^ 1;
-		if((side & 6) == (gate.getSide() & 6)) return 0;
-		int rel = gate.getSideRel(side);
+		if((side & 6) == (socket.getSide() & 6)) return 0;
+		int rel = socket.getSideRel(side);
 		
-		return gate.getRedstoneOutput(rel);
+		return socket.getRedstoneOutput(rel);
 	}
 }

@@ -6,6 +6,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import vic.mod.integratedcircuits.client.IPartRenderer;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
+import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -15,7 +16,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IGate
 {
-	public ISocket getProvider();
+	public ISocketBase getProvider();
 	
 	public void setProvider(Socket provider);
 	

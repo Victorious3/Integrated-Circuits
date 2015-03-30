@@ -49,7 +49,6 @@ public class PacketDataStream extends PacketTileEntity<PacketDataStream>
 		// TODO Change this
 		TileEntityGate gate = (TileEntityGate)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(gate == null) return;
-		byte discr = in.readByte();
-		gate.getGate().read(discr, in);
+		gate.getSocket().read(in);
 	}
 }

@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
+import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -11,7 +12,7 @@ import codechicken.lib.vec.BlockCoord;
 public abstract class Gate implements IGate
 {
 	private String name;
-	protected ISocket provider;
+	protected ISocketBase provider;
 	
 	public Gate(String name)
 	{
@@ -19,7 +20,7 @@ public abstract class Gate implements IGate
 	}
 	
 	@Override
-	public ISocket getProvider()
+	public ISocketBase getProvider()
 	{
 		return provider;
 	}

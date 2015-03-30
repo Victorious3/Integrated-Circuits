@@ -2,10 +2,11 @@ package vic.mod.integratedcircuits.gate;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
-interface ISocketBridge
+public interface ISocketBridge
 {
 	public void markRender();
 	
@@ -33,7 +34,7 @@ interface ISocketBridge
 	
 	public int strongPowerLevel(int side);
 	
-	static interface ISocketBase extends ISocketBridge
+	public static interface ISocketBase extends ISocketBridge
 	{
 		public void setGate(IGate gate);
 		
@@ -76,5 +77,11 @@ interface ISocketBridge
 		public void resetInput();
 		
 		public void resetOutput();
+
+		public EnumConnectionType getConnectionTypeAtSide(int side);
+
+		public void updateInputPre();
+
+		public void updateInputPost();
 	}
 }

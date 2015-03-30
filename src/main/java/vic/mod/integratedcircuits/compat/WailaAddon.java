@@ -70,7 +70,7 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) 
 	{
 		TileEntityGate te = (TileEntityGate) accessor.getTileEntity();
-		if(te.getGate() instanceof GateCircuit) 
+		if(te.getSocket().getGate() instanceof GateCircuit) 
 			return getCircuitInformation(itemStack, currenttip);
 		else return currenttip;
 	}
