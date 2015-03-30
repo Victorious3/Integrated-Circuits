@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.client.gui.GuiPCBLayout;
-import vic.mod.integratedcircuits.ic.CircuitProperties;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -54,7 +54,7 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear>
 			te.in = new int[4];
 			te.out = new int[4];
 			for(int i = 0; i < 4; i++)
-				if(te.getCircuitData().getProperties().getModeAtSide(i) == CircuitProperties.ANALOG) te.in[i] = 1;
+				if(te.getCircuitData().getProperties().getModeAtSide(i) == EnumConnectionType.ANALOG) te.in[i] = 1;
 			
 			if(side == side.SERVER)
 			{

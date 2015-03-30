@@ -5,9 +5,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.DiskDrive.IDiskDrive;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.ic.CircuitCache;
 import vic.mod.integratedcircuits.ic.CircuitData;
-import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.PacketFloppyDisk;
@@ -99,15 +99,15 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	@SideOnly(Side.CLIENT)
 	public void setInputFromSide(ForgeDirection dir, int frequency, boolean output) 
 	{
-		int im = circuitData.getProperties().getModeAtSide(MiscUtils.getSide(dir));
-		if(im != CircuitProperties.SIMPLE || frequency == 0)
+		EnumConnectionType mode = circuitData.getProperties().getModeAtSide(MiscUtils.getSide(dir));
+		if(mode != EnumConnectionType.SIMPLE || frequency == 0)
 		{
 			int[] i = this.in.clone();
-			if(im == CircuitProperties.ANALOG) i[MiscUtils.getSide(dir)] = 0;
+			if(mode == EnumConnectionType.ANALOG) i[MiscUtils.getSide(dir)] = 0;
 			if(output) i[MiscUtils.getSide(dir)] |= 1 << frequency;
 			else
 			{
-				if(im == CircuitProperties.ANALOG) i[MiscUtils.getSide(dir)] = 1;
+				if(mode == EnumConnectionType.ANALOG) i[MiscUtils.getSide(dir)] = 1;
 				else i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
 			}
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, circuitData.getProperties().getCon(), xCoord, yCoord, zCoord));
@@ -115,11 +115,11 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public void setInputMode(int side, int mode)
+	public void setInputMode(int side, EnumConnectionType mode)
 	{
 		int con = circuitData.getProperties().setModeAtSide(side, mode);
 		int i[] = this.in.clone();
-		i[side] = mode == CircuitProperties.ANALOG ? 1 : 0;
+		i[side] = mode == EnumConnectionType.ANALOG ? 1 : 0;
 		CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
 	}
 

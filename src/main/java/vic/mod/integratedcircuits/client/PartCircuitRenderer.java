@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.gate.GateCircuit;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import codechicken.lib.vec.Transformation;
 
@@ -22,7 +23,7 @@ public class PartCircuitRenderer implements IPartRenderer<GateCircuit>
 		CircuitProperties prop = part.getCircuitData().getProperties();
 		int bundled = 0;
 		for(int i = 0; i < 4; i++)
-			bundled |= prop.getModeAtSide((i + 2) % 4) == CircuitProperties.BUNDLED ? 1 << i : 0;
+			bundled |= prop.getModeAtSide((i + 2) % 4) == EnumConnectionType.BUNDLED ? 1 << i : 0;
 //		prepareBundled(bundled);
 //		prepareRedstone(~bundled, part.io);
 	}
@@ -37,7 +38,7 @@ public class PartCircuitRenderer implements IPartRenderer<GateCircuit>
 		
 		int bundled = 0;
 		for(int i = 0; i < 4; i++)
-			bundled |= (con >> ((i + 2) % 4) * 2 & 3) == CircuitProperties.BUNDLED ? 1 << i : 0;
+			bundled |= (con >> ((i + 2) % 4) * 2 & 3) == EnumConnectionType.BUNDLED.ordinal() ? 1 << i : 0;
 //		prepareBundled(bundled);
 //		prepareRedstone(~bundled, 0);
 		

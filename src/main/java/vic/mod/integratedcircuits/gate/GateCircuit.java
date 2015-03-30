@@ -1,14 +1,13 @@
 package vic.mod.integratedcircuits.gate;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.PartCircuitRenderer;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.ic.CircuitData;
-import vic.mod.integratedcircuits.ic.CircuitProperties;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
@@ -16,7 +15,6 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Rotation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -90,11 +88,6 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 		stack.stackTagCompound = comp;
 		return stack;
 	}
-
-	private int getModeAtSide(int s)
-	{
-		return circuitData.getProperties().getModeAtSide((s + 2) % 4);
-	}
 	
 	@Override
 	public CircuitData getCircuitData() 
@@ -125,50 +118,16 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	{
 		circuitData.updateInput();
 	}
-	
-	@Override
-	public int updateRedstoneInput(int side) 
-	{
-		int oin = input[side][0];
-		int in = super.updateRedstoneInput(side);
-		if(in == 0 && getModeAtSide(side) == CircuitProperties.ANALOG)
-			in = updateComparatorInput(side);
-		return in;
-	}
 
 	@Override
 	public void update() 
 	{
 		if(!provider.getWorld().isRemote)
-		{
-			for(int i = 0; i < 4; i++)
-				if(getModeAtSide(i) == CircuitProperties.ANALOG && hasComparatorInput(i))
-				{
-					int in = (byte)updateComparatorInput(i);
-					if(in != input[i][0]) 
-					{
-						input[i][0] = (byte)in;
-						provider.scheduleTick(0);
-					}
-				}
 			circuitData.updateMatrix();
-		}
-	}
-	
-	@Override
-	public byte getRedstoneOutput(int side) 
-	{
-		//TODO Move over to PartGate!
-		if(getModeAtSide(side) == CircuitProperties.ANALOG)
-		{
-			byte[] out = output[side];
-			for(byte i = 15; i >= 0; i--)
-				if(out[i] != 0) return i;
-		}
-		return super.getRedstoneOutput(side);
 	}
 
-	public boolean hasComparatorInput(int side)
+	// TODO Re-implement comparator input
+	/*public boolean hasComparatorInput(int side)
 	{
 		int r = getRotationAbs(side);
 		int abs = Rotation.rotateSide(getSide(), r);
@@ -188,19 +147,7 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 		if(b != null && b.hasComparatorInputOverride())
 			return b.getComparatorInputOverride(provider.getWorld(), pos.x, pos.y, pos.z, abs ^ 1);
 		return 0;
-	}
-
-	@Override
-	public boolean canConnectRedstone(int arg0) 
-	{
-		return getModeAtSide(arg0) != CircuitProperties.BUNDLED;
-	}
-	
-	@Override
-	public boolean canConnectBundled(int arg0) 
-	{
-		return getModeAtSide(arg0) == CircuitProperties.BUNDLED;
-	}
+	}*/
 
 	@Override
 	public void setCircuitData(CircuitData data) 
@@ -212,22 +159,20 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) 
 	{
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
-		if(getModeAtSide(side) == CircuitProperties.ANALOG)
-			return input[side][0] == frequency && getRedstoneOutput(side) == 0;
-		return input[side][frequency] != 0 && output[side][frequency] == 0;
+		if(getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG)
+			return provider.getRedstoneInput(side) == frequency;
+		return provider.getBundledInput(side, frequency) != 0;
 	}
 
 	@Override
 	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) 
 	{
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
-		int mode = getModeAtSide(side);
-		if(mode == CircuitProperties.SIMPLE && frequency > 0) return;	
+		EnumConnectionType mode = getConnectionTypeAtSide(side);
+		if(mode == EnumConnectionType.SIMPLE && frequency > 0) return;	
 
-		this.output[side][frequency] = (byte)(output ? (mode == CircuitProperties.BUNDLED ? -1 : 15) : 0);
+		provider.setOutput(side, frequency, (byte)(output ? (mode == EnumConnectionType.BUNDLED ? -1 : 15) : 0));
 		provider.notifyBlocksAndChanges();
-		
-		updateRedstoneIO();
 	}
 
 	@Override
@@ -253,5 +198,17 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	{
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public EnumConnectionType getConnectionTypeAtSide(int side)
+	{
+		return circuitData.getProperties().getModeAtSide((side + 2) % 4);
+	}
+	
+	@Override
+	public boolean hasComparatorInputAtSide(int side)
+	{
+		return getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG;
 	}
 }

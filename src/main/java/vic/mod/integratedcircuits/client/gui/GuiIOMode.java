@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import vic.mod.integratedcircuits.ic.CircuitProperties;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
@@ -17,7 +17,7 @@ public class GuiIOMode extends GuiButton implements IHoverable
 {
 	private GuiPCBLayout parent;
 	private int side;
-	private int mode;
+	private EnumConnectionType mode;
 	
 	public GuiIOMode(int id, int xPos, int yPos, GuiPCBLayout parent, int side) 
 	{
@@ -30,7 +30,7 @@ public class GuiIOMode extends GuiButton implements IHoverable
 	public boolean mousePressed(Minecraft mc, int x, int y) 
 	{
 		boolean b = parent.blockMouseInput ? false : super.mousePressed(mc, x, y);
-		if(b) parent.te.setInputMode(side, (mode + 1) % 3);
+		if(b) parent.te.setInputMode(side, EnumConnectionType.values()[(mode.ordinal() + 1) % 3]);
 		return b;
 	}
 	
@@ -44,7 +44,7 @@ public class GuiIOMode extends GuiButton implements IHoverable
 			hover = true;
 		}
 		GuiUtils.drawContinuousTexturedBox(buttonTextures, this.xPosition, this.yPosition, 0, 46, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
-		String text = ChatFormatting.BOLD + (mode == CircuitProperties.BUNDLED ? "B" : mode == CircuitProperties.ANALOG ? "A" : "S");
+		String text = ChatFormatting.BOLD + (mode == EnumConnectionType.BUNDLED ? "B" : mode == EnumConnectionType.ANALOG ? "A" : "S");
 		int twidth = mc.fontRenderer.getStringWidth(text);
 		mc.fontRenderer.drawString(text, this.xPosition + width / 2 - twidth / 2, this.yPosition + 2, hover ? 0xFFFFFF : 0xE0E0E0);
 	}
@@ -59,7 +59,7 @@ public class GuiIOMode extends GuiButton implements IHoverable
 	{
 		ArrayList<String> text = new ArrayList<String>();
 		String s = "gui.integratedcircuits.cad.mode.";
-		s += mode == CircuitProperties.BUNDLED ? "bundled" : mode == CircuitProperties.ANALOG ? "analog" : "simple";
+		s += mode == EnumConnectionType.BUNDLED ? "bundled" : mode == EnumConnectionType.ANALOG ? "analog" : "simple";
 		text.add(I18n.format(s));
 		return text;
 	}

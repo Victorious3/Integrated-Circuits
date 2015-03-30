@@ -10,5 +10,8 @@ import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
  */
 public interface ISocket extends ISocketBase
 {
-	
+	public static enum EnumConnectionType
+	{
+		SIMPLE, ANALOG, BUNDLED, NONE
+	}
 }

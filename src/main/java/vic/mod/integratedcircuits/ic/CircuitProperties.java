@@ -1,15 +1,12 @@
 package vic.mod.integratedcircuits.ic;
 
 import net.minecraft.nbt.NBTTagCompound;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 
 public class CircuitProperties implements Cloneable
 {
 	private String name = "NO_NAME", author = "unknown";
 	private int con;
-	
-	public static final int SIMPLE = 0;
-	public static final int BUNDLED = 1;
-	public static final int ANALOG = 2;
 	
 	public void setName(String name)
 	{
@@ -41,16 +38,16 @@ public class CircuitProperties implements Cloneable
 		return con;
 	}
 	
-	public int getModeAtSide(int side)
+	public EnumConnectionType getModeAtSide(int side)
 	{
-		return con >> (side * 2) & 3;
+		return EnumConnectionType.values()[con >> (side * 2) & 3];
 	}
 	
-	public int setModeAtSide(int side, int mode)
+	public int setModeAtSide(int side, EnumConnectionType type)
 	{
 		int con = this.con;
 		con &= ~(3 << (side * 2));
-		con |= mode << (side * 2);
+		con |= type.ordinal() << (side * 2);
 		return con;
 	}
 	

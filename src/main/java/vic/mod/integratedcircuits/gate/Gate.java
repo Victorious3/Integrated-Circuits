@@ -110,4 +110,10 @@ public abstract class Gate implements IGate
 	
 	@Override
 	public void updateInputPost() {}
+
+	@Override
+	public boolean hasComparatorInputAtSide(int side)
+	{
+		return false;
+	}
 }

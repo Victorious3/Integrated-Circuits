@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.client.Resources;
 import vic.mod.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import vic.mod.integratedcircuits.ic.CircuitProperties;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.tile.TileEntityPCBLayout;
@@ -49,7 +49,7 @@ public class GuiIO extends GuiButton implements IHoverable
 		GL11.glTranslatef(-4F, -4F, -0F);
 		
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		isActive = te.getCircuitData().getProperties().getModeAtSide(side) != CircuitProperties.SIMPLE || color == 0;
+		isActive = te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.SIMPLE || color == 0;
 		boolean isPowered = isActive && te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
 		
 		if(isActive)
@@ -63,7 +63,7 @@ public class GuiIO extends GuiButton implements IHoverable
 		if(isActive) 
 		{
 			int c2 = 0;
-			if(te.getCircuitData().getProperties().getModeAtSide(side) == CircuitProperties.ANALOG)
+			if(te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
 				c2 = (color * 17) << 20;
 			else c2 = MapColor.getMapColorForBlockColored(color).colorValue;
 			RenderUtils.applyColorIRGB(c2);
@@ -93,7 +93,7 @@ public class GuiIO extends GuiButton implements IHoverable
 	{
 		ArrayList<String> text = new ArrayList<String>();
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		if(te.getCircuitData().getProperties().getModeAtSide(side) == CircuitProperties.ANALOG)
+		if(te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
 			text.add("S: "  + color);
 		else text.add("F: 0x" + Integer.toHexString(color));
 		if(isActive)

@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import vic.mod.integratedcircuits.client.IPartRenderer;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -63,9 +64,9 @@ public interface IGate
 	
 	public void updateInputPost();
 
-	public boolean canConnectRedstone(int arg0);
+	public EnumConnectionType getConnectionTypeAtSide(int side);
 	
-	public boolean canConnectBundled(int arg0);
+	public boolean hasComparatorInputAtSide(int side);
 
 	public IGate newInstance();
 }

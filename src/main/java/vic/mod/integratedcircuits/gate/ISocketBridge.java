@@ -5,7 +5,7 @@ import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
-public interface ISocketBridge
+interface ISocketBridge
 {
 	public void markRender();
 	
@@ -33,7 +33,7 @@ public interface ISocketBridge
 	
 	public int strongPowerLevel(int side);
 	
-	public static interface ISocketBase extends ISocketBridge
+	static interface ISocketBase extends ISocketBridge
 	{
 		public void setGate(IGate gate);
 		
@@ -63,19 +63,11 @@ public interface ISocketBridge
 		
 		public byte getRedstoneInput(int side);
 		
-		public byte[] getBundledInput(int side);
-		
 		public byte getBundledInput(int side, int frequency);
 		
 		public byte getRedstoneOutput(int side);
-		
-		public byte[] getBundledOutput(int side);
 
 		public byte getBundledOutput(int side, int frequency);
-		
-		public void setInput(int side, byte[] input);
-		
-		public void setOutput(int side, byte[] output);
 		
 		public void setInput(int side, int frequency, byte input);
 		

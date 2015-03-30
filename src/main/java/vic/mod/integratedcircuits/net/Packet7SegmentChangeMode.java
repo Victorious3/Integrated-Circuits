@@ -6,8 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import vic.mod.integratedcircuits.client.gui.Gui7Segment;
-import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.gate.Gate7Segment;
+import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
@@ -62,8 +62,8 @@ public class Packet7SegmentChangeMode extends PacketGate<Packet7SegmentChangeMod
 			
 			isSlave = part.isSlave;
 			part.getProvider().notifyBlocksAndChanges();
-			part.setInput(new byte[4][16]);
-			part.updateInput();
+			part.getProvider().resetInput();
+			part.getProvider().updateInput();
 			
 			CommonProxy.networkWrapper.sendToAllAround(this, 
 				new TargetPoint(part.getProvider().getWorld().provider.dimensionId, xCoord, yCoord, zCoord, 8));

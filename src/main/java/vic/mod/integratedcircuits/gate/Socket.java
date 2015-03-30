@@ -85,12 +85,14 @@ public class Socket implements ISocket
 	@Override
 	public void notifyBlocksAndChanges()
 	{
+		notifyPartChange();
 		provider.notifyBlocksAndChanges();
 	}
 
 	@Override
 	public void notifyPartChange()
 	{
+		updateRedstoneIO();
 		provider.notifyPartChange();
 	}
 
@@ -267,36 +269,43 @@ public class Socket implements ISocket
 	
 	//Rotation
 	
+	@Override
 	public int getSide()
 	{
 		return orientation >> 2;
 	}
 	
+	@Override
 	public int getSideRel(int side)
 	{
 		return getRotationRel(Rotation.rotationTo(getSide(), side));
 	}
 	
+	@Override
 	public void setSide(int s)
 	{
 		orientation = (byte)(orientation & 3 | s << 2);
 	}
 	
+	@Override
 	public int getRotation()
 	{
 		return orientation & 3;
 	}
 	
+	@Override
 	public int getRotationAbs(int rel)
 	{
 		return (rel + getRotation() + 2) % 4;
 	}
 	
+	@Override
 	public int getRotationRel(int abs)
 	{
 		return (abs + 6 - getRotation()) % 4;
 	}
 	
+	@Override
 	public void setRotation(int r)
 	{
 		orientation = (byte)(orientation & 252 | r);
@@ -316,83 +325,75 @@ public class Socket implements ISocket
 		return output;
 	}
 	
+	@Override
 	public byte getRedstoneInput(int side)
 	{
 		return getBundledInput(side, 0);
 	}
 	
-	public byte[] getBundledInput(int side) 
-	{
-		return input[side];
-	}
-	
+	@Override
 	public byte getBundledInput(int side, int frequency)
 	{
 		return input[side][frequency];
 	}
 	
+	@Override
 	public byte getRedstoneOutput(int side) 
 	{
 		return getBundledOutput(side, 0);
 	}
-	
-	public byte[] getBundledOutput(int side) 
-	{
-		return output[side];
-	}
 
+	@Override
 	public byte getBundledOutput(int side, int frequency) 
 	{
 		return output[side][frequency];
 	}
 	
+	@Override
 	public void setInput(byte[][] input) 
 	{
 		this.input = input;
 	}
 	
+	@Override
 	public void setOutput(byte[][] output)
 	{
 		this.output = output;
 	}
 	
-	public void setInput(int side, byte[] input) 
-	{
-		this.input[side] = input;
-	}
-	
-	public void setOutput(int side, byte[] output)
-	{
-		this.output[side] = output;
-	}
-	
+	@Override
 	public void setInput(int side, int frequency, byte input) 
 	{
 		this.input[side][frequency] = input;
 	}
 	
+	@Override
 	public void setOutput(int side, int frequency, byte output) 
 	{
 		this.output[side][frequency] = output;
 	}
 	
+	@Override
 	public void resetInput()
 	{
 		this.input = new byte[4][16];
 	}
 	
+	@Override
 	public void resetOutput()
 	{
 		this.output = new byte[4][16];
 	}
 	
+	@Override
 	public void updateInput()
 	{
 		updateInputPre();
 		for(int i = 0; i < 4; i++)
 		{
-			if(canConnectRedstone(i)) input[i][0] = (byte) updateRedstoneInput(i);
-			else if(canConnectBundled(i)) input[i] = updateBundledInput(i);
+			EnumConnectionType type = getConnectionTypeAtSide(i);
+			if(type == EnumConnectionType.SIMPLE) input[i][0] = (byte) updateRedstoneInput(i);
+			else if(type == EnumConnectionType.BUNDLED) input[i] = updateBundledInput(i);
 		}
 		updateInputPost();
 	}
@@ -411,17 +412,13 @@ public class Socket implements ISocket
 		}
 	}
 	
-	public boolean canConnectRedstone(int side)
+	public EnumConnectionType getConnectionTypeAtSide(int side)
 	{
-		return gate != null ? gate.canConnectRedstone(side) : false;
+		return gate != null ? gate.getConnectionTypeAtSide(side) : EnumConnectionType.NONE;
 	}
 	
-	public boolean canConnectBundled(int side)
-	{
-		return gate != null ? gate.canConnectBundled(side) : false;
-	}
-	
-	public void updateRedstoneIO()
+	// TODO Call this more often, is going to be needed
+	private void updateRedstoneIO()
 	{
 		byte oio = io;
 		io = 0;

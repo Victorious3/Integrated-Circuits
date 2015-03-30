@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
+import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.Packet7SegmentOpenGui;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
@@ -451,15 +452,12 @@ public class Gate7Segment extends Gate
 	}
 
 	@Override
-	public boolean canConnectRedstone(int arg0) 
+	public EnumConnectionType getConnectionTypeAtSide(int side)
 	{
-		return !isSlave && mode < 2;
-	}
-
-	@Override
-	public boolean canConnectBundled(int arg0) 
-	{
-		return !isSlave && mode > 1;
+		return isSlave ? EnumConnectionType.NONE : 
+			mode == MODE_SIMPLE ? EnumConnectionType.SIMPLE : 
+			mode == MODE_ANALOG ? EnumConnectionType.ANALOG : 
+			EnumConnectionType.BUNDLED;
 	}
 
 	@Override
