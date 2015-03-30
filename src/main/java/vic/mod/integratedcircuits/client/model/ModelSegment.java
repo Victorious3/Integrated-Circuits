@@ -5,7 +5,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Transformation;
 
-public class ModelSocket implements IComponentModel
+public class ModelSegment implements IComponentModel
 {
 	private static CCModel[] models = ModelHelper.generate(generateModel(), 24);
 

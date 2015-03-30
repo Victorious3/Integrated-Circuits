@@ -9,7 +9,6 @@ import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -22,7 +21,7 @@ public interface IGate
 	
 	public String getName();
 	
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta);
+	public void preparePlacement(EntityPlayer player, ItemStack stack);
 	
 	public void load(NBTTagCompound tag);
 	

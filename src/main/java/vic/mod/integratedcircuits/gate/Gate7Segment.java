@@ -80,10 +80,9 @@ public class Gate7Segment extends Gate
 	}
 
 	@Override
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) 
+	public void preparePlacement(EntityPlayer player, ItemStack stack) 
 	{
-		super.preparePlacement(player, pos, side, meta);
-		color = meta;
+		color = stack.getItemDamage();
 	}
 
 	@Override

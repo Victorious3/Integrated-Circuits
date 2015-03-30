@@ -7,16 +7,22 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.client.model.ModelChip;
 import vic.mod.integratedcircuits.gate.GateCircuit;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import codechicken.lib.vec.Transformation;
 
-public class PartCircuitRenderer implements IPartRenderer<GateCircuit>
+public class PartCircuitRenderer extends PartRenderer<GateCircuit>
 {
 	private byte tier;
 	private String name = "NO_NAME";
 
+	public PartCircuitRenderer()
+	{
+		models.add(new ModelChip());
+	}
+	
 	@Override
 	public void prepare(GateCircuit part) 
 	{

@@ -7,7 +7,6 @@ import net.minecraft.util.MovingObjectPosition;
 import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.BlockCoord;
 
 public abstract class Gate implements IGate
 {
@@ -38,7 +37,7 @@ public abstract class Gate implements IGate
 	}
 	
 	@Override
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta) {}
+	public void preparePlacement(EntityPlayer player, ItemStack stack) {}
 	
 	@Override
 	public void load(NBTTagCompound tag) {}

@@ -13,7 +13,6 @@ import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -37,11 +36,9 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 		return ClientProxy.circuitRenderer;
 	}
 	
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
+	@Override
+	public void preparePlacement(EntityPlayer player, ItemStack stack)
 	{
-		super.preparePlacement(player, pos, side, meta);
-		
-		ItemStack stack = player.getCurrentEquippedItem();
 		NBTTagCompound comp = stack.stackTagCompound;
 		if(comp == null) return;
 		

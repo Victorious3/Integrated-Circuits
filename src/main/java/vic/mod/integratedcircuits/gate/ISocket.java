@@ -30,7 +30,18 @@ public interface ISocket extends ISocketBase
 	
 	public void read(MCDataInput packet);
 
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta);
+	/**
+	 * Only has to be called when the orientation needs to be set automatically, 
+	 * relative to the player's position and look vector. 
+	 * If you want to set the orientation manually, use the two 
+	 * methods {@link #setSide(int)} and {@link #setRotation(int)}
+	 * 
+	 * @param player
+	 * @param pos
+	 * @param side
+	 * @param meta
+	 */
+	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, ItemStack stack);
 
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack);
 

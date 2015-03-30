@@ -105,7 +105,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		if(!te.isDestroyed) te.getSocket().onNeighborChanged();
 	}
-	
+
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) 
 	{
@@ -210,7 +210,7 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	public IPeripheral getPeripheral(World world, int x, int y, int z, int side) 
 	{
 		ISocket socket = ((TileEntityGate)world.getTileEntity(x, y, z)).getSocket();
-		if(socket.getGate() != null && socket.getGate() instanceof IGatePeripheralProvider)
+		if(socket.getGate() instanceof IGatePeripheralProvider)
 		{
 			IGatePeripheralProvider provider = (IGatePeripheralProvider)socket.getGate();
 			return provider.hasPeripheral(side) ? provider.getPeripheral() : null;

@@ -40,6 +40,8 @@ public interface ISocketBridge
 		
 		public IGate getGate();
 		
+		public byte getOrientation();
+		
 		public int getSide();
 		
 		public int getSideRel(int side);

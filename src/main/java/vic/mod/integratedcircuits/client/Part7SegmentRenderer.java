@@ -6,14 +6,20 @@ import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
+import vic.mod.integratedcircuits.client.model.ModelSegment;
 import vic.mod.integratedcircuits.gate.Gate7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import codechicken.lib.vec.Transformation;
 
-public class Part7SegmentRenderer implements IPartRenderer<Gate7Segment>
+public class Part7SegmentRenderer extends PartRenderer<Gate7Segment>
 {	
 	private int display;
 	private int color;
+	
+	public Part7SegmentRenderer()
+	{
+		models.add(new ModelSegment());
+	}
 	
 	@Override
 	public void prepare(Gate7Segment part) 
@@ -58,9 +64,6 @@ public class Part7SegmentRenderer implements IPartRenderer<Gate7Segment>
 		color = part.color;
 	}
 	
-	@Override
-	public void renderStatic(Transformation t, int orient) {}
-
 	@Override
 	public void renderDynamic(Transformation t) 
 	{

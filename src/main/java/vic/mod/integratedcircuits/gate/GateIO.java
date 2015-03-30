@@ -50,7 +50,7 @@ public final class GateIO
 		else if(te instanceof TileEntityGate)
 		{
 			TileEntityGate gate = (TileEntityGate)te;
-			if(gate.getSide() == side) return gate.getGate();
+			if(gate.getSocket().getSide() == side) return gate.getSocket().getGate();
 		}
 		return null;
 	}

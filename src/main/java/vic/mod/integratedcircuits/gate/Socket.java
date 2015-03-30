@@ -276,6 +276,12 @@ public class Socket implements ISocket
 	//Rotation
 	
 	@Override
+	public byte getOrientation()
+	{
+		return orientation;
+	}
+	
+	@Override
 	public int getSide()
 	{
 		return orientation >> 2;
@@ -439,7 +445,7 @@ public class Socket implements ISocket
 	//Interaction
 	
 	@Override
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, int meta)
+	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, ItemStack stack)
 	{
 		setSide(side ^ 1);
 		setRotation(Rotation.getSidedRotation(player, side));
@@ -453,6 +459,10 @@ public class Socket implements ISocket
 			if(gate == null && stack.getItem() instanceof IGateItem) 
 			{
 				gate = GateRegistry.createGateInstace(((IGateItem)stack.getItem()).getGateID(stack, player, getPos()));
+				gate.setProvider(this);
+				gate.preparePlacement(player, stack);
+				notifyBlocksAndChanges();
+				markRender();
 				return true;
 			}
 			

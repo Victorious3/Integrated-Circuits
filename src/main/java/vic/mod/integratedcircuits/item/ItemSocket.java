@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import vic.mod.integratedcircuits.IntegratedCircuits;
 import vic.mod.integratedcircuits.misc.MiscUtils;
+import vic.mod.integratedcircuits.tile.TileEntityGate;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
@@ -37,12 +38,16 @@ public class ItemSocket extends ItemBase
 			return false;
 		
 		if(world.getBlock(pos.x, pos.y, pos.z).isReplaceable(world, pos.x, pos.y, pos.z))
+		{
 			world.setBlock(pos.x, pos.y, pos.z, IntegratedCircuits.blockGate);
-
-		if(!player.capabilities.isCreativeMode)
-			stack.stackSize--;
-		
-		return true;
+			TileEntityGate te = (TileEntityGate)world.getTileEntity(pos.x, pos.y, pos.z);
+			te.getSocket().preparePlacement(player, pos2, side, stack);
+			
+    		if(!player.capabilities.isCreativeMode)
+    			stack.stackSize--;
+    		return true;
+		}
+		return false;
 	}
 	
 	public double getHitDepth(Vector3 vhit, int side)
