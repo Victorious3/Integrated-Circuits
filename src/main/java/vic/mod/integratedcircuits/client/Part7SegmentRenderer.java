@@ -10,7 +10,10 @@ import vic.mod.integratedcircuits.client.model.ModelSegment;
 import vic.mod.integratedcircuits.gate.Gate7Segment;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import codechicken.lib.vec.Transformation;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class Part7SegmentRenderer extends PartRenderer<Gate7Segment>
 {	
 	private int display;
@@ -50,11 +53,8 @@ public class Part7SegmentRenderer extends PartRenderer<Gate7Segment>
 	@Override
 	public void prepareInv(ItemStack stack) 
 	{
-		/*super.prepareInv(stack);
 		display = 127;
 		color = stack.getItemDamage();
-		prepareBundled(0);
-		prepareRedstone(15, 0);*/
 	}
 	
 	@Override

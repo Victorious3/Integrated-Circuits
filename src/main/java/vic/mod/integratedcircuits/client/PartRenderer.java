@@ -12,6 +12,10 @@ import codechicken.lib.vec.Translation;
 
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+@SideOnly(Side.CLIENT)
 public abstract class PartRenderer<T> implements IPartRenderer<T>
 {
 	protected List<IComponentModel> models = Lists.newLinkedList();
@@ -55,6 +59,7 @@ public abstract class PartRenderer<T> implements IPartRenderer<T>
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data)
 	{
+		prepareInv(item);
 		switch (type) {
     		case ENTITY : renderPart(item, -0.3F, 0F, -0.3F, 0.6F); break;
     		case EQUIPPED : renderPart(item, 0.0F, 0.15F, 0.0F, 1.0F); break;

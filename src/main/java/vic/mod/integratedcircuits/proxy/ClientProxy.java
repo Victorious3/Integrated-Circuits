@@ -61,6 +61,8 @@ import vic.mod.integratedcircuits.client.TileEntityGateRenderer;
 import vic.mod.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import vic.mod.integratedcircuits.client.gui.Gui7Segment;
 import vic.mod.integratedcircuits.gate.Gate7Segment;
+import vic.mod.integratedcircuits.gate.GateCircuit;
+import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
 import vic.mod.integratedcircuits.tile.TileEntityGate;
@@ -108,9 +110,15 @@ public class ClientProxy extends CommonProxy
 		circuitRenderer = new PartCircuitRenderer();
 		segmentRenderer = new Part7SegmentRenderer();
 		
+		GateRegistry.registerGateRenderer(GateCircuit.class, circuitRenderer);
+		GateRegistry.registerGateRenderer(Gate7Segment.class, segmentRenderer);
+		
 		socketRenderer = new SocketRenderer(Constants.MOD_ID + ":ic_base");
 		socketRendererFMP = new SocketRenderer(Constants.MOD_ID + ":ic_base_fmp");
 		
+		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemCircuit, circuitRenderer);
+		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.item7Segment, segmentRenderer);
+						
 		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemSocket, socketRenderer);
 		if(IntegratedCircuits.isFMPLoaded) 	
 			MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemSocketFMP, socketRendererFMP);

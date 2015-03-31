@@ -12,7 +12,10 @@ import vic.mod.integratedcircuits.gate.GateCircuit;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
 import codechicken.lib.vec.Transformation;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class PartCircuitRenderer extends PartRenderer<GateCircuit>
 {
 	private byte tier;

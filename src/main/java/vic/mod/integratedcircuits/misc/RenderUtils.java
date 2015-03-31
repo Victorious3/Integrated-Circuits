@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.Tessellator;
 import org.lwjgl.opengl.GL11;
 
 import vic.mod.integratedcircuits.client.Resources;
+import codechicken.lib.render.CCRenderState;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -112,7 +113,7 @@ public class RenderUtils
 		float red = (float)(rbg >> 16 & 255) / 255.0F * brightness;
 		float blue = (float)(rbg >> 8 & 255) / 255.0F * brightness;
 		float green = (float)(rbg & 255) / 255.0F * brightness;
-		GL11.glColor4f(red, blue, green, 1F);
+		GL11.glColor4f(red, blue, green, (CCRenderState.alphaOverride > 0 ? CCRenderState.alphaOverride : 255) / 255F);
 	}
 	
 	public static String cutStringToSize(FontRenderer fr, String str, int width)

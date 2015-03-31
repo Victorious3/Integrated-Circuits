@@ -207,7 +207,7 @@ public class Socket implements ISocket
 		// Write gate to NBT, if present
 		if(gate != null) 
 		{
-			compound.setString("gate_id", gate.getName());
+			compound.setString("gate_id", GateRegistry.getName(gate.getClass()));
 			NBTTagCompound gateCompound = new NBTTagCompound();
 			gate.save(gateCompound);
 			compound.setTag("gate", gateCompound);
@@ -234,7 +234,7 @@ public class Socket implements ISocket
 		{
 			PacketCustom packet = new PacketCustom("", 1);
 			gate.writeDesc(packet);
-			compound.setString("gate_id", gate.getName());
+			compound.setString("gate_id", GateRegistry.getName(gate.getClass()));
 			compound.setByteArray("data", packet.getByteBuf().array());
 		}
 	}

@@ -12,6 +12,7 @@ public class ModelSegment implements IComponentModel
 	@Override
 	public void renderModel(Transformation t, int orient)
 	{
+		models = ModelHelper.generate(generateModel(), 24);
 		models[orient % 24].render(t, new IconTransformation(Resources.ICON_IC_SOCKET));
 	}
 	
@@ -21,8 +22,8 @@ public class ModelSegment implements IComponentModel
 		m1.generateBlock(0, 3 / 16F, 2 / 16F, 2 / 16F, 13 / 16F, 3 / 16D, 14 / 16F);
 		m1.generateBlock(24, 2 / 16F, 2 / 16F, 1 / 16F, 3 / 16F, 5 / 16D, 15 / 16F);
 		m1.generateBlock(48, 13 / 16F, 2 / 16F, 1 / 16F, 14 / 16F, 5 / 16D, 15 / 16F);
-		m1.generateBlock(72, 2 / 16F, 2 / 16F, 1 / 16F, 14 / 16F, 5 / 16D, 2 / 16F);
-		m1.generateBlock(96, 2 / 16F, 2 / 16F, 14 / 16F, 14 / 16F, 5 / 16D, 15 / 16F);
+		m1.generateBlock(72, 3 / 16F, 2 / 16F, 1 / 16F, 13 / 16F, 5 / 16D, 2 / 16F);
+		m1.generateBlock(96, 3 / 16F, 2 / 16F, 14 / 16F, 13 / 16F, 5 / 16D, 15 / 16F);
 		m1.computeNormals();
 		return m1;
 	}

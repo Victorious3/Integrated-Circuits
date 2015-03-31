@@ -5,17 +5,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.client.PartCircuitRenderer;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.ic.CircuitData;
 import vic.mod.integratedcircuits.ic.ICircuit;
 import vic.mod.integratedcircuits.misc.MiscUtils;
-import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Cuboid6;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvider
 {
@@ -23,18 +19,6 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 
 	private boolean update;
 	private CircuitPeripheral peripheral = new CircuitPeripheral(this);
-		
-	public GateCircuit() 
-	{
-		super("circuit");
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public PartCircuitRenderer getRenderer() 
-	{
-		return ClientProxy.circuitRenderer;
-	}
 	
 	@Override
 	public void preparePlacement(EntityPlayer player, ItemStack stack)
@@ -170,12 +154,6 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 
 		provider.setOutput(side, frequency, (byte)(output ? (mode == EnumConnectionType.BUNDLED ? -1 : 15) : 0));
 		provider.notifyBlocksAndChanges();
-	}
-
-	@Override
-	public IGate newInstance() 
-	{
-		return new GateCircuit();
 	}
 
 	@Override

@@ -17,11 +17,9 @@ import net.minecraftforge.common.util.Constants.NBT;
 import org.apache.commons.lang3.StringUtils;
 
 import vic.mod.integratedcircuits.IntegratedCircuits;
-import vic.mod.integratedcircuits.client.Part7SegmentRenderer;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.misc.MiscUtils;
 import vic.mod.integratedcircuits.net.Packet7SegmentOpenGui;
-import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.proxy.CommonProxy;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
@@ -30,9 +28,6 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 
 import com.google.common.collect.Lists;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class Gate7Segment extends Gate
 {
@@ -73,11 +68,6 @@ public class Gate7Segment extends Gate
 	public static final int MODE_FLOAT = 4;
 	public static final int MODE_BINARY_STRING = 5;
 	public static final int MODE_MANUAL = 6;
-	
-	public Gate7Segment() 
-	{
-		super("7segment");
-	}
 
 	@Override
 	public void preparePlacement(EntityPlayer player, ItemStack stack) 
@@ -444,25 +434,12 @@ public class Gate7Segment extends Gate
 	}
 
 	@Override
-	@SideOnly(Side.CLIENT)
-	public Part7SegmentRenderer getRenderer() 
-	{
-		return ClientProxy.segmentRenderer;
-	}
-
-	@Override
 	public EnumConnectionType getConnectionTypeAtSide(int side)
 	{
 		return isSlave ? EnumConnectionType.NONE : 
 			mode == MODE_SIMPLE ? EnumConnectionType.SIMPLE : 
 			mode == MODE_ANALOG ? EnumConnectionType.ANALOG : 
 			EnumConnectionType.BUNDLED;
-	}
-
-	@Override
-	public Gate newInstance() 
-	{
-		return new Gate7Segment();
 	}
 
 	@Override

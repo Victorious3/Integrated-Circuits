@@ -4,23 +4,18 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
-import vic.mod.integratedcircuits.client.IPartRenderer;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.gate.ISocketBridge.ISocketBase;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Cuboid6;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IGate
 {
 	public ISocketBase getProvider();
 	
 	public void setProvider(Socket provider);
-	
-	public String getName();
-	
+
 	public void preparePlacement(EntityPlayer player, ItemStack stack);
 	
 	public void load(NBTTagCompound tag);
@@ -49,9 +44,6 @@ public interface IGate
 
 	public ItemStack pickItem(MovingObjectPosition hit);
 	
-	@SideOnly(Side.CLIENT)
-	public IPartRenderer getRenderer();
-	
 	public Cuboid6 getDimension();
 	
 	public void onNeighborChanged();
@@ -67,6 +59,4 @@ public interface IGate
 	public EnumConnectionType getConnectionTypeAtSide(int side);
 	
 	public boolean hasComparatorInputAtSide(int side);
-
-	public IGate newInstance();
 }

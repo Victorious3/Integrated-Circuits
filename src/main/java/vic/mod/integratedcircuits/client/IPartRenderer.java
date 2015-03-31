@@ -6,7 +6,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import vic.mod.integratedcircuits.client.model.IComponentModel;
 import codechicken.lib.vec.Transformation;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public interface IPartRenderer<T> extends IItemRenderer
 {
 	public List<IComponentModel> getModels();

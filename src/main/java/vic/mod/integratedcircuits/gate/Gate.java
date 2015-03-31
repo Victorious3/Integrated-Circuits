@@ -10,13 +10,7 @@ import codechicken.lib.data.MCDataOutput;
 
 public abstract class Gate implements IGate
 {
-	private String name;
 	protected ISocketBase provider;
-	
-	public Gate(String name)
-	{
-		this.name = name;
-	}
 	
 	@Override
 	public ISocketBase getProvider()
@@ -28,12 +22,6 @@ public abstract class Gate implements IGate
 	public void setProvider(Socket provider)
 	{
 		this.provider = provider;
-	}
-	
-	@Override
-	public String getName()
-	{
-		return name;
 	}
 	
 	@Override

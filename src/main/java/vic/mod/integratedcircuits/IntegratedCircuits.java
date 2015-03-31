@@ -8,9 +8,9 @@ import org.apache.logging.log4j.Logger;
 
 import vic.mod.integratedcircuits.compat.BPRedstoneProvider;
 import vic.mod.integratedcircuits.compat.NEIAddon;
-import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.Gate7Segment;
 import vic.mod.integratedcircuits.gate.GateCircuit;
+import vic.mod.integratedcircuits.gate.GateRegistry;
 import vic.mod.integratedcircuits.gate.fmp.FMPartGate;
 import vic.mod.integratedcircuits.gate.fmp.PartFactory;
 import vic.mod.integratedcircuits.item.Item7Segment;
@@ -111,8 +111,8 @@ public class IntegratedCircuits
 			}
 		};
 		
-		GateRegistry.registerGate(new GateCircuit());
-		GateRegistry.registerGate(new Gate7Segment());
+		GateRegistry.registerGate("circuit", GateCircuit.class);
+		GateRegistry.registerGate("7segment", Gate7Segment.class);
 		
 		itemSocket = new ItemSocket();
 		if(isFMPLoaded) itemSocketFMP = new ItemSocketFMP();
