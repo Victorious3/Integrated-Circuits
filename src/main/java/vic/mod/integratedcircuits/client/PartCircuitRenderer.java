@@ -11,6 +11,7 @@ import vic.mod.integratedcircuits.client.model.ModelChip;
 import vic.mod.integratedcircuits.gate.GateCircuit;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.ic.CircuitProperties;
+import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -61,9 +62,6 @@ public class PartCircuitRenderer extends PartRenderer<GateCircuit>
 		tier = (byte) (Math.log(part.circuitData.getSize()) / Math.log(2) - 3);
 		name = part.circuitData.getProperties().getName();
 	}
-	
-	@Override
-	public void renderStatic(Transformation t, int orient) {}
 
 	@Override
 	public void renderDynamic(Transformation t)
@@ -80,7 +78,7 @@ public class PartCircuitRenderer extends PartRenderer<GateCircuit>
 		
 		GL11.glPushMatrix();
 		GL11.glScaled(1 / 64D, 1 / 64D, 1 / 64D);
-		fr.drawString("T" + tier, 0, 0, 0xFFFFFF);
+		fr.drawString("T" + tier, 0, 0, 0xFFFFFF | CCRenderState.alphaOverride << 24);
 		GL11.glPopMatrix();
 		
 		GL11.glTranslated(0, -4 / 16D, 0);
@@ -88,7 +86,7 @@ public class PartCircuitRenderer extends PartRenderer<GateCircuit>
 		
 		int w = fr.getStringWidth(name);
 		int mw = 42;
-		fr.drawString(name, (int)(mw / 2F - w / 2F), 0, 0xFFFFFF);
+		fr.drawString(name, (int)(mw / 2F - w / 2F), 0, 0xFFFFFF | CCRenderState.alphaOverride << 24);
 		
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_LIGHTING);

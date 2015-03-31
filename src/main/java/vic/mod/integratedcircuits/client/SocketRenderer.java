@@ -1,6 +1,7 @@
 package vic.mod.integratedcircuits.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
@@ -16,15 +17,16 @@ import vic.mod.integratedcircuits.proxy.ClientProxy;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Vector3;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class SocketRenderer extends PartRenderer<ISocket>
 {	
-	private IGate part;
-	private BlockCoord pos;
+	private ISocket socket;
 	private float partialTicks;
 	
 	public SocketRenderer(String iconName)
@@ -32,47 +34,57 @@ public class SocketRenderer extends PartRenderer<ISocket>
 		models.add(new ModelBase(iconName));
 	}
 
-	public void prepare(ISocket part) 
+	public void prepare(ISocket socket) 
 	{
-		pos = part.getPos();
-		this.part = part.getGate();
-		if(this.part != null) GateRegistry.getRenderer(this.part.getClass()).prepare(this.part);
+		this.socket = socket;
+		if(socket != null && socket.getGate() != null) 
+			GateRegistry.getRenderer(socket.getGate().getClass()).prepare(socket.getGate());
 	}
 	
 	@Override
 	public void prepareInv(ItemStack stack)
 	{
-		pos = null;
-		this.part = null;
+		socket = null;
 	}
 
-	public void prepareDynamic(ISocket part, float partialTicks) 
+	public void prepareDynamic(ISocket socket, float partialTicks) 
 	{
 		this.partialTicks = partialTicks;
-		pos = part.getPos();
-		this.part = part.getGate();
-		if(this.part != null) GateRegistry.getRenderer(this.part.getClass()).prepareDynamic(this.part, partialTicks);
+		this.socket = socket;
+		if(socket != null && socket.getGate() != null) 
+			GateRegistry.getRenderer(socket.getGate().getClass()).prepareDynamic(socket.getGate(), partialTicks);
 	}
 	
 	public void renderStatic(Transformation t, int orient)
 	{
 		super.renderStatic(t, orient);
-		if(this.part != null) GateRegistry.getRenderer(this.part.getClass()).renderStatic(t, orient);
+		if(socket != null && socket.getGate() != null) 
+			GateRegistry.getRenderer(socket.getGate().getClass()).renderStatic(t, orient);
 	}
 	
 	public void renderDynamic(Transformation t) 
-	{
-		if(this.part != null) GateRegistry.getRenderer(this.part.getClass()).renderDynamic(t);
-		else if(pos != null)
+	{	
+		if(socket != null && socket.getGate() != null) 
 		{
+			Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
+			GateRegistry.getRenderer(socket.getGate().getClass()).renderDynamic(rotation.with(t));
+		}
+		else if(socket != null)
+		{
+			// Render translucent version
+			EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 			ItemStack stack;
-			if((stack = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem()) != null && stack.getItem() instanceof IGateItem)
+			if((stack = player.getCurrentEquippedItem()) != null && stack.getItem() instanceof IGateItem)
 			{
     			MovingObjectPosition mop = Minecraft.getMinecraft().objectMouseOver;
+    			BlockCoord pos = socket.getPos();
     			if(mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == pos.x && mop.blockY == pos.y && mop.blockZ == pos.z)
-    			{	
+    			{
     				String gateID = ((IGateItem)stack.getItem()).getGateID(stack, Minecraft.getMinecraft().thePlayer, pos);
     				IPartRenderer<IGate> renderer = GateRegistry.getRenderer(gateID);
+    				
+    				int rotation = Rotation.getSidedRotation(player, socket.getSide() ^ 1);
+    				t = Rotation.sideOrientation(socket.getSide(), rotation).at(Vector3.center).with(t);
     				
     				TextureUtils.bindAtlas(0);
     				CCRenderState.reset();

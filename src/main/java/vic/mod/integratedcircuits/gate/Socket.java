@@ -23,8 +23,6 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
-import codechicken.lib.vec.Transformation;
-import codechicken.lib.vec.Vector3;
 
 public class Socket implements ISocket
 {
@@ -48,19 +46,34 @@ public class Socket implements ISocket
 	
 	//Bridge methods
 	
+	@Override
 	public void update()
 	{
 		if(gate != null) gate.update();
 	}
 	
+	@Override
 	public void onAdded()
 	{
 		if(gate != null) gate.onAdded();
 	}
 	
+	@Override
 	public void onMoved()
 	{
 		if(gate != null) gate.onMoved();
+	}
+	
+	@Override
+	public void scheduledTick()
+	{
+		if(gate != null) gate.scheduledTick();
+	}
+	
+	@Override
+	public void onRemoved()
+	{
+		if(gate != null) gate.onRemoved();
 	}
 	
 	//Bridge methods, calling liked IGateProvider
@@ -107,6 +120,12 @@ public class Socket implements ISocket
 	public TileEntity getTileEntity()
 	{
 		return provider.getTileEntity();
+	}
+
+	@Override
+	public void sendDescription()
+	{
+		provider.sendDescription();
 	}
 
 	@Override
@@ -214,16 +233,6 @@ public class Socket implements ISocket
 		}
 	}
 	
-	public void writeDesc(MCDataOutput packet)
-	{
-		if(gate != null) gate.writeDesc(packet);
-	}
-	
-	public void readDesc(MCDataInput packet)
-	{
-		if(gate != null) gate.readDesc(packet);
-	}
-	
 	@Override
 	public void writeDesc(NBTTagCompound compound)
 	{
@@ -254,6 +263,8 @@ public class Socket implements ISocket
 			gate.setProvider(this);
 			gate.readDesc(in);
 		}
+		
+		markRender();
 	}
 	
 	@Override
@@ -456,13 +467,20 @@ public class Socket implements ISocket
 	{
 		if(stack != null)
 		{
-			if(gate == null && stack.getItem() instanceof IGateItem) 
+			if(gate == null && stack.getItem() instanceof IGateItem && !getWorld().isRemote) 
 			{
-				gate = GateRegistry.createGateInstace(((IGateItem)stack.getItem()).getGateID(stack, player, getPos()));
+				int rotation = Rotation.getSidedRotation(player, getSide() ^ 1);
+    			setRotation(rotation);
+				
+    			String gateID = ((IGateItem)stack.getItem()).getGateID(stack, player, getPos());
+				gate = GateRegistry.createGateInstace(gateID);
 				gate.setProvider(this);
 				gate.preparePlacement(player, stack);
+				
+				MiscUtils.playPlaceSound(getWorld(), getPos());
+				sendDescription();
 				notifyBlocksAndChanges();
-				markRender();
+								
 				return true;
 			}
 			
@@ -521,22 +539,5 @@ public class Socket implements ISocket
 	{
 		if(gate != null) return gate.pickItem(mop);
 		return null;
-	}
-	
-	@Override
-	public void scheduledTick()
-	{
-		if(gate != null) gate.scheduledTick();
-	}
-	
-	@Override
-	public void onRemoved()
-	{
-		if(gate != null) gate.onRemoved();
-	}
-
-	public Transformation getRotationTransformation()
-	{
-		return Rotation.sideOrientation(getSide(), getRotation()).at(Vector3.center);
 	}
 }

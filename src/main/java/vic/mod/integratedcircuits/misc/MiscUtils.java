@@ -5,10 +5,12 @@ import static net.minecraftforge.common.util.ForgeDirection.NORTH;
 import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
 import static net.minecraftforge.common.util.ForgeDirection.WEST;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.Block.SoundType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.item.EntityItem;
@@ -24,12 +26,13 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import org.apache.commons.lang3.text.WordUtils;
 
+import codechicken.lib.vec.BlockCoord;
+
 import com.google.common.collect.HashBiMap;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import java.util.Arrays;
 
 public class MiscUtils 
 {
@@ -72,6 +75,12 @@ public class MiscUtils
 		if(color == 8)
 			return StatCollector.translateToLocal("item.fireworksCharge.silver");
 		else return StatCollector.translateToLocal("item.fireworksCharge." + WordUtils.uncapitalize(colors.inverse().get(color).substring(3)));
+	}
+	
+	public static void playPlaceSound(World world, BlockCoord pos)
+	{
+		SoundType sound = world.getBlock(pos.x, pos.y, pos.z).stepSound;
+		world.playSoundEffect(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, sound.func_150496_b(), (sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
 	}
 	
 	@SideOnly(Side.CLIENT)

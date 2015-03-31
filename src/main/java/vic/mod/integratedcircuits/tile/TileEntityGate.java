@@ -314,4 +314,10 @@ public class TileEntityGate extends TileEntity implements
 	{
 		return socket;
 	}
+
+	@Override
+	public void sendDescription()
+	{
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
 }

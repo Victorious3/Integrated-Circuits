@@ -53,6 +53,10 @@ public interface ISocket extends ISocketBase
 	
 	public void scheduledTick();
 	
+	public void onAdded();
+	
+	public void onMoved();
+	
 	public void onRemoved();
 	
 	public static enum EnumConnectionType

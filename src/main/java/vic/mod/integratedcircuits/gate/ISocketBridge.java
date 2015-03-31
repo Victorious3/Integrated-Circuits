@@ -34,6 +34,8 @@ public interface ISocketBridge
 	
 	public int strongPowerLevel(int side);
 	
+	public void sendDescription();
+	
 	public static interface ISocketBase extends ISocketBridge
 	{
 		public void setGate(IGate gate);

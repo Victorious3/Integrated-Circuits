@@ -56,6 +56,6 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 		TextureUtils.bindAtlas(0);
 		
 		ClientProxy.socketRenderer.prepareDynamic(socket, par5);
-		ClientProxy.socketRenderer.renderDynamic(socket.getRotationTransformation().with(new Translation(new Vector3(x, y, z))));
+		ClientProxy.socketRenderer.renderDynamic(new Translation(new Vector3(x, y, z)));
 	}
 }

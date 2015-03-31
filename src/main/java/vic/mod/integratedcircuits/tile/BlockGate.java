@@ -26,6 +26,9 @@ import vic.mod.integratedcircuits.gate.ISocket;
 import vic.mod.integratedcircuits.gate.ISocket.EnumConnectionType;
 import vic.mod.integratedcircuits.gate.Socket;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Vector3;
 
 import com.google.common.collect.Lists;
 
@@ -81,7 +84,10 @@ public class BlockGate extends BlockContainer implements IBundledRedstoneProvide
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
 		if(te == null) return;
-		Cuboid6 bounds = Socket.box.copy().apply(te.getSocket().getRotationTransformation());
+		ISocket socket = te.getSocket();
+		//TODO Move to some sensible function
+		Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
+		Cuboid6 bounds = Socket.box.copy().apply(rotation);
 		bounds.setBlockBounds(this);
 	}
 	

@@ -42,6 +42,7 @@ public class ItemSocket extends ItemBase
 			world.setBlock(pos.x, pos.y, pos.z, IntegratedCircuits.blockGate);
 			TileEntityGate te = (TileEntityGate)world.getTileEntity(pos.x, pos.y, pos.z);
 			te.getSocket().preparePlacement(player, pos2, side, stack);
+			MiscUtils.playPlaceSound(world, pos);
 			
     		if(!player.capabilities.isCreativeMode)
     			stack.stackSize--;
