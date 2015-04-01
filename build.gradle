@@ -53,7 +53,7 @@ repositories {
 apply plugin: 'forge'
 
 version = "${mcVersion}-${modVersion}"
-group = "vic.mod.integratedcircuits"
+group = "moe.nightfall.vic.integratedcircuits"
 archivesBaseName = "integratedcircuits"
 
 if (System.env.BUILD_NUMBER != null) version = "$version.$System.env.BUILD_NUMBER"
