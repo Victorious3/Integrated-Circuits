@@ -113,6 +113,7 @@ gui.integratedcircuits.7segment.mode.manual.tooltip=Allows to modify the individ
 
 # misc
 itemGroup.integratedcircuits.ctab=Integrated Circuits
+tooltip.integratedcircuits.socket=You have to carry a soldering iron%nto solder onto a socket
 
 # Item tooltips
 item.integratedcircuits.floppy.tooltip.name=Name: %s
