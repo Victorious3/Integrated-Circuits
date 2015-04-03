@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.compat;
 
+import moe.nightfall.vic.integratedcircuits.api.IGate;
 import moe.nightfall.vic.integratedcircuits.gate.GateIO;
-import moe.nightfall.vic.integratedcircuits.gate.IGate;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;

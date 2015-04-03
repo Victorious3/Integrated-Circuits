@@ -1,56 +1,19 @@
 package moe.nightfall.vic.integratedcircuits.gate.fmp;
 
-import java.util.Arrays;
-
-import moe.nightfall.vic.integratedcircuits.Constants;
-import moe.nightfall.vic.integratedcircuits.gate.BPDevice;
-import moe.nightfall.vic.integratedcircuits.gate.Gate;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket;
-import moe.nightfall.vic.integratedcircuits.gate.Socket;
-import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
-import mrtjp.projectred.api.IBundledEmitter;
-import mrtjp.projectred.api.IConnectable;
-import mrtjp.projectred.transmission.IRedwireEmitter;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Translation;
-import codechicken.lib.vec.Vector3;
-import codechicken.multipart.IFaceRedstonePart;
-import codechicken.multipart.JCuboidPart;
-import codechicken.multipart.JNormalOcclusion;
-import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.TFacePart;
-import codechicken.multipart.TMultiPart;
-
-import com.bluepowermod.api.wire.redstone.IBundledDevice;
-import com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper;
-
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
-import cpw.mods.fml.common.Optional.Method;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @InterfaceList(value = {
 	@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),
 	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core"),
 	@Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 })
-public class FMPartGate extends JCuboidPart implements 
+public class FMPartGate /*extends JCuboidPart implements 
 	JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, 
-	IBundledEmitter, ISocket, IBundledDeviceWrapper
+	IBundledEmitter, IBundledDeviceWrapper*/
 {
 
-	private Gate gate;
+	/*private Gate gate;
 	
 	//TODO Re-implement
 	private BPDevice bpDevice;
@@ -351,5 +314,5 @@ public class FMPartGate extends JCuboidPart implements
 	public IBundledDevice getBundledDeviceOnSide(ForgeDirection side)
 	{
 		return bpDevice;
-	}
+	}*/
 }

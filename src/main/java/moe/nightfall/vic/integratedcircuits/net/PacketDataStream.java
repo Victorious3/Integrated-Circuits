@@ -5,7 +5,7 @@ import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityGate;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import codechicken.lib.data.MCDataInput;
@@ -47,7 +47,7 @@ public class PacketDataStream extends PacketTileEntity<PacketDataStream>
 	public void process(EntityPlayer player, Side side) 
 	{
 		// TODO Change this
-		TileEntityGate gate = (TileEntityGate)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		TileEntitySocket gate = (TileEntitySocket)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if(gate == null) return;
 		gate.getSocket().read(in);
 	}

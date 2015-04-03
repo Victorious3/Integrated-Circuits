@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.gate;
+package moe.nightfall.vic.integratedcircuits.api;
 
 public interface ISocketWrapper extends ISocketBridge
 {

@@ -1,8 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.client.model.ModelChip;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitProperties;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;

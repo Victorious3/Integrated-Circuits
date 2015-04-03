@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.IGate;
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.net.Packet7SegmentOpenGui;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;

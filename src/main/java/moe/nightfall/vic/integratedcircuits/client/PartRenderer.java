@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.client;
 
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.client.model.IComponentModel;
 import net.minecraft.item.ItemStack;
 import codechicken.lib.render.CCRenderState;

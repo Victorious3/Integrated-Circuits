@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.item;
 
+import moe.nightfall.vic.integratedcircuits.api.IGateItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;

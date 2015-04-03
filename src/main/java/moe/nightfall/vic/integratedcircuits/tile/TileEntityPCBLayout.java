@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitCache;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;

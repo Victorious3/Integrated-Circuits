@@ -2,9 +2,9 @@ package moe.nightfall.vic.integratedcircuits.net;
 
 import java.io.IOException;
 
+import moe.nightfall.vic.integratedcircuits.api.ISocketBridge.ISocketBase;
 import moe.nightfall.vic.integratedcircuits.client.gui.Gui7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
-import moe.nightfall.vic.integratedcircuits.gate.ISocketBridge.ISocketBase;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;

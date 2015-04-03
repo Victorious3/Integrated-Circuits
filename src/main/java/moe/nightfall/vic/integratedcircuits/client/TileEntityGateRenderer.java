@@ -3,7 +3,7 @@ package moe.nightfall.vic.integratedcircuits.client;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityGate;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -23,7 +23,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	@Override
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) 
 	{
-		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		TileEntitySocket te = (TileEntitySocket)world.getTileEntity(x, y, z);
 		
 		CCRenderState.reset();
 		CCRenderState.lightMatrix.locate(world, x, y, z);
@@ -49,7 +49,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	@Override
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float par5) 
 	{
-		Socket socket = ((TileEntityGate)te).getSocket();
+		Socket socket = ((TileEntitySocket)te).getSocket();
 		CCRenderState.reset();
 		CCRenderState.pullLightmap();
 		CCRenderState.useNormals = true;

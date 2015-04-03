@@ -2,7 +2,8 @@ package moe.nightfall.vic.integratedcircuits.gate;
 
 import java.util.HashMap;
 
-import moe.nightfall.vic.integratedcircuits.client.IPartRenderer;
+import moe.nightfall.vic.integratedcircuits.api.IGate;
+import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;

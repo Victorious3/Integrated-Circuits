@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.ic;
 
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class CircuitProperties implements Cloneable

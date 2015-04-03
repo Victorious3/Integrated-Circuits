@@ -10,8 +10,8 @@ import mcp.mobius.waila.api.IWailaFMPProvider;
 import mcp.mobius.waila.api.IWailaRegistrar;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
-import moe.nightfall.vic.integratedcircuits.tile.BlockGate;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityGate;
+import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,8 +26,8 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider
 	{
 		WailaAddon instance = new WailaAddon();
 		
-		register.registerStackProvider(instance, BlockGate.class);
-		register.registerBodyProvider(instance, BlockGate.class);
+		register.registerStackProvider(instance, BlockSocket.class);
+		register.registerBodyProvider(instance, BlockSocket.class);
 		register.registerBodyProvider(instance, Constants.MOD_ID + "_circuit");
 	}
 	
@@ -69,7 +69,7 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider
 	@Override
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) 
 	{
-		TileEntityGate te = (TileEntityGate) accessor.getTileEntity();
+		TileEntitySocket te = (TileEntitySocket) accessor.getTileEntity();
 		if(te.getSocket().getGate() instanceof GateCircuit) 
 			return getCircuitInformation(itemStack, currenttip);
 		else return currenttip;

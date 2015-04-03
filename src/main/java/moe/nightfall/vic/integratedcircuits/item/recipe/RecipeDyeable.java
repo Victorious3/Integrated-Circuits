@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.item.recipe;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
-import moe.nightfall.vic.integratedcircuits.item.IDyeable;
+import moe.nightfall.vic.integratedcircuits.api.IDyeable;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;

@@ -1,30 +1,14 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
-import mods.immibis.redlogic.wires.RedAlloyTile;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityGate;
-import mrtjp.projectred.api.IBundledEmitter;
-import mrtjp.projectred.transmission.APIImpl_Transmission;
-import mrtjp.projectred.transmission.IRedwireEmitter;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
+import moe.nightfall.vic.integratedcircuits.api.IGate;
+import moe.nightfall.vic.integratedcircuits.api.ISocket;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
-import powercrystals.minefactoryreloaded.api.rednet.IRedNetNetworkContainer;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Rotation;
-import codechicken.multipart.IRedstonePart;
-import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-
-import com.bluepowermod.api.BPApi;
-import com.bluepowermod.api.wire.redstone.IBundledDevice;
-import com.bluepowermod.api.wire.redstone.IRedstoneApi;
-
-import cpw.mods.fml.common.Optional.Method;
-import dan200.computercraft.api.ComputerCraftAPI;
 
 public final class GateIO
 {
@@ -47,18 +31,19 @@ public final class GateIO
 			if(multipart instanceof ISocket) 
 				return ((ISocket)multipart).getGate();
 		}
-		else if(te instanceof TileEntityGate)
+		else if(te instanceof TileEntitySocket)
 		{
-			TileEntityGate gate = (TileEntityGate)te;
+			TileEntitySocket gate = (TileEntitySocket)te;
 			if(gate.getSocket().getSide() == side) return gate.getSocket().getGate();
 		}
 		return null;
 	}
 	
+	/*
 	public static byte[] calculateBundledInput(ISocket provider, int side)
 	{
 		// TODO rewrite
-		/*int r = provider.getGate().getRotationAbs(side);
+		int r = provider.getGate().getRotationAbs(side);
 		int face = provider.getGate().getSide();
 		int abs = Rotation.rotateSide(face, r);
 		BlockCoord pos = provider.getPos().offset(abs);
@@ -82,12 +67,12 @@ public final class GateIO
 		}
 
 		if(input == null) input = new byte[16];
-		return input;*/
+		return input;
 		return null;
-	}
+	}*/
 	
 	/** Used to update the input coming from other gates, in case no API for bundled cabling is present **/
-	private static byte[] calculateBundledInputNative(ISocket provider, int side, BlockCoord pos, int abs)
+	/*private static byte[] calculateBundledInputNative(ISocket provider, int side, BlockCoord pos, int abs)
 	{
 		IGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
 		if(neighbour != null) return neighbour.output[(side + 2) % 4];
@@ -265,5 +250,5 @@ public final class GateIO
 		if(part instanceof IRedwireEmitter) 
 			return ((IRedwireEmitter)part).getRedwireSignal(r);
 		return 0;
-	}
+	}*/
 }

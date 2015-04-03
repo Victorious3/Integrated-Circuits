@@ -1,6 +1,6 @@
-package moe.nightfall.vic.integratedcircuits.gate;
+package moe.nightfall.vic.integratedcircuits.api;
 
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;

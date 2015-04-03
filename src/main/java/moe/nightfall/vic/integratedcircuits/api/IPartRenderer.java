@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.client;
+package moe.nightfall.vic.integratedcircuits.api;
 
 import java.util.List;
 

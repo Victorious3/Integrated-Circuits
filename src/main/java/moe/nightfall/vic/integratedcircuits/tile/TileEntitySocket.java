@@ -11,12 +11,12 @@ import mods.immibis.redlogic.api.wiring.IBundledWire;
 import mods.immibis.redlogic.api.wiring.IConnectable;
 import mods.immibis.redlogic.api.wiring.IWire;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.IGatePeripheralProvider;
+import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.gate.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.GatePeripheral;
-import moe.nightfall.vic.integratedcircuits.gate.IGatePeripheralProvider;
-import moe.nightfall.vic.integratedcircuits.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import mrtjp.projectred.api.IBundledTile;
 import mrtjp.projectred.transmission.BundledCablePart;
@@ -50,7 +50,7 @@ import cpw.mods.fml.common.Optional.Method;
 	@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers"),
 	@Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 })
-public class TileEntityGate extends TileEntity implements 
+public class TileEntitySocket extends TileEntity implements 
 	ISocketWrapper, IBundledTile, IBundledUpdatable, IBundledEmitter, 
 	IConnectable, SimpleComponent, SidedComponent, ManagedPeripheral,
 	IBundledDeviceWrapper

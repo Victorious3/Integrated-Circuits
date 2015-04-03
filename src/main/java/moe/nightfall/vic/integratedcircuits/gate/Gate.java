@@ -1,6 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
-import moe.nightfall.vic.integratedcircuits.gate.ISocketBridge.ISocketBase;
+import moe.nightfall.vic.integratedcircuits.api.IGate;
+import moe.nightfall.vic.integratedcircuits.api.ISocketBridge.ISocketBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

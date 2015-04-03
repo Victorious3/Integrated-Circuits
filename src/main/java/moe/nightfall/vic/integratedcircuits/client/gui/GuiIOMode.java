@@ -3,8 +3,8 @@ package moe.nightfall.vic.integratedcircuits.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;

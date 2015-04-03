@@ -2,6 +2,8 @@ package moe.nightfall.vic.integratedcircuits.item;
 
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.api.IDyeable;
+import moe.nightfall.vic.integratedcircuits.api.IGateItem;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;

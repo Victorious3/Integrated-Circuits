@@ -18,10 +18,10 @@ import moe.nightfall.vic.integratedcircuits.item.ItemSocketFMP;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.BlockAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.BlockGate;
+import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
 import moe.nightfall.vic.integratedcircuits.tile.BlockPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityGate;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -69,7 +69,7 @@ public class IntegratedCircuits
 	public static Item itemPCBChip;
 	public static ItemScrewdriver itemScrewdriver;
 	
-	public static BlockGate blockGate;
+	public static BlockSocket blockGate;
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
 	public static CreativeTabs creativeTab;
@@ -77,7 +77,10 @@ public class IntegratedCircuits
 	@Instance(Constants.MOD_ID)
 	public static IntegratedCircuits instance;
 
-	@SidedProxy(clientSide = "vic.mod.integratedcircuits.proxy.ClientProxy", serverSide = "vic.mod.integratedcircuits.proxy.CommonProxy")
+	@SidedProxy(
+		clientSide = "moe.nightfall.vic.integratedcircuits.proxy.ClientProxy", 
+		serverSide = "moe.nightfall.vic.integratedcircuits.proxy.CommonProxy"
+	)
 	public static CommonProxy proxy;
 	
 	@EventHandler
@@ -141,7 +144,7 @@ public class IntegratedCircuits
 			itemCoalCompound = new ItemBase("coalcompound");
 		}
 
-		blockGate = new BlockGate();
+		blockGate = new BlockSocket();
 		blockPCBLayout = new BlockPCBLayout();
 		blockAssembler = new BlockAssembler();
 		
@@ -151,7 +154,7 @@ public class IntegratedCircuits
 		
 		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, Constants.MOD_ID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");
-		GameRegistry.registerTileEntity(TileEntityGate.class, Constants.MOD_ID + ".gate");
+		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".gate");
 		
 		//Computercraft
 		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
@@ -167,7 +170,7 @@ public class IntegratedCircuits
 		if(isFMPLoaded) PartFactory.initialize();
 		proxy.initialize();
 		
-		FMLInterModComms.sendMessage("Waila", "register", "vic.mod.integratedcircuits.compat.WailaAddon.registerAddon");
+		FMLInterModComms.sendMessage("Waila", "register", "moe.nightfall.vic.integratedcircuits.compat.WailaAddon.registerAddon");
 	}
 
 	@EventHandler

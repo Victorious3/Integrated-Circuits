@@ -6,7 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.item.IGateItem;
+import moe.nightfall.vic.integratedcircuits.api.IGate;
+import moe.nightfall.vic.integratedcircuits.api.IGateItem;
+import moe.nightfall.vic.integratedcircuits.api.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.misc.InventoryUtils;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,6 +28,8 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Vector3;
 
 public class Socket implements ISocket
 {
@@ -572,5 +577,10 @@ public class Socket implements ISocket
 	{
 		if(gate != null) return gate.pickItem(mop);
 		return null;
+	}
+	
+	public static Transformation getRotationTransformation(ISocket socket)
+	{
+		return Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
 	}
 }

@@ -3,9 +3,9 @@ package moe.nightfall.vic.integratedcircuits.client.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;

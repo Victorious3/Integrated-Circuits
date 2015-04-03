@@ -1,11 +1,12 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.IGate;
+import moe.nightfall.vic.integratedcircuits.api.IGateItem;
+import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
+import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.model.ModelBase;
 import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
-import moe.nightfall.vic.integratedcircuits.gate.IGate;
-import moe.nightfall.vic.integratedcircuits.gate.ISocket;
-import moe.nightfall.vic.integratedcircuits.item.IGateItem;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -66,7 +67,7 @@ public class SocketRenderer extends PartRenderer<ISocket>
 	
 	public void renderDynamic(Transformation t) 
 	{	
-		if(socket != null && socket.getGate() != null) 
+		if(socket != null && socket.getGate() != null)
 		{
 			Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
 			GateRegistry.getRenderer(socket.getGate().getClass()).renderDynamic(rotation.with(t));

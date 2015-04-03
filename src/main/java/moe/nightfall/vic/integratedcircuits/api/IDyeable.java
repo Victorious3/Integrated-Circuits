@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.item;
+package moe.nightfall.vic.integratedcircuits.api;
 
 import net.minecraft.item.ItemStack;
 
