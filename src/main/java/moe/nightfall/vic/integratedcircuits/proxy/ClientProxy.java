@@ -9,8 +9,9 @@ import java.util.UUID;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.client.ItemLaserRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Part7SegmentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.PartCircuitRenderer;
@@ -24,12 +25,11 @@ import moe.nightfall.vic.integratedcircuits.client.TileEntityPCBLayoutRenderer;
 import moe.nightfall.vic.integratedcircuits.client.gui.Gui7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
-import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -114,8 +114,8 @@ public class ClientProxy extends CommonProxy
 		circuitRenderer = new PartCircuitRenderer();
 		segmentRenderer = new Part7SegmentRenderer();
 		
-		GateRegistry.registerGateRenderer(GateCircuit.class, circuitRenderer);
-		GateRegistry.registerGateRenderer(Gate7Segment.class, segmentRenderer);
+		IntegratedCircuitsAPI.getGateRegistry().registerGateRenderer(GateCircuit.class, circuitRenderer);
+		IntegratedCircuitsAPI.getGateRegistry().registerGateRenderer(Gate7Segment.class, segmentRenderer);
 		
 		socketRenderer = new SocketRenderer(Constants.MOD_ID + ":ic_base");
 		socketRendererFMP = new SocketRenderer(Constants.MOD_ID + ":ic_base_fmp");

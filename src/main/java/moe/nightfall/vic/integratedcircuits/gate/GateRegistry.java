@@ -3,6 +3,7 @@ package moe.nightfall.vic.integratedcircuits.gate;
 import java.util.HashMap;
 
 import moe.nightfall.vic.integratedcircuits.api.IGate;
+import moe.nightfall.vic.integratedcircuits.api.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 
 import com.google.common.collect.HashBiMap;
@@ -11,42 +12,46 @@ import com.google.common.collect.Maps;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class GateRegistry
+public class GateRegistry implements IGateRegistry
 {
-	private static HashBiMap<String, Class<? extends IGate>> registry = HashBiMap.create();
-	private static HashMap<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
+	private HashBiMap<String, Class<? extends IGate>> registry = HashBiMap.create();
+	private HashMap<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
 	
-	private GateRegistry() {}
-	
-	public static void registerGate(String name, Class<? extends IGate> clazz)
+	@Override
+	public void registerGate(String name, Class<? extends IGate> clazz)
 	{
 		registry.put(name, clazz);
 	}
 	
+	@Override
 	@SideOnly(Side.CLIENT)
-	public static <T extends IGate> void registerGateRenderer(Class<T> clazz, IPartRenderer<T> renderer)
+	public <T extends IGate> void registerGateRenderer(Class<T> clazz, IPartRenderer<T> renderer)
 	{
 		rendererRegistry.put(clazz, renderer);
 	}
 	
+	@Override
 	@SideOnly(Side.CLIENT)
-	public static IPartRenderer<IGate> getRenderer(Class<? extends IGate> clazz) 
+	public IPartRenderer<IGate> getRenderer(Class<? extends IGate> clazz) 
 	{
 		return (IPartRenderer<IGate>) rendererRegistry.get(clazz);
 	}
 	
+	@Override
 	@SideOnly(Side.CLIENT)
-	public static IPartRenderer<IGate> getRenderer(String gateID) 
+	public IPartRenderer<IGate> getRenderer(String gateID) 
 	{
 		return getRenderer(registry.get(gateID));
 	}
 	
-	public static String getName(Class<? extends IGate> gate)
+	@Override
+	public String getName(Class<? extends IGate> gate)
 	{
 		return registry.inverse().get(gate);
 	}
 	
-	public static IGate createGateInstace(String name)
+	@Override
+	public IGate createGateInstace(String name)
 	{
 		try {
 			return registry.get(name).newInstance();

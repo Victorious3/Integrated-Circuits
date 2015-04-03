@@ -20,7 +20,7 @@ public abstract class Gate implements IGate
 	}
 	
 	@Override
-	public void setProvider(Socket provider)
+	public void setProvider(ISocketBase provider)
 	{
 		this.provider = provider;
 	}

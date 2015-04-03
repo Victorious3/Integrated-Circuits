@@ -10,6 +10,7 @@ import moe.nightfall.vic.integratedcircuits.api.IGate;
 import moe.nightfall.vic.integratedcircuits.api.IGateItem;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.misc.InventoryUtils;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -205,7 +206,7 @@ public class Socket implements ISocket
 		// Read gate from NBT, if present
 		if(compound.hasKey("gate_id")) 
 		{
-    		gate = GateRegistry.createGateInstace(compound.getString("gate_id"));
+    		gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(compound.getString("gate_id"));
     		gate.setProvider(this);
     		gate.load(compound.getCompoundTag("gate"));
 		}
@@ -234,7 +235,7 @@ public class Socket implements ISocket
 		// Write gate to NBT, if present
 		if(gate != null) 
 		{
-			compound.setString("gate_id", GateRegistry.getName(gate.getClass()));
+			compound.setString("gate_id", IntegratedCircuitsAPI.getGateRegistry().getName(gate.getClass()));
 			NBTTagCompound gateCompound = new NBTTagCompound();
 			gate.save(gateCompound);
 			compound.setTag("gate", gateCompound);
@@ -251,7 +252,7 @@ public class Socket implements ISocket
 		{
 			PacketCustom packet = new PacketCustom("", 1);
 			gate.writeDesc(packet);
-			compound.setString("gate_id", GateRegistry.getName(gate.getClass()));
+			compound.setString("gate_id", IntegratedCircuitsAPI.getGateRegistry().getName(gate.getClass()));
 			compound.setByteArray("data", packet.getByteBuf().array());
 		}
 	}
@@ -267,7 +268,7 @@ public class Socket implements ISocket
 			byte[] data = compound.getByteArray("data");
 			PacketCustom in = new PacketCustom(Unpooled.copiedBuffer(data));
 			
-			gate = GateRegistry.createGateInstace(compound.getString("gate_id"));
+			gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(compound.getString("gate_id"));
 			gate.setProvider(this);
 			gate.readDesc(in);
 		}
@@ -494,7 +495,7 @@ public class Socket implements ISocket
         			setRotation(rotation);
     				
         			String gateID = ((IGateItem)stack.getItem()).getGateID(stack, player, getPos());
-    				gate = GateRegistry.createGateInstace(gateID);
+    				gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
     				gate.setProvider(this);
     				gate.preparePlacement(player, stack);
     				

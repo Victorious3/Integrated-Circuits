@@ -1,19 +1,61 @@
 package moe.nightfall.vic.integratedcircuits.gate.fmp;
 
+import java.util.Arrays;
+import java.util.List;
+
+import moe.nightfall.vic.integratedcircuits.Constants;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
+import moe.nightfall.vic.integratedcircuits.gate.BPDevice;
+import moe.nightfall.vic.integratedcircuits.gate.Socket;
+import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
+import mrtjp.projectred.api.IBundledEmitter;
+import mrtjp.projectred.api.IConnectable;
+import mrtjp.projectred.transmission.IRedwireEmitter;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
+import codechicken.multipart.IFaceRedstonePart;
+import codechicken.multipart.JCuboidPart;
+import codechicken.multipart.JNormalOcclusion;
+import codechicken.multipart.NormalOcclusionTest;
+import codechicken.multipart.TFacePart;
+import codechicken.multipart.TMultiPart;
+
+import com.bluepowermod.api.wire.redstone.IBundledDevice;
+import com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper;
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
+import cpw.mods.fml.common.Optional.Method;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @InterfaceList(value = {
 	@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),
 	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core"),
 	@Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 })
-public class FMPartGate /*extends JCuboidPart implements 
+public class FMPartGate extends JCuboidPart implements 
 	JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, 
-	IBundledEmitter, IBundledDeviceWrapper*/
+	IBundledEmitter, IBundledDeviceWrapper, ISocketWrapper
 {
 
-	/*private Gate gate;
+	private ISocket socket = new Socket(this);
 	
 	//TODO Re-implement
 	private BPDevice bpDevice;
@@ -27,31 +69,33 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public void load(NBTTagCompound tag)
 	{
-		gate.load(tag);
+		socket.readFromNBT(tag);
 	}
 	
 	@Override
 	public void save(NBTTagCompound tag)
 	{
-		gate.save(tag);
+		socket.writeToNBT(tag);
 	}
 
 	@Override
 	public void readDesc(MCDataInput packet)
 	{
-		gate.readDesc(packet);
+//		socket.readDesc(packet.readNBTTagCompound());
 	}
 	
 	@Override
 	public void writeDesc(MCDataOutput packet)
 	{
-		gate.writeDesc(packet);
+//		NBTTagCompound compound = new NBTTagCompound();
+//		socket.writeDesc(compound);
+//		packet.writeNBTTagCompound(compound);
 	}
 
 	@Override
 	public void read(MCDataInput packet) 
 	{
-		gate.read(packet.readByte(), packet);
+		socket.read(packet);
 	}
 	
 	@Override
@@ -63,7 +107,7 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public Cuboid6 getBounds()
 	{
-		return Gate.box.copy().apply(gate.getRotationTransformation());
+		return Socket.box.copy().apply(Socket.getRotationTransformation(socket));
 	}
 	
 	@Override
@@ -81,7 +125,7 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public int getSlotMask() 
 	{
-		return 1 << gate.getSide();
+		return 1 << socket.getSide();
 	}
 
 	@Override
@@ -93,13 +137,13 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public void update() 
 	{
-		gate.update();
+		socket.update();
 	}
 
 	@Override
 	public void scheduledTick() 
 	{
-		gate.scheduledTick();
+		socket.scheduledTick();
 	}
 
 	@Override
@@ -111,37 +155,40 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
 	{
-		return gate.activate(player, hit, item);
+		return socket.activate(player, hit, item);
 	}
 	
 	@Override
 	public void onAdded() 
 	{
-		gate.onAdded();
+		socket.onAdded();
 	}
 
 	@Override
 	public void onRemoved()
 	{
-		gate.onRemoved();
+		socket.onRemoved();
 	}
 
 	@Override
 	public void onMoved() 
 	{
-		gate.onMoved();
+		socket.onMoved();
 	}
 	
 	@Override
 	public Iterable<ItemStack> getDrops() 
 	{
-		return Arrays.asList(gate.getItemStack());
+		List<ItemStack> list = Lists.newArrayList();
+		socket.addDrops(list);
+		list.add(new ItemStack(IntegratedCircuits.itemSocketFMP));
+		return list;
 	}
 	
 	@Override
 	public ItemStack pickItem(MovingObjectPosition hit) 
 	{
-		return gate.pickItem(hit);
+		return socket.pickItem(hit);
 	}
 	
 	@Override
@@ -150,8 +197,9 @@ public class FMPartGate /*extends JCuboidPart implements
 	{
 		if(pass == 0) 
 		{
-			ClientProxy.socketRendererFMP.prepare(this);
-			ClientProxy.socketRendererFMP.renderStatic(new Translation(pos), 0);
+			CCRenderState.setBrightness(getWorld(), x(), y(), z());
+			ClientProxy.socketRendererFMP.prepare(socket);
+			ClientProxy.socketRendererFMP.renderStatic(new Translation(pos), socket.getOrientation());
 			return true;
 		}
 		return false;
@@ -163,7 +211,7 @@ public class FMPartGate /*extends JCuboidPart implements
 	{
 		if(pass == 0) 
 		{
-    		ClientProxy.socketRendererFMP.prepareDynamic(this, frame);
+    		ClientProxy.socketRendererFMP.prepareDynamic(socket, frame);
     		ClientProxy.socketRendererFMP.renderDynamic(new Translation(pos));
 		}
 	}
@@ -171,13 +219,13 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public void onNeighborChanged() 
 	{
-		gate.onNeighborChanged();
+		socket.onNeighborChanged();
 	}
 
 	@Override
 	public void onPartChanged(TMultiPart part) 
 	{
-		if(!world().isRemote) gate.updateInput();
+		if(!world().isRemote) updateInput();
 	}
 	
 	//ProjectRed
@@ -203,18 +251,20 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public boolean connectStraight(IConnectable arg0, int arg1, int arg2) 
 	{
-		int side = gate.getRotationRel(arg1);
-		if(arg0 instanceof IRedwireEmitter && gate.canConnectRedstone(side)) return true;
-		else if(arg0 instanceof IBundledEmitter && gate.canConnectBundledl(side)) return true;
+		int side = socket.getRotationRel(arg1);
+		EnumConnectionType type = socket.getConnectionTypeAtSide(side);
+		if(arg0 instanceof IRedwireEmitter && type.isRedstone()) return true;
+		else if(arg0 instanceof IBundledEmitter && type.isBundled()) return true;
 		return false;
 	}
 	
 	@Override
 	public byte[] getBundledSignal(int arg0) 
 	{
-		int rot = gate.getRotationRel(arg0);
-		if(!gate.canConnectBundledl(rot)) return null;
-		return gate.getBundledOutput(rot);
+		int rot = socket.getRotationRel(arg0);
+		EnumConnectionType type = socket.getConnectionTypeAtSide(rot);
+		if(!type.isBundled()) return null;
+		return socket.getOutput()[rot];
 	}
 	
 	//---
@@ -222,17 +272,18 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public final boolean canConnectRedstone(int arg0) 
 	{
-		if((arg0 & 6) == (gate.getSide() & 6)) return false;
-		return gate.canConnectRedstone(gate.getSideRel(arg0));
+		if((arg0 & 6) == (socket.getSide() & 6)) return false;
+		return socket.getConnectionTypeAtSide(socket.getSideRel(arg0)).isRedstone();
 	}
 	
 	@Override
 	public int strongPowerLevel(int arg0) 
 	{
-		if((arg0 & 6) == (gate.getSide() & 6)) return 0;
-		int rot = gate.getSideRel(arg0);
-		if(!gate.canConnectRedstone(rot)) return 0;
-		return gate.getRedstoneOutput(rot);
+		if((arg0 & 6) == (socket.getSide() & 6)) return 0;
+		int rot = socket.getSideRel(arg0);
+		EnumConnectionType type = socket.getConnectionTypeAtSide(rot);
+		if(type.isRedstone()) return 0;
+		return socket.getRedstoneOutput(rot);
 	}
 
 	@Override
@@ -244,7 +295,7 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public int getFace() 
 	{
-		return gate.getSide();
+		return socket.getSide();
 	}
 
 	@Override
@@ -270,7 +321,7 @@ public class FMPartGate /*extends JCuboidPart implements
 	{
 		tile().markDirty();
 		tile().notifyPartChange(this);
-		tile().notifyNeighborChange(gate.getSide());
+		tile().notifyNeighborChange(socket.getSide());
 	}
 
 	@Override
@@ -294,19 +345,15 @@ public class FMPartGate /*extends JCuboidPart implements
 	@Override
 	public byte[] updateBundledInput(int side)
 	{
-		return Socket.calculateBundledInput(this, side);
+		//TODO
+		return new byte[16];
 	}
 	
 	@Override
 	public int updateRedstoneInput(int side)
 	{
-		return Socket.calculateRedstoneInput(this, side);
-	}
-
-	@Override
-	public Gate getGate() 
-	{
-		return gate;
+		//TODO
+		return 0;
 	}
 
 	@Override
@@ -314,5 +361,23 @@ public class FMPartGate /*extends JCuboidPart implements
 	public IBundledDevice getBundledDeviceOnSide(ForgeDirection side)
 	{
 		return bpDevice;
-	}*/
+	}
+
+	@Override
+	public void updateInput()
+	{
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void sendDescription()
+	{
+		world().markBlockForUpdate(x(), y(), z());
+	}
+
+	@Override
+	public ISocket getSocket()
+	{
+		return socket;
+	}
 }

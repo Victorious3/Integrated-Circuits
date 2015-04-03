@@ -27,6 +27,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 		
 		CCRenderState.reset();
 		CCRenderState.lightMatrix.locate(world, x, y, z);
+		CCRenderState.setBrightness(world, x, y, z);
 		
 		ClientProxy.socketRenderer.prepare(te.getSocket());
 		ClientProxy.socketRenderer.renderStatic(new Translation(new Vector3(x, y, z)), te.getSocket().getOrientation());

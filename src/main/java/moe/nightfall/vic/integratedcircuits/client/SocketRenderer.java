@@ -5,8 +5,8 @@ import moe.nightfall.vic.integratedcircuits.api.IGate;
 import moe.nightfall.vic.integratedcircuits.api.IGateItem;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.client.model.ModelBase;
-import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -41,7 +41,9 @@ public class SocketRenderer extends PartRenderer<ISocket>
 	{
 		this.socket = socket;
 		if(socket != null && socket.getGate() != null) 
-			GateRegistry.getRenderer(socket.getGate().getClass()).prepare(socket.getGate());
+			IntegratedCircuitsAPI.getGateRegistry()
+				.getRenderer(socket.getGate().getClass())
+				.prepare(socket.getGate());
 	}
 	
 	@Override
@@ -55,22 +57,26 @@ public class SocketRenderer extends PartRenderer<ISocket>
 		this.partialTicks = partialTicks;
 		this.socket = socket;
 		if(socket != null && socket.getGate() != null) 
-			GateRegistry.getRenderer(socket.getGate().getClass()).prepareDynamic(socket.getGate(), partialTicks);
+			IntegratedCircuitsAPI.getGateRegistry()
+				.getRenderer(socket.getGate().getClass())
+				.prepareDynamic(socket.getGate(), partialTicks);
 	}
 	
 	public void renderStatic(Transformation t, int orient)
 	{
 		super.renderStatic(t, orient);
 		if(socket != null && socket.getGate() != null) 
-			GateRegistry.getRenderer(socket.getGate().getClass()).renderStatic(t, orient);
+			IntegratedCircuitsAPI.getGateRegistry()
+				.getRenderer(socket.getGate().getClass())
+				.renderStatic(t, orient);
 	}
 	
 	public void renderDynamic(Transformation t) 
-	{	
+	{
 		if(socket != null && socket.getGate() != null)
 		{
 			Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
-			GateRegistry.getRenderer(socket.getGate().getClass()).renderDynamic(rotation.with(t));
+			IntegratedCircuitsAPI.getGateRegistry().getRenderer(socket.getGate().getClass()).renderDynamic(rotation.with(t));
 		}
 		else if(socket != null)
 		{
@@ -90,7 +96,7 @@ public class SocketRenderer extends PartRenderer<ISocket>
     				}
     				
     				String gateID = ((IGateItem)stack.getItem()).getGateID(stack, Minecraft.getMinecraft().thePlayer, pos);
-    				IPartRenderer<IGate> renderer = GateRegistry.getRenderer(gateID);
+    				IPartRenderer<IGate> renderer = IntegratedCircuitsAPI.getGateRegistry().getRenderer(gateID);
     				
     				int rotation = Rotation.getSidedRotation(player, socket.getSide() ^ 1);
     				t = Rotation.sideOrientation(socket.getSide(), rotation).at(Vector3.center).with(t);

@@ -1,10 +1,15 @@
 package moe.nightfall.vic.integratedcircuits;
 
+import java.lang.reflect.Field;
+
+import moe.nightfall.vic.integratedcircuits.api.IAPI;
+import moe.nightfall.vic.integratedcircuits.api.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
-import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
 import moe.nightfall.vic.integratedcircuits.gate.fmp.FMPartGate;
 import moe.nightfall.vic.integratedcircuits.gate.fmp.PartFactory;
 import moe.nightfall.vic.integratedcircuits.item.Item7Segment;
@@ -18,16 +23,21 @@ import moe.nightfall.vic.integratedcircuits.item.ItemSocketFMP;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.BlockAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
 import moe.nightfall.vic.integratedcircuits.tile.BlockPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 import org.apache.logging.log4j.Logger;
 
+import codechicken.lib.vec.BlockCoord;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -84,8 +94,14 @@ public class IntegratedCircuits
 	public static CommonProxy proxy;
 	
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event)
+	public void preInit(FMLPreInitializationEvent event) throws Exception
 	{
+		//Initialize API
+		IAPI api = new API();
+		Field apiField = IntegratedCircuitsAPI.class.getDeclaredField("instance");
+		apiField.setAccessible(true);
+		apiField.set(null, api);
+		
 		logger = event.getModLog();
 		logger.info("Loading Integrated Circutis " + Constants.MOD_VERSION);
 		
@@ -114,8 +130,8 @@ public class IntegratedCircuits
 			}
 		};
 		
-		GateRegistry.registerGate("circuit", GateCircuit.class);
-		GateRegistry.registerGate("7segment", Gate7Segment.class);
+		IntegratedCircuitsAPI.getGateRegistry().registerGate("circuit", GateCircuit.class);
+		IntegratedCircuitsAPI.getGateRegistry().registerGate("7segment", Gate7Segment.class);
 		
 		itemSocket = new ItemSocket();
 		if(isFMPLoaded) itemSocketFMP = new ItemSocketFMP();
@@ -155,6 +171,43 @@ public class IntegratedCircuits
 		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, Constants.MOD_ID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");
 		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".gate");
+		
+		//Register socket provider
+		
+		if(isFMPLoaded)
+		{
+    		IntegratedCircuitsAPI.registerSocketProvider(new ISocketProvider()
+    		{		
+    			@Override
+    			public ISocket getSocketAt(World world, BlockCoord pos, int side)
+    			{
+    				TileEntity te = world.getTileEntity(pos.x, pos.y, pos.z);
+    				if(te instanceof TileMultipart)
+    				{
+    					TileMultipart tm = (TileMultipart)te;
+    					TMultiPart multipart = tm.partMap(side);
+    					if(multipart instanceof ISocket) 
+    						return ((ISocket)multipart);
+    				}
+					return null; 
+    			}
+    		});
+		}
+		
+		IntegratedCircuitsAPI.registerSocketProvider(new ISocketProvider()
+		{		
+			@Override
+			public ISocket getSocketAt(World world, BlockCoord pos, int side)
+			{
+				TileEntity te = world.getTileEntity(pos.x, pos.y, pos.z);
+				if(te instanceof TileEntitySocket)
+				{
+					TileEntitySocket gate = (TileEntitySocket)te;
+					if(gate.getSocket().getSide() == side) return gate.getSocket();
+				}
+				return null;
+			}
+		});
 		
 		//Computercraft
 		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
