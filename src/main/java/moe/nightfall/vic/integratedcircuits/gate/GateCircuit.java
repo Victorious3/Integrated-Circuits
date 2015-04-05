@@ -10,8 +10,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Cuboid6;
 
 public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvider
@@ -47,18 +45,16 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	}
 
 	@Override
-	public void readDesc(MCDataInput packet) 
+	public void readDesc(NBTTagCompound compound) 
 	{
-		super.readDesc(packet);
-		circuitData = CircuitData.readFromNBT(packet.readNBTTagCompound(), this);
+		circuitData = CircuitData.readFromNBT(compound.getCompoundTag("circuit_data"), this);
 		circuitData.setQueueEnabled(false);
 	}
 	
 	@Override
-	public void writeDesc(MCDataOutput packet) 
+	public void writeDesc(NBTTagCompound compound) 
 	{
-		super.writeDesc(packet);
-		packet.writeNBTTagCompound(circuitData.writeToNBT(new NBTTagCompound()));
+		compound.setTag("circuit_data", circuitData.writeToNBT(new NBTTagCompound()));
 	}
 	
 	@Override

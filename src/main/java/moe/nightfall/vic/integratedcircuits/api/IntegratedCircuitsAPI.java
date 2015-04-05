@@ -1,6 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.api;
 
 import net.minecraft.world.World;
+import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
 /**
@@ -26,6 +27,11 @@ public class IntegratedCircuitsAPI
 	public static void registerSocketProvider(ISocketProvider provider)
 	{
 		getInstance().registerSocketProvider(provider);
+	}
+	
+	public static MCDataOutput getWriteStream(World world, BlockCoord pos, int side)
+	{
+		return getInstance().getWriteStream(world, pos, side);
 	}
 	
 	public static IGateRegistry getGateRegistry()

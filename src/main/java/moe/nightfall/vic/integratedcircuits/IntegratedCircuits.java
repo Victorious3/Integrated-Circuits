@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import moe.nightfall.vic.integratedcircuits.api.IAPI;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
+import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
@@ -186,8 +187,8 @@ public class IntegratedCircuits
     				{
     					TileMultipart tm = (TileMultipart)te;
     					TMultiPart multipart = tm.partMap(side);
-    					if(multipart instanceof ISocket) 
-    						return ((ISocket)multipart);
+    					if(multipart instanceof ISocketWrapper) 
+    						return ((ISocketWrapper)multipart).getSocket();
     				}
 					return null; 
     			}
@@ -200,10 +201,10 @@ public class IntegratedCircuits
 			public ISocket getSocketAt(World world, BlockCoord pos, int side)
 			{
 				TileEntity te = world.getTileEntity(pos.x, pos.y, pos.z);
-				if(te instanceof TileEntitySocket)
+				if(te instanceof ISocketWrapper)
 				{
-					TileEntitySocket gate = (TileEntitySocket)te;
-					if(gate.getSocket().getSide() == side) return gate.getSocket();
+					ISocketWrapper wrapper = (ISocketWrapper)te;
+					if(wrapper.getSocket().getSide() == side) return wrapper.getSocket();
 				}
 				return null;
 			}

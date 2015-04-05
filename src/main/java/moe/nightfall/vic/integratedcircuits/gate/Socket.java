@@ -1,7 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
-import io.netty.buffer.Unpooled;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +23,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
@@ -250,10 +247,8 @@ public class Socket implements ISocket
 		
 		if(gate != null) 
 		{
-			PacketCustom packet = new PacketCustom("", 1);
-			gate.writeDesc(packet);
 			compound.setString("gate_id", IntegratedCircuitsAPI.getGateRegistry().getName(gate.getClass()));
-			compound.setByteArray("data", packet.getByteBuf().array());
+			gate.writeDesc(compound);
 		}
 	}
 
@@ -265,12 +260,9 @@ public class Socket implements ISocket
 		
 		if(compound.hasKey("gate_id"))
 		{
-			byte[] data = compound.getByteArray("data");
-			PacketCustom in = new PacketCustom(Unpooled.copiedBuffer(data));
-			
 			gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(compound.getString("gate_id"));
 			gate.setProvider(this);
-			gate.readDesc(in);
+			gate.readDesc(compound);
 		}
 		else gate = null;
 		
@@ -282,14 +274,14 @@ public class Socket implements ISocket
 	{
 		byte discr = packet.readByte();
 		switch (discr) {
-		case 0 :
-			orientation = packet.readByte();
-			markRender();
-			return;
-		case 1 :
-			io = packet.readByte();
-			markRender();
-			return;
+    		case 0 :
+    			orientation = packet.readByte();
+    			markRender();
+    			return;
+    		case 1 :
+    			io = packet.readByte();
+    			markRender();
+    			return;
 		}
 		if(gate != null) gate.read(discr, packet);
 	}
@@ -529,13 +521,14 @@ public class Socket implements ISocket
 				if(!getWorld().isRemote && gate != null) 
 				{
 					if(!player.isSneaking()) rotate();
+					System.out.println("hello?");
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
 				
 				stack.damageItem(1, player);
 				return true;
 			}
-		}	
+		}
 		if(gate != null) return gate.activate(player, hit, stack);
 		return false;
 	}

@@ -8,6 +8,7 @@ import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
 import net.minecraft.world.World;
+import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
 import com.google.common.collect.Lists;
@@ -39,5 +40,11 @@ public class API implements IAPI
 	public IGateRegistry getGateRegistry()
 	{
 		return gateRegistry;
+	}
+
+	@Override
+	public MCDataOutput getWriteStream(World world, BlockCoord pos, int side)
+	{
+		return IntegratedCircuits.proxy.addStream(world, pos, side);
 	}
 }

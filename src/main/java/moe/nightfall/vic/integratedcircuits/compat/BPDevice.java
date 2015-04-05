@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.gate;
+package moe.nightfall.vic.integratedcircuits.compat;
 
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import net.minecraft.world.World;

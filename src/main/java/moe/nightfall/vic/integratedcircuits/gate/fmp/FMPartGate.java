@@ -8,7 +8,7 @@ import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
-import moe.nightfall.vic.integratedcircuits.gate.BPDevice;
+import moe.nightfall.vic.integratedcircuits.compat.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import mrtjp.projectred.api.IBundledEmitter;
@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Translation;
@@ -31,6 +32,7 @@ import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
+import codechicken.multipart.MultipartHelper;
 import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
@@ -81,15 +83,15 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public void readDesc(MCDataInput packet)
 	{
-//		socket.readDesc(packet.readNBTTagCompound());
+		socket.readDesc(packet.readNBTTagCompound());
 	}
 	
 	@Override
 	public void writeDesc(MCDataOutput packet)
 	{
-//		NBTTagCompound compound = new NBTTagCompound();
-//		socket.writeDesc(compound);
-//		packet.writeNBTTagCompound(compound);
+		NBTTagCompound compound = new NBTTagCompound();
+		socket.writeDesc(compound);
+		packet.writeNBTTagCompound(compound);
 	}
 
 	@Override
@@ -211,6 +213,7 @@ public class FMPartGate extends JCuboidPart implements
 	{
 		if(pass == 0) 
 		{
+			TextureUtils.bindAtlas(0);
     		ClientProxy.socketRendererFMP.prepareDynamic(socket, frame);
     		ClientProxy.socketRendererFMP.renderDynamic(new Translation(pos));
 		}
@@ -301,7 +304,7 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public void markRender() 
 	{
-		tile().markRender();
+		if(tile() != null) tile().markRender();
 	}
 
 	@Override
@@ -320,7 +323,7 @@ public class FMPartGate extends JCuboidPart implements
 	public void notifyBlocksAndChanges() 
 	{
 		tile().markDirty();
-		tile().notifyPartChange(this);
+		notifyPartChange();
 		tile().notifyNeighborChange(socket.getSide());
 	}
 
@@ -372,7 +375,7 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public void sendDescription()
 	{
-		world().markBlockForUpdate(x(), y(), z());
+		MultipartHelper.sendDescPacket(getWorld(), getTile());
 	}
 
 	@Override

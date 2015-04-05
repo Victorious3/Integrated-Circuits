@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.Cuboid6;
 
 public interface IGate
@@ -22,9 +21,9 @@ public interface IGate
 	
 	public void save(NBTTagCompound tag);
 
-	public void readDesc(MCDataInput packet);
+	public void readDesc(NBTTagCompound tag);
 	
-	public void writeDesc(MCDataOutput packet);
+	public void writeDesc(NBTTagCompound tag);
 
 	public void read(byte discr, MCDataInput packet);
 	

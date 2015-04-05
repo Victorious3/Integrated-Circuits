@@ -12,9 +12,10 @@ import mods.immibis.redlogic.api.wiring.IConnectable;
 import mods.immibis.redlogic.api.wiring.IWire;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IGatePeripheralProvider;
-import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
-import moe.nightfall.vic.integratedcircuits.gate.BPDevice;
+import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.compat.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.GatePeripheral;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
@@ -105,9 +106,7 @@ public class TileEntitySocket extends TileEntity implements
 	@Override
 	public MCDataOutput getWriteStream(int disc) 
 	{
-		if(!worldObj.isRemote)
-			return IntegratedCircuits.proxy.addStream(getWorld(), getPos()).writeByte(disc);
-		throw new IllegalArgumentException("Cannot use getWriteStream on a client world");
+		return IntegratedCircuitsAPI.getWriteStream(getWorld(), getPos(), socket.getSide()).writeByte(disc);
 	}
 
 	@Override

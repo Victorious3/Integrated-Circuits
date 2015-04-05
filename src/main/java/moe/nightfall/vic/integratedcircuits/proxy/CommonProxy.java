@@ -5,12 +5,13 @@ import static moe.nightfall.vic.integratedcircuits.IntegratedCircuits.logger;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.LaserHelper.Laser;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiHandler;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
@@ -73,7 +74,7 @@ public class CommonProxy
 {
 	public static int serverTicks;
 	public static SimpleNetworkWrapper networkWrapper;
-	private static HashMap<World, HashMap<BlockCoord, MCDataOutputImpl>> out = Maps.newHashMap();
+	private static HashMap<World, HashMap<SidedBlockCoord, MCDataOutputImpl>> out = Maps.newHashMap();
 	
 	public void initialize()
 	{
@@ -112,17 +113,19 @@ public class CommonProxy
 		AbstractPacket.registerPacket(PacketDataStream.class, Side.CLIENT, 17);
 	}
 	
-	public MCDataOutputImpl addStream(World world, BlockCoord crd)
+	public MCDataOutputImpl addStream(World world, BlockCoord crd, int side)
 	{
+		if(world.isRemote) throw new IllegalArgumentException("Cannot use getWriteStream on a client world");
+		SidedBlockCoord scrd = new SidedBlockCoord(crd.x, crd.y, crd.z, side);
 		if(!out.containsKey(world))
-			out.put(world, new HashMap<BlockCoord, MCDataOutputImpl>());
-		HashMap<BlockCoord, MCDataOutputImpl> map = out.get(world);
+			out.put(world, new HashMap<SidedBlockCoord, MCDataOutputImpl>());
+		HashMap<SidedBlockCoord, MCDataOutputImpl> map = out.get(world);
 		
-		if(map.containsKey(crd))
-			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.remove(crd), crd.x, crd.y, crd.z), world.provider.dimensionId);
+		if(map.containsKey(scrd))
+			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.remove(scrd), scrd.x, scrd.y, scrd.z, scrd.side), world.provider.dimensionId);
 		
 		MCDataOutputImpl stream = new MCDataOutputImpl(new ByteArrayOutputStream());
-		map.put(crd, stream);
+		map.put(scrd, stream);
 		return stream;
 	}
 	
@@ -135,14 +138,46 @@ public class CommonProxy
 			
 			for(World world : out.keySet())
 			{
-				HashMap<BlockCoord, MCDataOutputImpl> map = out.get(world);
-				for(Entry<BlockCoord, MCDataOutputImpl> entry : map.entrySet())
+				HashMap<SidedBlockCoord, MCDataOutputImpl> map = out.get(world);
+				for(Entry<SidedBlockCoord, MCDataOutputImpl> entry : map.entrySet())
 				{
-					BlockCoord crd = entry.getKey();
-					CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.get(crd), crd.x, crd.y, crd.z), world.provider.dimensionId);
+					SidedBlockCoord crd = entry.getKey();
+					CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.get(crd), crd.x, crd.y, crd.z, crd.side), world.provider.dimensionId);
 				}
 				map.clear();
 			}
+		}
+	}
+	
+	private static class SidedBlockCoord
+	{
+		public int x, y, z, side;
+		
+		public SidedBlockCoord(int x, int y, int z, int side)
+		{
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.side = side;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return Objects.hash(x, y, z, side);
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SidedBlockCoord other = (SidedBlockCoord) obj;
+			return other.x == x && other.y == y && other.z == z && other.side == side;
 		}
 	}
 	

@@ -7,7 +7,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import codechicken.lib.data.MCDataInput;
-import codechicken.lib.data.MCDataOutput;
 
 public abstract class Gate implements IGate
 {
@@ -35,10 +34,10 @@ public abstract class Gate implements IGate
 	public void save(NBTTagCompound tag) {}
 
 	@Override
-	public void readDesc(MCDataInput packet) {}
+	public void readDesc(NBTTagCompound tag) {}
 	
 	@Override
-	public void writeDesc(MCDataOutput packet) {}
+	public void writeDesc(NBTTagCompound tag) {}
 
 	@Override
 	public void read(byte discr, MCDataInput packet) {}

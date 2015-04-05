@@ -33,10 +33,10 @@ import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartStateCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartTimer;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.ValueProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
 

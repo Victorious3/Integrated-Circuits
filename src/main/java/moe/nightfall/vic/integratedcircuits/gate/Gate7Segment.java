@@ -393,25 +393,23 @@ public class Gate7Segment extends Gate
 	}
 
 	@Override
-	public void readDesc(MCDataInput packet)
+	public void readDesc(NBTTagCompound compound)
 	{
-		super.readDesc(packet);
-		digit = packet.readInt();
-		color = packet.readInt();
-		isSlave = packet.readBoolean();
-		hasSlaves = packet.readBoolean();
-		mode = packet.readInt();
+		digit = compound.getInteger("digit");
+		color = compound.getInteger("color");
+		isSlave = compound.getBoolean("isSlave");
+		hasSlaves = compound.getBoolean("hasSlaves");
+		mode = compound.getInteger("mode");
 	}
 	
 	@Override
-	public void writeDesc(MCDataOutput packet)
+	public void writeDesc(NBTTagCompound compound)
 	{
-		super.writeDesc(packet);
-		packet.writeInt(digit);
-		packet.writeInt(color);
-		packet.writeBoolean(isSlave);
-		packet.writeBoolean(slaves.size() > 0);
-		packet.writeInt(mode);
+		compound.setInteger("digit", digit);
+		compound.setInteger("color", color);
+		compound.setBoolean("isSlave", isSlave);
+		compound.setBoolean("hasSlaves", slaves.size() > 0);
+		compound.setInteger("mode", mode);
 	}
 
 	@Override

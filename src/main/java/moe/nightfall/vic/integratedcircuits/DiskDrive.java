@@ -15,6 +15,7 @@ import org.lwjgl.opengl.GL11;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+//TODO Rewrite!
 public class DiskDrive 
 {
 	public static AxisAlignedBB getDiskDriveBoundingBox(IDiskDrive drive, int x, int y, int z, Vec3 hitVec)
