@@ -24,6 +24,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) 
 	{
 		TileEntitySocket te = (TileEntitySocket)world.getTileEntity(x, y, z);
+		if(te == null || te.getSocket() == null) return false;
 		
 		CCRenderState.reset();
 		CCRenderState.lightMatrix.locate(world, x, y, z);
@@ -51,6 +52,8 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float par5) 
 	{
 		Socket socket = ((TileEntitySocket)te).getSocket();
+		if(te == null || (socket == null)) return;
+		
 		CCRenderState.reset();
 		CCRenderState.pullLightmap();
 		CCRenderState.useNormals = true;

@@ -69,8 +69,9 @@ public class SemiTransparentRenderer
 		{
 			TileEntityRendererDispatcher dispatcher = TileEntityRendererDispatcher.instance;
 			TileEntity te = Minecraft.getMinecraft().theWorld.getTileEntity((int)pos.xCoord, (int)pos.yCoord, (int)pos.zCoord);
+			if(te == null) continue;
 			TileEntitySpecialRenderer renderer = dispatcher.getSpecialRenderer(te);
-			if(renderer == null || !(renderer instanceof TileEntitySemiTransparentRenderer))
+			if(!(renderer instanceof TileEntitySemiTransparentRenderer))
 				throw new IllegalArgumentException();
 			TileEntitySemiTransparentRenderer stRenderer = (TileEntitySemiTransparentRenderer)renderer;
 			stRenderer.renderPass = pass;

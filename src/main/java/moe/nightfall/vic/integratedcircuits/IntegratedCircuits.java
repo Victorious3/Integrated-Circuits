@@ -1,6 +1,7 @@
 package moe.nightfall.vic.integratedcircuits;
 
 import java.lang.reflect.Field;
+import java.net.URL;
 
 import moe.nightfall.vic.integratedcircuits.api.IAPI;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
@@ -34,6 +35,11 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Logger;
 
 import codechicken.lib.vec.BlockCoord;
@@ -231,7 +237,29 @@ public class IntegratedCircuits
 	public void postInit(FMLPostInitializationEvent event)
 	{
 		IntegratedCircuitsRecipes.loadRecipes();
-		
+
+		//Tracker
+		if(Config.enableTracker)
+		{
+			new Thread() {
+				@Override
+				public void run()
+				{
+					try {
+						HttpClient client = HttpClientBuilder.create().build();
+						HttpUriRequest request = new HttpGet(new URL("http://bit.ly/1GIaUA6").toURI());
+						request.setHeader("Referer", "http://" + Constants.MOD_VERSION);
+						request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0");
+						String newestVersion = client.execute(request, new BasicResponseHandler());
+						// TODO version checker? I don't really like them but we have the information now...
+						logger.info("Your version: {}, Newest version: {}", Constants.MOD_VERSION, newestVersion);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}.run();
+		}
+
 		//Register provider for bluepower
 		if(isBPLoaded) new BPRedstoneProvider();
 		

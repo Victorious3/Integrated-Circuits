@@ -15,12 +15,14 @@ import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 
 import com.google.common.collect.Lists;
 
+import cpw.mods.fml.common.Optional.Interface;
 import dan200.computercraft.api.filesystem.IMount;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
+@Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 public abstract class GatePeripheral implements IPeripheral
 {
 	@Override
@@ -108,6 +110,7 @@ public abstract class GatePeripheral implements IPeripheral
 		}
 	}
 	
+	@Interface(iface = "dan200.computercraft.api.filesystem.IMount", modid = "ComputerCraft")
 	public static class FileMount implements IMount
 	{
 		private ArrayList<String> files;
