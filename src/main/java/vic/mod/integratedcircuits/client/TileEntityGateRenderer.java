@@ -20,6 +20,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) 
 	{
 		TileEntityGate te = (TileEntityGate)world.getTileEntity(x, y, z);
+		if(te == null || te.getGate() == null) return false;
 		
 		CCRenderState.reset();
 		CCRenderState.lightMatrix.locate(world, x, y, z);
@@ -43,6 +44,8 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	@Override
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float par5) 
 	{
+		if(te == null || ((TileEntityGate)te).getGate() == null) return;
+		
 		CCRenderState.reset();
 		CCRenderState.pullLightmap();
 		CCRenderState.useNormals = true;
