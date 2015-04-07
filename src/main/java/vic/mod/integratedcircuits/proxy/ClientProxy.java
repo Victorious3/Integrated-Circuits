@@ -2,7 +2,6 @@ package vic.mod.integratedcircuits.proxy;
 
 import java.lang.reflect.Field;
 import java.util.BitSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +21,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -89,7 +89,6 @@ public class ClientProxy extends CommonProxy
 	{
 		super.initialize();
 		stRenderer = new SemiTransparentRenderer();
-		TileEntityAssemblerRenderer.fboArray = new LinkedList<Framebuffer>();
 		ShaderHelper.loadShaders();
 		
 		Constants.GATE_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
@@ -158,10 +157,10 @@ public class ClientProxy extends CommonProxy
 	public void onWorldUnload(WorldEvent.Unload event)
 	{
 		try {
-			for(Framebuffer buf : TileEntityAssemblerRenderer.fboArray)
-				buf.deleteFramebuffer();
+			for(Integer texture : TileEntityAssemblerRenderer.textureList)
+				TextureUtil.deleteTexture(texture);
 		} catch (RuntimeException e) {}
-		TileEntityAssemblerRenderer.fboArray.clear();
+		TileEntityAssemblerRenderer.textureList.clear();
 	}
 	
 	@SubscribeEvent

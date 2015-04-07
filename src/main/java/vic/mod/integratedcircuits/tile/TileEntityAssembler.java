@@ -1,7 +1,7 @@
 package vic.mod.integratedcircuits.tile;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.shader.Framebuffer;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -29,8 +29,6 @@ import buildcraft.api.tiles.IControllable;
 import buildcraft.api.tiles.IHasWork;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @InterfaceList({
 	@Interface(iface = "buildcraft.api.tiles.IControllable", modid = "BuildCraft|Core"),
@@ -48,8 +46,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	private int statusCode;
 	
 	//Client
-	@SideOnly(Side.CLIENT)
-	public Framebuffer circuitFBO;
+	public int circuitTexture = -1;
 	public boolean isOccupied;
 	public byte request = 1;
 	
@@ -66,11 +63,11 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	public ItemStack[] contents = new ItemStack[13];
 	public CraftingSupply craftingSupply = new CraftingSupply(this, 2, 9);
 	private OptionSet<TileEntityAssembler> optionSet = new OptionSet<TileEntityAssembler>(this);
-	
+
 	@Override
 	public void updateEntity() 
 	{
-		if(worldObj.isRemote && circuitFBO == null) TileEntityAssemblerRenderer.scheduleFramebuffer(this);
+		if(worldObj.isRemote && circuitTexture != -1) TileEntityAssemblerRenderer.scheduleFramebuffer(this);
 		if(worldObj.isRemote) return;
 		
 		if(power == -1) onNeighborBlockChange();
@@ -269,10 +266,11 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	public void invalidate() 
 	{
 		super.invalidate();
-		if(worldObj.isRemote && circuitFBO != null) 
+		if(worldObj.isRemote && circuitTexture != -1) 
 		{
-			circuitFBO.deleteFramebuffer();
-			TileEntityAssemblerRenderer.fboArray.remove(circuitFBO);
+			TileEntityAssemblerRenderer.textureList.remove((Object)circuitTexture);
+			TextureUtil.deleteTexture(circuitTexture);
+			circuitTexture = -1;
 		}	
 	}
 

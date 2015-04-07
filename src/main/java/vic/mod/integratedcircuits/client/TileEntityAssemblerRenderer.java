@@ -1,10 +1,13 @@
 package vic.mod.integratedcircuits.client;
 
-import java.util.LinkedList;
+import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 
@@ -20,6 +23,9 @@ import vic.mod.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import vic.mod.integratedcircuits.misc.RenderUtils;
 import vic.mod.integratedcircuits.proxy.ClientProxy;
 import vic.mod.integratedcircuits.tile.TileEntityAssembler;
+
+import com.google.common.collect.Lists;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
@@ -30,8 +36,9 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	private static ModelFloppy model = new ModelFloppy(-7, -7, -9, 12, 2, 1);
 	
 	//Used to unload the FBOs when the world does. If there is a better way to do this, tell me.
-	public static LinkedList<Framebuffer> fboArray;
-	private static LinkedList<TileEntityAssembler> schedule = new LinkedList<TileEntityAssembler>();
+	public static List<Integer> textureList = Lists.newLinkedList();
+	private static List<TileEntityAssembler> schedule = Lists.newLinkedList();
+	private static Framebuffer fbo;
 	
 	public TileEntityAssemblerRenderer()
 	{
@@ -62,7 +69,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 			tes.draw();
 			
-			if(te.circuitFBO != null && te.isOccupied)
+			if(te.circuitTexture != -1 && te.isOccupied)
 			{
 				GL11.glDisable(GL11.GL_TEXTURE_2D);			
 				GL11.glColor3f(0, 0.1F, 0);	
@@ -98,8 +105,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				tes.draw();
 				
 				GL11.glColor3f(1, 1, 1);
-				GL11.glEnable(GL11.GL_TEXTURE_2D);		
-				te.circuitFBO.bindFramebufferTexture();
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, te.circuitTexture);
 				
 				tes.startDrawingQuads();
 				tes.setNormal(0, 1, 0);
@@ -209,7 +216,10 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	{
 		if(event.phase == Phase.START && schedule.size() > 0)
 		{
+			if(fbo == null) fbo = new Framebuffer(256, 256, false);
 			Minecraft.getMinecraft().getFramebuffer().unbindFramebuffer();
+			
+			fbo.bindFramebuffer(false);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
 			GL11.glViewport(0, 0, 256, 256);
@@ -223,19 +233,26 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			for(TileEntityAssembler te : schedule)
 				updateFramebuffer(te);
 			schedule.clear();
+			
+			fbo.unbindFramebuffer();
 			Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
 		}
 	}
 	
 	private void updateFramebuffer(TileEntityAssembler te)
 	{
-		if(te.circuitFBO == null)
+		if(te.circuitTexture == -1) 
 		{
-			te.circuitFBO = new Framebuffer(256, 256, true);
-			TileEntityAssemblerRenderer.fboArray.add(te.circuitFBO);
-		}	
-		te.circuitFBO.framebufferClear();
-		te.circuitFBO.bindFramebuffer(false);
+			te.circuitTexture = fbo.framebufferTexture = TextureUtil.glGenTextures();
+			textureList.add(te.circuitTexture);
+			fbo.setFramebufferFilter(GL11.GL_NEAREST);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, fbo.framebufferTexture);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, fbo.framebufferTextureWidth, fbo.framebufferTextureHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer)null);
+			OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, fbo.framebufferObject);	
+		}
+		
+		fbo.framebufferTexture = te.circuitTexture;
+		OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, GL11.GL_TEXTURE_2D, fbo.framebufferTexture, 0);
 		
 		GL11.glColor3f(0, 0.1F, 0);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -254,8 +271,6 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			GL11.glScalef(16 / (float)te.cdata.getSize(), 16 / (float)te.cdata.getSize(), 1);
 			CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.cdata), 0, 0, te.excMatrix, te.size > 16 ? 2 : 1);
 		}
-
-		te.circuitFBO.unbindFramebuffer();
 	}
 	
 	public static void scheduleFramebuffer(TileEntityAssembler te)
