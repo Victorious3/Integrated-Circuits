@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -12,6 +11,7 @@ import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import vic.mod.integratedcircuits.DiskDrive;
 import vic.mod.integratedcircuits.DiskDrive.ModelFloppy;
@@ -216,15 +216,18 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 	{
 		if(event.phase == Phase.START && schedule.size() > 0)
 		{
+			int currentFBO = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
 			if(fbo == null) fbo = new Framebuffer(256, 256, false);
-			Minecraft.getMinecraft().getFramebuffer().unbindFramebuffer();
+			fbo.unbindFramebuffer();
 			
 			fbo.bindFramebuffer(false);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glPushMatrix();
 			GL11.glLoadIdentity();
 			GL11.glViewport(0, 0, 256, 256);
 			GL11.glOrtho(0, 256, 256, 0, -1, 1);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glPushMatrix();
 			GL11.glLoadIdentity();
 	        
 			GL11.glEnable(GL11.GL_BLEND);
@@ -234,8 +237,13 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 				updateFramebuffer(te);
 			schedule.clear();
 			
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glPopMatrix();
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glPopMatrix();
+			
 			fbo.unbindFramebuffer();
-			Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
+			OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, currentFBO);
 		}
 	}
 	

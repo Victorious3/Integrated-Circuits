@@ -44,6 +44,7 @@ import net.minecraftforge.event.world.WorldEvent;
 
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import vic.mod.integratedcircuits.Constants;
 import vic.mod.integratedcircuits.DiskDrive;
@@ -224,7 +225,8 @@ public class ClientProxy extends CommonProxy
 		// Cirno
 		try {
 			Minecraft mc = Minecraft.getMinecraft();
-			Framebuffer mcfbo = mc.getFramebuffer();
+			int currentFBO = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
+			int currentTexture = RenderUtils.glGetFramebufferAttachmentParameteri(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
 
 			if(OpenGlHelper.isFramebufferEnabled() && shaders && ShaderHelper.SHADER_BLUR != 0)
 			{
@@ -238,7 +240,7 @@ public class ClientProxy extends CommonProxy
 					fbo2.setFramebufferColor(0, 0, 0, 1);
 					fbo2.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
 					fbo2.unbindFramebuffer();
-					mcfbo.bindFramebuffer(false);
+					OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, currentFBO);
 				} 
 				else if(mc.displayWidth != fbo.framebufferWidth || mc.displayHeight != fbo.framebufferHeight)
 				{
@@ -246,7 +248,7 @@ public class ClientProxy extends CommonProxy
 					fbo.unbindFramebuffer();
 					fbo2.createBindFramebuffer(mc.displayWidth, mc.displayHeight);
 					fbo2.unbindFramebuffer();
-					mcfbo.bindFramebuffer(false);
+					OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, currentFBO);
 				}
 
 				OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, fbo.framebufferTexture, 0);
@@ -416,7 +418,7 @@ public class ClientProxy extends CommonProxy
 			
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			
-			OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, mcfbo.framebufferTexture, 0);
+			OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, 3553, currentTexture, 0);
 			
 			if(OpenGlHelper.isFramebufferEnabled() && shaders && ShaderHelper.SHADER_BLUR != 0 && found)
 			{
@@ -450,7 +452,7 @@ public class ClientProxy extends CommonProxy
 				ShaderHelper.releaseShader();
 				fbo.framebufferClear();
 
-				mcfbo.bindFramebuffer(false);
+				OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, currentFBO);
 				fbo2.bindFramebufferTexture();
 
 				GL11.glShadeModel(GL11.GL_SMOOTH);

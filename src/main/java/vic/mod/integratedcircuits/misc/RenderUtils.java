@@ -6,9 +6,13 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 
+import org.lwjgl.opengl.ARBFramebufferObject;
+import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import vic.mod.integratedcircuits.client.Resources;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -130,6 +134,20 @@ public class RenderUtils
 			str = str.substring(0, i) + dots + str.substring(str.length() - i, str.length());
 		}
 		return str;
+	}
+	
+	public static int glGetFramebufferAttachmentParameteri(int target, int attachment, int pname)
+	{
+		if(OpenGlHelper.framebufferSupported)
+		{
+			int fboType = ReflectionHelper.getPrivateValue(OpenGlHelper.class, null, "field_153212_w");
+			switch(fboType) {
+				case 0: return GL30.glGetFramebufferAttachmentParameteri(target, attachment, pname);
+				case 1: return ARBFramebufferObject.glGetFramebufferAttachmentParameteri(target, attachment, pname);
+				case 2: return EXTFramebufferObject.glGetFramebufferAttachmentParameteriEXT(target, attachment, pname);
+			}
+		}
+		return 0;
 	}
 	
 	private static float lightX, lightY;
