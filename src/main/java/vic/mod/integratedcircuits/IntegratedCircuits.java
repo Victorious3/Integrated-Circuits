@@ -1,8 +1,15 @@
 package vic.mod.integratedcircuits;
 
+import java.net.URL;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Logger;
 
 import vic.mod.integratedcircuits.compat.BPRedstoneProvider;
@@ -157,6 +164,27 @@ public class IntegratedCircuits
 		//Register provider for bluepower
 		if(isBPLoaded) new BPRedstoneProvider();
 		
+		//Tracker
+		if(Config.enableTracker) 
+		{
+			new Thread() {
+				@Override
+				public void run()
+				{
+					try {
+    					HttpClient client = HttpClientBuilder.create().build();
+    					HttpUriRequest request = new HttpGet(new URL("http://bit.ly/1GIaUA6").toURI());
+    					request.setHeader("Referer", "http://" + Constants.MOD_VERSION);
+    					request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0");
+    					String newestVersion = client.execute(request, new BasicResponseHandler());
+    					// TODO version checker? I don't really like them but we have the information now...
+    					logger.info("Your version: {}, Newest version: {}", Constants.MOD_VERSION, newestVersion);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}.run();
+		}
 		logger.info("Done! This is an extremely early alpha version so please report any bugs occurring to https://github.com/Victorious3/Integrated-Circuits");
 	}
 }
