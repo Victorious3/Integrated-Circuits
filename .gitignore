@@ -4,6 +4,7 @@
 !build.gradle
 !gradle.properties
 !README.md
+!version.dat
 !/src/
 !/libs/
 
