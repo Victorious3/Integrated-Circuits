@@ -1,7 +1,11 @@
 package moe.nightfall.vic.integratedcircuits;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import moe.nightfall.vic.integratedcircuits.api.IAPI;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
@@ -35,11 +39,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.Logger;
 
 import codechicken.lib.vec.BlockCoord;
@@ -238,21 +237,33 @@ public class IntegratedCircuits
 	{
 		IntegratedCircuitsRecipes.loadRecipes();
 
-		//Tracker
-		if(Config.enableTracker)
+		if(Config.enableTracker) 
 		{
 			new Thread() {
 				@Override
 				public void run()
 				{
+					//I would have done it with commons, but it doesn't let me. So this is pretty much copied from AW
+					//https://github.com/RiskyKen/Armourers-Workshop
 					try {
-						HttpClient client = HttpClientBuilder.create().build();
-						HttpUriRequest request = new HttpGet(new URL("http://bit.ly/1GIaUA6").toURI());
-						request.setHeader("Referer", "http://" + Constants.MOD_VERSION);
-						request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0");
-						String newestVersion = client.execute(request, new BasicResponseHandler());
-						// TODO version checker? I don't really like them but we have the information now...
-						logger.info("Your version: {}, Newest version: {}", Constants.MOD_VERSION, newestVersion);
+						String location = "http://bit.ly/1GIaUA6";
+						HttpURLConnection conn = null;
+						while(location != null && !location.isEmpty()) {
+							URL url = new URL(location);
+							if(conn != null) conn.disconnect();
+
+							conn = (HttpURLConnection) url.openConnection();
+							conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; rv:36.0) Gecko/20100101 Firefox/36.0");
+							conn.setRequestProperty("Referer", "http://" + Constants.MOD_VERSION);
+							conn.connect();
+							location = conn.getHeaderField("Location");
+						}
+
+						if(conn == null) throw new NullPointerException();
+    					String newestVersion = new BufferedReader(new InputStreamReader(conn.getInputStream(), Charset.forName("UTF-8"))).readLine();
+    					// TODO version checker? I don't really like them but we have the information now...
+    					logger.info("Your version: {}, Newest version: {}", Constants.MOD_VERSION, newestVersion);
+    					conn.disconnect();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
