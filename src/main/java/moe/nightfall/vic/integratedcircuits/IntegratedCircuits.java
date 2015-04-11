@@ -18,6 +18,7 @@ import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.gate.fmp.FMPartGate;
 import moe.nightfall.vic.integratedcircuits.gate.fmp.PartFactory;
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.item.Item7Segment;
 import moe.nightfall.vic.integratedcircuits.item.ItemBase;
 import moe.nightfall.vic.integratedcircuits.item.ItemCircuit;
@@ -111,7 +112,9 @@ public class IntegratedCircuits
 		logger = event.getModLog();
 		logger.info("Loading Integrated Circutis " + Constants.MOD_VERSION);
 		
-		Config.initialize(event.getSuggestedConfigurationFile());
+		Config.preInitialize(event.getSuggestedConfigurationFile());
+		CircuitPart.registerParts();
+		Config.postIninitialize();
 		
 		//Compatibility
 		logger.info("Searching for compatible mods");

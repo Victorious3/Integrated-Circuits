@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
@@ -257,7 +258,15 @@ public class CircuitData implements Cloneable
 	public CircuitPart getPart(Vec2 pos)
 	{
 		if(pos.x < 0 || pos.y < 0 || pos.x >= size || pos.y >= size) return CircuitPart.getPart(PartNull.class);
-		return CircuitPart.getPart(id[pos.x][pos.y]);
+		CircuitPart part = CircuitPart.getPart(id[pos.x][pos.y]);
+		if (part == null) {
+			// TODO: More information?
+			IntegratedCircuits.logger.warn("Removed circuit part! " + pos);
+			setID(pos, 0);
+			setMeta(pos, 0);
+			part = getPart(pos);
+		}
+		return part;
 	}
 	
 	public void scheduleTick(Vec2 pos)
