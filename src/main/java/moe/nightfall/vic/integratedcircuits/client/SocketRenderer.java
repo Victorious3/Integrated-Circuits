@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IGate;
 import moe.nightfall.vic.integratedcircuits.api.IGateItem;
@@ -91,7 +92,10 @@ public class SocketRenderer extends PartRenderer<ISocket>
     			{
     				if(!player.inventory.hasItem(IntegratedCircuits.itemSolderingIron))
     				{
-    					ClientProxy.drawTooltip(I18n.format("tooltip.integratedcircuits.socket"));
+					    if (Config.enableTooltips)
+					    {
+						    ClientProxy.drawTooltip(I18n.format("tooltip.integratedcircuits.socket"));
+					    }
     					return;
     				}
     				

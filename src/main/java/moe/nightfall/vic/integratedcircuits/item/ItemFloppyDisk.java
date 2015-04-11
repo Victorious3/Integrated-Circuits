@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.item;
 
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -30,7 +31,7 @@ public class ItemFloppyDisk extends ItemBase
 			itemInformation.add(ChatFormatting.GRAY + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.name", ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("name")));
 			itemInformation.add(ChatFormatting.GRAY + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.size", "" + ChatFormatting.WHITE + size + "x" + size));
 			itemInformation.add(ChatFormatting.GRAY + StatCollector.translateToLocalFormatted(getUnlocalizedName() + ".tooltip.author", ChatFormatting.WHITE + comp.getCompoundTag("properties").getString("author")));
-		} else {
+		} else if (Config.enableTooltips) {
 			itemInformation.addAll(MiscUtils.appendToAll(ChatFormatting.GRAY + "" + ChatFormatting.ITALIC, MiscUtils.splitTranslateToLocalFormatted(getUnlocalizedName() + ".tooltip.info")));
 		}
 	}
