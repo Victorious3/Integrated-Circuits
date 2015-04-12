@@ -57,7 +57,7 @@ public abstract class CircuitPart
 	public final IntProperty PROP_INPUT = new IntProperty("INPUT", stitcher, 15);
 
 	public enum Category {
-		NONE, NULL, TORCH, WIRE, NGATE, GATE, LATCH, MISC, CELL
+		NONE, TORCH, WIRE, NGATE, GATE, LATCH, MISC, CELL
 	}
 
 	public Category getCategory() {

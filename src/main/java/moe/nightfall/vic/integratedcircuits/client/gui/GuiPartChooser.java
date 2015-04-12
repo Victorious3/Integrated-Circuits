@@ -75,6 +75,20 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 		this.parent = parent;
 	}
 
+	public GuiPartChooser(int id, int x, int y, CircuitPart.Category category, GuiPCBLayout parent)
+	{
+		this(id, x, y, getRenderWrapperParts(category), parent);
+	}
+
+	public static List<CircuitRenderWrapper> getRenderWrapperParts(CircuitPart.Category category)
+	{
+		ArrayList<CircuitRenderWrapper> parts = new ArrayList<CircuitRenderWrapper>();
+		for (CircuitPart part : CircuitPart.getParts())
+			if (part.getCategory() == category)
+				parts.add(new CircuitRenderWrapper(part.getClass()));
+		return parts;
+	}
+
 	@Override
 	public void drawButton(Minecraft mc, int x, int y)
 	{
@@ -119,7 +133,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 				}
 			}
 		}
-		if(!bool && list != null) 
+		if(!bool && list != null)
 		{
 			showList = false;
 			parent.blockMouseInput = false;
@@ -152,7 +166,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 			else if(mode == 2) parent.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
 			else parent.selectedPart = current;
 		}
-		if(list != null)
+		if(list != null && list.size() > 1)
 		{
 			showList = !showList;
 			parent.blockMouseInput = showList;

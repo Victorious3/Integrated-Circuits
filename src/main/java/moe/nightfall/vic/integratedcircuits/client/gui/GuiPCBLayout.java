@@ -152,36 +152,31 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			this.buttonList.add(new GuiIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3, this, te));
 		for(int i = 0; i < 16; i++)
 			this.buttonList.add(new GuiIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2, this, te));
-		
-		this.buttonList.add(c1);
-		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 131, getRenderWrapperParts(CircuitPart.Category.CELL), this));
 
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, new CircuitRenderWrapper(PartTorch.class), this));
+		// FIXME: TODO: Make it so that the position of these buttons is not hardcoded, and that if there are no parts in a certain category, the button doesn't appear at all.
+
+		this.buttonList.add(c1);
+
+		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
+
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 131, CircuitPart.Category.CELL, this));
+
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, CircuitPart.Category.TORCH, this));
 		
 		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class), Arrays.asList(
 			new CircuitRenderWrapper(PartWire.class, 1 << 4),
 			new CircuitRenderWrapper(PartWire.class, 2 << 4)), this));
 
-		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, getRenderWrapperParts(CircuitPart.Category.LATCH), this));
+		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, CircuitPart.Category.LATCH, this));
 
-		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, getRenderWrapperParts(CircuitPart.Category.GATE), this));
+		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, CircuitPart.Category.GATE, this));
 		
-		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, getRenderWrapperParts(CircuitPart.Category.NGATE), this));
+		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, CircuitPart.Category.NGATE, this));
 
-		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, getRenderWrapperParts(CircuitPart.Category.MISC), this));
+		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, CircuitPart.Category.MISC, this));
 
 		refreshUI();
 		super.initGui();
-	}
-
-	public List<CircuitRenderWrapper> getRenderWrapperParts(CircuitPart.Category category)
-	{
-		ArrayList<CircuitRenderWrapper> parts = new ArrayList<CircuitRenderWrapper>();
-		for (CircuitPart part : CircuitPart.getParts())
-			if (part.getCategory() == category)
-				parts.add(new CircuitRenderWrapper(part.getClass()));
-		return parts;
 	}
 	
 	public void refreshIO()
