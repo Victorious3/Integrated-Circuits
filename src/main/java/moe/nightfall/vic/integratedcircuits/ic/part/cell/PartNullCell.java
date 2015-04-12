@@ -8,6 +8,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartNullCell extends CircuitPart
 {
 	@Override
+	public Category getCategory() {
+		return Category.CELL;
+	}
+
+	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{
 		return getInputFromSide(pos, parent, side.getOpposite()) && !getInputFromSide(pos, parent, side);

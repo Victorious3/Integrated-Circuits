@@ -1,6 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.ic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,7 @@ public abstract class CircuitPart
 	public final IntProperty PROP_INPUT = new IntProperty("INPUT", stitcher, 15);
 
 	public enum Category {
-		NONE, NULL, TORCH, WIRE, NGATE, GATE, LATCH, MISC
+		NONE, NULL, TORCH, WIRE, NGATE, GATE, LATCH, MISC, CELL
 	}
 
 	public Category getCategory() {
@@ -127,9 +128,9 @@ public abstract class CircuitPart
 	}
 
 	/** Return all the circuit parts that are registered **/
-	public static List<CircuitPart> getParts() {
+	public static Collection<CircuitPart> getParts() {
 		// FIXME: This is probably a bad way to do this...
-		return Collections.unmodifiableList(new ArrayList<CircuitPart>(partRegistry.values()));
+		return Collections.unmodifiableCollection(partRegistry.values());
 	}
 	
 	public final <T extends Comparable> void setProperty(Vec2 pos, ICircuit parent, IProperty<T> property, T value)

@@ -8,12 +8,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartORGate extends Part3I1O
 {
 	@Override
-	public Category getCategory() {
-		return Category.NGATE;
-	}
-
-
-	@Override
 	public void calcOutput(Vec2 pos, ICircuit parent)
 	{
 		ForgeDirection s3 = toExternal(pos, parent, ForgeDirection.SOUTH);

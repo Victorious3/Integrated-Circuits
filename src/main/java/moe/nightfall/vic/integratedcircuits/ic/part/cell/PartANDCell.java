@@ -8,6 +8,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartANDCell extends PartSimpleGate
 {
 	@Override
+	public Category getCategory() {
+		return Category.CELL;
+	}
+
+	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) 
 	{
 		super.onInputChange(pos, parent, side);

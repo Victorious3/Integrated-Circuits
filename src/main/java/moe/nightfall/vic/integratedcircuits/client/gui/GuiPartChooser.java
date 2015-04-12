@@ -55,8 +55,28 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 		this.parent = parent;
 	}
 
+	public GuiPartChooser(int id, int x, int y, List<CircuitRenderWrapper> list2, GuiPCBLayout parent)
+	{
+		super(id, x, y, 20, 20, "");
+		if(list2.size() > 0)
+		{
+			current = list2.get(0);
+			ArrayList<CircuitRenderWrapper> list3 = new ArrayList<CircuitRenderWrapper>(list2);
+			this.list = new ArrayList<GuiPartChooser>();
+			for(int i = 0; i < list3.size(); i++)
+			{
+				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + i * 21, list3.get(i), parent);
+				child.chooserParent = this;
+				child.visible = false;
+				this.list.add(child);
+			}
+		}
+		mode = 0;
+		this.parent = parent;
+	}
+
 	@Override
-	public void drawButton(Minecraft mc, int x, int y) 
+	public void drawButton(Minecraft mc, int x, int y)
 	{
 		super.drawButton(mc, x, y);
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);

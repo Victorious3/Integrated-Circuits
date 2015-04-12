@@ -7,41 +7,15 @@ import java.util.List;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.ContainerPCBLayout;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiCallback.Action;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
-import moe.nightfall.vic.integratedcircuits.ic.part.PartMultiplexer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartNull;
-import moe.nightfall.vic.integratedcircuits.ic.part.PartSynchronizer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartTorch;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartWire;
-import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartANDCell;
-import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartBufferCell;
-import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartInvertCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartNullCell;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartRSLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartToggleLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartTransparentLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartANDGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartBufferGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartNANDGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartNORGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartNOTGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartORGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartXNORGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartXORGate;
 import moe.nightfall.vic.integratedcircuits.ic.part.timed.IConfigurableDelay;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartPulseFormer;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartRandomizer;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartRepeater;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartSequencer;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartStateCell;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartTimer;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBCache;
@@ -51,6 +25,12 @@ import moe.nightfall.vic.integratedcircuits.net.PacketPCBClear;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBIO;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiCallback.Action;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
@@ -175,42 +155,33 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		this.buttonList.add(c1);
 		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
-		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 131, new CircuitRenderWrapper(PartNullCell.class), Arrays.asList(
-			new CircuitRenderWrapper(PartBufferCell.class),
-			new CircuitRenderWrapper(PartInvertCell.class),
-			new CircuitRenderWrapper(PartANDCell.class)), this));
+		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 131, getRenderWrapperParts(CircuitPart.Category.CELL), this));
 
 		this.buttonList.add(new GuiPartChooser(2, cx + 220, cy + 173, new CircuitRenderWrapper(PartTorch.class), this));
 		
 		this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class), Arrays.asList(
 			new CircuitRenderWrapper(PartWire.class, 1 << 4),
 			new CircuitRenderWrapper(PartWire.class, 2 << 4)), this));
+
+		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, getRenderWrapperParts(CircuitPart.Category.LATCH), this));
+
+		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, getRenderWrapperParts(CircuitPart.Category.GATE), this));
 		
-		this.buttonList.add(new GuiPartChooser(4, cx + 220, cy + 68, new CircuitRenderWrapper(PartToggleLatch.class), Arrays.asList(
-			new CircuitRenderWrapper(PartRSLatch.class),
-			new CircuitRenderWrapper(PartTransparentLatch.class)), this));
-		
-		this.buttonList.add(new GuiPartChooser(5, cx + 220, cy + 89, new CircuitRenderWrapper(PartANDGate.class), Arrays.asList(
-			new CircuitRenderWrapper(PartORGate.class),
-			new CircuitRenderWrapper(PartXORGate.class),
-			new CircuitRenderWrapper(PartBufferGate.class)), this));
-		
-		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, new CircuitRenderWrapper(PartNANDGate.class), Arrays.asList(
-			new CircuitRenderWrapper(PartNORGate.class),
-			new CircuitRenderWrapper(PartXNORGate.class),
-			new CircuitRenderWrapper(PartNOTGate.class)), this));
-		
-		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, new CircuitRenderWrapper(PartTimer.class), Arrays.asList(
-			new CircuitRenderWrapper(PartSequencer.class),
-			new CircuitRenderWrapper(PartSynchronizer.class),
-			new CircuitRenderWrapper(PartStateCell.class),
-			new CircuitRenderWrapper(PartPulseFormer.class),
-			new CircuitRenderWrapper(PartRandomizer.class),
-			new CircuitRenderWrapper(PartRepeater.class),
-			new CircuitRenderWrapper(PartMultiplexer.class)), this));
-		
+		this.buttonList.add(new GuiPartChooser(6, cx + 220, cy + 110, getRenderWrapperParts(CircuitPart.Category.NGATE), this));
+
+		this.buttonList.add(new GuiPartChooser(7, cx + 220, cy + 47, getRenderWrapperParts(CircuitPart.Category.MISC), this));
+
 		refreshUI();
 		super.initGui();
+	}
+
+	public List<CircuitRenderWrapper> getRenderWrapperParts(CircuitPart.Category category)
+	{
+		ArrayList<CircuitRenderWrapper> parts = new ArrayList<CircuitRenderWrapper>();
+		for (CircuitPart part : CircuitPart.getParts())
+			if (part.getCategory() == category)
+				parts.add(new CircuitRenderWrapper(part.getClass()));
+		return parts;
 	}
 	
 	public void refreshIO()
