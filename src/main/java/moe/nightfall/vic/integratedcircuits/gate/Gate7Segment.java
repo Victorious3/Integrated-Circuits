@@ -5,6 +5,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
@@ -61,8 +62,8 @@ public class Gate7Segment extends Gate
 			
 	public static final int DOT = 1 << 7;
 	public static final int SIGN = 1 << 6;
-	public static final int MAX_DIGITS = 16; //TODO Mabye a config option?
-	
+	public static final int MAX_DIGITS = Config.sevenSegmentMaxDigits; //TODO Mabye a config option? ..Done?
+
 	public static final int MODE_SIMPLE = 0;
 	public static final int MODE_ANALOG = 1;
 	public static final int MODE_SHORT_SIGNED = 2;

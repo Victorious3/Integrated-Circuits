@@ -18,6 +18,7 @@ public class Config
 	public static boolean enableTracker;
 	public static int circuitCacheSize;
 	public static boolean enableTooltips;
+	public static int sevenSegmentMaxDigits;
 
 	//TODO Generalize!
 	public static void preInitialize(File file)
@@ -42,6 +43,8 @@ public class Config
 			"Circuits broken in this way will not be fixed when the part is re-enabled.\n" +
 			"The only way to \"fix\" the circuits is to edit the blueprint in the CAD to put the part back,\n" +
 			"and then remake and replace the circuits.");
+
+		sevenSegmentMaxDigits = config.getInt("sevenSegmentMaxDigits", "GENERAL", 16, 1, 16, "The maximum number of digits a seven segment display can have");
 	}
 
 	public static void postInitialize() {
