@@ -32,6 +32,11 @@ public abstract class PartCPGate extends CircuitPart
 		setProperty(pos, parent, PROP_ROTATION, rotation);
 		notifyNeighbours(pos, parent);
 	}
+
+	@Override
+	public Category getCategory() {
+		return Category.MISC;
+	}
 	
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) 

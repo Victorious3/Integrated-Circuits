@@ -8,6 +8,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartNull extends CircuitPart
 {
 	@Override
+	public Category getCategory() {
+		return Category.NULL;
+	}
+
+	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) 
 	{
 		for(int i = 2; i < 6; i++)

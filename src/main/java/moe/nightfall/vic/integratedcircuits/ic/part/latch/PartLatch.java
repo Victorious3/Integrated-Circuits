@@ -9,7 +9,12 @@ public class PartLatch extends PartCPGate
 {
 	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
 	protected final BooleanProperty PROP_TMP = new BooleanProperty("TMP", stitcher);
-	
+
+	@Override
+	public Category getCategory() {
+		return Category.LATCH;
+	}
+
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) 
 	{
