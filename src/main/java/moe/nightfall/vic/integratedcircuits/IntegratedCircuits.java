@@ -57,7 +57,9 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import dan200.computercraft.api.ComputerCraftAPI;
 
-@Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft")
+@Mod(modid = "integratedcircuits",
+		dependencies = "required-after:CodeChickenCore; after:ComputerCraft",
+		guiFactory = "moe.nightfall.vic.integratedcircuits.IntegratedCircuitsGuiFactory")
 public class IntegratedCircuits
 {
 	public static boolean isPRLoaded = false;
