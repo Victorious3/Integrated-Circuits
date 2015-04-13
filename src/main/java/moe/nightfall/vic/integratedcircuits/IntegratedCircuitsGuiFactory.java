@@ -11,7 +11,7 @@ public class IntegratedCircuitsGuiFactory implements IModGuiFactory
 
     @Override
     public void initialize(Minecraft minecraftInstance) {
-
+        IntegratedCircuitsGuiConfig.initialize(minecraftInstance);
     }
 
     @Override
