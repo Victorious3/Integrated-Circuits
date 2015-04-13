@@ -57,7 +57,7 @@ public abstract class CircuitPart
 	public final IntProperty PROP_INPUT = new IntProperty("INPUT", stitcher, 15);
 
 	public enum Category {
-		NONE, TORCH, WIRE, NGATE, GATE, LATCH, MISC, CELL
+		NONE, MISC, LATCH, GATE, NGATE, CELL, WIRE, TORCH
 	}
 
 	public Category getCategory() {
@@ -127,12 +127,21 @@ public abstract class CircuitPart
 		return partRegistry.get(id);
 	}
 
-	/** Return all the circuit parts that are registered **/
+	/** Returns all the circuit parts that are registered **/
 	public static Collection<CircuitPart> getParts() {
-		// FIXME: This is probably a bad way to do this...
 		return Collections.unmodifiableCollection(partRegistry.values());
 	}
-	
+
+	/** Returns all the circuit parts that are registered and are in a certain category **/
+	public static List<CircuitPart> getParts(Category category)
+	{
+		ArrayList<CircuitPart> parts = new ArrayList<CircuitPart>();
+		for (CircuitPart part : CircuitPart.getParts())
+			if (part.getCategory() == category)
+				parts.add(part);
+		return parts;
+	}
+
 	public final <T extends Comparable> void setProperty(Vec2 pos, ICircuit parent, IProperty<T> property, T value)
 	{
 		setState(pos, parent, property.set(value, getState(pos, parent)));

@@ -32,11 +32,10 @@ public class Config
 		enableTooltips = config.getBoolean("enableTooltips", "GENERAL", true, "Enable help tooltips. Recommended to be enabled unless you are familiar with the mod.");
 		enableTracker = config.getBoolean("enableTracker", "GENERAL", true,
 			"This setting will make the game visit this URL on startup: https://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat\n" +
-				"The connection is established over bit.ly for statistics. The data collected is publicly visible on https://bitly.com/1GIaUA6+. Bit.ly will track\n" +
-				"your country via your IP address, no other, or personal, information is gathered. I like statistics, and I would like you to keep this setting enabled,\n" +
-				"so that I get a better overview of how often my mod is used. Thanks.\n");
+			"The connection is established over bit.ly for statistics. The data collected is publicly visible on https://bitly.com/1GIaUA6+. Bit.ly will track\n" +
+			"your country via your IP address, no other, or personal, information is gathered. I like statistics, and I would like you to keep this setting enabled,\n" +
+			"so that I get a better overview of how often my mod is used. Thanks.\n");
 
-		// FIXME: Disabling gates WILL crash you when you try to use the CAD
 		config.addCustomCategoryComment("PARTS",
 			"Enables / Disables circuit parts.\n" +
 			"If you disable ANYTHING, ALL circuits with that part will BREAK!\n" +
@@ -45,7 +44,7 @@ public class Config
 			"and then remake and replace the circuits.");
 	}
 
-	public static void postIninitialize() {
+	public static void postInitialize() {
 		config.save();
 	}
 	

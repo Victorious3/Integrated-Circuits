@@ -82,11 +82,15 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 
 	public static List<CircuitRenderWrapper> getRenderWrapperParts(CircuitPart.Category category)
 	{
-		ArrayList<CircuitRenderWrapper> parts = new ArrayList<CircuitRenderWrapper>();
-		for (CircuitPart part : CircuitPart.getParts())
-			if (part.getCategory() == category)
-				parts.add(new CircuitRenderWrapper(part.getClass()));
-		return parts;
+		return getRenderWrapperParts(CircuitPart.getParts(category));
+	}
+
+	public static List<CircuitRenderWrapper> getRenderWrapperParts(List<CircuitPart> parts)
+	{
+		ArrayList<CircuitRenderWrapper> renderWrappers = new ArrayList<CircuitRenderWrapper>();
+		for (CircuitPart part : parts)
+			renderWrappers.add(new CircuitRenderWrapper(part.getClass()));
+		return renderWrappers;
 	}
 
 	@Override

@@ -114,7 +114,7 @@ public class IntegratedCircuits
 		
 		Config.preInitialize(event.getSuggestedConfigurationFile());
 		CircuitPart.registerParts();
-		Config.postIninitialize();
+		Config.postInitialize();
 		
 		//Compatibility
 		logger.info("Searching for compatible mods");
