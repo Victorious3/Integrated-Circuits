@@ -2,6 +2,9 @@ package moe.nightfall.vic.integratedcircuits;
 
 import java.io.File;
 
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -11,7 +14,7 @@ public class Config
 	private Config() {}
 	
 	public static Configuration config;
-	
+
 	public static Property showConfirmMessage;
 	public static boolean showStartupMessage;
 	public static boolean enablePropertyEdit;
@@ -45,6 +48,9 @@ public class Config
 			"and then remake and replace the circuits.");
 
 		sevenSegmentMaxDigits = config.getInt("sevenSegmentMaxDigits", "GENERAL", 16, 1, 16, "The maximum number of digits a seven segment display can have");
+
+
+		FMLCommonHandler.instance().bus().register(new ChangeHandler());
 	}
 
 	public static void postInitialize() {
@@ -55,5 +61,14 @@ public class Config
 	{
 		if(!showConfirmMessage.hasChanged()) return;
 		config.save();
+	}
+
+	/** Reloads the config values upon change */
+	public static class ChangeHandler {
+		@SubscribeEvent
+		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+			if(event.modID.equals(Constants.MOD_ID))
+				save();
+		}
 	}
 }

@@ -59,7 +59,9 @@ import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 
-@Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft")
+@Mod(modid = "integratedcircuits",
+		dependencies = "required-after:CodeChickenCore; after:ComputerCraft",
+		guiFactory = "moe.nightfall.vic.integratedcircuits.IntegratedCircuitsGuiFactory")
 public class IntegratedCircuits
 {
 	public static boolean isPRLoaded = false;
