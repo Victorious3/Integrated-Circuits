@@ -60,7 +60,7 @@ public class Config
 	public static void save()
 	{
 		if(!showConfirmMessage.hasChanged()) return;
-		config.save();
+			config.save();
 	}
 
 	/** Reloads the config values upon change */
@@ -68,7 +68,7 @@ public class Config
 		@SubscribeEvent
 		public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
 			if(event.modID.equals(Constants.MOD_ID))
-				save();
+				config.save();
 		}
 	}
 }

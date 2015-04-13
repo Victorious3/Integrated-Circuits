@@ -20,7 +20,7 @@ public class IntegratedCircuitsGuiConfig extends GuiConfig
                 configElements,
                 Constants.MOD_ID,
                 true,
-                false,
+                true,
                 "Configure IntegratedCircuits here");
         titleLine2 = Config.config.getConfigFile().getAbsolutePath();
 
