@@ -60,7 +60,7 @@ import dan200.computercraft.api.ComputerCraftAPI;
 
 @Mod(modid = "integratedcircuits",
 		dependencies = "required-after:CodeChickenCore; after:ComputerCraft",
-		guiFactory = "moe.nightfall.vic.integratedcircuits.IntegratedCircuitsGuiFactory")
+		guiFactory = "moe.nightfall.vic.integratedcircuits.client.gui.IntegratedCircuitsGuiFactory")
 public class IntegratedCircuits
 {
 	public static boolean isPRLoaded = false;
