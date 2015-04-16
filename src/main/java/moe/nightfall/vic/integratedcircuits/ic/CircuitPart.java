@@ -95,7 +95,7 @@ public abstract class CircuitPart
 	}
 
 	public static void registerPartConfig(int id, CircuitPart part) {
-		if (Config.config.getBoolean(part.getClass().getSimpleName(), "PARTS", true, ""))
+		if (Config.config.getBoolean(part.getClass().getSimpleName().replaceFirst("Part", ""), "PARTS", true, ""))
 			registerPart(id, part);
 	}
 
