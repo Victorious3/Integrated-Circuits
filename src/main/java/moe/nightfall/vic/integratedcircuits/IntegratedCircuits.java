@@ -37,6 +37,7 @@ import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -71,7 +72,8 @@ public class IntegratedCircuits
 	public static boolean isRLLoaded = false;
 	public static boolean isMFRLoaded = false;
 	public static boolean isCCLoaded = false;
-	
+
+	public static boolean developmentEnvironment;
 	public static Logger logger;
 	
 	public static ItemSocket itemSocket;
@@ -110,6 +112,8 @@ public class IntegratedCircuits
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception
 	{
+		developmentEnvironment = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+
 		//Initialize API
 		Field apiField = IntegratedCircuitsAPI.class.getDeclaredField("instance");
 		apiField.setAccessible(true);
