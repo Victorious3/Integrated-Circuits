@@ -12,7 +12,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartWire extends CircuitPart
 {
 	public final IntProperty PROP_COLOR = new IntProperty("COLOR", stitcher, 2);
-	
+
+	@Override
+	public Category getCategory() {
+		return Category.WIRE;
+	}
+
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)
 	{

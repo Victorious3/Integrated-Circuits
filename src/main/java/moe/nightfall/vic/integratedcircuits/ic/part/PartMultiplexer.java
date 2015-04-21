@@ -7,6 +7,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartMultiplexer extends PartSimpleGate
 {
 	@Override
+	public Category getCategory() {
+		return Category.MISC;
+	}
+
+	@Override
 	protected void calcOutput(Vec2 pos, ICircuit parent) 
 	{
 		if(getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))

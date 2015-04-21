@@ -1,8 +1,12 @@
 package moe.nightfall.vic.integratedcircuits.ic;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartMultiplexer;
@@ -37,6 +41,7 @@ import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.ValueProperty;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -50,38 +55,50 @@ public abstract class CircuitPart
 	private int id;
 	public final PropertyStitcher stitcher = new PropertyStitcher();
 	public final IntProperty PROP_INPUT = new IntProperty("INPUT", stitcher, 15);
-	
-	static 
-	{
-		registerPart(0, new PartNull());
-		registerPart(1, new PartWire());
-		registerPart(2, new PartTorch());
-		registerPart(3, new PartANDGate());
-		registerPart(4, new PartORGate());
-		registerPart(5, new PartNANDGate());
-		registerPart(6, new PartNORGate());
-		registerPart(7, new PartBufferGate());
-		registerPart(8, new PartNOTGate());
-		registerPart(9, new PartMultiplexer());
-		registerPart(10, new PartRepeater());
-		registerPart(11, new PartTimer());
-		registerPart(12, new PartSequencer());
-		registerPart(13, new PartStateCell());
-		registerPart(14, new PartRandomizer());
-		registerPart(15, new PartPulseFormer());
-		registerPart(16, new PartRSLatch());
-		registerPart(17, new PartToggleLatch());
-		registerPart(18, new PartTransparentLatch());
-		registerPart(19, new PartXORGate());
-		registerPart(20, new PartXNORGate());
-		registerPart(21, new PartSynchronizer());
-		registerPart(22, new PartNullCell());
-		registerPart(23, new PartIOBit());
-		registerPart(24, new PartInvertCell());
-		registerPart(25, new PartBufferCell());
-		registerPart(26, new PartANDCell());
+
+	public enum Category {
+		NONE, MISC, LATCH, GATE, NGATE, CELL, WIRE, TORCH
 	}
-	
+
+	public Category getCategory() {
+		return Category.NONE;
+	}
+
+	public static void registerParts() {
+		registerPart(0, new PartNull());
+		registerPartConfig(1, new PartWire());
+		registerPartConfig(2, new PartTorch());
+		registerPartConfig(3, new PartANDGate());
+		registerPartConfig(4, new PartORGate());
+		registerPartConfig(5, new PartNANDGate());
+		registerPartConfig(6, new PartNORGate());
+		registerPartConfig(7, new PartBufferGate());
+		registerPartConfig(8, new PartNOTGate());
+		registerPartConfig(9, new PartMultiplexer());
+		registerPartConfig(10, new PartRepeater());
+		registerPartConfig(11, new PartTimer());
+		registerPartConfig(12, new PartSequencer());
+		registerPartConfig(13, new PartStateCell());
+		registerPartConfig(14, new PartRandomizer());
+		registerPartConfig(15, new PartPulseFormer());
+		registerPartConfig(16, new PartRSLatch());
+		registerPartConfig(17, new PartToggleLatch());
+		registerPartConfig(18, new PartTransparentLatch());
+		registerPartConfig(19, new PartXORGate());
+		registerPartConfig(20, new PartXNORGate());
+		registerPartConfig(21, new PartSynchronizer());
+		registerPartConfig(22, new PartNullCell());
+		registerPart(23, new PartIOBit());
+		registerPartConfig(24, new PartInvertCell());
+		registerPartConfig(25, new PartBufferCell());
+		registerPartConfig(26, new PartANDCell());
+	}
+
+	public static void registerPartConfig(int id, CircuitPart part) {
+		if (Config.config.getBoolean(part.getClass().getSimpleName(), "PARTS", true, ""))
+			registerPart(id, part);
+	}
+
 	public static void registerPart(int id, CircuitPart part)
 	{
 		part.id = id;
@@ -110,7 +127,22 @@ public abstract class CircuitPart
 	{
 		return partRegistry.get(id);
 	}
-	
+
+	/** Returns all the circuit parts that are registered **/
+	public static Collection<CircuitPart> getParts() {
+		return Collections.unmodifiableCollection(partRegistry.values());
+	}
+
+	/** Returns all the circuit parts that are registered and are in a certain category **/
+	public static List<CircuitPart> getParts(Category category)
+	{
+		ArrayList<CircuitPart> parts = new ArrayList<CircuitPart>();
+		for (CircuitPart part : CircuitPart.getParts())
+			if (part.getCategory() == category)
+				parts.add(part);
+		return parts;
+	}
+
 	public final <T extends Comparable> void setProperty(Vec2 pos, ICircuit parent, IProperty<T> property, T value)
 	{
 		setState(pos, parent, property.set(value, getState(pos, parent)));

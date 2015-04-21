@@ -25,6 +25,11 @@ public abstract class PartSimpleGate extends PartCPGate
 	
 	/** already rotated **/
 	protected abstract boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd);
+
+	@Override
+	public Category getCategory() {
+		return Category.GATE;
+	}
 	
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side)

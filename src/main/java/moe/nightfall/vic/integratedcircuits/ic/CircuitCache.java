@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import moe.nightfall.vic.integratedcircuits.Config;
+
 /** Used for undo & redo **/
 public class CircuitCache 
 {
@@ -59,8 +61,6 @@ public class CircuitCache
 	public static class CircuitCacheEntry
 	{
 		private int position = 0;
-		//TODO Config option?
-		private static final int MAX_SIZE = 20;
 		private ArrayList<CircuitData> cache = Lists.newArrayList();
 		
 		public void capture(CircuitData data)
@@ -70,7 +70,7 @@ public class CircuitCache
 				cache.subList(cache.size() - position, cache.size()).clear();
 				position = 0;
 			}
-			if(cache.size() >= MAX_SIZE)
+			if(cache.size() >= Config.circuitCacheSize)
 				cache.remove(0);
 			cache.add(data.clone());
 		}

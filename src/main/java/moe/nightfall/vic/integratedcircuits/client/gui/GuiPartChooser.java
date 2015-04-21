@@ -55,8 +55,46 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 		this.parent = parent;
 	}
 
+	public GuiPartChooser(int id, int x, int y, List<CircuitRenderWrapper> list2, GuiPCBLayout parent)
+	{
+		super(id, x, y, 20, 20, "");
+		if(list2.size() > 0)
+		{
+			current = list2.get(0);
+			ArrayList<CircuitRenderWrapper> list3 = new ArrayList<CircuitRenderWrapper>(list2);
+			this.list = new ArrayList<GuiPartChooser>();
+			for(int i = 0; i < list3.size(); i++)
+			{
+				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + i * 21, list3.get(i), parent);
+				child.chooserParent = this;
+				child.visible = false;
+				this.list.add(child);
+			}
+		}
+		mode = 0;
+		this.parent = parent;
+	}
+
+	public GuiPartChooser(int id, int x, int y, CircuitPart.Category category, GuiPCBLayout parent)
+	{
+		this(id, x, y, getRenderWrapperParts(category), parent);
+	}
+
+	public static List<CircuitRenderWrapper> getRenderWrapperParts(CircuitPart.Category category)
+	{
+		return getRenderWrapperParts(CircuitPart.getParts(category));
+	}
+
+	public static List<CircuitRenderWrapper> getRenderWrapperParts(List<CircuitPart> parts)
+	{
+		ArrayList<CircuitRenderWrapper> renderWrappers = new ArrayList<CircuitRenderWrapper>();
+		for (CircuitPart part : parts)
+			renderWrappers.add(new CircuitRenderWrapper(part.getClass()));
+		return renderWrappers;
+	}
+
 	@Override
-	public void drawButton(Minecraft mc, int x, int y) 
+	public void drawButton(Minecraft mc, int x, int y)
 	{
 		super.drawButton(mc, x, y);
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
@@ -99,7 +137,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 				}
 			}
 		}
-		if(!bool && list != null) 
+		if(!bool && list != null)
 		{
 			showList = false;
 			parent.blockMouseInput = false;
@@ -132,7 +170,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable
 			else if(mode == 2) parent.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
 			else parent.selectedPart = current;
 		}
-		if(list != null)
+		if(list != null && list.size() > 1)
 		{
 			showList = !showList;
 			parent.blockMouseInput = showList;
