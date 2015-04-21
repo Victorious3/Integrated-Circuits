@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import moe.nightfall.vic.integratedcircuits.api.IGate;
 import moe.nightfall.vic.integratedcircuits.api.ISocketBridge.ISocketBase;
-import moe.nightfall.vic.integratedcircuits.gate.GateIO;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
@@ -40,6 +40,6 @@ public abstract class PacketGate<T extends AbstractPacket<T>> extends PacketTile
 	
 	protected IGate getPart(World world)
 	{
-		return GateIO.getGateAt(world, new BlockCoord(xCoord, yCoord, zCoord), facing);
+		return IntegratedCircuitsAPI.getSocketAt(world, new BlockCoord(xCoord, yCoord, zCoord), facing).getGate();
 	}
 }

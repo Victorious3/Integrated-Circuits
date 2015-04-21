@@ -1,14 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.api.IGate;
-import moe.nightfall.vic.integratedcircuits.api.ISocket;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
 
 public final class GateIO
 {
@@ -19,24 +10,6 @@ public final class GateIO
 	public static int vanillaToSide(int vside)
 	{
 		return vanillaSideMap[vside + 1];
-	}
-	
-	public static IGate getGateAt(World world, BlockCoord pos, int side)
-	{
-		TileEntity te = world.getTileEntity(pos.x, pos.y, pos.z);
-		if(IntegratedCircuits.isFMPLoaded && te instanceof TileMultipart)
-		{
-			TileMultipart tm = (TileMultipart)te;
-			TMultiPart multipart = tm.partMap(side);
-			if(multipart instanceof ISocket) 
-				return ((ISocket)multipart).getGate();
-		}
-		else if(te instanceof TileEntitySocket)
-		{
-			TileEntitySocket gate = (TileEntitySocket)te;
-			if(gate.getSocket().getSide() == side) return gate.getSocket().getGate();
-		}
-		return null;
 	}
 	
 	/*
