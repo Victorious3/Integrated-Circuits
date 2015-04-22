@@ -7,17 +7,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import moe.nightfall.vic.integratedcircuits.api.IAPI;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
+import moe.nightfall.vic.integratedcircuits.compat.GateIO;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
-import moe.nightfall.vic.integratedcircuits.gate.fmp.FMPartGate;
-import moe.nightfall.vic.integratedcircuits.gate.fmp.PartFactory;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.item.Item7Segment;
 import moe.nightfall.vic.integratedcircuits.item.ItemBase;
@@ -32,6 +30,8 @@ import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.BlockAssembler;
 import moe.nightfall.vic.integratedcircuits.tile.BlockPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
+import moe.nightfall.vic.integratedcircuits.tile.FMPartGate;
+import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
@@ -90,6 +90,8 @@ public class IntegratedCircuits
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
 	public static CreativeTabs creativeTab;
+	
+	public static final API API = new API();
 
 	@Instance(Constants.MOD_ID)
 	public static IntegratedCircuits instance;
@@ -104,10 +106,9 @@ public class IntegratedCircuits
 	public void preInit(FMLPreInitializationEvent event) throws Exception
 	{
 		//Initialize API
-		IAPI api = new API();
 		Field apiField = IntegratedCircuitsAPI.class.getDeclaredField("instance");
 		apiField.setAccessible(true);
-		apiField.set(null, api);
+		apiField.set(null, API);
 		
 		logger = event.getModLog();
 		logger.info("Loading Integrated Circutis " + Constants.MOD_VERSION);
@@ -147,9 +148,6 @@ public class IntegratedCircuits
 		
 		itemCircuit = new ItemCircuit();
 		item7Segment = new Item7Segment();
-		
-		if(isFMPLoaded) PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartGate.class);
-		
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
 		itemPCBChip = new ItemBase("pcb_chip");
@@ -179,7 +177,6 @@ public class IntegratedCircuits
 		
 		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, Constants.MOD_ID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");
-		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".gate");
 		
 		//Register socket provider
 		
@@ -224,12 +221,19 @@ public class IntegratedCircuits
 		
 		if(Loader.isModLoaded("NotEnoughItems") && !MiscUtils.isServer()) 
 			new NEIAddon().initialize();
+		
+		GateIO.initialize();
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		if(isFMPLoaded) PartFactory.initialize();
+		GameRegistry.registerTileEntity(API.getGateRegistry().createProxyClass(TileEntitySocket.class), Constants.MOD_ID + ".gate");
+		
+		if(isFMPLoaded) {
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", API.getGateRegistry().createProxyClass(FMPartGate.class));
+			PartFactory.initialize();
+		}
 		proxy.initialize();
 		
 		FMLInterModComms.sendMessage("Waila", "register", "moe.nightfall.vic.integratedcircuits.compat.WailaAddon.registerAddon");

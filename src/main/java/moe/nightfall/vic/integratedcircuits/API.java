@@ -3,7 +3,6 @@ package moe.nightfall.vic.integratedcircuits;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.api.IAPI;
-import moe.nightfall.vic.integratedcircuits.api.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
@@ -16,7 +15,7 @@ import com.google.common.collect.Lists;
 public class API implements IAPI
 {
 	private List<ISocketProvider> providerList = Lists.newArrayList();
-	private IGateRegistry gateRegistry = new GateRegistry();
+	private GateRegistry gateRegistry = new GateRegistry();
 	
 	@Override
 	public ISocket getSocketAt(World world, BlockCoord pos, int side)
@@ -37,7 +36,7 @@ public class API implements IAPI
 	}
 
 	@Override
-	public IGateRegistry getGateRegistry()
+	public GateRegistry getGateRegistry()
 	{
 		return gateRegistry;
 	}

@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.gate.fmp;
+package moe.nightfall.vic.integratedcircuits.tile;
 
 import java.util.HashMap;
 

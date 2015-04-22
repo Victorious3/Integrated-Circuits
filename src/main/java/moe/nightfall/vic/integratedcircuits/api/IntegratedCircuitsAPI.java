@@ -13,6 +13,17 @@ public class IntegratedCircuitsAPI
 {
 	private static IAPI instance;
 	
+	public static final Class<? extends ISocketWrapper> TILE = (Class<? extends ISocketWrapper>) findClass("moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket");
+	public static final Class<? extends ISocketWrapper> TILEFMP = (Class<? extends ISocketWrapper>) findClass("moe.nightfall.vic.integratedcircuits.tile.FMPartGate");
+	
+	private static Class<?> findClass(String className) {
+		try {
+			return Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			return null;
+		}
+	}
+	
 	public static IAPI getInstance()
 	{
 		if(instance == null) throw new RuntimeException("Integrated Circuits not installed, aborting!");

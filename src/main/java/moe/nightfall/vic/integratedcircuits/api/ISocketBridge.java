@@ -1,7 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.api;
 
 import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -19,8 +18,6 @@ public interface ISocketBridge
 	public void notifyPartChange();
 	
 	public BlockCoord getPos();
-	
-	public TileEntity getTileEntity();
 	
 	public void destroy();
 	
@@ -41,6 +38,8 @@ public interface ISocketBridge
 		public void setGate(IGate gate);
 		
 		public IGate getGate();
+		
+		public ISocketWrapper getWrapper();
 		
 		public byte getOrientation();
 		

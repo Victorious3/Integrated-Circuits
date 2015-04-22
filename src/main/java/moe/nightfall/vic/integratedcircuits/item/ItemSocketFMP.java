@@ -2,7 +2,7 @@ package moe.nightfall.vic.integratedcircuits.item;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.gate.fmp.FMPartGate;
+import moe.nightfall.vic.integratedcircuits.tile.FMPartGate;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

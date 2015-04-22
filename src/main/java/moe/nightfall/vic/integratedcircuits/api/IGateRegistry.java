@@ -13,4 +13,6 @@ public interface IGateRegistry
 	public String getName(Class<? extends IGate> gate);
 
 	public IGate createGateInstace(String name);
+	
+	public void registerGateIOProvider(GateIOProvider instance, Class<? extends ISocketWrapper> clazz);
 }

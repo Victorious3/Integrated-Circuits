@@ -15,7 +15,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
@@ -119,12 +118,6 @@ public class Socket implements ISocket
 	public BlockCoord getPos()
 	{
 		return provider.getPos();
-	}
-
-	@Override
-	public TileEntity getTileEntity()
-	{
-		return provider.getTileEntity();
 	}
 
 	@Override
@@ -576,5 +569,11 @@ public class Socket implements ISocket
 	public static Transformation getRotationTransformation(ISocket socket)
 	{
 		return Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
+	}
+
+	@Override
+	public ISocketWrapper getWrapper()
+	{
+		return provider;
 	}
 }

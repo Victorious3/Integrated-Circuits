@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
-
+@Deprecated
 public final class GateIO
 {
 	private GateIO() {}
