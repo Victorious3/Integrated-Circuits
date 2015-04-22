@@ -104,6 +104,7 @@ public abstract class CircuitPart
 		part.id = id;
 		partRegistry.put(id, part);
 		idRegistry.put(part.getClass(), id);
+		partRegistry.values();
 	}
 	
 	public static Integer getId(CircuitPart part)
