@@ -8,18 +8,15 @@ import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.compat.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
-import mrtjp.projectred.api.IBundledEmitter;
-import mrtjp.projectred.api.IConnectable;
-import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.render.CCRenderState;
@@ -36,26 +33,13 @@ import codechicken.multipart.NormalOcclusionTest;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
 
-import com.bluepowermod.api.wire.redstone.IBundledDevice;
-import com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper;
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.InterfaceList;
-import cpw.mods.fml.common.Optional.Method;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@InterfaceList(value = {
-	@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),
-	@Interface(iface = "mrtjp.projectred.api.IConnectable", modid = "ProjRed|Core"),
-	@Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
-})
-public class FMPartGate extends JCuboidPart implements 
-	JNormalOcclusion, TFacePart, IConnectable, IFaceRedstonePart, 
-	IBundledEmitter, IBundledDeviceWrapper, ISocketWrapper
+public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper
 {
-
 	private ISocket socket = new Socket(this);
 	
 	//TODO Re-implement
@@ -227,50 +211,9 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public void onPartChanged(TMultiPart part) 
 	{
-		if(!world().isRemote) updateInput();
+		socket.onNeighborChanged();
 	}
 	
-	//ProjectRed
-	
-	@Override
-	public boolean canConnectCorner(int arg0) 
-	{
-		return false;
-	}
-
-	@Override
-	public boolean connectCorner(IConnectable arg0, int arg1, int arg2) 
-	{
-		return connectStraight(arg0, arg1, arg2);
-	}
-
-	@Override
-	public boolean connectInternal(IConnectable arg0, int arg1) 
-	{
-		return connectStraight(arg0, arg1, 0);
-	}
-
-	@Override
-	public boolean connectStraight(IConnectable arg0, int arg1, int arg2) 
-	{
-		int side = socket.getRotationRel(arg1);
-		EnumConnectionType type = socket.getConnectionTypeAtSide(side);
-		if(arg0 instanceof IRedwireEmitter && type.isRedstone()) return true;
-		else if(arg0 instanceof IBundledEmitter && type.isBundled()) return true;
-		return false;
-	}
-	
-	@Override
-	public byte[] getBundledSignal(int arg0) 
-	{
-		int rot = socket.getRotationRel(arg0);
-		EnumConnectionType type = socket.getConnectionTypeAtSide(rot);
-		if(!type.isBundled()) return null;
-		return socket.getOutput()[rot];
-	}
-	
-	//---
-
 	@Override
 	public final boolean canConnectRedstone(int arg0) 
 	{
@@ -341,28 +284,13 @@ public class FMPartGate extends JCuboidPart implements
 	@Override
 	public byte[] updateBundledInput(int side)
 	{
-		//TODO
-		return new byte[16];
+		return IntegratedCircuitsAPI.updateBundledInput(getSocket(), side);
 	}
 	
 	@Override
 	public int updateRedstoneInput(int side)
 	{
-		//TODO
-		return 0;
-	}
-
-	@Override
-	@Method(modid = "bluepower")
-	public IBundledDevice getBundledDeviceOnSide(ForgeDirection side)
-	{
-		return bpDevice;
-	}
-
-	@Override
-	public void updateInput()
-	{
-		// TODO Auto-generated method stub
+		return IntegratedCircuitsAPI.updateRedstoneInput(getSocket(), side);
 	}
 
 	@Override
@@ -375,5 +303,11 @@ public class FMPartGate extends JCuboidPart implements
 	public ISocket getSocket()
 	{
 		return socket;
+	}
+
+	@Override
+	public void updateInput()
+	{
+		socket.updateInput();
 	}
 }

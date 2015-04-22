@@ -5,11 +5,14 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.GateIOProvider;
@@ -18,8 +21,10 @@ import moe.nightfall.vic.integratedcircuits.api.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -34,7 +39,7 @@ public class GateRegistry implements IGateRegistry
 {
 	private HashBiMap<String, Class<? extends IGate>> registry = HashBiMap.create();
 	private HashMap<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
-	private HashMap<Class<? extends ISocketWrapper>, List<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
+	private HashMap<Class<?>, List<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
 	
 	@Override
 	public void registerGate(String name, Class<? extends IGate> clazz)
@@ -80,8 +85,12 @@ public class GateRegistry implements IGateRegistry
 	}
 
 	@Override
-	public void registerGateIOProvider(GateIOProvider provider, Class<? extends ISocketWrapper> clazz)
+	public void registerGateIOProvider(GateIOProvider provider, Class<?>... classes)
 	{
+		for(Class<?> clazz : classes) registerGateIOProvider(provider, clazz);
+	}
+	
+	private void registerGateIOProvider(GateIOProvider provider, Class<?> clazz) {
 		if(Loader.instance().getModState(Loader.instance().getModObjectList().inverse().get(IntegratedCircuits.instance)).compareTo(ModState.INITIALIZED) > 0) {
 			IntegratedCircuits.logger.fatal("Tried to register gate provider instance after initialization phase: " + Loader.instance().activeModContainer());
 		}
@@ -90,43 +99,86 @@ public class GateRegistry implements IGateRegistry
 		ioProviderRegistry.put(clazz, list);
 	}
 	
-	public <T extends ISocketWrapper> Class<T> createProxyClass(Class<T> clazz) {
+	public List<GateIOProvider> getIOProviderList(Class<?> clazz) {
+		return ioProviderRegistry.get(clazz);
+	}
+	
+	public <T> T createProxyInstance(Class<T> clazz) {
 		try {
-    		List<GateIOProvider> list = ioProviderRegistry.getOrDefault(clazz, new LinkedList());
-    		ProxyFactory pf = new ProxyFactory();
-    		pf.setSuperclass(clazz);
-    		List<Class> proxyInterfaces = Lists.newArrayList();
-    		
-    		for(GateIOProvider provider : list) {
-    			Annotation[] annotations = provider.getClass().getAnnotations();
-    			
-    			for(Annotation annotation : annotations) {
-    				if(annotation instanceof Interface) {
-    					addInterface((Interface) annotation, proxyInterfaces);
-    				} else if(annotation instanceof InterfaceList) {
-    					for(Interface intf : ((InterfaceList)annotation).value()) {
-    						addInterface(intf, proxyInterfaces);
-    					}
-    				}
-    			}
-    		}
-    		
-    		pf.setInterfaces(proxyInterfaces.toArray(new Class[proxyInterfaces.size()]));
-    		pf.setFilter(new MethodFilterImpl(proxyInterfaces));
-    		pf.setHandler(new MethodHandlerImpl(list, proxyInterfaces));
-    		
-    		return pf.createClass();
+			Pair<ProxyFactory, MethodCache> pair = createProxyFactory(clazz);
+			ProxyFactory pf = pair.getLeft();
+			Proxy proxy = (Proxy) pf.create(new Class[0], new Object[0]);
+			proxy.setHandler(pair.getRight());
+			ioProviderRegistry.put(proxy.getClass(), getIOProviderList(clazz));
+			return (T) proxy;
 		} catch (Exception e) {
 			IntegratedCircuits.logger.fatal("Couldn't initialize proxy class for " + clazz);
 			throw new RuntimeException(e);
 		}
 	}
 	
+	public <T> Class<T> createProxyClass(Class<T> clazz) {
+		Pair<ProxyFactory, MethodCache> pair = createProxyFactory(clazz);
+		ProxyFactory pf = pair.getLeft();
+		pf.setHandler(pair.getRight());
+		Class<T> clazz2 = pf.createClass();
+		ioProviderRegistry.put(clazz2, getIOProviderList(clazz));
+		return clazz2;
+	}
+	
+	private Pair<ProxyFactory, MethodCache> createProxyFactory(Class<?> clazz) {
+		try {
+			IntegratedCircuits.logger.info("Creating proxy class for " + clazz);
+			List<GateIOProvider> list = ioProviderRegistry.getOrDefault(clazz, new LinkedList());
+			ProxyFactory pf = new ProxyFactory();
+			pf.setSuperclass(clazz);
+			HashSet<Class> proxyInterfaces = Sets.newHashSet();
+
+			Iterator<GateIOProvider> iterator = list.iterator();
+			while (iterator.hasNext()) {
+				GateIOProvider provider = iterator.next();
+				Annotation[] annotations = provider.getClass().getAnnotations();
+
+				int numInterfaces = 0;
+				for (Annotation annotation : annotations) {
+					if (annotation instanceof Interface) {
+						numInterfaces += addInterface((Interface) annotation, proxyInterfaces);
+					} else if (annotation instanceof InterfaceList) {
+						for (Interface intf : ((InterfaceList) annotation).value()) {
+							numInterfaces += addInterface(intf, proxyInterfaces);
+						}
+					}
+				}
+				if (numInterfaces > 0) {
+					IntegratedCircuits.logger.info("Added the following interfaces from GateIOProvider " + provider.getClass());
+					IntegratedCircuits.logger.info(proxyInterfaces);
+				}
+			}
+
+			pf.setInterfaces(proxyInterfaces.toArray(new Class[proxyInterfaces.size()]));
+			pf.setFilter(new MethodFilterImpl(proxyInterfaces));
+
+			return new ImmutablePair<ProxyFactory, MethodCache>(pf, new MethodCache(list, proxyInterfaces));
+		} catch (Exception e) {
+			IntegratedCircuits.logger.fatal("Couldn't initialize proxy class for " + clazz);
+			throw new RuntimeException(e);
+		}
+	}
+
+	private int addInterface(Interface intf, Set<Class> proxyInterfaces) throws ClassNotFoundException {
+		if(Loader.isModLoaded(intf.modid())) {
+			Class intfClazz = Class.forName(intf.iface());
+			proxyInterfaces.add(intfClazz);
+			return 1;
+		}
+		return 0;
+	}
+	
 	private class MethodFilterImpl implements MethodFilter {
 		
-		public HashSet<Method> interfaceMethods = Sets.newHashSet();
+		public Set<Method> interfaceMethods = Sets.newHashSet();
 		
-		public MethodFilterImpl(List<Class> interfaces) {
+		public MethodFilterImpl(Set<Class> interfaces) {
 			for(Class clazz : interfaces) {
 				interfaceMethods.addAll(Arrays.asList(clazz.getMethods()));
 			}
@@ -138,32 +190,11 @@ public class GateRegistry implements IGateRegistry
 		}
 	}
 	
-	private class MethodHandlerImpl implements MethodHandler {
-		
-		private MethodCache cache;
-		
-		public MethodHandlerImpl(List<GateIOProvider> provider, List<Class> interfaces) {
-			cache = new MethodCache(provider, interfaces);
-		}
-		
-		@Override
-		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
-			return cache.invoke(thisMethod, self, args);
-		}
-	}
-	
-	private void addInterface(Interface intf, List<Class> proxyInterfaces) throws ClassNotFoundException {
-		if(Loader.isModLoaded(intf.modid())) {
-			Class intfClazz = Class.forName(intf.iface());
-			proxyInterfaces.add(intfClazz);
-		}
-	}
-	
-	private class MethodCache {
+	private class MethodCache implements MethodHandler {
 		
 		private HashMap<Method, GateIOProvider> map = Maps.newHashMap();
 		
-		public MethodCache(List<GateIOProvider> providers, List<Class> interfaces) {
+		public MethodCache(List<GateIOProvider> providers, Set<Class> interfaces) {
 			for(Class clazz : interfaces) {
 				GateIOProvider provider = null;
 				for(GateIOProvider p : providers) {
@@ -178,11 +209,15 @@ public class GateRegistry implements IGateRegistry
 				}
 			}
 		}
-		
-		public Object invoke(Method method, Object self, Object[] args) throws Exception {
-			GateIOProvider provider = map.get(method);
-			provider.socket = ((ISocketWrapper)self).getSocket();
-			return method.invoke(provider, args);
+
+		@Override
+		public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable
+		{
+			GateIOProvider provider = map.get(thisMethod);
+			if(self instanceof ISocketWrapper) {
+				provider.socket = ((ISocketWrapper)self).getSocket();
+			}
+			return thisMethod.invoke(provider, args);
 		}
 	}
 }

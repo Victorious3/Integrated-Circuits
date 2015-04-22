@@ -13,8 +13,9 @@ public class IntegratedCircuitsAPI
 {
 	private static IAPI instance;
 	
-	public static final Class<? extends ISocketWrapper> TILE = (Class<? extends ISocketWrapper>) findClass("moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket");
-	public static final Class<? extends ISocketWrapper> TILEFMP = (Class<? extends ISocketWrapper>) findClass("moe.nightfall.vic.integratedcircuits.tile.FMPartGate");
+	public static final Class<?> TILE = findClass("moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket");
+	public static final Class<?> TILE_FMP = findClass("moe.nightfall.vic.integratedcircuits.tile.FMPartGate");
+	public static final Class<?> BLOCK = findClass("moe.nightfall.vic.integratedcircuits.tile.BlockSocket");
 	
 	private static Class<?> findClass(String className) {
 		try {
@@ -48,5 +49,15 @@ public class IntegratedCircuitsAPI
 	public static IGateRegistry getGateRegistry()
 	{
 		return getInstance().getGateRegistry();
+	}
+	
+	public static int updateRedstoneInput(ISocket socket, int side) 
+	{
+		return getInstance().updateRedstoneInput(socket, side);
+	}
+	
+	public static byte[] updateBundledInput(ISocket socket, int side)
+	{
+		return getInstance().updateBundledInput(socket, side);
 	}
 }

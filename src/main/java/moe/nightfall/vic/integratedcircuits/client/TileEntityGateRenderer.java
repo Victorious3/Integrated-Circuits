@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
-import moe.nightfall.vic.integratedcircuits.gate.Socket;
+import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.block.Block;
@@ -51,7 +51,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 	@Override
 	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float par5) 
 	{
-		Socket socket = ((TileEntitySocket)te).getSocket();
+		ISocket socket = ((TileEntitySocket)te).getSocket();
 		if(te == null || (socket == null)) return;
 		
 		CCRenderState.reset();

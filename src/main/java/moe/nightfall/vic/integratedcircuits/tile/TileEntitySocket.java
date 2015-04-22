@@ -1,9 +1,9 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
-import moe.nightfall.vic.integratedcircuits.compat.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.item.ItemStack;
@@ -18,10 +18,8 @@ import codechicken.lib.vec.BlockCoord;
 
 public class TileEntitySocket extends TileEntity implements ISocketWrapper
 {
-	public Socket socket = new Socket(this);
+	public ISocket socket = new Socket(this);
 	
-	// TODO Re-implement
-	public BPDevice bpDevice;
 	public boolean isDestroyed;
 	
 	@Override
@@ -109,15 +107,13 @@ public class TileEntitySocket extends TileEntity implements ISocketWrapper
 	@Override
 	public byte[] updateBundledInput(int side)
 	{
-		// TODO implement
-		return new byte[16];
+		return IntegratedCircuitsAPI.updateBundledInput(getSocket(), side);
 	}
 	
 	@Override
 	public int updateRedstoneInput(int side)
 	{
-		// TODO implement
-		return 0;
+		return IntegratedCircuitsAPI.updateRedstoneInput(getSocket(), side);
 	}
 
 	@Override
@@ -125,7 +121,6 @@ public class TileEntitySocket extends TileEntity implements ISocketWrapper
 	{
 		worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, getBlockType(), delay);
 	}
-
 	
 	@Override
 	public int strongPowerLevel(int side) 
@@ -134,13 +129,7 @@ public class TileEntitySocket extends TileEntity implements ISocketWrapper
 	}
 
 	@Override
-	public void updateInput()
-	{
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public Socket getSocket()
+	public ISocket getSocket()
 	{
 		return socket;
 	}
@@ -149,5 +138,11 @@ public class TileEntitySocket extends TileEntity implements ISocketWrapper
 	public void sendDescription()
 	{
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+
+	@Override
+	public void updateInput()
+	{
+		socket.updateInput();
 	}
 }

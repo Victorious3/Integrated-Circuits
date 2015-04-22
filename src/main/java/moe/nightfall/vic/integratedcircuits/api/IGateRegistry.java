@@ -14,5 +14,9 @@ public interface IGateRegistry
 
 	public IGate createGateInstace(String name);
 	
-	public void registerGateIOProvider(GateIOProvider instance, Class<? extends ISocketWrapper> clazz);
+	public void registerGateIOProvider(GateIOProvider instance, Class<?>... classes);
+	
+	public <T> T createProxyInstance(Class<T> clazz);
+	
+	public <T> Class<T> createProxyClass(Class<T> clazz);
 }

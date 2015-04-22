@@ -13,4 +13,8 @@ public interface IAPI
 	public MCDataOutput getWriteStream(World world, BlockCoord pos, int side);
 	
 	public IGateRegistry getGateRegistry();
+	
+	public int updateRedstoneInput(ISocket socket, int side);
+	
+	public byte[] updateBundledInput(ISocket socket, int side);
 }

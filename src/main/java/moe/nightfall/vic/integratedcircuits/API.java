@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits;
 
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.api.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.IAPI;
 import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
@@ -45,5 +46,29 @@ public class API implements IAPI
 	public MCDataOutput getWriteStream(World world, BlockCoord pos, int side)
 	{
 		return IntegratedCircuits.proxy.addStream(world, pos, side);
+	}
+
+	@Override
+	public int updateRedstoneInput(ISocket socket, int side)
+	{
+		int input = 0;
+		List<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
+		for(GateIOProvider provider : providerList) {
+			input = provider.calculateRedstoneInput(side);
+			if(input != 0) return input;
+		}
+		return input;
+	}
+
+	@Override
+	public byte[] updateBundledInput(ISocket socket, int side)
+	{
+		byte[] input = null;
+		List<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
+		for(GateIOProvider provider : providerList) {
+			input = provider.calculateBundledInput(side);
+			if(input != null) return input;
+		}
+		return input == null ? new byte[16] : input;
 	}
 }

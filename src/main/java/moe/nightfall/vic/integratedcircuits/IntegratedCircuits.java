@@ -56,6 +56,8 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.peripheral.IPeripheralProvider;
+import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 
 @Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft")
 public class IntegratedCircuits
@@ -66,6 +68,7 @@ public class IntegratedCircuits
 	public static boolean isFMPLoaded = false;
 	public static boolean isRLLoaded = false;
 	public static boolean isMFRLoaded = false;
+	public static boolean isCCLoaded = false;
 	
 	public static Logger logger;
 	
@@ -125,6 +128,7 @@ public class IntegratedCircuits
 		logger.info("ForgeMultipart: "       + (isFMPLoaded = Loader.isModLoaded("ForgeMultipart")));
 		logger.info("RedLogic: "             + (isRLLoaded  = Loader.isModLoaded("RedLogic")));
 		logger.info("MineFactoryReloaded: "  + (isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded")));
+		logger.info("Computer Craft: "       + (isCCLoaded  = Loader.isModLoaded("ComputerCraft")));
 		
 		if(isFMPLoaded) logger.info("Forge Multi Part installation found! FMP Compatible gates will be added.");
 		
@@ -167,11 +171,9 @@ public class IntegratedCircuits
 			itemCoalCompound = new ItemBase("coalcompound");
 		}
 
-		blockGate = new BlockSocket();
 		blockPCBLayout = new BlockPCBLayout();
 		blockAssembler = new BlockAssembler();
 		
-		GameRegistry.registerBlock(blockGate, Constants.MOD_ID + ".gate");
 		GameRegistry.registerBlock(blockPCBLayout, Constants.MOD_ID + ".pcblayout");
 		GameRegistry.registerBlock(blockAssembler, Constants.MOD_ID + ".assembler");
 		
@@ -215,26 +217,30 @@ public class IntegratedCircuits
 			}
 		});
 		
-		//Computercraft
-		ComputerCraftAPI.registerBundledRedstoneProvider(blockGate);
-		ComputerCraftAPI.registerPeripheralProvider(blockGate);
-		
-		if(Loader.isModLoaded("NotEnoughItems") && !MiscUtils.isServer()) 
-			new NEIAddon().initialize();
-		
 		GateIO.initialize();
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
+		blockGate = API.getGateRegistry().createProxyInstance(BlockSocket.class);
+		GameRegistry.registerBlock(blockGate, Constants.MOD_ID + ".gate");
 		GameRegistry.registerTileEntity(API.getGateRegistry().createProxyClass(TileEntitySocket.class), Constants.MOD_ID + ".gate");
 		
 		if(isFMPLoaded) {
 			PartFactory.register(Constants.MOD_ID + ".socket_fmp", API.getGateRegistry().createProxyClass(FMPartGate.class));
 			PartFactory.initialize();
 		}
+		
+		if(isCCLoaded) {
+			ComputerCraftAPI.registerBundledRedstoneProvider((IBundledRedstoneProvider) blockGate);
+			ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) blockGate);
+		}
+		
 		proxy.initialize();
+		
+		if(Loader.isModLoaded("NotEnoughItems") && !MiscUtils.isServer()) 
+			new NEIAddon().initialize();
 		
 		FMLInterModComms.sendMessage("Waila", "register", "moe.nightfall.vic.integratedcircuits.compat.WailaAddon.registerAddon");
 	}
