@@ -37,6 +37,7 @@ import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -57,7 +58,9 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import dan200.computercraft.api.ComputerCraftAPI;
 
-@Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft")
+@Mod(modid = "integratedcircuits",
+		dependencies = "required-after:CodeChickenCore; after:ComputerCraft",
+		guiFactory = "moe.nightfall.vic.integratedcircuits.client.gui.IntegratedCircuitsGuiFactory")
 public class IntegratedCircuits
 {
 	public static boolean isPRLoaded = false;
@@ -66,7 +69,8 @@ public class IntegratedCircuits
 	public static boolean isFMPLoaded = false;
 	public static boolean isRLLoaded = false;
 	public static boolean isMFRLoaded = false;
-	
+
+	public static boolean developmentEnvironment;
 	public static Logger logger;
 	
 	public static ItemSocket itemSocket;
@@ -103,6 +107,8 @@ public class IntegratedCircuits
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception
 	{
+		developmentEnvironment = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+
 		//Initialize API
 		IAPI api = new API();
 		Field apiField = IntegratedCircuitsAPI.class.getDeclaredField("instance");

@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.compat;
 
 import moe.nightfall.vic.integratedcircuits.api.IGate;
-import moe.nightfall.vic.integratedcircuits.gate.GateIO;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.vec.BlockCoord;
@@ -28,7 +28,7 @@ public class BPRedstoneProvider implements IRedstoneProvider
 	@Override
 	public IBundledDevice getBundledDeviceAt(World world, int x, int y, int z, ForgeDirection side, ForgeDirection face)
 	{
-		IGate gate = GateIO.getGateAt(world, new BlockCoord(x, y, z), side.ordinal());
+		IGate gate = IntegratedCircuitsAPI.getSocketAt(world, new BlockCoord(x, y, z), side.ordinal()).getGate();
 		if(gate != null && gate.getProvider() instanceof IBundledDeviceWrapper) 
 			return ((IBundledDeviceWrapper)gate.getProvider()).getBundledDeviceOnSide(face);
 		return null;

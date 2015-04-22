@@ -5,9 +5,11 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IGate;
 import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.net.Packet7SegmentOpenGui;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
@@ -60,8 +62,8 @@ public class Gate7Segment extends Gate
 			
 	public static final int DOT = 1 << 7;
 	public static final int SIGN = 1 << 6;
-	public static final int MAX_DIGITS = 16; //TODO Mabye a config option?
-	
+	public static final int MAX_DIGITS = Config.sevenSegmentMaxDigits; //TODO Mabye a config option? ..Done?
+
 	public static final int MODE_SIMPLE = 0;
 	public static final int MODE_ANALOG = 1;
 	public static final int MODE_SHORT_SIGNED = 2;
@@ -184,7 +186,7 @@ public class Gate7Segment extends Gate
 	
 	public Gate7Segment getSegment(BlockCoord crd)
 	{
-		IGate gate = GateIO.getGateAt(provider.getWorld(), crd, provider.getSide());
+		IGate gate = IntegratedCircuitsAPI.getSocketAt(provider.getWorld(), crd, provider.getSide()).getGate();
 		if(gate instanceof Gate7Segment) return (Gate7Segment)gate;
 		return null;
 	}

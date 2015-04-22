@@ -221,4 +221,23 @@ public class MiscUtils
 		}
 		return list;
 	}
+
+	public static String translateOrNUll(String unlocalizedName){
+		String localizedName = StatCollector.translateToLocal(unlocalizedName);
+		if(localizedName.equals(unlocalizedName)){
+			localizedName = StatCollector.translateToFallback(unlocalizedName);
+			if(localizedName.equals(unlocalizedName))return null;
+		}
+		return localizedName;
+	}
+
+	public static String translateFormattedOrNUll(String unlocalizedName, Object... toInsert){
+		String localizedName = StatCollector.translateToLocalFormatted(unlocalizedName, toInsert);
+		if(localizedName.equals(unlocalizedName)){
+			localizedName = StatCollector.translateToFallback(unlocalizedName);
+			if(localizedName.equals(unlocalizedName))return null;
+		}
+		return localizedName;
+	}
+
 }
