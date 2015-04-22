@@ -9,6 +9,7 @@ import net.minecraftforge.common.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class IntegratedCircuitsGuiConfig extends GuiConfig
 {
@@ -36,5 +37,17 @@ public class IntegratedCircuitsGuiConfig extends GuiConfig
         configElements.add(partsCategoryElement);
 
         return configElements;
+    }
+
+    private static Pattern p = Pattern.compile("\r");
+
+    @Override
+    public void drawToolTip(List tooltip, int x, int y)
+    {
+        for(int i = 0; i < tooltip.size();i++) {
+            tooltip.set(i, p.matcher((String) tooltip.get(i)).replaceAll(""));
+        }
+            //tooltip.set(i, ((String)tooltip.get(i)).replace("\r", "")); }
+        super.drawToolTip(tooltip, x, y);
     }
 }
