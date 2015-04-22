@@ -5,8 +5,8 @@ import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import codechicken.lib.data.MCDataInput;

@@ -1,4 +1,6 @@
-package moe.nightfall.vic.integratedcircuits.api;
+package moe.nightfall.vic.integratedcircuits.api.gate;
+
+import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 
 public interface IGateRegistry
 {

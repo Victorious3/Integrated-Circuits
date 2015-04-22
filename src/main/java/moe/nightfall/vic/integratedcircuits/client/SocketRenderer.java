@@ -2,11 +2,11 @@ package moe.nightfall.vic.integratedcircuits.client;
 
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.api.IGate;
-import moe.nightfall.vic.integratedcircuits.api.IGateItem;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
-import moe.nightfall.vic.integratedcircuits.api.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.model.ModelBase;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraft.client.Minecraft;

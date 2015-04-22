@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.compat;
 
-import moe.nightfall.vic.integratedcircuits.api.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 

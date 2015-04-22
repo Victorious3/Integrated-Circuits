@@ -1,5 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.api;
 
+import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;

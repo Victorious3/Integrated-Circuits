@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.api.IGate;
-import moe.nightfall.vic.integratedcircuits.api.IGateItem;
-import moe.nightfall.vic.integratedcircuits.api.ISocket;
-import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.misc.InventoryUtils;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;

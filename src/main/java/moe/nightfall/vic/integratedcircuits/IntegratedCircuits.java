@@ -7,10 +7,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import moe.nightfall.vic.integratedcircuits.api.ISocket;
-import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
-import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
 import moe.nightfall.vic.integratedcircuits.compat.GateIO;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;

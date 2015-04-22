@@ -2,10 +2,10 @@ package moe.nightfall.vic.integratedcircuits;
 
 import java.util.List;
 
-import moe.nightfall.vic.integratedcircuits.api.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.IAPI;
-import moe.nightfall.vic.integratedcircuits.api.ISocket;
-import moe.nightfall.vic.integratedcircuits.api.ISocketProvider;
+import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;

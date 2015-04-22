@@ -2,9 +2,9 @@ package moe.nightfall.vic.integratedcircuits.net;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.api.IGate;
-import moe.nightfall.vic.integratedcircuits.api.ISocketBridge.ISocketBase;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketBridge.ISocketBase;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;

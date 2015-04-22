@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.net;
 
-import moe.nightfall.vic.integratedcircuits.api.ISocketBridge.ISocketBase;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketBridge.ISocketBase;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraft.entity.player.EntityPlayer;

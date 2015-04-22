@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.api;
+package moe.nightfall.vic.integratedcircuits.api.gate;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

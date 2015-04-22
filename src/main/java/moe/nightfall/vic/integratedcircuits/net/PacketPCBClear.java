@@ -2,7 +2,7 @@ package moe.nightfall.vic.integratedcircuits.net;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.api.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;

@@ -15,11 +15,11 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.Proxy;
 import javassist.util.proxy.ProxyFactory;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.api.GateIOProvider;
-import moe.nightfall.vic.integratedcircuits.api.IGate;
-import moe.nightfall.vic.integratedcircuits.api.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
-import moe.nightfall.vic.integratedcircuits.api.ISocketWrapper;
+import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;

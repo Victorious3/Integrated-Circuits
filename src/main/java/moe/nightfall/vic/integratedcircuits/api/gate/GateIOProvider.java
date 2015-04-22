@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.api;
+package moe.nightfall.vic.integratedcircuits.api.gate;
 
 public abstract class GateIOProvider
 {
