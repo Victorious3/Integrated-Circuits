@@ -112,9 +112,8 @@ gui.integratedcircuits.7segment.mode.binary.tooltip=Outputs a bundled signal%nby
 gui.integratedcircuits.7segment.mode.manual.tooltip=Allows to modify the individual%nsegments with a bundled signal.
 
 #config
-#please use \n as linebreak character.. it would show weird symbols in the ui otherwise
 config.integratedcircuits.category.parts=Circuit Parts
-config.integratedcircuits.category.parts.tooltip=Enables / Disables circuit parts \nIf you disable ANYTHING, ALL circuits with that part will BREAK! \nCircuits broken in this way will not be fixed when the part is re-enabled. \nThe only way to "fix" the circuits is to edit the blueprint in the CAD to put the part back, \nand then remake and replace the circuits.
+config.integratedcircuits.category.parts.tooltip=Enables / Disables circuit parts %nIf you disable ANYTHING, ALL circuits with that part will BREAK! %nCircuits broken in this way will not be fixed when the part is re-enabled. %nThe only way to "fix" the circuits is to edit the blueprint in the CAD to put the part back, %nand then remake and replace the circuits.
 config.integratedcircuits.general.showConfirmMessage=Show confirmation message
 config.integratedcircuits.general.showConfirmMessage.tooltip=Show the CAD's confirm prompt.
 config.integratedcircuits.general.showStartupMessage=Show startup message
@@ -126,7 +125,7 @@ config.integratedcircuits.general.circuitCacheSize.tooltip=The maximum number of
 config.integratedcircuits.general.enableTooltips=Enable tooltips
 config.integratedcircuits.general.enableTooltips.tooltip=Enable help tooltips. Recommended to be enabled unless you are familiar with the mod.
 config.integratedcircuits.general.enableTracker=Enable tracker
-config.integratedcircuits.general.enableTracker.tooltip=This setting will make the game visit this URL on startup: https://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat \nThe connection is established over bit.ly for statistics. The data collected is publicly visible on https://bitly.com/1GIaUA6+. Bit.ly will track \nyour country via your IP address, no other, or personal, information is gathered. I like statistics, and I would like you to keep this setting enabled, \nso that I get a better overview of how often my mod is used. Thanks.
+config.integratedcircuits.general.enableTracker.tooltip=This setting will make the game visit this URL on startup: https://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat %nThe connection is established over bit.ly for statistics. The data collected is publicly visible on https://bitly.com/1GIaUA6+. Bit.ly will track %nyour country via your IP address, no other, or personal, information is gathered. I like statistics, and I would like you to keep this setting enabled, %nso that I get a better overview of how often my mod is used. Thanks.
 config.integratedcircuits.general.sevenSegmentMaxDigits=Maximal digits seven segment display
 config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=The maximum number of digits a seven segment display can have
 config.integratedcircuits.parts.redirect=part.integratedcircuits.%s.name

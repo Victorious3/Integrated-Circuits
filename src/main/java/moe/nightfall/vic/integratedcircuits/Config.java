@@ -12,10 +12,10 @@ import net.minecraftforge.common.config.Property;
 
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 
-public class Config 
+public class Config
 {
 	private Config() {}
-	
+
 	public static Configuration config;
 
 	public static Property showConfirmMessage;
@@ -51,16 +51,16 @@ public class Config
 		config.setCategoryRequiresMcRestart("PARTS", true);
 	}
 
-	public static void postIninitialize() {
+	public static void postInitialize() {
 		loadlangKeys();
 		loadComments();
 		config.save();
 	}
-	
+
 	public static void save()
 	{
 		if(!showConfirmMessage.hasChanged()) return;
-			config.save();
+		config.save();
 	}
 
 	/** Reloads the config values upon change */
@@ -108,14 +108,14 @@ public class Config
 		for(String category: categories)
 		{
 			String categoryComment = MiscUtils.translateFormattedOrNUll("config.integratedcircuits.category." + category + ".tooltip");
-			if(categoryComment != null && !categoryComment.isEmpty()) config.addCustomCategoryComment(category, categoryComment.replace("\\n", "\n"));
+			if(categoryComment != null && !categoryComment.isEmpty()) config.addCustomCategoryComment(category, categoryComment.replace("\\n", "\n").replaceAll("\r", ""));
 
 			for(Property p : config.getCategory(category).values())
 			{
 				String langKey = p.getLanguageKey();
 				if(langKey.equals(p.getName()))langKey = "config.integratedcircuits." + category + "." + p.getName().toLowerCase();
 				String comment = MiscUtils.translateFormattedOrNUll(langKey + ".tooltip");
-				if(comment != null && !comment.isEmpty()) p.comment= comment.replace("\\n", "\n") + " [default: " + p.getDefault() + "]";
+				if(comment != null && !comment.isEmpty()) p.comment= comment.replace("\\n", "\n").replaceAll("\r", "") + " [default: " + p.getDefault() + "]";
 				else
 				{
 					p.comment = "[default: " + p.getDefault() + "]";
@@ -124,5 +124,4 @@ public class Config
 			}
 		}
 	}
-
 }
