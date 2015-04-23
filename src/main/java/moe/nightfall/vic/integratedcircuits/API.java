@@ -10,6 +10,7 @@ import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
 
 import com.google.common.collect.Lists;
 
@@ -51,10 +52,16 @@ public class API implements IAPI
 	@Override
 	public int updateRedstoneInput(ISocket socket, int side)
 	{
+		int r =  socket.getRotationAbs(side);
+		int face = socket.getSide();
+		int abs = Rotation.rotateSide(face, r);
+		BlockCoord pos = socket.getPos().offset(abs);
+		
 		int input = 0;
 		List<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
 		for(GateIOProvider provider : providerList) {
-			input = provider.calculateRedstoneInput(side);
+			provider.socket = socket;
+			input = provider.calculateRedstoneInput(side, pos, abs);
 			if(input != 0) return input;
 		}
 		return input;
@@ -63,12 +70,26 @@ public class API implements IAPI
 	@Override
 	public byte[] updateBundledInput(ISocket socket, int side)
 	{
-		byte[] input = null;
+		int r =  socket.getRotationAbs(side);
+		int face = socket.getSide();
+		int abs = Rotation.rotateSide(face, r);
+		BlockCoord pos = socket.getPos().offset(abs);
+		
+		byte[] input = updateBundledInputNative(socket, side, pos);
+		if(input != null) return input;
+		
 		List<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
 		for(GateIOProvider provider : providerList) {
-			input = provider.calculateBundledInput(side);
+			provider.socket = socket;
+			input = provider.calculateBundledInput(side, pos, abs);
 			if(input != null) return input;
 		}
 		return input == null ? new byte[16] : input;
+	}
+	
+	public byte[] updateBundledInputNative(ISocket socket, int side, BlockCoord pos) {
+		ISocket neighbour = getSocketAt(socket.getWorld(), pos, socket.getSide());
+		if(neighbour != null) return neighbour.getOutput()[(side + 2) % 4];
+		return null;
 	}
 }

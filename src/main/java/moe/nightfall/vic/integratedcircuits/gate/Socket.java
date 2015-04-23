@@ -1,7 +1,9 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
@@ -34,6 +36,7 @@ public class Socket implements ISocket
 	public static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
 		
 	protected final ISocketWrapper provider;
+	protected final Map<String, Object> extendedProperties;
 	protected IGate gate;
 	
 	//Used by the client, redstone IO
@@ -46,6 +49,7 @@ public class Socket implements ISocket
 	public Socket(ISocketWrapper provider) 
 	{
 		this.provider = provider;
+		this.extendedProperties = new HashMap<String, Object>();
 	}
 	
 	//Bridge methods
@@ -575,5 +579,15 @@ public class Socket implements ISocket
 	public ISocketWrapper getWrapper()
 	{
 		return provider;
+	}
+
+	@Override
+	public <T> T get(String key) {
+		return (T) extendedProperties.get(key);
+	}
+
+	@Override
+	public void put(String key, Object value) {
+		extendedProperties.put(key, value);
 	}
 }

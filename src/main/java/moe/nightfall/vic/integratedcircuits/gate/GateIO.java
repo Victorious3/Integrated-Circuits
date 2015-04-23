@@ -1,23 +1,18 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
+
 @Deprecated
 public final class GateIO
 {
 	private GateIO() {}
 	
-	private static final int[] vanillaSideMap = {1, 2, 5, 3, 4};
-	
-	public static int vanillaToSide(int vside)
-	{
-		return vanillaSideMap[vside + 1];
-	}
-	
+	// TODO For convenicence, have to move over the rest.
 	/*
 	public static byte[] calculateBundledInput(ISocket provider, int side)
 	{
 		// TODO rewrite
-		int r = provider.getGate().getRotationAbs(side);
-		int face = provider.getGate().getSide();
+		int r = provider.getRotationAbs(side);
+		int face = provider.getSide();
 		int abs = Rotation.rotateSide(face, r);
 		BlockCoord pos = provider.getPos().offset(abs);
 		
@@ -41,23 +36,6 @@ public final class GateIO
 
 		if(input == null) input = new byte[16];
 		return input;
-		return null;
-	}*/
-	
-	/** Used to update the input coming from other gates, in case no API for bundled cabling is present **/
-	/*private static byte[] calculateBundledInputNative(ISocket provider, int side, BlockCoord pos, int abs)
-	{
-		IGate neighbour = getGateAt(provider.getWorld(), pos, provider.getGate().getSide());
-		if(neighbour != null) return neighbour.output[(side + 2) % 4];
-		return null;
-	}
-	
-	@Method(modid = "bluepower")
-	private static byte[] calculateBundledInputBluePower(ISocket provider, int side, BlockCoord pos, int abs)
-	{
-		IRedstoneApi redstoneAPI = BPApi.getInstance().getRedstoneApi();
-		IBundledDevice device = redstoneAPI.getBundledDevice(provider.getWorld(), pos.x, pos.y, pos.z, ForgeDirection.getOrientation(provider.getGate().getSide()), ForgeDirection.UNKNOWN);
-		if(device != null) return device.getBundledOutput(ForgeDirection.getOrientation(abs ^ 1));
 		return null;
 	}
 	

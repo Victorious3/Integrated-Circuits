@@ -148,7 +148,7 @@ public class BlockSocket extends BlockContainer
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) 
 	{
-		side = GateIO.vanillaToSide(side);
+		side = moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO.vanillaToSide(side);
 		
 		TileEntitySocket te = (TileEntitySocket)world.getTileEntity(x, y, z);
 		ISocket socket = te.getSocket();

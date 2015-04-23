@@ -105,7 +105,7 @@ public class GateRegistry implements IGateRegistry
 	
 	public <T> T createProxyInstance(Class<T> clazz) {
 		try {
-			Pair<ProxyFactory, MethodCache> pair = createProxyFactory(clazz);
+			Pair<ProxyFactory, ProxyCache> pair = createProxyFactory(clazz);
 			ProxyFactory pf = pair.getLeft();
 			Proxy proxy = (Proxy) pf.create(new Class[0], new Object[0]);
 			proxy.setHandler(pair.getRight());
@@ -118,7 +118,7 @@ public class GateRegistry implements IGateRegistry
 	}
 	
 	public <T> Class<T> createProxyClass(Class<T> clazz) {
-		Pair<ProxyFactory, MethodCache> pair = createProxyFactory(clazz);
+		Pair<ProxyFactory, ProxyCache> pair = createProxyFactory(clazz);
 		ProxyFactory pf = pair.getLeft();
 		pf.setHandler(pair.getRight());
 		Class<T> clazz2 = pf.createClass();
@@ -126,8 +126,8 @@ public class GateRegistry implements IGateRegistry
 		return clazz2;
 	}
 	
-	private Pair<ProxyFactory, MethodCache> createProxyFactory(Class<?> clazz) {
-		try {
+	private Pair<ProxyFactory, ProxyCache> createProxyFactory(Class<?> clazz) {
+		try {	
 			IntegratedCircuits.logger.info("Creating proxy class for " + clazz);
 			List<GateIOProvider> list = ioProviderRegistry.getOrDefault(clazz, new LinkedList());
 			ProxyFactory pf = new ProxyFactory();
@@ -158,7 +158,7 @@ public class GateRegistry implements IGateRegistry
 			pf.setInterfaces(proxyInterfaces.toArray(new Class[proxyInterfaces.size()]));
 			pf.setFilter(new MethodFilterImpl(proxyInterfaces));
 
-			return new ImmutablePair<ProxyFactory, MethodCache>(pf, new MethodCache(list, proxyInterfaces));
+			return new ImmutablePair<ProxyFactory, ProxyCache>(pf, new ProxyCache(list, proxyInterfaces));
 		} catch (Exception e) {
 			IntegratedCircuits.logger.fatal("Couldn't initialize proxy class for " + clazz);
 			throw new RuntimeException(e);
@@ -190,11 +190,11 @@ public class GateRegistry implements IGateRegistry
 		}
 	}
 	
-	private class MethodCache implements MethodHandler {
+	private class ProxyCache implements MethodHandler {
 		
 		private HashMap<Method, GateIOProvider> map = Maps.newHashMap();
 		
-		public MethodCache(List<GateIOProvider> providers, Set<Class> interfaces) {
+		public ProxyCache(List<GateIOProvider> providers, Set<Class> interfaces) {
 			for(Class clazz : interfaces) {
 				GateIOProvider provider = null;
 				for(GateIOProvider p : providers) {

@@ -82,6 +82,15 @@ public interface ISocketBridge
 		public void resetOutput();
 
 		public EnumConnectionType getConnectionTypeAtSide(int side);
+		
+		/**
+		 * Use this to store additional data on this socket, meant for use with {@link GateIOProvider}.
+		 * @param key
+		 * @return T
+		 */
+		public <T> T get(String key);
+		
+		public void put(String key, Object o);
 
 		public void updateInputPre();
 
