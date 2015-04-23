@@ -6,27 +6,24 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import cpw.mods.fml.common.registry.GameRegistry;
 
-public class ItemBase extends Item
-{
+public class ItemBase extends Item {
 	private boolean hasIcon = true;
 
-	public ItemBase(String name)
-	{
+	public ItemBase(String name) {
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setUnlocalizedName(Constants.MOD_ID + "." + name);
 		setTextureName(Constants.MOD_ID + ":" + name);
 		GameRegistry.registerItem(this, Constants.MOD_ID + "_" + name, Constants.MOD_ID);
 	}
-	
-	public ItemBase setHasIcon(boolean hasIcon)
-	{
+
+	public ItemBase setHasIcon(boolean hasIcon) {
 		this.hasIcon = hasIcon;
 		return this;
 	}
 
 	@Override
-	public void registerIcons(IIconRegister ir) 
-	{
-		if(hasIcon) super.registerIcons(ir);
+	public void registerIcons(IIconRegister ir) {
+		if (hasIcon)
+			super.registerIcons(ir);
 	}
 }

@@ -7,10 +7,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-public class BlockCircuitStorage extends BlockContainer
-{
-	protected BlockCircuitStorage() 
-	{
+public class BlockCircuitStorage extends BlockContainer {
+	protected BlockCircuitStorage() {
 		super(Material.iron);
 		setBlockName(Constants.MOD_ID + ".circuitstorage");
 		setCreativeTab(IntegratedCircuits.creativeTab);
@@ -18,8 +16,7 @@ public class BlockCircuitStorage extends BlockContainer
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int meta) 
-	{
+	public TileEntity createNewTileEntity(World world, int meta) {
 		return null;
 	}
 }

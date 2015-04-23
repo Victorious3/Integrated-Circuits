@@ -16,68 +16,58 @@ import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
-public class TileEntitySocket extends TileEntity implements ISocketWrapper
-{
+public class TileEntitySocket extends TileEntity implements ISocketWrapper {
 	public ISocket socket = new Socket(this);
-	
+
 	public boolean isDestroyed;
-	
+
 	@Override
-	public void markRender() 
-	{
+	public void markRender() {
 		worldObj.markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 	}
 
 	@Override
-	public void updateEntity() 
-	{
+	public void updateEntity() {
 		socket.update();
 	}
-	
+
 	@Override
-	public void readFromNBT(NBTTagCompound compound) 
-	{
+	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
 		socket.readFromNBT(compound);
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound compound) 
-	{
+	public void writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
-		socket.writeToNBT(compound);	
+		socket.writeToNBT(compound);
 	}
 
 	@Override
-	public Packet getDescriptionPacket() 
-	{
+	public Packet getDescriptionPacket() {
 		NBTTagCompound comp = new NBTTagCompound();
 		socket.writeDesc(comp);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, blockMetadata, comp);
 	}
 
 	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) 
-	{
+	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
 		NBTTagCompound comp = pkt.func_148857_g();
 		socket.readDesc(comp);
 	}
 
 	@Override
-	public MCDataOutput getWriteStream(int disc) 
-	{
+	public MCDataOutput getWriteStream(int disc) {
 		return IntegratedCircuitsAPI.getWriteStream(getWorld(), getPos(), socket.getSide()).writeByte(disc);
 	}
 
 	@Override
-	public World getWorld() 
-	{
+	public World getWorld() {
 		return worldObj;
 	}
 
 	@Override
-	public void notifyBlocksAndChanges() 
-	{
+	public void notifyBlocksAndChanges() {
 		markDirty();
 		notifyPartChange();
 		BlockCoord pos = getPos().copy().offset(socket.getSide());
@@ -85,64 +75,54 @@ public class TileEntitySocket extends TileEntity implements ISocketWrapper
 	}
 
 	@Override
-	public void notifyPartChange() 
-	{
+	public void notifyPartChange() {
 		worldObj.notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
 	}
 
 	@Override
-	public BlockCoord getPos() 
-	{
+	public BlockCoord getPos() {
 		return new BlockCoord(xCoord, yCoord, zCoord);
 	}
 
 	@Override
-	public void destroy() 
-	{
+	public void destroy() {
 		MiscUtils.dropItem(worldObj, new ItemStack(IntegratedCircuits.itemSocket), xCoord, yCoord, zCoord);
 		isDestroyed = true;
 		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 	}
 
 	@Override
-	public byte[] updateBundledInput(int side)
-	{
+	public byte[] updateBundledInput(int side) {
 		return IntegratedCircuitsAPI.updateBundledInput(getSocket(), side);
 	}
-	
+
 	@Override
-	public int updateRedstoneInput(int side)
-	{
+	public int updateRedstoneInput(int side) {
 		return IntegratedCircuitsAPI.updateRedstoneInput(getSocket(), side);
 	}
 
 	@Override
-	public void scheduleTick(int delay) 
-	{
+	public void scheduleTick(int delay) {
 		worldObj.scheduleBlockUpdate(xCoord, yCoord, zCoord, getBlockType(), delay);
 	}
-	
+
 	@Override
-	public int strongPowerLevel(int side) 
-	{
+	public int strongPowerLevel(int side) {
 		return 0;
 	}
 
 	@Override
-	public ISocket getSocket()
-	{
+	public ISocket getSocket() {
 		return socket;
 	}
 
 	@Override
-	public void sendDescription()
-	{
+	public void sendDescription() {
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 
 	@Override
-	public void updateInput()
-	{
+	public void updateInput() {
 		socket.updateInput();
 	}
 }

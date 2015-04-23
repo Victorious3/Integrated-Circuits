@@ -11,121 +11,102 @@ import com.bluepowermod.api.wire.IConnectionCache;
 import com.bluepowermod.api.wire.redstone.IBundledDevice;
 import com.bluepowermod.api.wire.redstone.IRedstoneDevice;
 
-public class BPDevice implements IBundledDevice, IRedstoneDevice
-{
+public class BPDevice implements IBundledDevice, IRedstoneDevice {
 	private final ISocket socket;
-	
+
 	private final IConnectionCache<IBundledDevice> cacheBundled;
 	private final IConnectionCache<IRedstoneDevice> cacheSimple;
-	
-	public BPDevice(ISocket socket) 
-	{
+
+	public BPDevice(ISocket socket) {
 		this.socket = socket;
 		this.cacheBundled = BPApi.getInstance().getRedstoneApi().createBundledConnectionCache(this);
 		this.cacheSimple = BPApi.getInstance().getRedstoneApi().createRedstoneConnectionCache(this);
 	}
-	
+
 	@Override
-	public int getX()
-	{
+	public int getX() {
 		return socket.getPos().x;
 	}
 
 	@Override
-	public int getY()
-	{
+	public int getY() {
 		return socket.getPos().y;
 	}
 
 	@Override
-	public int getZ()
-	{
+	public int getZ() {
 		return socket.getPos().z;
 	}
-	
+
 	@Override
-	public World getWorld()
-	{
+	public World getWorld() {
 		return socket.getWorld();
 	}
 
 	@Override
-	public boolean canConnect(ForgeDirection side, IBundledDevice dev, ConnectionType type)
-	{
+	public boolean canConnect(ForgeDirection side, IBundledDevice dev, ConnectionType type) {
 		return socket.getConnectionTypeAtSide(socket.getSideRel(side.ordinal())).isBundled();
 	}
 
 	@Override
-	public IConnectionCache<? extends IBundledDevice> getBundledConnectionCache()
-	{
+	public IConnectionCache<? extends IBundledDevice> getBundledConnectionCache() {
 		return cacheBundled;
 	}
 
 	@Override
-	public byte[] getBundledOutput(ForgeDirection side)
-	{
+	public byte[] getBundledOutput(ForgeDirection side) {
 		return socket.getOutput()[(socket.getSideRel(side.ordinal()))];
 	}
 
 	@Override
-	public void setBundledPower(ForgeDirection side, byte[] power)
-	{
+	public void setBundledPower(ForgeDirection side, byte[] power) {
 		socket.updateInputPre();
 		socket.getInput()[socket.getSideRel(side.ordinal())] = power;
 	}
 
 	@Override
-	public byte[] getBundledPower(ForgeDirection side)
-	{
+	public byte[] getBundledPower(ForgeDirection side) {
 		return socket.getInput()[socket.getSideRel(side.ordinal())];
 	}
 
 	@Override
-	public void onBundledUpdate()
-	{
+	public void onBundledUpdate() {
 		socket.updateInputPost();
 	}
 
 	@Override
-	public MinecraftColor getBundledColor(ForgeDirection side)
-	{
+	public MinecraftColor getBundledColor(ForgeDirection side) {
 		return MinecraftColor.ANY;
 	}
 
 	@Override
-	public boolean isNormalFace(ForgeDirection side)
-	{
+	public boolean isNormalFace(ForgeDirection side) {
 		return true;
 	}
 
 	@Override
-	public boolean canConnect(ForgeDirection side, IRedstoneDevice dev, ConnectionType type)
-	{
+	public boolean canConnect(ForgeDirection side, IRedstoneDevice dev, ConnectionType type) {
 		return socket.getConnectionTypeAtSide(socket.getSideRel(side.ordinal())).isRedstone();
 	}
 
 	@Override
-	public IConnectionCache<? extends IRedstoneDevice> getRedstoneConnectionCache()
-	{
+	public IConnectionCache<? extends IRedstoneDevice> getRedstoneConnectionCache() {
 		return cacheSimple;
 	}
 
 	@Override
-	public byte getRedstonePower(ForgeDirection side)
-	{
-		return (byte)(socket.getRedstoneOutput(socket.getSideRel(side.ordinal())) != 0 ? -1 : 0);
+	public byte getRedstonePower(ForgeDirection side) {
+		return (byte) (socket.getRedstoneOutput(socket.getSideRel(side.ordinal())) != 0 ? -1 : 0);
 	}
 
 	@Override
-	public void setRedstonePower(ForgeDirection side, byte power)
-	{
+	public void setRedstonePower(ForgeDirection side, byte power) {
 		socket.updateInputPre();
 		socket.setInput(socket.getSideRel(side.ordinal()), 0, power);
 	}
 
 	@Override
-	public void onRedstoneUpdate()
-	{
+	public void onRedstoneUpdate() {
 		socket.updateInputPost();
 	}
 }

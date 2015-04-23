@@ -8,100 +8,104 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
 import codechicken.lib.data.MCDataInput;
 
-public abstract class Gate implements IGate
-{
+public abstract class Gate implements IGate {
 	protected ISocketBase provider;
-	
+
 	@Override
-	public ISocketBase getProvider()
-	{
+	public ISocketBase getProvider() {
 		return provider;
 	}
-	
+
 	@Override
-	public void setProvider(ISocketBase provider)
-	{
+	public void setProvider(ISocketBase provider) {
 		this.provider = provider;
 	}
-	
-	@Override
-	public void preparePlacement(EntityPlayer player, ItemStack stack) {}
-	
-	@Override
-	public void load(NBTTagCompound tag) {}
-	
-	@Override
-	public void save(NBTTagCompound tag) {}
 
 	@Override
-	public void readDesc(NBTTagCompound tag) {}
-	
-	@Override
-	public void writeDesc(NBTTagCompound tag) {}
+	public void preparePlacement(EntityPlayer player, ItemStack stack) {
+	}
 
 	@Override
-	public void read(byte discr, MCDataInput packet) {}
-	
+	public void load(NBTTagCompound tag) {
+	}
+
 	@Override
-	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
-	{
+	public void save(NBTTagCompound tag) {
+	}
+
+	@Override
+	public void readDesc(NBTTagCompound tag) {
+	}
+
+	@Override
+	public void writeDesc(NBTTagCompound tag) {
+	}
+
+	@Override
+	public void read(byte discr, MCDataInput packet) {
+	}
+
+	@Override
+	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
 		return false;
 	}
 
 	@Override
-	public void onActivatedWithScrewdriver(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {}
-	
-	@Override
-	public void onRotated() {}
+	public void onActivatedWithScrewdriver(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
+	}
 
 	@Override
-	public void onAdded() 
-	{
+	public void onRotated() {
+	}
+
+	@Override
+	public void onAdded() {
 		notifyChanges();
 	}
 
 	@Override
-	public void onRemoved()
-	{
+	public void onRemoved() {
 		provider.notifyBlocksAndChanges();
 	}
 
 	@Override
-	public void onMoved() 
-	{
+	public void onMoved() {
 		notifyChanges();
 	}
 
-	private void notifyChanges()
-	{
-		if(!provider.getWorld().isRemote) provider.updateInput();
+	private void notifyChanges() {
+		if (!provider.getWorld().isRemote)
+			provider.updateInput();
 		provider.notifyBlocksAndChanges();
 	}
 
 	@Override
-	public ItemStack pickItem(MovingObjectPosition hit) 
-	{
+	public ItemStack pickItem(MovingObjectPosition hit) {
 		return getItemStack();
 	}
-	
-	@Override
-	public void onNeighborChanged() {}
-	
-	@Override
-	public void update() {}
-	
-	@Override
-	public void scheduledTick() {}
-	
-	@Override
-	public void updateInputPre() {}
-	
-	@Override
-	public void updateInputPost() {}
 
 	@Override
-	public boolean hasComparatorInputAtSide(int side)
-	{
+	public void onNeighborChanged() {
+	}
+
+	@Override
+	public void update() {
+	}
+
+	@Override
+	public void scheduledTick() {
+	}
+
+	@Override
+	public void updateInputPre() {
+	}
+
+	@Override
+	public void updateInputPost() {
+	}
+
+	@Override
+	public boolean hasComparatorInputAtSide(int side) {
 		return false;
 	}
 }

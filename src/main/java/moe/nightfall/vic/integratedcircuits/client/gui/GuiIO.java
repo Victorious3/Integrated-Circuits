@@ -17,15 +17,14 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiIO extends GuiButton implements IHoverable
-{
+public class GuiIO extends GuiButton implements IHoverable {
 	public int side;
 	public int color;
 	private GuiPCBLayout parent;
 	private TileEntityPCBLayout te;
 	private boolean isActive;
-	public GuiIO(int id, int x, int y, int color, int side, GuiPCBLayout parent, TileEntityPCBLayout te) 
-	{
+
+	public GuiIO(int id, int x, int y, int color, int side, GuiPCBLayout parent, TileEntityPCBLayout te) {
 		super(id, x, y, 9, 9, "");
 		this.color = color;
 		this.side = side;
@@ -34,53 +33,55 @@ public class GuiIO extends GuiButton implements IHoverable
 	}
 
 	@Override
-	public void drawButton(Minecraft mc, int x, int y) 
-	{
+	public void drawButton(Minecraft mc, int x, int y) {
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
-		this.field_146123_n = x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width && y < this.yPosition + this.height;
+		this.field_146123_n = x >= this.xPosition && y >= this.yPosition && x < this.xPosition + this.width
+				&& y < this.yPosition + this.height;
 		this.field_146123_n = !parent.blockMouseInput && field_146123_n;
-		if(getHoverState(field_146123_n) == 2) parent.setCurrentItem(this);
-		
+		if (getHoverState(field_146123_n) == 2)
+			parent.setCurrentItem(this);
+
 		GL11.glPushMatrix();
 		GL11.glTranslatef(this.xPosition, this.yPosition, 0);
 		GL11.glTranslatef(4F, 4F, 0F);
 		GL11.glRotatef(side * 90, 0F, 0F, 1F);
 		GL11.glTranslatef(-4F, -4F, -0F);
-		
+
 		ForgeDirection dir = MiscUtils.getDirection(side);
 		isActive = te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.SIMPLE || color == 0;
 		boolean isPowered = isActive && te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
-		
-		if(isActive)
-		{
-			if(isPowered) GL11.glColor3f(0F, 1F, 0F);
-			else GL11.glColor3f(0F, 0.4F, 0F);
+
+		if (isActive) {
+			if (isPowered)
+				GL11.glColor3f(0F, 1F, 0F);
+			else
+				GL11.glColor3f(0F, 0.4F, 0F);
 			drawTexturedModalRect(0, 3, 5 * 8, 31 * 8, 8, 8);
 		}
 
 		GL11.glColor3f(0F, 0F, 0F);
-		if(isActive) 
-		{
+		if (isActive) {
 			int c2 = 0;
-			if(te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
+			if (te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
 				c2 = (color * 17) << 20;
-			else c2 = MapColor.getMapColorForBlockColored(color).colorValue;
+			else
+				c2 = MapColor.getMapColorForBlockColored(color).colorValue;
 			RenderUtils.applyColorIRGB(c2);
 		}
 		drawTexturedModalRect(0, 0, 4 * 8, (getHoverState(field_146123_n) == 2 || isPowered ? 30 : 31) * 8, 8, 8);
-		
-		if(isPowered) GL11.glColor3f(0F, 1F, 0F);
-		else GL11.glColor3f(0F, 0.4F, 0F);
+
+		if (isPowered)
+			GL11.glColor3f(0F, 1F, 0F);
+		else
+			GL11.glColor3f(0F, 0.4F, 0F);
 		drawTexturedModalRect(0, 0, 5 * 8, 30 * 8, 8, 8);
 		GL11.glPopMatrix();
 	}
 
 	@Override
-	public boolean mousePressed(Minecraft mc, int par1, int par2) 
-	{
+	public boolean mousePressed(Minecraft mc, int par1, int par2) {
 		boolean b = super.mousePressed(mc, par1, par2) && !parent.blockMouseInput;
-		if(b)
-		{
+		if (b) {
 			ForgeDirection dir = MiscUtils.getDirection(side);
 			te.setInputFromSide(dir, color, !te.getInputFromSide(dir, color));
 		}
@@ -88,17 +89,20 @@ public class GuiIO extends GuiButton implements IHoverable
 	}
 
 	@Override
-	public List<String> getHoverInformation() 
-	{
+	public List<String> getHoverInformation() {
 		ArrayList<String> text = new ArrayList<String>();
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		if(te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
-			text.add("S: "  + color);
-		else text.add("F: 0x" + Integer.toHexString(color));
-		if(isActive)
-		{
-			text.add("I: " + I18n.format("gui.integratedcircuits.cad.mode." + (te.getInputFromSide(dir, color) ? "high" : "low")));
-			text.add("O: " + I18n.format("gui.integratedcircuits.cad.mode." + (te.getOutputToSide(dir, color) ? "high" : "low")));
+		if (te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
+			text.add("S: " + color);
+		else
+			text.add("F: 0x" + Integer.toHexString(color));
+		if (isActive) {
+			text.add("I: "
+					+ I18n.format("gui.integratedcircuits.cad.mode."
+							+ (te.getInputFromSide(dir, color) ? "high" : "low")));
+			text.add("O: "
+					+ I18n.format("gui.integratedcircuits.cad.mode."
+							+ (te.getOutputToSide(dir, color) ? "high" : "low")));
 		}
 		return text;
 	}

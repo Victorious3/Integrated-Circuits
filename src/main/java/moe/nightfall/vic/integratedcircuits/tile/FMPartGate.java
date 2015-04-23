@@ -38,150 +38,126 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper
-{
+public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper {
 	private ISocket socket = new Socket(this);
-	
-	//TODO Re-implement
+
+	// TODO Re-implement
 	private BPDevice bpDevice;
-	
+
 	@Override
-	public String getType() 
-	{
+	public String getType() {
 		return Constants.MOD_ID + ".socket_fmp";
 	}
-	
+
 	@Override
-	public void load(NBTTagCompound tag)
-	{
+	public void load(NBTTagCompound tag) {
 		socket.readFromNBT(tag);
 	}
-	
+
 	@Override
-	public void save(NBTTagCompound tag)
-	{
+	public void save(NBTTagCompound tag) {
 		socket.writeToNBT(tag);
 	}
 
 	@Override
-	public void readDesc(MCDataInput packet)
-	{
+	public void readDesc(MCDataInput packet) {
 		socket.readDesc(packet.readNBTTagCompound());
 	}
-	
+
 	@Override
-	public void writeDesc(MCDataOutput packet)
-	{
+	public void writeDesc(MCDataOutput packet) {
 		NBTTagCompound compound = new NBTTagCompound();
 		socket.writeDesc(compound);
 		packet.writeNBTTagCompound(compound);
 	}
 
 	@Override
-	public void read(MCDataInput packet) 
-	{
+	public void read(MCDataInput packet) {
 		socket.read(packet);
 	}
-	
+
 	@Override
-	public MCDataOutput getWriteStream(int disc)
-	{
+	public MCDataOutput getWriteStream(int disc) {
 		return getWriteStream().writeByte(disc);
 	}
 
 	@Override
-	public Cuboid6 getBounds()
-	{
+	public Cuboid6 getBounds() {
 		return Socket.box.copy().apply(Socket.getRotationTransformation(socket));
 	}
-	
+
 	@Override
-	public Iterable<Cuboid6> getOcclusionBoxes() 
-	{
+	public Iterable<Cuboid6> getOcclusionBoxes() {
 		return Arrays.asList(getBounds());
 	}
-	
+
 	@Override
-	public boolean occlusionTest(TMultiPart npart)
-	{
+	public boolean occlusionTest(TMultiPart npart) {
 		return NormalOcclusionTest.apply(this, npart);
 	}
-	
+
 	@Override
-	public int getSlotMask() 
-	{
+	public int getSlotMask() {
 		return 1 << socket.getSide();
 	}
 
 	@Override
-	public int redstoneConductionMap() 
-	{
+	public int redstoneConductionMap() {
 		return 0;
 	}
-	
+
 	@Override
-	public void update() 
-	{
+	public void update() {
 		socket.update();
 	}
 
 	@Override
-	public void scheduledTick() 
-	{
+	public void scheduledTick() {
 		socket.scheduledTick();
 	}
 
 	@Override
-	public boolean solid(int arg0) 
-	{
+	public boolean solid(int arg0) {
 		return false;
 	}
-	
+
 	@Override
-	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) 
-	{
+	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack item) {
 		return socket.activate(player, hit, item);
 	}
-	
+
 	@Override
-	public void onAdded() 
-	{
+	public void onAdded() {
 		socket.onAdded();
 	}
 
 	@Override
-	public void onRemoved()
-	{
+	public void onRemoved() {
 		socket.onRemoved();
 	}
 
 	@Override
-	public void onMoved() 
-	{
+	public void onMoved() {
 		socket.onMoved();
 	}
-	
+
 	@Override
-	public Iterable<ItemStack> getDrops() 
-	{
+	public Iterable<ItemStack> getDrops() {
 		List<ItemStack> list = Lists.newArrayList();
 		socket.addDrops(list);
 		list.add(new ItemStack(IntegratedCircuits.itemSocketFMP));
 		return list;
 	}
-	
+
 	@Override
-	public ItemStack pickItem(MovingObjectPosition hit) 
-	{
+	public ItemStack pickItem(MovingObjectPosition hit) {
 		return socket.pickItem(hit);
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
-	public boolean renderStatic(Vector3 pos, int pass) 
-	{
-		if(pass == 0) 
-		{
+	public boolean renderStatic(Vector3 pos, int pass) {
+		if (pass == 0) {
 			CCRenderState.setBrightness(getWorld(), x(), y(), z());
 			ClientProxy.socketRendererFMP.prepare(socket);
 			ClientProxy.socketRendererFMP.renderStatic(new Translation(pos), socket.getOrientation());
@@ -189,125 +165,110 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 		}
 		return false;
 	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderDynamic(Vector3 pos, float frame, int pass) 
-	{
-		if(pass == 0) 
-		{
+	public void renderDynamic(Vector3 pos, float frame, int pass) {
+		if (pass == 0) {
 			TextureUtils.bindAtlas(0);
-    		ClientProxy.socketRendererFMP.prepareDynamic(socket, frame);
-    		ClientProxy.socketRendererFMP.renderDynamic(new Translation(pos));
+			ClientProxy.socketRendererFMP.prepareDynamic(socket, frame);
+			ClientProxy.socketRendererFMP.renderDynamic(new Translation(pos));
 		}
 	}
-	
+
 	@Override
-	public void onNeighborChanged() 
-	{
+	public void onNeighborChanged() {
 		socket.onNeighborChanged();
 	}
 
 	@Override
-	public void onPartChanged(TMultiPart part) 
-	{
+	public void onPartChanged(TMultiPart part) {
 		socket.onNeighborChanged();
 	}
-	
+
 	@Override
-	public final boolean canConnectRedstone(int arg0) 
-	{
-		if((arg0 & 6) == (socket.getSide() & 6)) return false;
+	public final boolean canConnectRedstone(int arg0) {
+		if ((arg0 & 6) == (socket.getSide() & 6))
+			return false;
 		return socket.getConnectionTypeAtSide(socket.getSideRel(arg0)).isRedstone();
 	}
-	
+
 	@Override
-	public int strongPowerLevel(int arg0) 
-	{
-		if((arg0 & 6) == (socket.getSide() & 6)) return 0;
+	public int strongPowerLevel(int arg0) {
+		if ((arg0 & 6) == (socket.getSide() & 6))
+			return 0;
 		int rot = socket.getSideRel(arg0);
 		EnumConnectionType type = socket.getConnectionTypeAtSide(rot);
-		if(type.isRedstone()) return 0;
+		if (type.isRedstone())
+			return 0;
 		return socket.getRedstoneOutput(rot);
 	}
 
 	@Override
-	public int weakPowerLevel(int arg0) 
-	{
+	public int weakPowerLevel(int arg0) {
 		return strongPowerLevel(arg0);
 	}
 
 	@Override
-	public int getFace() 
-	{
+	public int getFace() {
 		return socket.getSide();
 	}
 
 	@Override
-	public void markRender() 
-	{
-		if(tile() != null) tile().markRender();
+	public void markRender() {
+		if (tile() != null)
+			tile().markRender();
 	}
 
 	@Override
-	public World getWorld() 
-	{
+	public World getWorld() {
 		return world();
 	}
-	
+
 	@Override
-	public void notifyPartChange() 
-	{
+	public void notifyPartChange() {
 		tile().notifyPartChange(this);
 	}
 
 	@Override
-	public void notifyBlocksAndChanges() 
-	{
+	public void notifyBlocksAndChanges() {
 		tile().markDirty();
 		notifyPartChange();
 		tile().notifyNeighborChange(socket.getSide());
 	}
 
 	@Override
-	public BlockCoord getPos() 
-	{
+	public BlockCoord getPos() {
 		return new BlockCoord(x(), y(), z());
 	}
 
 	@Override
-	public void destroy() 
-	{
+	public void destroy() {
 		tile().remPart(this);
 	}
-	
+
 	@Override
-	public byte[] updateBundledInput(int side)
-	{
+	public byte[] updateBundledInput(int side) {
 		return IntegratedCircuitsAPI.updateBundledInput(getSocket(), side);
 	}
-	
+
 	@Override
-	public int updateRedstoneInput(int side)
-	{
+	public int updateRedstoneInput(int side) {
 		return IntegratedCircuitsAPI.updateRedstoneInput(getSocket(), side);
 	}
 
 	@Override
-	public void sendDescription()
-	{
+	public void sendDescription() {
 		MultipartHelper.sendDescPacket(getWorld(), getTile());
 	}
 
 	@Override
-	public ISocket getSocket()
-	{
+	public ISocket getSocket() {
 		return socket;
 	}
 
 	@Override
-	public void updateInput()
-	{
+	public void updateInput() {
 		socket.updateInput();
 	}
 }

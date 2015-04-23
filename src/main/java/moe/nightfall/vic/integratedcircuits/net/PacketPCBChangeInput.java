@@ -11,25 +11,23 @@ import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
-{
+public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput> {
 	private boolean input;
 	private int[] io;
 	private int con;
-	
-	public PacketPCBChangeInput() {}
-	
-	public PacketPCBChangeInput(boolean input, int[] io, int con, int xCoord, int yCoord, int zCoord)
-	{
+
+	public PacketPCBChangeInput() {
+	}
+
+	public PacketPCBChangeInput(boolean input, int[] io, int con, int xCoord, int yCoord, int zCoord) {
 		super(xCoord, yCoord, zCoord);
 		this.io = io;
 		this.input = input;
 		this.con = con;
 	}
-	
+
 	@Override
-	public void read(PacketBuffer buffer) throws IOException 
-	{
+	public void read(PacketBuffer buffer) throws IOException {
 		super.read(buffer);
 		input = buffer.readBoolean();
 		con = buffer.readInt();
@@ -41,8 +39,7 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 	}
 
 	@Override
-	public void write(PacketBuffer buffer) throws IOException 
-	{
+	public void write(PacketBuffer buffer) throws IOException {
 		super.write(buffer);
 		buffer.writeBoolean(input);
 		buffer.writeInt(con);
@@ -53,21 +50,24 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 	}
 
 	@Override
-	public void process(EntityPlayer player, Side side) 
-	{
-		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
-		if(te == null) return;
-		if(input) te.in = io;
-		else te.out = io;
-		if(te.getCircuitData().supportsBundled()) te.getCircuitData().getProperties().setCon(con);
-		else  te.getCircuitData().getProperties().setCon(0);
-		if(input && side == Side.SERVER)
-		{
+	public void process(EntityPlayer player, Side side) {
+		TileEntityPCBLayout te = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		if (te == null)
+			return;
+		if (input)
+			te.in = io;
+		else
+			te.out = io;
+		if (te.getCircuitData().supportsBundled())
+			te.getCircuitData().getProperties().setCon(con);
+		else
+			te.getCircuitData().getProperties().setCon(0);
+		if (input && side == Side.SERVER) {
 			te.getCircuitData().updateInput();
-			CommonProxy.networkWrapper.sendToAllAround(this, 
-				new TargetPoint(te.getWorldObj().getWorldInfo().getVanillaDimension(), xCoord, yCoord, zCoord, 8));
+			CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().getWorldInfo()
+				.getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 		}
-		if(side == Side.CLIENT && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
-			((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshIO();
+		if (side == Side.CLIENT && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
+			((GuiPCBLayout) Minecraft.getMinecraft().currentScreen).refreshIO();
 	}
 }

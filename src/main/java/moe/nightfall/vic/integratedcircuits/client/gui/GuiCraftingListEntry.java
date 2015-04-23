@@ -18,66 +18,65 @@ import org.lwjgl.input.Mouse;
 
 import cpw.mods.fml.client.config.GuiUtils;
 
-public class GuiCraftingListEntry implements IGuiListEntry, IHoverable
-{
+public class GuiCraftingListEntry implements IGuiListEntry, IHoverable {
 	private static final ResourceLocation buttonTextures = new ResourceLocation("textures/gui/widgets.png");
 	private ItemAmount amount;
 	private ItemStack stack;
 	private GuiAssembler parent;
-	
-	public GuiCraftingListEntry(ItemAmount amount, GuiAssembler parent)
-	{
+
+	public GuiCraftingListEntry(ItemAmount amount, GuiAssembler parent) {
 		this.amount = amount;
 		this.parent = parent;
 		this.stack = new ItemStack(amount.item);
 	}
-	
+
 	@Override
-	public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, Tessellator tes, int mouseX, int mouseY, boolean isSelected) 
-	{
+	public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, Tessellator tes, int mouseX,
+			int mouseY, boolean isSelected) {
 		FontRenderer fr = parent.mc.fontRenderer;
-		if(mouseX >= x && mouseY >= y && mouseX <= x + listWidth && mouseY <= y + slotHeight && !parent.te.laserHelper.isRunning && !Mouse.isButtonDown(0))
+		if (mouseX >= x && mouseY >= y && mouseX <= x + listWidth && mouseY <= y + slotHeight
+				&& !parent.te.laserHelper.isRunning && !Mouse.isButtonDown(0))
 			parent.setCurrentItem(this);
-		
-		GuiUtils.drawContinuousTexturedBox(buttonTextures, x + 1, y, 0, 46, listWidth - 2, slotHeight, 200, 20, 2, 3, 2, 2, 0);
-		
-		int needed = (int)Math.ceil(amount.amount) * parent.te.request;
+
+		GuiUtils.drawContinuousTexturedBox(buttonTextures, x + 1, y, 0, 46, listWidth - 2, slotHeight, 200, 20, 2, 3,
+				2, 2, 0);
+
+		int needed = (int) Math.ceil(amount.amount) * parent.te.request;
 		int current = parent.container.getAmountOf(amount.item);
 		boolean supplied = current >= needed;
-		
+
 		RenderHelper.enableStandardItemLighting();
-		RenderItem.getInstance().renderItemIntoGUI(fr, parent.mc.renderEngine, stack, x + 2, y + slotHeight / 2 - 8, true);
+		RenderItem.getInstance().renderItemIntoGUI(fr, parent.mc.renderEngine, stack, x + 2, y + slotHeight / 2 - 8,
+				true);
 		RenderHelper.disableStandardItemLighting();
-		
+
 		String s = current + "/" + needed;
-		String s2 = stack.getDisplayName();	
+		String s2 = stack.getDisplayName();
 		s2 = RenderUtils.cutStringToSize(fr, s2, listWidth - 45);
-		
+
 		fr.setUnicodeFlag(true);
 		fr.drawString(s, x + listWidth - 2 - fr.getStringWidth(s), y + slotHeight - fr.FONT_HEIGHT, 0xFFFFFF);
 		fr.setUnicodeFlag(false);
-		
+
 		fr.drawStringWithShadow(s2, x + 21, y + slotHeight / 2 - fr.FONT_HEIGHT / 2, 0xFFFFFF);
 		int c1 = 0x00FF00;
 		int c2 = 0xFF0000;
-		RenderUtils.drawStringWithBorder(fr, supplied ? "\u2714" : "x", x + 4, y + slotHeight / 2, supplied ? c1 : c2, 0);
+		RenderUtils.drawStringWithBorder(fr, supplied ? "\u2714" : "x", x + 4, y + slotHeight / 2, supplied ? c1 : c2,
+				0);
 	}
 
 	@Override
-	public boolean mousePressed(int id, int x, int y, int mouseEvent, int relX, int relY) 
-	{
+	public boolean mousePressed(int id, int x, int y, int mouseEvent, int relX, int relY) {
 		return false;
 	}
 
 	@Override
-	public void mouseReleased(int id, int x, int y, int mouseEvent, int relX, int relY) 
-	{
-		
+	public void mouseReleased(int id, int x, int y, int mouseEvent, int relX, int relY) {
+
 	}
 
 	@Override
-	public List<String> getHoverInformation() 
-	{
+	public List<String> getHoverInformation() {
 		return Arrays.asList(stack.getDisplayName());
-	}	
+	}
 }

@@ -17,61 +17,68 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public abstract class PartRenderer<T> implements IPartRenderer<T>
-{
+public abstract class PartRenderer<T> implements IPartRenderer<T> {
 	protected List<IComponentModel> models = Lists.newLinkedList();
-	
-	@Override
-	public void prepare(T part) {}
 
 	@Override
-	public void prepareInv(ItemStack stack) {}
-
-	@Override
-	public void prepareDynamic(T part, float partialTicks) {}
-
-	@Override
-	public void renderStatic(Transformation t, int orient) 
-	{
-		for(IComponentModel m : models) m.renderModel(t, orient);
+	public void prepare(T part) {
 	}
 
 	@Override
-	public void renderDynamic(Transformation t) {}
+	public void prepareInv(ItemStack stack) {
+	}
 
 	@Override
-	public List<IComponentModel> getModels()
-	{
+	public void prepareDynamic(T part, float partialTicks) {
+	}
+
+	@Override
+	public void renderStatic(Transformation t, int orient) {
+		for (IComponentModel m : models)
+			m.renderModel(t, orient);
+	}
+
+	@Override
+	public void renderDynamic(Transformation t) {
+	}
+
+	@Override
+	public List<IComponentModel> getModels() {
 		return models;
 	}
-	
+
 	@Override
-	public boolean handleRenderType(ItemStack item, ItemRenderType type)
-	{
+	public boolean handleRenderType(ItemStack item, ItemRenderType type) {
 		return true;
 	}
 
 	@Override
-	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper)
-	{
+	public boolean shouldUseRenderHelper(ItemRenderType type, ItemStack item, ItemRendererHelper helper) {
 		return true;
 	}
 
 	@Override
-	public void renderItem(ItemRenderType type, ItemStack item, Object... data)
-	{
+	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
 		prepareInv(item);
 		switch (type) {
-    		case ENTITY : renderPart(item, -0.3F, 0F, -0.3F, 0.6F); break;
-    		case EQUIPPED : renderPart(item, 0.0F, 0.15F, 0.0F, 1.0F); break;
-    		case EQUIPPED_FIRST_PERSON : renderPart(item, 1.0F, -0.2F, -0.4f, 2.0F); break;
-    		case INVENTORY : renderPart(item, 0.0F, 0.2F, 0.0F, 1.0F); break;
-    		default: break;
+			case ENTITY:
+				renderPart(item, -0.3F, 0F, -0.3F, 0.6F);
+				break;
+			case EQUIPPED:
+				renderPart(item, 0.0F, 0.15F, 0.0F, 1.0F);
+				break;
+			case EQUIPPED_FIRST_PERSON:
+				renderPart(item, 1.0F, -0.2F, -0.4f, 2.0F);
+				break;
+			case INVENTORY:
+				renderPart(item, 0.0F, 0.2F, 0.0F, 1.0F);
+				break;
+			default:
+				break;
 		}
 	}
-	
-	protected void renderPart(ItemStack stack, float x, float y, float z, float scale)
-	{
+
+	protected void renderPart(ItemStack stack, float x, float y, float z, float scale) {
 		TextureUtils.bindAtlas(0);
 		CCRenderState.reset();
 		CCRenderState.setDynamic();

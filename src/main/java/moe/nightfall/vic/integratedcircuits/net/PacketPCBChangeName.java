@@ -13,23 +13,21 @@ import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
-{
+public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName> {
 	private String name;
 	private UUID uuid;
-	
-	public PacketPCBChangeName(){}
-	
-	public PacketPCBChangeName(EntityPlayer sender, String name, int xCoord, int yCoord, int zCoord)
-	{
+
+	public PacketPCBChangeName() {
+	}
+
+	public PacketPCBChangeName(EntityPlayer sender, String name, int xCoord, int yCoord, int zCoord) {
 		super(xCoord, yCoord, zCoord);
 		this.name = name;
 		uuid = sender.getPersistentID();
 	}
-	
+
 	@Override
-	public void read(PacketBuffer buffer) throws IOException 
-	{
+	public void read(PacketBuffer buffer) throws IOException {
 		super.read(buffer);
 		this.name = buffer.readStringFromBuffer(7);
 		long l1 = buffer.readLong();
@@ -38,8 +36,7 @@ public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
 	}
 
 	@Override
-	public void write(PacketBuffer buffer) throws IOException 
-	{
+	public void write(PacketBuffer buffer) throws IOException {
 		super.write(buffer);
 		buffer.writeStringToBuffer(this.name);
 		buffer.writeLong(uuid.getMostSignificantBits());
@@ -47,19 +44,16 @@ public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName>
 	}
 
 	@Override
-	public void process(EntityPlayer player, Side side) 
-	{
-		TileEntityPCBLayout te = (TileEntityPCBLayout)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
-		if(te != null)
-		{
+	public void process(EntityPlayer player, Side side) {
+		TileEntityPCBLayout te = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		if (te != null) {
 			te.getCircuitData().getProperties().setName(this.name);
-			if(side == Side.SERVER)
-			{
-				CommonProxy.networkWrapper.sendToAllAround(this, 
-					new TargetPoint(te.getWorldObj().provider.dimensionId, xCoord, yCoord, zCoord, 8));
-			}
-			else if(Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout && !MiscUtils.thePlayer().getPersistentID().equals(uuid))
-				((GuiPCBLayout)Minecraft.getMinecraft().currentScreen).refreshUI();	
+			if (side == Side.SERVER) {
+				CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().provider.dimensionId,
+						xCoord, yCoord, zCoord, 8));
+			} else if (Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout
+					&& !MiscUtils.thePlayer().getPersistentID().equals(uuid))
+				((GuiPCBLayout) Minecraft.getMinecraft().currentScreen).refreshUI();
 		}
 	}
 }

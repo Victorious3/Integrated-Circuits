@@ -15,25 +15,25 @@ import cpw.mods.fml.common.Optional.Method;
 
 @Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 public class GPBluePower extends GateIOProvider implements IBundledDeviceWrapper {
-	
+
 	@Override
 	@Method(modid = "bluepower")
 	public byte[] calculateBundledInput(int side, BlockCoord offset, int abs) {
 		IRedstoneApi redstoneAPI = BPApi.getInstance().getRedstoneApi();
-		IBundledDevice device = redstoneAPI.getBundledDevice(
-			socket.getWorld(), offset.x, offset.y, offset.z, ForgeDirection.getOrientation(socket.getSide()), ForgeDirection.UNKNOWN);
-		
-		if(device != null) return device.getBundledOutput(ForgeDirection.getOrientation(abs ^ 1));
-		
+		IBundledDevice device = redstoneAPI.getBundledDevice(socket.getWorld(), offset.x, offset.y, offset.z,
+				ForgeDirection.getOrientation(socket.getSide()), ForgeDirection.UNKNOWN);
+
+		if (device != null)
+			return device.getBundledOutput(ForgeDirection.getOrientation(abs ^ 1));
+
 		return null;
 	}
 
 	@Override
 	@Method(modid = "bluepower")
-	public IBundledDevice getBundledDeviceOnSide(ForgeDirection side)
-	{
+	public IBundledDevice getBundledDeviceOnSide(ForgeDirection side) {
 		IBundledDevice device = socket.get("bpDevice");
-		if(device == null) {
+		if (device == null) {
 			device = new BPDevice(socket);
 			socket.put("bpDevice", device);
 		}

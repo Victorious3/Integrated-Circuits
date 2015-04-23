@@ -70,24 +70,21 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
-public class CommonProxy 
-{
+public class CommonProxy {
 	public static int serverTicks;
 	public static SimpleNetworkWrapper networkWrapper;
 	private static HashMap<World, HashMap<SidedBlockCoord, MCDataOutputImpl>> out = Maps.newHashMap();
-	
-	public void initialize()
-	{
+
+	public void initialize() {
 		NetworkRegistry.INSTANCE.registerGuiHandler(IntegratedCircuits.instance, new GuiHandler());
 	}
-	
-	public void preInitialize()
-	{
+
+	public void preInitialize() {
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLCommonHandler.instance().bus().register(this);
-		
+
 		networkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel(Constants.MOD_ID);
-		
+
 		logger.debug("[Common Proxy]: Registering network packets");
 		AbstractPacket.registerPacket(PacketPCBUpdate.class, Side.CLIENT, 0);
 		AbstractPacket.registerPacket(PacketPCBChangePart.class, Side.SERVER, 1);
@@ -97,64 +94,60 @@ public class CommonProxy
 		AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
 		AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
 		AbstractPacket.registerPacket(PacketPCBCache.class, Side.SERVER, 7);
-		
+
 		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 8);
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);
 		AbstractPacket.registerPacket(PacketAssemblerChangeLaser.class, Side.CLIENT, 10);
 		AbstractPacket.registerPacket(PacketAssemblerChangeItem.class, Side.CLIENT, 11);
 		AbstractPacket.registerPacket(PacketAssemblerUpdateInsufficient.class, Side.CLIENT, 12);
-		
+
 		AbstractPacket.registerPacket(PacketChangeSetting.class, null, 13);
 		AbstractPacket.registerPacket(PacketFloppyDisk.class, Side.CLIENT, 14);
-		
+
 		AbstractPacket.registerPacket(Packet7SegmentOpenGui.class, Side.CLIENT, 15);
 		AbstractPacket.registerPacket(Packet7SegmentChangeMode.class, null, 16);
-		
+
 		AbstractPacket.registerPacket(PacketDataStream.class, Side.CLIENT, 17);
 	}
-	
-	public MCDataOutputImpl addStream(World world, BlockCoord crd, int side)
-	{
-		if(world.isRemote) throw new IllegalArgumentException("Cannot use getWriteStream on a client world");
+
+	public MCDataOutputImpl addStream(World world, BlockCoord crd, int side) {
+		if (world.isRemote)
+			throw new IllegalArgumentException("Cannot use getWriteStream on a client world");
 		SidedBlockCoord scrd = new SidedBlockCoord(crd.x, crd.y, crd.z, side);
-		if(!out.containsKey(world))
+		if (!out.containsKey(world))
 			out.put(world, new HashMap<SidedBlockCoord, MCDataOutputImpl>());
 		HashMap<SidedBlockCoord, MCDataOutputImpl> map = out.get(world);
-		
-		if(map.containsKey(scrd))
-			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.remove(scrd), scrd.x, scrd.y, scrd.z, scrd.side), world.provider.dimensionId);
-		
+
+		if (map.containsKey(scrd))
+			CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.remove(scrd), scrd.x, scrd.y, scrd.z,
+					scrd.side), world.provider.dimensionId);
+
 		MCDataOutputImpl stream = new MCDataOutputImpl(new ByteArrayOutputStream());
 		map.put(scrd, stream);
 		return stream;
 	}
-	
+
 	@SubscribeEvent
-	public void onServerTick(TickEvent.ServerTickEvent event)
-	{
-		if(event.phase == Phase.END) 
-		{
+	public void onServerTick(TickEvent.ServerTickEvent event) {
+		if (event.phase == Phase.END) {
 			serverTicks++;
-			
-			for(World world : out.keySet())
-			{
+
+			for (World world : out.keySet()) {
 				HashMap<SidedBlockCoord, MCDataOutputImpl> map = out.get(world);
-				for(Entry<SidedBlockCoord, MCDataOutputImpl> entry : map.entrySet())
-				{
+				for (Entry<SidedBlockCoord, MCDataOutputImpl> entry : map.entrySet()) {
 					SidedBlockCoord crd = entry.getKey();
-					CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.get(crd), crd.x, crd.y, crd.z, crd.side), world.provider.dimensionId);
+					CommonProxy.networkWrapper.sendToDimension(new PacketDataStream(map.get(crd), crd.x, crd.y, crd.z,
+							crd.side), world.provider.dimensionId);
 				}
 				map.clear();
 			}
 		}
 	}
-	
-	private static class SidedBlockCoord
-	{
+
+	private static class SidedBlockCoord {
 		public int x, y, z, side;
-		
-		public SidedBlockCoord(int x, int y, int z, int side)
-		{
+
+		public SidedBlockCoord(int x, int y, int z, int side) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
@@ -162,14 +155,12 @@ public class CommonProxy
 		}
 
 		@Override
-		public int hashCode()
-		{
+		public int hashCode() {
 			return Objects.hash(x, y, z, side);
 		}
 
 		@Override
-		public boolean equals(Object obj)
-		{
+		public boolean equals(Object obj) {
 			if (this == obj)
 				return true;
 			if (obj == null)
@@ -180,55 +171,55 @@ public class CommonProxy
 			return other.x == x && other.y == y && other.z == z && other.side == side;
 		}
 	}
-	
+
 	@SubscribeEvent
-	public void onPlayerJoined(PlayerLoggedInEvent event)
-	{
-		if(Config.showStartupMessage)
-		{
-			ChatComponentText text = new ChatComponentText("[Integrated Circuits] This is an extremely early alpha version so please report any bugs occuring to the ");
+	public void onPlayerJoined(PlayerLoggedInEvent event) {
+		if (Config.showStartupMessage) {
+			ChatComponentText text = new ChatComponentText(
+					"[Integrated Circuits] This is an extremely early alpha version so please report any bugs occuring to the ");
 			ChatComponentText url = new ChatComponentText("GitHub");
 			url.getChatStyle().setUnderlined(true);
 			url.getChatStyle().setColor(EnumChatFormatting.BLUE);
-			url.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText("Click to visit ICs GitHub repo")));
-			url.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Victorious3/Integrated-Circuits"));
+			url.getChatStyle()
+				.setChatHoverEvent(
+						new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ChatComponentText(
+								"Click to visit ICs GitHub repo")));
+			url.getChatStyle().setChatClickEvent(
+					new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/Victorious3/Integrated-Circuits"));
 			text.appendSibling(url);
 			text.appendText(" repo.");
-			if(event.player.canCommandSenderUseCommand(MinecraftServer.getServer().getOpPermissionLevel(), null))
-			text.appendText(" You can disable this message by changing the config file. Thanks for your attention.");
+			if (event.player.canCommandSenderUseCommand(MinecraftServer.getServer().getOpPermissionLevel(), null))
+				text.appendText(" You can disable this message by changing the config file. Thanks for your attention.");
 			event.player.addChatComponentMessage(text);
 		}
 	}
-	
+
 	@SubscribeEvent
-	public void onPlayerInteract(PlayerInteractEvent event)
-	{
-		if(event.action != Action.RIGHT_CLICK_BLOCK) return;
+	public void onPlayerInteract(PlayerInteractEvent event) {
+		if (event.action != Action.RIGHT_CLICK_BLOCK)
+			return;
 		Block block = event.world.getBlock(event.x, event.y, event.z);
-		if(!(block.hasTileEntity(event.world.getBlockMetadata(event.x, event.y, event.z)))) return;
-		TileEntity te = (TileEntity)event.world.getTileEntity(event.x, event.y, event.z);
-		
-		if(te instanceof IDiskDrive)
-		{
+		if (!(block.hasTileEntity(event.world.getBlockMetadata(event.x, event.y, event.z))))
+			return;
+		TileEntity te = (TileEntity) event.world.getTileEntity(event.x, event.y, event.z);
+
+		if (te instanceof IDiskDrive) {
 			IDiskDrive drive = (IDiskDrive) te;
-			
+
 			ItemStack stack = event.entityPlayer.getCurrentEquippedItem();
-			
+
 			MovingObjectPosition target = RayTracer.rayTrace(event.entityPlayer, 1F);
-			if(target == null) return;
+			if (target == null)
+				return;
 			AxisAlignedBB box = DiskDrive.getDiskDriveBoundingBox(drive, event.x, event.y, event.z, target.hitVec);
-			if(box != null)
-			{
-				if(!event.world.isRemote)
-				{
-					if(stack == null)
-					{
+			if (box != null) {
+				if (!event.world.isRemote) {
+					if (stack == null) {
 						ItemStack floppy = drive.getDisk();
 						drive.setDisk(null);
 						event.entityPlayer.setCurrentItemOrArmor(0, floppy);
-					}
-					else if(stack.getItem() != null && stack.getItem() == IntegratedCircuits.itemFloppyDisk && drive.getDisk() == null)
-					{
+					} else if (stack.getItem() != null && stack.getItem() == IntegratedCircuits.itemFloppyDisk
+							&& drive.getDisk() == null) {
 						drive.setDisk(stack);
 						event.entityPlayer.setCurrentItemOrArmor(0, null);
 					}
@@ -237,28 +228,26 @@ public class CommonProxy
 				event.useItem = Result.DENY;
 			}
 		}
-		if(te instanceof TileEntityAssembler)
-		{
-			TileEntityAssembler assembler = (TileEntityAssembler)te;
-			Pair<AxisAlignedBB, Integer> result = getLaserBoundingBox(assembler, event.x, event.y, event.z, event.entityPlayer, 1);
-			if(result.getLeft() != null)
-			{
-				if(!event.world.isRemote)
-				{
+		if (te instanceof TileEntityAssembler) {
+			TileEntityAssembler assembler = (TileEntityAssembler) te;
+			Pair<AxisAlignedBB, Integer> result = getLaserBoundingBox(assembler, event.x, event.y, event.z,
+					event.entityPlayer, 1);
+			if (result.getLeft() != null) {
+				if (!event.world.isRemote) {
 					ItemStack holding = event.entityPlayer.getHeldItem();
 					ItemStack stack2 = holding;
-					if(holding != null) 
-					{
+					if (holding != null) {
 						stack2 = holding.copy();
 						stack2.stackSize = 1;
 					}
 					assembler.laserHelper.createLaser(result.getRight(), stack2);
-					if(holding == null)
-						event.entityPlayer.inventory.setInventorySlotContents(event.entityPlayer.inventory.currentItem, new ItemStack(IntegratedCircuits.itemLaser));
-					else if(holding.getItem() == IntegratedCircuits.itemLaser)
-					{
+					if (holding == null)
+						event.entityPlayer.inventory.setInventorySlotContents(event.entityPlayer.inventory.currentItem,
+								new ItemStack(IntegratedCircuits.itemLaser));
+					else if (holding.getItem() == IntegratedCircuits.itemLaser) {
 						holding.stackSize--;
-						if(holding.stackSize <= 0) holding = null;
+						if (holding.stackSize <= 0)
+							holding = null;
 					}
 				}
 				event.useBlock = Result.DENY;
@@ -266,34 +255,37 @@ public class CommonProxy
 			}
 		}
 	}
-	
-	public Pair<AxisAlignedBB, Integer> getLaserBoundingBox(TileEntityAssembler te, int x, int y, int z, EntityPlayer player, float partialTicks)
-	{
-		if(te.getStatus() == te.RUNNING || !player.isSneaking()) return new ImmutablePair(null, null);
+
+	public Pair<AxisAlignedBB, Integer> getLaserBoundingBox(TileEntityAssembler te, int x, int y, int z,
+			EntityPlayer player, float partialTicks) {
+		if (te.getStatus() == te.RUNNING || !player.isSneaking())
+			return new ImmutablePair(null, null);
 		boolean holdsEmpty = player.getHeldItem() == null;
 		boolean holdsLaser = !holdsEmpty ? player.getHeldItem().getItem() == IntegratedCircuits.itemLaser : false;
-		
+
 		AxisAlignedBB base = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 8 / 16F, 1).offset(x, y, z);
 		AxisAlignedBB boxBase = AxisAlignedBB.getBoundingBox(11 / 16F, 8 / 16F, 11 / 16F, 15 / 16F, 15 / 16F, 15 / 16F);
 		AxisAlignedBB box1 = null, box2 = null, box3 = null, box4 = null;
-		
+
 		Laser l1 = te.laserHelper.getLaser((te.rotation + 0) % 4);
-		if(l1 != null && holdsEmpty || holdsLaser && l1 == null)
+		if (l1 != null && holdsEmpty || holdsLaser && l1 == null)
 			box1 = MiscUtils.getRotatedInstance(boxBase, 2).offset(x, y, z);
 		Laser l2 = te.laserHelper.getLaser((te.rotation + 1) % 4);
-		if(l2 != null && holdsEmpty || holdsLaser && l2 == null) 
+		if (l2 != null && holdsEmpty || holdsLaser && l2 == null)
 			box2 = MiscUtils.getRotatedInstance(boxBase, 1).offset(x, y, z);
 		Laser l3 = te.laserHelper.getLaser((te.rotation + 2) % 4);
-		if(l3 != null && holdsEmpty || holdsLaser && l3 == null)
+		if (l3 != null && holdsEmpty || holdsLaser && l3 == null)
 			box3 = MiscUtils.getRotatedInstance(boxBase, 0).offset(x, y, z);
 		Laser l4 = te.laserHelper.getLaser((te.rotation + 3) % 4);
-		if(l4 != null && holdsEmpty || holdsLaser && l4 == null)
+		if (l4 != null && holdsEmpty || holdsLaser && l4 == null)
 			box4 = MiscUtils.getRotatedInstance(boxBase, 3).offset(x, y, z);
-		
+
 		MovingObjectPosition mop = RayTracer.rayTraceAABB(player, partialTicks, base, box1, box2, box3, box4);
-		if(mop == null || mop.hitInfo == base) return new ImmutablePair(null, null);
-		
-		int id = (te.rotation + (mop.hitInfo == box1 ? 0 : mop.hitInfo == box2 ? 1 : mop.hitInfo == box3 ? 2 : mop.hitInfo == box4 ? 3 : 0)) % 4;
-		return new ImmutablePair((AxisAlignedBB)mop.hitInfo, id);
+		if (mop == null || mop.hitInfo == base)
+			return new ImmutablePair(null, null);
+
+		int id = (te.rotation + (mop.hitInfo == box1 ? 0 : mop.hitInfo == box2 ? 1 : mop.hitInfo == box3 ? 2
+				: mop.hitInfo == box4 ? 3 : 0)) % 4;
+		return new ImmutablePair((AxisAlignedBB) mop.hitInfo, id);
 	}
 }

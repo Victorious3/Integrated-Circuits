@@ -30,111 +30,100 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
 
-public class Socket implements ISocket
-{
-	//Collision box
+public class Socket implements ISocket {
+	// Collision box
 	public static Cuboid6 box = new Cuboid6(0, 0, 0, 1, 2 / 16D, 1);
-		
+
 	protected final ISocketWrapper provider;
 	protected final Map<String, Object> extendedProperties;
 	protected IGate gate;
-	
-	//Used by the client, redstone IO
+
+	// Used by the client, redstone IO
 	protected byte io;
 	protected byte[][] output = new byte[4][16];
 	protected byte[][] input = new byte[4][16];
-	
+
 	protected byte orientation;
-	
-	public Socket(ISocketWrapper provider) 
-	{
+
+	public Socket(ISocketWrapper provider) {
 		this.provider = provider;
 		this.extendedProperties = new HashMap<String, Object>();
 	}
-	
-	//Bridge methods
-	
+
+	// Bridge methods
+
 	@Override
-	public void update()
-	{
-		if(gate != null) gate.update();
+	public void update() {
+		if (gate != null)
+			gate.update();
 	}
-	
+
 	@Override
-	public void onAdded()
-	{
-		if(gate != null) gate.onAdded();
+	public void onAdded() {
+		if (gate != null)
+			gate.onAdded();
 	}
-	
+
 	@Override
-	public void onMoved()
-	{
-		if(gate != null) gate.onMoved();
+	public void onMoved() {
+		if (gate != null)
+			gate.onMoved();
 	}
-	
+
 	@Override
-	public void scheduledTick()
-	{
-		if(gate != null) gate.scheduledTick();
+	public void scheduledTick() {
+		if (gate != null)
+			gate.scheduledTick();
 	}
-	
+
 	@Override
-	public void onRemoved()
-	{
-		if(gate != null) gate.onRemoved();
+	public void onRemoved() {
+		if (gate != null)
+			gate.onRemoved();
 	}
-	
-	//Bridge methods, calling liked IGateProvider
-	
+
+	// Bridge methods, calling liked IGateProvider
+
 	@Override
-	public void markRender()
-	{
+	public void markRender() {
 		provider.markRender();
 	}
 
 	@Override
-	public MCDataOutput getWriteStream(int disc)
-	{
+	public MCDataOutput getWriteStream(int disc) {
 		return provider.getWriteStream(disc);
 	}
 
 	@Override
-	public World getWorld()
-	{
+	public World getWorld() {
 		return provider.getWorld();
 	}
 
 	@Override
-	public void notifyBlocksAndChanges()
-	{
+	public void notifyBlocksAndChanges() {
 		notifyPartChange();
 		provider.notifyBlocksAndChanges();
 	}
 
 	@Override
-	public void notifyPartChange()
-	{
+	public void notifyPartChange() {
 		updateRedstoneIO();
 		provider.notifyPartChange();
 	}
 
 	@Override
-	public BlockCoord getPos()
-	{
+	public BlockCoord getPos() {
 		return provider.getPos();
 	}
 
 	@Override
-	public void sendDescription()
-	{
+	public void sendDescription() {
 		provider.sendDescription();
 	}
 
 	@Override
-	public void destroy()
-	{
-		if(gate != null) 
-		{
+	public void destroy() {
+		if (gate != null) {
 			BlockCoord pos = getPos();
 			MiscUtils.dropItem(getWorld(), gate.getItemStack(), pos.x, pos.y, pos.z);
 		}
@@ -142,442 +131,393 @@ public class Socket implements ISocket
 	}
 
 	@Override
-	public int updateRedstoneInput(int side)
-	{
+	public int updateRedstoneInput(int side) {
 		return provider.updateRedstoneInput(side);
 	}
 
 	@Override
-	public byte[] updateBundledInput(int side)
-	{
+	public byte[] updateBundledInput(int side) {
 		return provider.updateBundledInput(side);
 	}
 
 	@Override
-	public void scheduleTick(int delay)
-	{
+	public void scheduleTick(int delay) {
 		provider.scheduleTick(delay);
 	}
-	
+
 	@Override
-	public void setGate(IGate gate)
-	{
+	public void setGate(IGate gate) {
 		this.gate = gate;
 		this.gate.setProvider(this);
 		this.gate.onAdded();
 	}
 
 	@Override
-	public IGate getGate()
-	{
+	public IGate getGate() {
 		return gate;
 	}
 
 	@Override
-	public int strongPowerLevel(int side)
-	{
+	public int strongPowerLevel(int side) {
 		return provider.strongPowerLevel(side);
 	}
-	
-	//IO
-	
+
+	// IO
+
 	@Override
-	public void readFromNBT(NBTTagCompound compound)
-	{
+	public void readFromNBT(NBTTagCompound compound) {
 		// Read orientation and IO
 		orientation = compound.getByte("orientation");
 		io = compound.getByte("io");
-		
+
 		byte[] input = compound.getByteArray("input");
 		byte[] output = compound.getByteArray("output");
-		
-		for(int i = 0; i < 4; i++)
-		{
+
+		for (int i = 0; i < 4; i++) {
 			this.input[i] = Arrays.copyOfRange(input, i * 16, (i + 1) * 16);
 			this.output[i] = Arrays.copyOfRange(output, i * 16, (i + 1) * 16);
 		}
-		
+
 		// Read gate from NBT, if present
-		if(compound.hasKey("gate_id")) 
-		{
-    		gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(compound.getString("gate_id"));
-    		gate.setProvider(this);
-    		gate.load(compound.getCompoundTag("gate"));
-		}
-		else gate = null;
+		if (compound.hasKey("gate_id")) {
+			gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(compound.getString("gate_id"));
+			gate.setProvider(this);
+			gate.load(compound.getCompoundTag("gate"));
+		} else
+			gate = null;
 	}
-	
+
 	@Override
-	public void writeToNBT(NBTTagCompound compound)
-	{
+	public void writeToNBT(NBTTagCompound compound) {
 		// Write orientation and IO
 		compound.setByte("orientation", orientation);
 		compound.setByte("io", io);
-		
+
 		byte[] input = null;
 		byte[] output = null;
-		
-		for(int i = 0; i < 4; i++)
-		{
+
+		for (int i = 0; i < 4; i++) {
 			input = ArrayUtils.addAll(input, this.input[i]);
 			output = ArrayUtils.addAll(output, this.output[i]);
 		}
-		
+
 		compound.setByteArray("input", input);
 		compound.setByteArray("output", output);
-		
+
 		// Write gate to NBT, if present
-		if(gate != null) 
-		{
+		if (gate != null) {
 			compound.setString("gate_id", IntegratedCircuitsAPI.getGateRegistry().getName(gate.getClass()));
 			NBTTagCompound gateCompound = new NBTTagCompound();
 			gate.save(gateCompound);
 			compound.setTag("gate", gateCompound);
 		}
 	}
-	
+
 	@Override
-	public void writeDesc(NBTTagCompound compound)
-	{
+	public void writeDesc(NBTTagCompound compound) {
 		compound.setByte("orientation", orientation);
 		compound.setByte("io", io);
-		
-		if(gate != null) 
-		{
+
+		if (gate != null) {
 			compound.setString("gate_id", IntegratedCircuitsAPI.getGateRegistry().getName(gate.getClass()));
 			gate.writeDesc(compound);
 		}
 	}
 
 	@Override
-	public void readDesc(NBTTagCompound compound)
-	{
+	public void readDesc(NBTTagCompound compound) {
 		orientation = compound.getByte("orientation");
 		io = compound.getByte("io");
-		
-		if(compound.hasKey("gate_id"))
-		{
+
+		if (compound.hasKey("gate_id")) {
 			gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(compound.getString("gate_id"));
 			gate.setProvider(this);
 			gate.readDesc(compound);
-		}
-		else gate = null;
-		
+		} else
+			gate = null;
+
 		markRender();
 	}
-	
+
 	@Override
-	public void read(MCDataInput packet)
-	{
+	public void read(MCDataInput packet) {
 		byte discr = packet.readByte();
 		switch (discr) {
-    		case 0 :
-    			orientation = packet.readByte();
-    			markRender();
-    			return;
-    		case 1 :
-    			io = packet.readByte();
-    			markRender();
-    			return;
+			case 0:
+				orientation = packet.readByte();
+				markRender();
+				return;
+			case 1:
+				io = packet.readByte();
+				markRender();
+				return;
 		}
-		if(gate != null) gate.read(discr, packet);
+		if (gate != null)
+			gate.read(discr, packet);
 	}
-	
-	//Rotation
-	
+
+	// Rotation
+
 	@Override
-	public byte getOrientation()
-	{
+	public byte getOrientation() {
 		return orientation;
 	}
-	
+
 	@Override
-	public int getSide()
-	{
+	public int getSide() {
 		return orientation >> 2;
 	}
-	
+
 	@Override
-	public int getSideRel(int side)
-	{
+	public int getSideRel(int side) {
 		return getRotationRel(Rotation.rotationTo(getSide(), side));
 	}
-	
+
 	@Override
-	public void setSide(int s)
-	{
-		orientation = (byte)(orientation & 3 | s << 2);
+	public void setSide(int s) {
+		orientation = (byte) (orientation & 3 | s << 2);
 	}
-	
+
 	@Override
-	public int getRotation()
-	{
+	public int getRotation() {
 		return orientation & 3;
 	}
-	
+
 	@Override
-	public int getRotationAbs(int rel)
-	{
+	public int getRotationAbs(int rel) {
 		return (rel + getRotation() + 2) % 4;
 	}
-	
+
 	@Override
-	public int getRotationRel(int abs)
-	{
+	public int getRotationRel(int abs) {
 		return (abs + 6 - getRotation()) % 4;
 	}
-	
+
 	@Override
-	public void setRotation(int r)
-	{
-		orientation = (byte)(orientation & 252 | r);
+	public void setRotation(int r) {
+		orientation = (byte) (orientation & 252 | r);
 	}
-	
-	//Redstone IO
-	
+
+	// Redstone IO
+
 	@Override
-	public byte[][] getInput()
-	{
+	public byte[][] getInput() {
 		return input;
 	}
 
 	@Override
-	public byte[][] getOutput()
-	{
+	public byte[][] getOutput() {
 		return output;
 	}
-	
+
 	@Override
-	public byte getRedstoneInput(int side)
-	{
+	public byte getRedstoneInput(int side) {
 		return getBundledInput(side, 0);
 	}
-	
+
 	@Override
-	public byte getBundledInput(int side, int frequency)
-	{
+	public byte getBundledInput(int side, int frequency) {
 		return input[side][frequency];
 	}
-	
+
 	@Override
-	public byte getRedstoneOutput(int side) 
-	{
+	public byte getRedstoneOutput(int side) {
 		return getBundledOutput(side, 0);
 	}
 
 	@Override
-	public byte getBundledOutput(int side, int frequency) 
-	{
+	public byte getBundledOutput(int side, int frequency) {
 		return output[side][frequency];
 	}
-	
+
 	@Override
-	public void setInput(byte[][] input) 
-	{
+	public void setInput(byte[][] input) {
 		this.input = input;
 	}
-	
+
 	@Override
-	public void setOutput(byte[][] output)
-	{
+	public void setOutput(byte[][] output) {
 		this.output = output;
 	}
-	
+
 	@Override
-	public void setInput(int side, int frequency, byte input) 
-	{
+	public void setInput(int side, int frequency, byte input) {
 		this.input[side][frequency] = input;
 	}
-	
+
 	@Override
-	public void setOutput(int side, int frequency, byte output) 
-	{
+	public void setOutput(int side, int frequency, byte output) {
 		this.output[side][frequency] = output;
 	}
-	
+
 	@Override
-	public void resetInput()
-	{
+	public void resetInput() {
 		this.input = new byte[4][16];
 	}
-	
+
 	@Override
-	public void resetOutput()
-	{
+	public void resetOutput() {
 		this.output = new byte[4][16];
 	}
-	
+
 	@Override
-	public void updateInput()
-	{
+	public void updateInput() {
 		updateInputPre();
-		for(int i = 0; i < 4; i++)
-		{
+		for (int i = 0; i < 4; i++) {
 			EnumConnectionType type = getConnectionTypeAtSide(i);
-			if(type.isRedstone()) input[i][0] = (byte) updateRedstoneInput(i);
-			else if(type.isBundled()) input[i] = updateBundledInput(i);
+			if (type.isRedstone())
+				input[i][0] = (byte) updateRedstoneInput(i);
+			else if (type.isBundled())
+				input[i] = updateBundledInput(i);
 		}
 		updateInputPost();
 	}
-	
+
 	@Override
-	public void updateInputPre()
-	{
-		if(gate != null) gate.updateInputPre();
+	public void updateInputPre() {
+		if (gate != null)
+			gate.updateInputPre();
 	}
-	
+
 	@Override
-	public void updateInputPost()
-	{
-		if(gate != null) 
-		{
+	public void updateInputPost() {
+		if (gate != null) {
 			gate.updateInputPost();
 			updateRedstoneIO();
 		}
 	}
-	
+
 	@Override
-	public EnumConnectionType getConnectionTypeAtSide(int side)
-	{
+	public EnumConnectionType getConnectionTypeAtSide(int side) {
 		return gate != null ? gate.getConnectionTypeAtSide(side) : EnumConnectionType.NONE;
 	}
-	
-	private void updateRedstoneIO()
-	{
+
+	private void updateRedstoneIO() {
 		byte oio = io;
 		io = 0;
-		for(int i = 0; i < 4; i++)
-			io |= (getRedstoneInput(i) != 0 || getRedstoneOutput(i) != 0) ? 1 << i: 0;
-		
-		if(oio != io) provider.getWriteStream(1).writeByte(io);
+		for (int i = 0; i < 4; i++)
+			io |= (getRedstoneInput(i) != 0 || getRedstoneOutput(i) != 0) ? 1 << i : 0;
+
+		if (oio != io)
+			provider.getWriteStream(1).writeByte(io);
 	}
-	
-	//Interaction
-	
+
+	// Interaction
+
 	@Override
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, ItemStack stack)
-	{
+	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, ItemStack stack) {
 		setSide(side ^ 1);
 		setRotation(Rotation.getSidedRotation(player, side));
 	}
-	
+
 	@Override
-	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack)
-	{
-		if(stack != null)
-		{
-			if(!getWorld().isRemote)
-			{
-    			if(gate == null && stack.getItem() instanceof IGateItem) 
-    			{
-    				ItemStack solderingIron;
-    				if((solderingIron = InventoryUtils.getFirstItem(IntegratedCircuits.itemSolderingIron, player.inventory)) != null)
-    				{
-    					solderingIron.damageItem(1, player);
-    					if(solderingIron.getItemDamage() == solderingIron.getMaxDamage())
-    						player.inventory.setInventorySlotContents(InventoryUtils.getSlotIndex(solderingIron, player.inventory), null);
-    					player.inventoryContainer.detectAndSendChanges();
-    				}
-    				else return false;
-    				
-    				int rotation = Rotation.getSidedRotation(player, getSide() ^ 1);
-        			setRotation(rotation);
-    				
-        			String gateID = ((IGateItem)stack.getItem()).getGateID(stack, player, getPos());
-    				gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
-    				gate.setProvider(this);
-    				gate.preparePlacement(player, stack);
-    				
-    				MiscUtils.playPlaceSound(getWorld(), getPos());
-    				sendDescription();
-    				notifyBlocksAndChanges();
-    				
-    				return true;
-    			}
-    			else if (gate != null && stack.getItem() == IntegratedCircuits.itemSolderingIron)
-    			{
-    				stack.damageItem(1, player);
-    				if(stack.getItemDamage() == stack.getMaxDamage())
-    					player.setCurrentItemOrArmor(0, null);
-    				else ((EntityPlayerMP)player).updateHeldItem();
-    				
-    				BlockCoord pos = getPos();
-    				MiscUtils.dropItem(getWorld(), gate.getItemStack(), pos.x, pos.y, pos.z);
-    				gate = null;
-    				
-    				sendDescription();
-    				notifyBlocksAndChanges();
-    				
-    				return true;
-    			}
+	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack) {
+		if (stack != null) {
+			if (!getWorld().isRemote) {
+				if (gate == null && stack.getItem() instanceof IGateItem) {
+					ItemStack solderingIron;
+					if ((solderingIron = InventoryUtils.getFirstItem(IntegratedCircuits.itemSolderingIron,
+							player.inventory)) != null) {
+						solderingIron.damageItem(1, player);
+						if (solderingIron.getItemDamage() == solderingIron.getMaxDamage())
+							player.inventory.setInventorySlotContents(
+									InventoryUtils.getSlotIndex(solderingIron, player.inventory), null);
+						player.inventoryContainer.detectAndSendChanges();
+					} else
+						return false;
+
+					int rotation = Rotation.getSidedRotation(player, getSide() ^ 1);
+					setRotation(rotation);
+
+					String gateID = ((IGateItem) stack.getItem()).getGateID(stack, player, getPos());
+					gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
+					gate.setProvider(this);
+					gate.preparePlacement(player, stack);
+
+					MiscUtils.playPlaceSound(getWorld(), getPos());
+					sendDescription();
+					notifyBlocksAndChanges();
+
+					return true;
+				} else if (gate != null && stack.getItem() == IntegratedCircuits.itemSolderingIron) {
+					stack.damageItem(1, player);
+					if (stack.getItemDamage() == stack.getMaxDamage())
+						player.setCurrentItemOrArmor(0, null);
+					else
+						((EntityPlayerMP) player).updateHeldItem();
+
+					BlockCoord pos = getPos();
+					MiscUtils.dropItem(getWorld(), gate.getItemStack(), pos.x, pos.y, pos.z);
+					gate = null;
+
+					sendDescription();
+					notifyBlocksAndChanges();
+
+					return true;
+				}
 			}
-			
+
 			String name = stack.getItem().getUnlocalizedName();
-			if(stack.getItem() == IntegratedCircuits.itemScrewdriver || name.equals("item.redlogic.screwdriver") || name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver"))
-			{
-				if(!getWorld().isRemote && gate != null) 
-				{
-					if(!player.isSneaking()) rotate();
+			if (stack.getItem() == IntegratedCircuits.itemScrewdriver || name.equals("item.redlogic.screwdriver")
+					|| name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver")) {
+				if (!getWorld().isRemote && gate != null) {
+					if (!player.isSneaking())
+						rotate();
 					System.out.println("hello?");
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
-				
+
 				stack.damageItem(1, player);
 				return true;
 			}
 		}
-		if(gate != null) return gate.activate(player, hit, stack);
+		if (gate != null)
+			return gate.activate(player, hit, stack);
 		return false;
 	}
-	
-	private void rotate()
-	{
+
+	private void rotate() {
 		setRotation((getRotation() + 1) % 4);
 		getWriteStream(0).writeByte(orientation);
 		notifyBlocksAndChanges();
-		if(gate != null)
-		{
+		if (gate != null) {
 			gate.onRotated();
 			updateInput();
 		}
 	}
-	
+
 	@Override
-	public void onNeighborChanged()
-	{
-		if(!getWorld().isRemote) 
-		{
+	public void onNeighborChanged() {
+		if (!getWorld().isRemote) {
 			BlockCoord pos = getPos().offset(getSide());
-			if(!MiscUtils.canPlaceGateOnSide(getWorld(), pos.x, pos.y, pos.z, getSide() ^ 1))
-			{
+			if (!MiscUtils.canPlaceGateOnSide(getWorld(), pos.x, pos.y, pos.z, getSide() ^ 1)) {
 				destroy();
-			}
-			else updateInput();
+			} else
+				updateInput();
 		}
-		if(gate != null) gate.onNeighborChanged();
+		if (gate != null)
+			gate.onNeighborChanged();
 	}
-	
+
 	@Override
-	public void addDrops(List<ItemStack> list) 
-	{
-		if(gate != null) list.add(gate.getItemStack());
+	public void addDrops(List<ItemStack> list) {
+		if (gate != null)
+			list.add(gate.getItemStack());
 	}
-	
+
 	@Override
-	public ItemStack pickItem(MovingObjectPosition mop)
-	{
-		if(gate != null) return gate.pickItem(mop);
+	public ItemStack pickItem(MovingObjectPosition mop) {
+		if (gate != null)
+			return gate.pickItem(mop);
 		return null;
 	}
-	
-	public static Transformation getRotationTransformation(ISocket socket)
-	{
+
+	public static Transformation getRotationTransformation(ISocket socket) {
 		return Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
 	}
 
 	@Override
-	public ISocketWrapper getWrapper()
-	{
+	public ISocketWrapper getWrapper() {
 		return provider;
 	}
 

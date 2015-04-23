@@ -13,20 +13,16 @@ import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.common.Optional.Method;
 
-@InterfaceList({
-	@Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
-	@Interface(iface = "li.cil.oc.api.network.SidedComponent", modid = "OpenComputers"),
-	@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers")
-})
+@InterfaceList({ @Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
+		@Interface(iface = "li.cil.oc.api.network.SidedComponent", modid = "OpenComputers"),
+		@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers") })
 public class GPOpenComputers extends GateIOProvider implements SimpleComponent, SidedComponent, ManagedPeripheral {
-	
+
 	@Override
 	@Method(modid = "OpenComputers")
-	public boolean canConnectNode(ForgeDirection side) 
-	{
-		if(socket.getGate() instanceof IGatePeripheralProvider) 
-		{
-			IGatePeripheralProvider provider = (IGatePeripheralProvider)socket.getGate();
+	public boolean canConnectNode(ForgeDirection side) {
+		if (socket.getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider) socket.getGate();
 			return provider.hasPeripheral(side.ordinal());
 		}
 		return false;
@@ -34,10 +30,9 @@ public class GPOpenComputers extends GateIOProvider implements SimpleComponent, 
 
 	@Override
 	@Method(modid = "OpenComputers")
-	public String getComponentName() 
-	{
-		if(socket.getGate() instanceof IGatePeripheralProvider) {
-			IGatePeripheralProvider provider = (IGatePeripheralProvider)socket.getGate();
+	public String getComponentName() {
+		if (socket.getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider) socket.getGate();
 			GatePeripheral peripheral = provider.getPeripheral();
 			return peripheral.getType();
 		}
@@ -46,10 +41,9 @@ public class GPOpenComputers extends GateIOProvider implements SimpleComponent, 
 
 	@Override
 	@Method(modid = "OpenComputers")
-	public String[] methods() 
-	{
-		if(socket.getGate() instanceof IGatePeripheralProvider) {
-			IGatePeripheralProvider provider = (IGatePeripheralProvider)socket.getGate();
+	public String[] methods() {
+		if (socket.getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider) socket.getGate();
 			GatePeripheral peripheral = provider.getPeripheral();
 			return peripheral.getMethodNames();
 		}
@@ -58,10 +52,9 @@ public class GPOpenComputers extends GateIOProvider implements SimpleComponent, 
 
 	@Override
 	@Method(modid = "OpenComputers")
-	public Object[] invoke(String method, Context context, Arguments args) throws Exception 
-	{
-		if(socket.getGate() instanceof IGatePeripheralProvider) {
-			IGatePeripheralProvider provider = (IGatePeripheralProvider)socket.getGate();
+	public Object[] invoke(String method, Context context, Arguments args) throws Exception {
+		if (socket.getGate() instanceof IGatePeripheralProvider) {
+			IGatePeripheralProvider provider = (IGatePeripheralProvider) socket.getGate();
 			GatePeripheral peripheral = provider.getPeripheral();
 			return peripheral.callMethod(method, args.toArray());
 		}
