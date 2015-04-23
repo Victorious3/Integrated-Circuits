@@ -20,7 +20,7 @@ public class GPRedLogic extends GateIOProvider implements IBundledUpdatable, IBu
 
 	@Override
 	@Method(modid = "RedLogic")
-	public byte[] calculateBundledInput(int side, BlockCoord offset, int abs) {
+	public byte[] calculateBundledInput(int side, int rotation, int abs, BlockCoord offset) {
 		byte[] power = null;
 		TileEntity te = socket.getWorld().getTileEntity(offset.x, offset.y, offset.z);
 		if (te instanceof IBundledEmitter) {

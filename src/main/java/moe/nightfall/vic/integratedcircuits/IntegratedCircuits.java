@@ -62,6 +62,10 @@ import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 
 @Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft", guiFactory = "moe.nightfall.vic.integratedcircuits.client.gui.IntegratedCircuitsGuiFactory")
 public class IntegratedCircuits {
+
+	public static Class<? extends TileEntity> socketClass;
+
+	// TODO Some of those might be obsolete
 	public static boolean isPRLoaded = false;
 	public static boolean isAWLoaded = false;
 	public static boolean isBPLoaded = false;
@@ -213,8 +217,8 @@ public class IntegratedCircuits {
 	public void init(FMLInitializationEvent event) {
 		blockGate = API.getGateRegistry().createProxyInstance(BlockSocket.class);
 		GameRegistry.registerBlock(blockGate, Constants.MOD_ID + ".gate");
-		GameRegistry.registerTileEntity(API.getGateRegistry().createProxyClass(TileEntitySocket.class),
-				Constants.MOD_ID + ".gate");
+		socketClass = API.getGateRegistry().createProxyClass(TileEntitySocket.class);
+		GameRegistry.registerTileEntity(socketClass, Constants.MOD_ID + ".gate");
 
 		if (isFMPLoaded) {
 			PartFactory.register(Constants.MOD_ID + ".socket_fmp",
@@ -232,8 +236,7 @@ public class IntegratedCircuits {
 		if (Loader.isModLoaded("NotEnoughItems") && !MiscUtils.isServer())
 			new NEIAddon().initialize();
 
-		FMLInterModComms.sendMessage("Waila", "register",
-				"moe.nightfall.vic.integratedcircuits.compat.WailaAddon.registerAddon");
+		FMLInterModComms.sendMessage("Waila", "register", "moe.nightfall.vic.integratedcircuits.compat.WailaAddon.registerAddon");
 	}
 
 	@EventHandler

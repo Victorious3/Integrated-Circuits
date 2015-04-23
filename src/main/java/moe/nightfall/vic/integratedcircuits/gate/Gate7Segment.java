@@ -9,6 +9,7 @@ import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.net.Packet7SegmentOpenGui;
@@ -188,7 +189,10 @@ public class Gate7Segment extends Gate {
 	}
 
 	public Gate7Segment getSegment(BlockCoord crd) {
-		IGate gate = IntegratedCircuitsAPI.getSocketAt(provider.getWorld(), crd, provider.getSide()).getGate();
+		ISocket socket = IntegratedCircuitsAPI.getSocketAt(provider.getWorld(), crd, provider.getSide());
+		if (socket == null)
+			return null;
+		IGate gate = socket.getGate();
 		if (gate instanceof Gate7Segment)
 			return (Gate7Segment) gate;
 		return null;

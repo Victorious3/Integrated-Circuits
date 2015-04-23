@@ -3,7 +3,7 @@ package moe.nightfall.vic.integratedcircuits.api.gate;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 
 public interface IGateRegistry {
-	public void registerGate(String name, Class<? extends IGate> clazz);
+	public void registerGate(String gateID, Class<? extends IGate> clazz);
 
 	public <T extends IGate> void registerGateRenderer(Class<T> clazz, IPartRenderer<T> renderer);
 
@@ -13,7 +13,7 @@ public interface IGateRegistry {
 
 	public String getName(Class<? extends IGate> gate);
 
-	public IGate createGateInstace(String name);
+	public IGate createGateInstace(String gateID);
 
 	public void registerGateIOProvider(GateIOProvider instance, Class<?>... classes);
 

@@ -16,12 +16,13 @@ import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 
 @InterfaceList({
 		@Interface(iface = "dan200.computercraft.api.redstone.IBundledRedstoneProvider", modid = "ComputerCraft"),
-		@Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = "ComputerCraft") })
+		@Interface(iface = "dan200.computercraft.api.peripheral.IPeripheralProvider", modid = "ComputerCraft")
+})
 public class GPComputerCraft extends GateIOProvider implements IBundledRedstoneProvider, IPeripheralProvider {
 
 	@Override
 	@Method(modid = "ComputerCraft")
-	public byte[] calculateBundledInput(int side, BlockCoord offset, int abs) {
+	public byte[] calculateBundledInput(int side, int rotation, int abs, BlockCoord offset) {
 		int input = ComputerCraftAPI.getBundledRedstoneOutput(socket.getWorld(), offset.x, offset.y, offset.z, abs ^ 1);
 		if (input > 0) {
 			// digital to analog

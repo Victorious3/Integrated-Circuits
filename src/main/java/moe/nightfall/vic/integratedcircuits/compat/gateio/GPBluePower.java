@@ -18,7 +18,7 @@ public class GPBluePower extends GateIOProvider implements IBundledDeviceWrapper
 
 	@Override
 	@Method(modid = "bluepower")
-	public byte[] calculateBundledInput(int side, BlockCoord offset, int abs) {
+	public byte[] calculateBundledInput(int side, int rotation, int abs, BlockCoord offset) {
 		IRedstoneApi redstoneAPI = BPApi.getInstance().getRedstoneApi();
 		IBundledDevice device = redstoneAPI.getBundledDevice(socket.getWorld(), offset.x, offset.y, offset.z,
 				ForgeDirection.getOrientation(socket.getSide()), ForgeDirection.UNKNOWN);

@@ -18,12 +18,23 @@ import cpw.mods.fml.common.Optional.Method;
 public class GPMinefactoryReloaded extends GateIOProvider implements IRedNetOmniNode {
 
 	@Override
-	public byte[] calculateBundledInput(int side, BlockCoord offset, int abs) {
+	@Method(modid = "MineFactoryReloaded")
+	public byte[] calculateBundledInput(int side, int rotation, int abs, BlockCoord offset) {
 		// Ignore MFR tiles, they update separately.
 		Block block = socket.getWorld().getBlock(offset.x, offset.y, offset.z);
 		if (block instanceof IRedNetNetworkContainer)
 			return socket.getInput()[side];
 		return null;
+	}
+
+	@Override
+	@Method(modid = "MineFactoryReloaded")
+	public int calculateRedstoneInput(int side, int rotation, int abs, BlockCoord offset) {
+		// Ignore MFR tiles, they update separately.
+		Block block = socket.getWorld().getBlock(offset.x, offset.y, offset.z);
+		if (block instanceof IRedNetNetworkContainer)
+			return socket.getRedstoneInput(side);
+		return 0;
 	}
 
 	@Override

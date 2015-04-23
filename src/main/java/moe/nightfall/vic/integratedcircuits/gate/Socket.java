@@ -463,7 +463,6 @@ public class Socket implements ISocket {
 				if (!getWorld().isRemote && gate != null) {
 					if (!player.isSneaking())
 						rotate();
-					System.out.println("hello?");
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
 

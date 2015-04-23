@@ -6,7 +6,7 @@ import java.util.Random;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
-import moe.nightfall.vic.integratedcircuits.gate.GateIO;
+import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.block.Block;
@@ -128,7 +128,11 @@ public class BlockSocket extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
-		return new TileEntitySocket();
+		try {
+			return IntegratedCircuits.socketClass.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
@@ -138,7 +142,7 @@ public class BlockSocket extends BlockContainer {
 
 	@Override
 	public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-		side = moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO.vanillaToSide(side);
+		side = GateIO.vanillaToSide(side);
 
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
 		ISocket socket = te.getSocket();

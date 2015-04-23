@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
-public class TileEntitySocket extends TileEntity implements ISocketWrapper {
+public abstract class TileEntitySocket extends TileEntity implements ISocketWrapper {
 	public ISocket socket = new Socket(this);
 
 	public boolean isDestroyed;

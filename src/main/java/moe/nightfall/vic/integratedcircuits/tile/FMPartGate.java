@@ -7,8 +7,8 @@ import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
-import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.compat.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
@@ -23,15 +23,19 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.multipart.IFaceRedstonePart;
+import codechicken.multipart.IRedstonePart;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.JNormalOcclusion;
 import codechicken.multipart.MultipartHelper;
 import codechicken.multipart.NormalOcclusionTest;
+import codechicken.multipart.RedstoneInteractions;
 import codechicken.multipart.TFacePart;
 import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
 import com.google.common.collect.Lists;
 
@@ -254,6 +258,24 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 
 	@Override
 	public int updateRedstoneInput(int side) {
+		// FMP part signal
+		int rotation = socket.getRotationAbs(side);
+		int face = socket.getSide();
+		int abs = Rotation.rotateSide(face, rotation);
+
+		int power = RedstoneInteractions.getPowerTo(this, abs);
+		if (power != 0)
+			return power;
+
+		// Internal signal
+		TMultiPart tp = ((TileMultipart) ((FMPartGate) socket.getWrapper()).getTile()).partMap(abs);
+		if (tp instanceof IRedstonePart) {
+			IRedstonePart rp = (IRedstonePart) tp;
+			power = Math.max(rp.strongPowerLevel(face), rp.weakPowerLevel(face)) << 4;
+			if (power != 0)
+				return power;
+		}
+
 		return IntegratedCircuitsAPI.updateRedstoneInput(getSocket(), side);
 	}
 
