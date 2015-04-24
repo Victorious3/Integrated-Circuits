@@ -13,9 +13,11 @@ import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.common.Optional.Method;
 
-@InterfaceList({ @Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
+@InterfaceList({
+		@Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
 		@Interface(iface = "li.cil.oc.api.network.SidedComponent", modid = "OpenComputers"),
-		@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers") })
+		@Interface(iface = "li.cil.oc.api.network.ManagedPeripheral", modid = "OpenComputers")
+})
 public class GPOpenComputers extends GateIOProvider implements SimpleComponent, SidedComponent, ManagedPeripheral {
 
 	@Override
