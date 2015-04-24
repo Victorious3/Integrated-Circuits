@@ -9,15 +9,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdate>
-{
+public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdate> {
 	private int x, y, id;
 	private boolean isRunning;
-	
-	public PacketAssemblerUpdate() {}
-	
-	public PacketAssemblerUpdate(boolean isActive, int x, int y, int id, int xCoord, int yCoord, int zCoord)
-	{
+
+	public PacketAssemblerUpdate() {
+	}
+
+	public PacketAssemblerUpdate(boolean isActive, int x, int y, int id, int xCoord, int yCoord, int zCoord) {
 		super(xCoord, yCoord, zCoord);
 		this.x = x;
 		this.y = y;
@@ -26,8 +25,7 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 	}
 
 	@Override
-	public void read(PacketBuffer buffer) throws IOException 
-	{
+	public void read(PacketBuffer buffer) throws IOException {
 		super.read(buffer);
 		this.isRunning = buffer.readBoolean();
 		this.id = buffer.readInt();
@@ -36,8 +34,7 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 	}
 
 	@Override
-	public void write(PacketBuffer buffer) throws IOException 
-	{
+	public void write(PacketBuffer buffer) throws IOException {
 		super.write(buffer);
 		buffer.writeBoolean(isRunning);
 		buffer.writeInt(id);
@@ -46,17 +43,19 @@ public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdat
 	}
 
 	@Override
-	public void process(EntityPlayer player, Side side) 
-	{
-		TileEntityAssembler te = (TileEntityAssembler)player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
-		if(te == null) return;
+	public void process(EntityPlayer player, Side side) {
+		TileEntityAssembler te = (TileEntityAssembler) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		if (te == null)
+			return;
 		Laser laser = te.laserHelper.getLaser(id);
-		if(laser == null) return;
-		if(te.excMatrix != null && laser.isRunning) te.excMatrix[laser.x][laser.y] = true;
+		if (laser == null)
+			return;
+		if (te.excMatrix != null && laser.isRunning)
+			te.excMatrix[laser.x][laser.y] = true;
 		TileEntityAssemblerRenderer.scheduleFramebuffer(te);
 		laser.isRunning = isRunning;
 		te.laserHelper.updateStatus();
-		if(!te.laserHelper.isRunning)
+		if (!te.laserHelper.isRunning)
 			te.getWorldObj().markBlockRangeForRenderUpdate(xCoord, yCoord, zCoord, xCoord, yCoord, zCoord);
 		laser.setAim(x, y);
 		te.laserHelper.position++;

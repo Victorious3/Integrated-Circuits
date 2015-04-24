@@ -15,9 +15,7 @@ buildscript {
     }
 }
 
-repositories {
-    
-    // Dear RX14, this is a bad idea.  Dear Thog, fix your VPS!
+repositories {   
     maven {
         name "rx14"
         url "http://mvn.rx14.co.uk/repo/"
@@ -66,7 +64,15 @@ minecraft {
     replace "\${version}", project.version
 }
 
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
 dependencies {
+    
+    provided "org.javassist:javassist:3.18.1-GA"
+    
     compile "codechicken:CodeChickenLib:${mcVersion}-${cclVersion}:dev"
     compile "codechicken:CodeChickenCore:${mcVersion}-${cccVersion}:dev"
     compile "codechicken:ForgeMultipart:${mcVersion}-${fmpVersion}:dev"
@@ -99,6 +105,18 @@ processResources {
 
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+jar {
+    from {
+        (configurations.provided).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
     }
 }
 

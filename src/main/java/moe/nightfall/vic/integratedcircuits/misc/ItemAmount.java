@@ -5,34 +5,29 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.registry.GameData;
 
-public class ItemAmount 
-{
+public class ItemAmount {
 	public double amount;
 	public int damageValue;
 	public Item item;
-	
-	public ItemAmount(Item item, double amount)
-	{
+
+	public ItemAmount(Item item, double amount) {
 		this.item = item;
 		this.amount = amount;
 	}
-	
-	public ItemAmount(Item item, double amount, int damageValue)
-	{
+
+	public ItemAmount(Item item, double amount, int damageValue) {
 		this(item, amount);
 		this.damageValue = damageValue;
 	}
-	
-	public static ItemAmount readFromNBT(NBTTagCompound compound)
-	{
+
+	public static ItemAmount readFromNBT(NBTTagCompound compound) {
 		Item item = GameData.getItemRegistry().getRaw(compound.getString("id"));
 		int damage = compound.getInteger("damage");
 		double amount = compound.getDouble("amount");
 		return new ItemAmount(item, amount, damage);
 	}
 
-	public NBTTagCompound writeToNBT(NBTTagCompound compound)
-	{
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		compound.setString("id", GameData.getItemRegistry().getNameForObject(item));
 		compound.setInteger("damage", damageValue);
 		compound.setDouble("amount", amount);
@@ -40,8 +35,7 @@ public class ItemAmount
 	}
 
 	@Override
-	public int hashCode() 
-	{
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		long temp;
@@ -53,36 +47,32 @@ public class ItemAmount
 	}
 
 	@Override
-	public boolean equals(Object obj) 
-	{
-		if(this == obj)
+	public boolean equals(Object obj) {
+		if (this == obj)
 			return true;
-		if(obj == null || getClass() != obj.getClass())
+		if (obj == null || getClass() != obj.getClass())
 			return false;
 		ItemAmount other = (ItemAmount) obj;
-		if(Double.doubleToLongBits(amount) != Double.doubleToLongBits(other.amount))
+		if (Double.doubleToLongBits(amount) != Double.doubleToLongBits(other.amount))
 			return false;
-		if(damageValue != other.damageValue)
+		if (damageValue != other.damageValue)
 			return false;
-		if(item == null && other.item != null)
+		if (item == null && other.item != null)
 			return false;
 		else if (item != other.item)
 			return false;
 		return true;
 	}
-	
-	public boolean hasEqualItem(ItemAmount other)
-	{
+
+	public boolean hasEqualItem(ItemAmount other) {
 		return item == other.item && damageValue == other.damageValue;
 	}
-	
-	public ItemStack convertToItemStack()
-	{
-		return new ItemStack(item, (int)Math.abs(amount), damageValue);
+
+	public ItemStack convertToItemStack() {
+		return new ItemStack(item, (int) Math.abs(amount), damageValue);
 	}
-	
-	public ItemStack convertToItemStack(int amount)
-	{
+
+	public ItemStack convertToItemStack(int amount) {
 		return new ItemStack(item, amount, damageValue);
 	}
 }
