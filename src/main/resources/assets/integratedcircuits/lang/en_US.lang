@@ -111,6 +111,8 @@ gui.integratedcircuits.7segment.mode.float.tooltip=Parses a bundled signal as%n1
 gui.integratedcircuits.7segment.mode.binary.tooltip=Outputs a bundled signal%nby its binary digits.
 gui.integratedcircuits.7segment.mode.manual.tooltip=Allows to modify the individual%nsegments with a bundled signal.
 
+gui.integratedcircuits.config.titleline2=Configure IntegratedCircuits here
+
 #config
 config.integratedcircuits.category.parts=Circuit Parts
 config.integratedcircuits.category.parts.tooltip=Enables / Disables circuit parts %nIf you disable ANYTHING, ALL circuits with that part will BREAK! %nCircuits broken in this way will not be fixed when the part is re-enabled. %nThe only way to "fix" the circuits is to edit the blueprint in the CAD to put the part back, %nand then remake and replace the circuits.
