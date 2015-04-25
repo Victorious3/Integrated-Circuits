@@ -78,12 +78,15 @@ dependencies {
     compile "codechicken:ForgeMultipart:${mcVersion}-${fmpVersion}:dev"
     compile "codechicken:NotEnoughItems:${mcVersion}-${neiVersion}:dev"
     
-    compile "mcp.mobius.waila:Waila:${wailaVersion}_${mcVersion}"
+    compile("mcp.mobius.waila:Waila:${wailaVersion}_${mcVersion}") {
+        exclude group: "codechicken"
+	}
 
     compile("mrtjp:ProjectRed:${mcVersion}-${projectredVersion}:dev") {
         exclude group: "cofh"
         exclude group: "thermalexpansion"
         exclude group: "tconstruct"
+        exclude group: "codechicken"
     }
 
     compile "qmunity:QmunityLib:${qmlVersion}:deobf"
