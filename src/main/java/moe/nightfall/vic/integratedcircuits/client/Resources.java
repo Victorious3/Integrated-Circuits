@@ -17,8 +17,6 @@ public class Resources {
 	public static IIcon ICON_IC;
 	public static IIcon ICON_IC_SOCKET;
 	public static IIcon ICON_IC_SEGMENT;
-	public static IIcon ICON_IC_BASE;
-	public static IIcon ICON_IC_BASE_FMP;
 	public static IIcon ICON_IC_WIRE;
 	public static IIcon ICON_IC_WIRE_FLIPPED;
 	public static IIcon ICON_IC_RSWIRE_OFF;
@@ -92,8 +90,6 @@ public class Resources {
 				ICON_IC = map.registerIcon(Constants.MOD_ID + ":ic");
 				ICON_IC_SOCKET = map.registerIcon(Constants.MOD_ID + ":ic_uniform");
 				ICON_IC_SEGMENT = map.registerIcon(Constants.MOD_ID + ":ic_segment");
-				ICON_IC_BASE = map.registerIcon(Constants.MOD_ID + ":ic_base");
-				ICON_IC_BASE_FMP = map.registerIcon(Constants.MOD_ID + ":ic_base_fmp");
 				ICON_IC_WIRE = map.registerIcon(Constants.MOD_ID + ":ic_wire");
 				ICON_IC_WIRE_FLIPPED = new IconFlipped(ICON_IC_WIRE, true, false);
 				ICON_IC_RSWIRE_OFF = map.registerIcon(Constants.MOD_ID + ":ic_rswire_off");

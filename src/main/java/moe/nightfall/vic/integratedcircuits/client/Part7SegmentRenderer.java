@@ -52,7 +52,7 @@ public class Part7SegmentRenderer extends PartRenderer<Gate7Segment> {
 		GL11.glRotatef(180, 0, 1, 0);
 		GL11.glTranslatef(-0.5F, 0, -0.5F);
 
-		GL11.glTranslatef(17 / 64F, 3 / 16F + 0.002F, 11 / 64F);
+		GL11.glTranslatef(17 / 64F, 1 / 16F + 0.002F, 11 / 64F);
 		GL11.glDisable(GL11.GL_LIGHTING);
 		render7Segment(display, 1 / 48F, color);
 		GL11.glEnable(GL11.GL_LIGHTING);
