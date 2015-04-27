@@ -5,7 +5,7 @@ import moe.nightfall.vic.integratedcircuits.ic.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 
-public class PartLatch extends PartCPGate {
+public abstract class PartLatch extends PartCPGate {
 	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
 	protected final BooleanProperty PROP_TMP = new BooleanProperty("TMP", stitcher);
 
