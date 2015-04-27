@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.ic.part.logic;
 
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.ic.part.Part3I1O;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
@@ -18,5 +19,12 @@ public class PartANDGate extends Part3I1O {
 				(!canConnectToSide(pos, parent, s3) || getInputFromSide(pos, parent, s3))
 						&& (!canConnectToSide(pos, parent, s4) || getInputFromSide(pos, parent, s4))
 						&& (!canConnectToSide(pos, parent, s5) || getInputFromSide(pos, parent, s5)));
+	}
+
+	@Override
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+		CircuitPartRenderer.renderPartGate(pos, parent, this, x, y, type);
+
+		CircuitPartRenderer.addQuad(x, y, 7 * 16, 0, 16, 16, this.getRotation(pos, parent));
 	}
 }

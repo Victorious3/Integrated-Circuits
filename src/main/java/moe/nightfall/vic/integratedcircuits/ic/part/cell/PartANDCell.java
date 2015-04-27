@@ -1,8 +1,11 @@
 package moe.nightfall.vic.integratedcircuits.ic.part.cell;
 
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartSimpleGate;
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class PartANDCell extends PartSimpleGate {
@@ -27,6 +30,40 @@ public class PartANDCell extends PartSimpleGate {
 		if (fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH)
 			return getInputFromSide(pos, parent, side.getOpposite());
 		return super.getOutputToSide(pos, parent, side);
+	}
+
+	@Override
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+		Tessellator tes = Tessellator.instance;
+		int rotation = this.getRotation(pos, parent);
+
+		ForgeDirection fd = MiscUtils.rotn(ForgeDirection.NORTH, rotation);
+		if (type == 0
+				&& (this.getOutputToSide(pos, parent, fd) || this.getInputFromSide(pos, parent, fd)
+				|| this.getOutputToSide(pos, parent, fd.getOpposite()) || this.getInputFromSide(pos, parent,
+				fd.getOpposite())))
+			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else
+			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		CircuitPartRenderer.addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
+
+		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
+		if (type == 0
+				&& (this.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || this
+				.getInputFromSide(pos, parent, fd)))
+			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else
+			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		CircuitPartRenderer.addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);
+
+		fd = MiscUtils.rotn(ForgeDirection.WEST, rotation);
+		if (type == 0
+				&& (this.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || this
+				.getInputFromSide(pos, parent, fd)))
+			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		else
+			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+		CircuitPartRenderer.addQuad(x, y, 7 * 16, 2 * 16, 16, 16, rotation);
 	}
 
 	@Override

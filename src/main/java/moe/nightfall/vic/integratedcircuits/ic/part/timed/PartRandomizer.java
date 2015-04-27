@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.ic.part.timed;
 
 import java.util.Random;
 
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
@@ -45,6 +46,13 @@ public class PartRandomizer extends PartDelayedAction {
 		if (s2 == ForgeDirection.NORTH && (rand & 1) != 0)
 			return true;
 		return false;
+	}
+
+	@Override
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+		CircuitPartRenderer.renderPartGate(pos, parent, this, x, y, type);
+
+		CircuitPartRenderer.addQuad(x, y, 5 * 16, 16, 16, 16, this.getRotation(pos, parent));
 	}
 
 	@Override

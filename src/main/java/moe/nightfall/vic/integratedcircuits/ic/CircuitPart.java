@@ -282,4 +282,6 @@ public abstract class CircuitPart {
 				|| getInputFromSide(pos, parent, ForgeDirection.SOUTH)
 				|| getInputFromSide(pos, parent, ForgeDirection.WEST);
 	}
+
+	public abstract void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type);
 }

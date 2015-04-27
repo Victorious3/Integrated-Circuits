@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.ic.part.latch;
 
 import java.util.ArrayList;
 
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
@@ -54,6 +55,13 @@ public class PartRSLatch extends PartLatch {
 				pos, parent, s3))) && b1 && !getProperty(pos, parent, PROP_TMP))
 			return true;
 		return false;
+	}
+
+	@Override
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+		CircuitPartRenderer.renderPartGate(pos, parent, this, x, y, type);
+
+		CircuitPartRenderer.addQuad(x, y, 7 * 16, 16, 16, 16, this.getRotation(pos, parent));
 	}
 
 	@Override

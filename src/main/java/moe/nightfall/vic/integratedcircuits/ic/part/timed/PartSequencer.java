@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.ic.part.timed;
 
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
@@ -8,6 +9,13 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class PartSequencer extends PartTimer {
 	public final IntProperty PROP_OUTPUT_SIDE = new IntProperty("OUTPUT_SIDE", stitcher, 3);
+
+	@Override
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+		CircuitPartRenderer.renderPartGate(pos, parent, this, x, y, type);
+
+		CircuitPartRenderer.addQuad(x, y, 3 * 16, 16, 16, 16, this.getRotation(pos, parent));
+	}
 
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {

@@ -3,35 +3,15 @@ package moe.nightfall.vic.integratedcircuits.ic;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartIOBit;
-import moe.nightfall.vic.integratedcircuits.ic.part.PartMultiplexer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartNull;
-import moe.nightfall.vic.integratedcircuits.ic.part.PartSynchronizer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartTorch;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartANDCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartBufferCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartInvertCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartNullCell;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartRSLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartToggleLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartTransparentLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartANDGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartBufferGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartNANDGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartNORGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartNOTGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartORGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartXNORGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.PartXORGate;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartPulseFormer;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartRandomizer;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartRepeater;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartSequencer;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartStateCell;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.PartTimer;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -50,24 +30,15 @@ public class CircuitPartRenderer {
 	}
 
 	private static void renderPartPayload(Vec2 pos, ICircuit parent, CircuitPart part, double x, double y, int type) {
-		if (part instanceof PartWire)
-			renderPartWire(pos, parent, (PartWire) part, x, y, type);
-		else if (part instanceof PartIOBit)
-			renderPartIOBit(pos, parent, (PartIOBit) part, x, y, type);
-		else if (type == 2 && !(part instanceof PartNull)) {
+		if (type == 2 && !(part instanceof PartNull || part instanceof PartWire || part instanceof PartIOBit)) {
 			Tessellator.instance.setColorRGBA_F(0, 0, 0, 1);
 			addQuad(x, y, 0, 15 * 16, 16, 16);
-		} else if (part instanceof PartNullCell || part instanceof PartInvertCell || part instanceof PartBufferCell)
-			renderPartCell(pos, parent, part, x, y, type);
-		else if (part instanceof PartANDCell)
-			renderPartANDCell(pos, parent, (PartANDCell) part, x, y, type);
-		else if (part instanceof PartCPGate)
-			renderPartGate(pos, parent, (PartCPGate) part, x, y, type);
-		else if (part instanceof PartTorch)
-			renderPartTorch(pos, parent, (PartTorch) part, x, y, type);
+		}
+
+		part.renderPart(pos, parent, x, y, type);
 	}
 
-	private static int checkConnections(Vec2 pos, ICircuit parent, CircuitPart part) {
+	public static int checkConnections(Vec2 pos, ICircuit parent, CircuitPart part) {
 		boolean c1 = false;
 		if (pos.y > 0) {
 			CircuitPart n = part.getNeighbourOnSide(pos, parent, ForgeDirection.NORTH);
@@ -214,79 +185,9 @@ public class CircuitPartRenderer {
 		GL11.glTranslated(-offX, -offY, 0);
 	}
 
-	public static void renderPartIOBit(Vec2 pos, ICircuit parent, PartIOBit bit, double x, double y, int type) {
-		int freq = bit.getFrequency(pos, parent);
-		int rot = bit.getRotation(pos, parent);
-		Tessellator tes = Tessellator.instance;
-
-		if (type == 2) {
-			tes.setColorRGBA(188, 167, 60, 255);
-			addQuad(x, y, 6 * 16, 3 * 16, 16, 16, rot);
-		} else {
-			tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-			addQuad(x, y, 2 * 16, 2 * 16, 16, 16, rot);
-			if (bit.isPowered(pos, parent) && type == 0)
-				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-			else
-				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
-			if (type == 0) {
-				tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
-				addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
-			}
-		}
-	}
-
-	public static void renderPartWire(Vec2 pos, ICircuit parent, PartWire wire, double x, double y, int type) {
-		int color = wire.getColor(pos, parent);
-		Tessellator tes = Tessellator.instance;
-
-		if (type == 0) {
-			switch (color) {
-				case 1:
-					if (wire.getInput(pos, parent))
-						tes.setColorRGBA_F(1F, 0F, 0F, 1F);
-					else
-						tes.setColorRGBA_F(0.4F, 0F, 0F, 1F);
-					break;
-				case 2:
-					if (wire.getInput(pos, parent))
-						tes.setColorRGBA_F(1F, 0.4F, 0F, 1F);
-					else
-						tes.setColorRGBA_F(0.4F, 0.2F, 0F, 1F);
-					break;
-				default:
-					if (wire.getInput(pos, parent))
-						tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-					else
-						tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-					break;
-			}
-		} else
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-
-		int ty = type == 2 ? 3 * 16 : 0;
-
-		int con = checkConnections(pos, parent, wire);
-		if ((con & 12) == 12 && (con & ~12) == 0)
-			addQuad(x, y, 6 * 16, ty, 16, 16);
-		else if ((con & 3) == 3 && (con & ~3) == 0)
-			addQuad(x, y, 5 * 16, ty, 16, 16);
-		else {
-			if ((con & 8) > 0)
-				addQuad(x, y, 2 * 16, ty, 16, 16);
-			if ((con & 4) > 0)
-				addQuad(x, y, 4 * 16, ty, 16, 16);
-			if ((con & 2) > 0)
-				addQuad(x, y, 1 * 16, ty, 16, 16);
-			if ((con & 1) > 0)
-				addQuad(x, y, 3 * 16, ty, 16, 16);
-			addQuad(x, y, 0, ty, 16, 16);
-		}
-	}
-
 	public static void renderPartCell(Vec2 pos, ICircuit parent, CircuitPart cell, double x, double y, int type) {
 		Tessellator tes = Tessellator.instance;
+
 		int rotation = 0;
 		if (cell instanceof PartCPGate)
 			rotation = ((PartCPGate) cell).getRotation(pos, parent);
@@ -309,46 +210,6 @@ public class CircuitPartRenderer {
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else
 			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-
-		if (cell instanceof PartNullCell)
-			addQuad(x, y, 16, 2 * 16, 16, 16, rotation);
-		else if (cell instanceof PartInvertCell)
-			addQuad(x, y, 5 * 16, 2 * 16, 16, 16, rotation);
-		else if (cell instanceof PartBufferCell)
-			addQuad(x, y, 6 * 16, 2 * 16, 16, 16, rotation);
-	}
-
-	public static void renderPartANDCell(Vec2 pos, ICircuit parent, PartANDCell cell, double x, double y, int type) {
-		Tessellator tes = Tessellator.instance;
-		int rotation = cell.getRotation(pos, parent);
-
-		ForgeDirection fd = MiscUtils.rotn(ForgeDirection.NORTH, rotation);
-		if (type == 0
-				&& (cell.getOutputToSide(pos, parent, fd) || cell.getInputFromSide(pos, parent, fd)
-						|| cell.getOutputToSide(pos, parent, fd.getOpposite()) || cell.getInputFromSide(pos, parent,
-						fd.getOpposite())))
-			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-		else
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
-
-		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
-		if (type == 0
-				&& (cell.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || cell
-					.getInputFromSide(pos, parent, fd)))
-			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-		else
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);
-
-		fd = MiscUtils.rotn(ForgeDirection.WEST, rotation);
-		if (type == 0
-				&& (cell.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || cell
-					.getInputFromSide(pos, parent, fd)))
-			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-		else
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 7 * 16, 2 * 16, 16, 16, rotation);
 	}
 
 	public static void renderPartGate(Vec2 pos, ICircuit parent, PartCPGate gate, double x, double y, int type) {
@@ -398,65 +259,6 @@ public class CircuitPartRenderer {
 		}
 
 		tes.setColorRGBA_F(0F, 1F, 0F, 1F);
-
-		// TODO Really, this is horrible. Get rid of it.
-		if (gate instanceof PartNANDGate)
-			addQuad(x, y, 10 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartNORGate)
-			addQuad(x, y, 11 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartXNORGate)
-			addQuad(x, y, 12 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartANDGate)
-			addQuad(x, y, 7 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartORGate)
-			addQuad(x, y, 8 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartXORGate)
-			addQuad(x, y, 9 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartBufferGate)
-			addQuad(x, y, 14 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartNOTGate)
-			addQuad(x, y, 15 * 16, 0, 16, 16, gate.getRotation(pos, parent));
-
-		else if (gate instanceof PartMultiplexer)
-			addQuad(x, y, 0, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartTimer)
-			addQuad(x, y, 2 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartSequencer)
-			addQuad(x, y, 3 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartStateCell)
-			addQuad(x, y, 4 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartRandomizer)
-			addQuad(x, y, 5 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartSynchronizer)
-			addQuad(x, y, 10 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-
-		else if (gate instanceof PartRSLatch)
-			addQuad(x, y, 7 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartToggleLatch)
-			addQuad(x, y, 8 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartTransparentLatch)
-			addQuad(x, y, 9 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-
-		else if (gate instanceof PartRepeater)
-			addQuad(x, y, 16, 16, 16, 16, gate.getRotation(pos, parent));
-		else if (gate instanceof PartPulseFormer)
-			addQuad(x, y, 6 * 16, 16, 16, 16, gate.getRotation(pos, parent));
-	}
-
-	public static void renderPartTorch(Vec2 pos, ICircuit parent, PartTorch torch, double x, double y, int type) {
-		Tessellator.instance.setColorRGBA_F(0F, 1F, 0F, 1F);
-
-		int con = checkConnections(pos, parent, torch);
-		if ((con & 8) > 0)
-			addQuad(x, y, 2 * 16, 0, 16, 16);
-		if ((con & 4) > 0)
-			addQuad(x, y, 4 * 16, 0, 16, 16);
-		if ((con & 2) > 0)
-			addQuad(x, y, 1 * 16, 0, 16, 16);
-		if ((con & 1) > 0)
-			addQuad(x, y, 3 * 16, 0, 16, 16);
-
-		addQuad(x, y, 13 * 16, 0, 16, 16);
 	}
 
 	public static class CircuitRenderWrapper implements ICircuit {

@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.ic.part.timed;
 
 import java.util.ArrayList;
 
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
@@ -68,6 +69,13 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 		if (toInternal(pos, parent, side) == ForgeDirection.SOUTH)
 			return false;
 		return getProperty(pos, parent, PROP_OUT);
+	}
+
+	@Override
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+		CircuitPartRenderer.renderPartGate(pos, parent, this, x, y, type);
+
+		CircuitPartRenderer.addQuad(x, y, 2 * 16, 16, 16, 16, this.getRotation(pos, parent));
 	}
 
 	@Override

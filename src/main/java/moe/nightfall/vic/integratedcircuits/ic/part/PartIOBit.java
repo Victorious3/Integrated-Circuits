@@ -1,15 +1,41 @@
 package moe.nightfall.vic.integratedcircuits.ic.part;
 
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class PartIOBit extends CircuitPart {
 	public final IntProperty PROP_ROTATION = new IntProperty("ROTATION", stitcher, 3);
 	public final IntProperty PROP_FREQUENCY = new IntProperty("FREQUENCY", stitcher, 15);
+
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+		int freq = this.getFrequency(pos, parent);
+		int rot = this.getRotation(pos, parent);
+		Tessellator tes = Tessellator.instance;
+
+		if (type == 2) {
+			tes.setColorRGBA(188, 167, 60, 255);
+			CircuitPartRenderer.addQuad(x, y, 6 * 16, 3 * 16, 16, 16, rot);
+		} else {
+			tes.setColorRGBA_F(1F, 1F, 1F, 1F);
+			CircuitPartRenderer.addQuad(x, y, 2 * 16, 2 * 16, 16, 16, rot);
+			if (this.isPowered(pos, parent) && type == 0)
+				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			else
+				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+			CircuitPartRenderer.addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
+			if (type == 0) {
+				tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
+				CircuitPartRenderer.addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
+			}
+		}
+	}
 
 	public final int getRotation(Vec2 pos, ICircuit parent) {
 		return getProperty(pos, parent, PROP_ROTATION);
