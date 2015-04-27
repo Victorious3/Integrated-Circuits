@@ -92,11 +92,10 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 
 	@Override
 	public void drawScreen(int x, int y, float par3) {
-		GL11.glColor3f(1, 1, 1);
-
 		hoverable = null;
 		drawDefaultBackground();
 
+		GL11.glColor3f(1F, 1F, 1F);
 		this.mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_7SEGMENT_BACKGROUND);
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 
