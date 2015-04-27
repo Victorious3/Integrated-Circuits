@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javassist.util.proxy.MethodFilter;
@@ -19,12 +20,19 @@ import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
+import moe.nightfall.vic.integratedcircuits.client.SocketRenderer;
+import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -32,13 +40,32 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState.ModState;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class GateRegistry implements IGateRegistry {
-	private HashBiMap<String, Class<? extends IGate>> registry = HashBiMap.create();
-	private HashMap<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
-	private HashMap<Class<?>, List<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
+	private BiMap<String, Class<? extends IGate>> registry = HashBiMap.create();
+	private Map<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
+	private Map<Class<?>, List<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
+	private List<String> icons = Lists.newArrayList();
+
+	public GateRegistry() {
+		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void onTextureStitchEvent(TextureStitchEvent event) {
+		TextureMap map = event.map;
+
+		switch (map.getTextureType()) {
+			case 0:
+				for (String iconString : icons) {
+					event.map.registerIcon(iconString);
+				}
+		}
+	}
 
 	@Override
 	public void registerGate(String name, Class<? extends IGate> clazz) {
@@ -75,6 +102,12 @@ public class GateRegistry implements IGateRegistry {
 		} catch (Exception e) {
 			throw new RuntimeException("Coundn't instance gate \"" + name + "\", need an empty constructor!");
 		}
+	}
+
+	@Override
+	public IPartRenderer<ISocket> createDefaultSocketRenderer(String iconName) {
+		icons.add(iconName);
+		return new SocketRenderer(iconName);
 	}
 
 	@Override

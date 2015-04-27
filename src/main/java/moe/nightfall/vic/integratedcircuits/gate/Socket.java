@@ -29,6 +29,8 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Vector3;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class Socket implements ISocket {
 	// Collision box
@@ -317,7 +319,8 @@ public class Socket implements ISocket {
 
 	@Override
 	public byte getBundledInput(int side, int frequency) {
-		return input[side][frequency];
+		byte i = input[side][frequency];
+		return output[side][frequency] > 0 ? 0 : i;
 	}
 
 	@Override
@@ -528,5 +531,11 @@ public class Socket implements ISocket {
 	@Override
 	public void put(String key, Object value) {
 		extendedProperties.put(key, value);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public byte getRedstoneIO() {
+		return io;
 	}
 }

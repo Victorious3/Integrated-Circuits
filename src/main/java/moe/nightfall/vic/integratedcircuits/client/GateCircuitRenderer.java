@@ -17,11 +17,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class PartCircuitRenderer extends PartRenderer<GateCircuit> {
+public class GateCircuitRenderer extends PartRenderer<GateCircuit> {
 	private byte tier;
 	private String name = "NO_NAME";
 
-	public PartCircuitRenderer() {
+	public GateCircuitRenderer() {
 		models.add(new ModelChip());
 	}
 
@@ -66,7 +66,7 @@ public class PartCircuitRenderer extends PartRenderer<GateCircuit> {
 		t.glApply();
 		GL11.glRotatef(90, 1, 0, 0);
 		GL11.glRotatef(180, 0, 0, 1);
-		GL11.glTranslated(-13 / 16D, -5 / 16D, -5.005 / 16D);
+		GL11.glTranslated(-13 / 16D, -5 / 16D, -3.002 / 16D);
 
 		FontRenderer fr = RenderManager.instance.getFontRenderer();
 		if (fr == null)

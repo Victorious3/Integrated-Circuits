@@ -34,6 +34,9 @@ import codechicken.lib.vec.Rotation;
 import com.google.common.collect.Lists;
 
 public class Gate7Segment extends Gate {
+	
+	private final Cuboid6 dimensions = new Cuboid6(1, 0, 2, 15, 2, 14);
+	
 	public int digit = NUMBERS[0];
 	public int color;
 	public boolean isSlave;
@@ -45,12 +48,12 @@ public class Gate7Segment extends Gate {
 	// TODO Relative positions, will break upon moving like this
 	public ArrayList<BlockCoord> slaves = Lists.newArrayList();
 
-	// 0
-	// --
+	//   0
+	//   --
 	// 5|6 |1
-	// --
+	//   --
 	// 4|3 |2
-	// -- #7
+	//   --   # 7
 	public static final byte[] NUMBERS = { 63, 6, 91, 79, 102, 109, 125, 7, 127, 111, 119, 124, 57, 94, 121, 113 }; // 0-F
 
 	// In reverse order
@@ -62,12 +65,6 @@ public class Gate7Segment extends Gate {
 
 	public static final int DOT = 1 << 7;
 	public static final int SIGN = 1 << 6;
-	public static final int MAX_DIGITS = Config.sevenSegmentMaxDigits; // TODO
-																		// Mabye
-																		// a
-																		// config
-																		// option?
-																		// ..Done?
 
 	public static final int MODE_SIMPLE = 0;
 	public static final int MODE_ANALOG = 1;
@@ -119,7 +116,7 @@ public class Gate7Segment extends Gate {
 			seg.updateSlaves();
 
 			break;
-		} while (off < MAX_DIGITS);
+		} while (off < Config.sevenSegmentMaxDigits);
 
 		sendChangesToClient();
 	}
@@ -182,7 +179,7 @@ public class Gate7Segment extends Gate {
 				slaves.add(pos2.copy());
 			else
 				break;
-		} while (off < MAX_DIGITS);
+		} while (off < Config.sevenSegmentMaxDigits);
 
 		updateSlaves();
 		sendChangesToClient();
@@ -319,10 +316,10 @@ public class Gate7Segment extends Gate {
 	}
 
 	private void writeDigit(int digit) {
-		int odisp = this.digit;
-		this.digit = digit;
-		if (odisp != digit)
+		if (this.digit != digit) {
+			this.digit = digit;
 			provider.getWriteStream(10).writeInt(digit);
+		}
 	}
 
 	private boolean isSigned() {
@@ -421,7 +418,6 @@ public class Gate7Segment extends Gate {
 
 	@Override
 	public Cuboid6 getDimension() {
-		// TODO Auto-generated method stub
-		return null;
+		return dimensions;
 	}
 }

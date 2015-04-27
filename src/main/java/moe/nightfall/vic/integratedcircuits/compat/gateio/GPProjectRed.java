@@ -102,7 +102,7 @@ public class GPProjectRed extends GateIOProvider {
 			byte[] power = null;
 			// Corner signal
 			if (((abs ^ 1) & 6) != ((socket.getSide() ^ 1) & 6)) {
-				BlockCoord pos = offset.offset(socket.getSide());
+				BlockCoord pos = offset.copy().offset(socket.getSide());
 				TileEntity t = socket.getWorld().getTileEntity(pos.x, pos.y, pos.z);
 				if (t != null && t instanceof TileMultipart)
 					power = updateBundledPartSignal(((TileMultipart) t).partMap(abs ^ 1), Rotation.rotationTo(abs ^ 1, socket.getSide() ^ 1));
@@ -133,7 +133,7 @@ public class GPProjectRed extends GateIOProvider {
 
 			// Corner signal
 			if (((abs ^ 1) & 6) != ((socket.getSide() ^ 1) & 6)) {
-				BlockCoord pos = offset.offset(socket.getSide());
+				BlockCoord pos = offset.copy().offset(socket.getSide());
 				TileEntity t = socket.getWorld().getTileEntity(pos.x, pos.y, pos.z);
 				if (t != null && t instanceof TileMultipart)
 					power = updatePartSignal(((TileMultipart) t).partMap(abs ^ 1), Rotation.rotationTo(abs ^ 1, socket.getSide() ^ 1));

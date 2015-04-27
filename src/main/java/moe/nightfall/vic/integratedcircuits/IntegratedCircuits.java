@@ -221,8 +221,7 @@ public class IntegratedCircuits {
 		GameRegistry.registerTileEntity(socketClass, Constants.MOD_ID + ".gate");
 
 		if (isFMPLoaded) {
-			PartFactory.register(Constants.MOD_ID + ".socket_fmp",
-					API.getGateRegistry().createProxyClass(FMPartGate.class));
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", API.getGateRegistry().createProxyClass(FMPartGate.class));
 			PartFactory.initialize();
 		}
 

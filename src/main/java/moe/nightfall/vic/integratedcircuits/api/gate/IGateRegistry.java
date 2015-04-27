@@ -15,6 +15,14 @@ public interface IGateRegistry {
 
 	public IGate createGateInstace(String gateID);
 
+	/**
+	 * Creates a default socket renderer with a texture name.
+	 * 
+	 * @param iconName
+	 * @return
+	 */
+	public IPartRenderer<ISocket> createDefaultSocketRenderer(String iconName);
+
 	public void registerGateIOProvider(GateIOProvider instance, Class<?>... classes);
 
 	public <T> T createProxyInstance(Class<T> clazz);

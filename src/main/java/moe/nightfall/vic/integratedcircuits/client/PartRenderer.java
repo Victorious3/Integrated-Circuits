@@ -33,9 +33,9 @@ public abstract class PartRenderer<T> implements IPartRenderer<T> {
 	}
 
 	@Override
-	public void renderStatic(Transformation t, int orient) {
+	public void renderStatic(Transformation t) {
 		for (IComponentModel m : models)
-			m.renderModel(t, orient);
+			m.renderModel(t);
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public abstract class PartRenderer<T> implements IPartRenderer<T> {
 		CCRenderState.pullLightmap();
 		prepareInv(stack);
 		CCRenderState.startDrawing();
-		renderStatic(new Scale(scale).with(new Translation(x, y, z)), 0);
+		renderStatic(new Scale(scale).with(new Translation(x, y, z)));
 		CCRenderState.draw();
 		renderDynamic(new Scale(scale).with(new Translation(x, y, z)));
 	}

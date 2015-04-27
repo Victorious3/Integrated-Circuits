@@ -19,7 +19,7 @@ public interface IPartRenderer<T> extends IItemRenderer {
 
 	public void prepareDynamic(T part, float partialTicks);
 
-	public void renderStatic(Transformation t, int orient);
+	public void renderStatic(Transformation t);
 
 	public void renderDynamic(Transformation t);
 }

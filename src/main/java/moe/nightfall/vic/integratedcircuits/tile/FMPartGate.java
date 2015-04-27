@@ -164,7 +164,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 		if (pass == 0) {
 			CCRenderState.setBrightness(getWorld(), x(), y(), z());
 			ClientProxy.socketRendererFMP.prepare(socket);
-			ClientProxy.socketRendererFMP.renderStatic(new Translation(pos), socket.getOrientation());
+			ClientProxy.socketRendererFMP.renderStatic(new Translation(pos));
 			return true;
 		}
 		return false;

@@ -32,7 +32,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 		CCRenderState.setBrightness(world, x, y, z);
 
 		ClientProxy.socketRenderer.prepare(te.getSocket());
-		ClientProxy.socketRenderer.renderStatic(new Translation(new Vector3(x, y, z)), te.getSocket().getOrientation());
+		ClientProxy.socketRenderer.renderStatic(new Translation(new Vector3(x, y, z)));
 
 		return true;
 	}
@@ -55,7 +55,7 @@ public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements
 
 		CCRenderState.reset();
 		CCRenderState.pullLightmap();
-		CCRenderState.useNormals = true;
+		CCRenderState.setDynamic();
 		TextureUtils.bindAtlas(0);
 
 		ClientProxy.socketRenderer.prepareDynamic(socket, par5);
