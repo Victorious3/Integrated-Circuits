@@ -18,7 +18,7 @@ public class ModelChip implements IComponentModel {
 
 	private static CCModel generateModel() {
 		CCModel m1 = CCModel.quadModel(24);
-		m1.generateBlock(0, 0, 0, 0, 12 / 16D, 3 / 16D, 12 / 16D);
+		m1.generateBlock(0, 2 / 16F, 0, 2 / 16F, 14 / 16D, 3 / 16D, 14 / 16D);
 		m1.computeNormals();
 		return m1;
 	}

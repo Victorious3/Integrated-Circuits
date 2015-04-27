@@ -14,8 +14,8 @@ import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.ItemLaserRenderer;
-import moe.nightfall.vic.integratedcircuits.client.Part7SegmentRenderer;
-import moe.nightfall.vic.integratedcircuits.client.PartCircuitRenderer;
+import moe.nightfall.vic.integratedcircuits.client.Gate7SegmentRenderer;
+import moe.nightfall.vic.integratedcircuits.client.GateCircuitRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.SemiTransparentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.ShaderHelper;
@@ -86,8 +86,8 @@ public class ClientProxy extends CommonProxy {
 	public static Resources resources;
 
 	public static int clientTicks;
-	public static PartCircuitRenderer circuitRenderer;
-	public static Part7SegmentRenderer segmentRenderer;
+	public static GateCircuitRenderer circuitRenderer;
+	public static Gate7SegmentRenderer segmentRenderer;
 
 	public static IPartRenderer<ISocket> socketRenderer;
 	public static IPartRenderer<ISocket> socketRendererFMP;
@@ -109,8 +109,8 @@ public class ClientProxy extends CommonProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(IntegratedCircuits.socketClass, gateRenderer);
 
-		circuitRenderer = new PartCircuitRenderer();
-		segmentRenderer = new Part7SegmentRenderer();
+		circuitRenderer = new GateCircuitRenderer();
+		segmentRenderer = new Gate7SegmentRenderer();
 
 		IntegratedCircuitsAPI.getGateRegistry().registerGateRenderer(GateCircuit.class, circuitRenderer);
 		IntegratedCircuitsAPI.getGateRegistry().registerGateRenderer(Gate7Segment.class, segmentRenderer);

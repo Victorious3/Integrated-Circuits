@@ -20,11 +20,13 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 
 import org.lwjgl.opengl.GL11;
 
+import codechicken.lib.lighting.LightModel;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
@@ -63,6 +65,9 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 	public void renderStatic(Transformation t) {
 		if (socket != null) {
 			Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
+			Transformation rotation2 = Rotation.sideOrientation(socket.getSide(), 0).at(Vector3.center);
+
+			renderConnections(rotation2.with(t));
 			t = rotation.with(t);
 		}
 		super.renderStatic(t);
@@ -71,30 +76,59 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 		if (socket != null && socket.getGate() != null)
 			IntegratedCircuitsAPI.getGateRegistry().getRenderer(socket.getGate().getClass())
 				.renderStatic(t);
-		renderConnections(t);
 	}
 
-	public void renderConnections(Transformation t) {
-		if (socket == null)
+	protected void renderConnections(Transformation t) {
+		if (socket == null || socket.getGate() == null)
 			return;
 		for (int i = 0; i < 4; i++) {
-			int size = 1;
+			double size = getInset(i);
 			EnumConnectionType type = socket.getConnectionTypeAtSide(i);
 			if (type.isRedstone()) {
-				IIcon icon = socket.getRedstoneInput(i) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
-				CCModel m1 = CCModel.quadModel(72);
-				m1.generateBox(0, 0, 2, 7, size, 0.32, 2, 0, 0, 16, 16, 16);
-				m1.generateBox(24, 0, 2, 6, size, 0.16, 1, 9, 0, 16, 16, 16);
-				m1.generateBox(48, 0, 2, 9, size, 0.16, 1, 9, 0, 16, 16, 16);
-				m1.computeNormals();
-				m1.render(t.with(new Rotation(i * 90, 0, 0, 1)), new IconTransformation(icon));
+				// TODO Someone should go over it and standardize every
+				// rotation.
+				IIcon icon = (socket.getRedstoneIO() & 1 << (4 - i) % 4) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
+				CCModel model = CCModel.quadModel(72);
+				model.generateBox(00, 7, 2, 0, 2, 0.32, size, 0, 0, 16, 16, 16);
+				model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
+				model.generateBox(48, 9, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
+				model.computeNormals();
+				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+				model.apply(t);
+				model.computeLighting(LightModel.standardLightModel);
+				model.render(new IconTransformation(icon));
 			} else if (type.isBundled()) {
-				CCModel m1 = CCModel.quadModel(24);
-				m1.generateBlock(0, 5 / 16D, 0.0003, 0, 11 / 16D, 4 / 16D, size / 16D);
-				m1.computeNormals();
-				m1.render(t.with(new Rotation(i * 90, 0, 0, 1)), new IconTransformation(Resources.ICON_IC_WIRE));
+				CCModel model = CCModel.quadModel(24);
+				model.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, size / 16D);
+				model.computeNormals();
+				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+				model.apply(t);
+				model.computeLighting(LightModel.standardLightModel);
+				model.render(new IconTransformation(i == 2 || i == 1 ? Resources.ICON_IC_WIRE_FLIPPED : Resources.ICON_IC_WIRE));
 			}
 		}
+	}
+
+	protected double getInset(int side) {
+		double inset;
+		Cuboid6 dimensions = socket.getGate().getDimension().copy();
+		dimensions.apply(new Rotation(socket.getRotation() * Math.PI / 2, 0, 1, 0).at(new Vector3(8, 8, 8)));
+
+		switch (side) {
+			case 0:
+				inset = dimensions.min.x;
+				break;
+			case 1:
+				inset = 16 - dimensions.max.z;
+				break;
+			case 2:
+				inset = 16 - dimensions.max.x;
+				break;
+			default:
+				inset = dimensions.min.z;
+				break;
+		}
+		return inset;
 	}
 
 	public void renderDynamic(Transformation t) {

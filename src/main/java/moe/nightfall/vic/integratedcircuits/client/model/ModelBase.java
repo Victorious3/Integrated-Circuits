@@ -8,6 +8,7 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.uv.IconTransformation;
 import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Vector3;
 
 public class ModelBase implements IComponentModel {
 	public static CCModel model = generateModel();
@@ -30,7 +31,7 @@ public class ModelBase implements IComponentModel {
 	private static CCModel generateModel() {
 		CCModel m1 = CCModel.quadModel(24);
 		m1.generateBlock(0, 0, 0, 0, 1, 2 / 16D, 1);
-		m1.apply(new Scale(0.99));
+		m1.apply(new Scale(0.999).at(new Vector3(0.5, 0, 0.5)));
 		m1.computeNormals();
 		return m1;
 	}

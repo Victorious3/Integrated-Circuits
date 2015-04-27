@@ -17,11 +17,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class PartCircuitRenderer extends PartRenderer<GateCircuit> {
+public class GateCircuitRenderer extends PartRenderer<GateCircuit> {
 	private byte tier;
 	private String name = "NO_NAME";
 
-	public PartCircuitRenderer() {
+	public GateCircuitRenderer() {
 		models.add(new ModelChip());
 	}
 

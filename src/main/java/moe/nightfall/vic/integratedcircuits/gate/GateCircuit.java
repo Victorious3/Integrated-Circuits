@@ -13,6 +13,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import codechicken.lib.vec.Cuboid6;
 
 public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvider {
+
+	private final Cuboid6 dimensions = new Cuboid6(2, 0, 2, 14, 2, 14);
+
 	public CircuitData circuitData;
 
 	private boolean update;
@@ -146,12 +149,6 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	}
 
 	@Override
-	public Cuboid6 getDimension() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public EnumConnectionType getConnectionTypeAtSide(int side) {
 		return circuitData.getProperties().getModeAtSide((side + 2) % 4);
 	}
@@ -159,5 +156,10 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	@Override
 	public boolean hasComparatorInputAtSide(int side) {
 		return getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG;
+	}
+
+	@Override
+	public Cuboid6 getDimension() {
+		return dimensions;
 	}
 }

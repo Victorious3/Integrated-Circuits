@@ -14,11 +14,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class Part7SegmentRenderer extends PartRenderer<Gate7Segment> {
+public class Gate7SegmentRenderer extends PartRenderer<Gate7Segment> {
 	private int display;
 	private int color;
 
-	public Part7SegmentRenderer() {
+	public Gate7SegmentRenderer() {
 		models.add(new ModelSegment());
 	}
 

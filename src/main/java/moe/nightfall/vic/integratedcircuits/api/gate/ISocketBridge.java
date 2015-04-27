@@ -4,6 +4,8 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public interface ISocketBridge {
 
@@ -56,6 +58,9 @@ public interface ISocketBridge {
 		public int getRotationRel(int abs);
 
 		public void setRotation(int rot);
+
+		@SideOnly(Side.CLIENT)
+		public byte getRedstoneIO();
 
 		public byte[][] getInput();
 

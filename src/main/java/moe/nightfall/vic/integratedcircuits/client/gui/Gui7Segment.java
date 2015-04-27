@@ -2,7 +2,7 @@ package moe.nightfall.vic.integratedcircuits.client.gui;
 
 import java.util.Arrays;
 
-import moe.nightfall.vic.integratedcircuits.client.Part7SegmentRenderer;
+import moe.nightfall.vic.integratedcircuits.client.Gate7SegmentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
@@ -118,7 +118,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(guiLeft + 119, guiTop + 51, 0);
 		GL11.glRotatef(-90, 1, 0, 0);
-		Part7SegmentRenderer.render7Segment(part.digit, 1, part.color);
+		Gate7SegmentRenderer.render7Segment(part.digit, 1, part.color);
 		GL11.glPopMatrix();
 
 		String label = I18n.format("gui.integratedcircuits.7segment.mode");
