@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartIOBit;
@@ -283,5 +285,6 @@ public abstract class CircuitPart {
 				|| getInputFromSide(pos, parent, ForgeDirection.WEST);
 	}
 
-	public abstract void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type);
+	@SideOnly(Side.CLIENT)
+	public abstract void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type);
 }

@@ -2,15 +2,12 @@ package moe.nightfall.vic.integratedcircuits.ic.part;
 
 import java.util.ArrayList;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartRSLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartToggleLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.latch.PartTransparentLatch;
-import moe.nightfall.vic.integratedcircuits.ic.part.logic.*;
-import moe.nightfall.vic.integratedcircuits.ic.part.timed.*;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
@@ -77,4 +74,17 @@ public abstract class PartCPGate extends CircuitPart {
 		cost.add(new ItemAmount(Items.redstone, 0.048));
 		cost.add(new ItemAmount(IntegratedCircuits.itemSiliconDrop, 0.1));
 	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
+		CircuitPartRenderer.renderPartGate(pos, parent, this, x, y, type);
+
+		Vec2 textureOffset = getTextureOffset(pos, parent, x, y, type);
+		CircuitPartRenderer.addQuad(x, y, textureOffset.x * 16, textureOffset.y * 16, 16, 16, this.getRotation(pos, parent));
+	}
+
+	@SideOnly(Side.CLIENT)
+	public abstract Vec2 getTextureOffset(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type);
+
 }

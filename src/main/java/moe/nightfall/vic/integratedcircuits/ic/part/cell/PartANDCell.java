@@ -1,5 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.ic.part.cell;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartSimpleGate;
@@ -33,12 +35,13 @@ public class PartANDCell extends PartSimpleGate {
 	}
 
 	@Override
-	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, int type) {
+	@SideOnly(Side.CLIENT)
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
 		Tessellator tes = Tessellator.instance;
 		int rotation = this.getRotation(pos, parent);
 
 		ForgeDirection fd = MiscUtils.rotn(ForgeDirection.NORTH, rotation);
-		if (type == 0
+		if (type == CircuitPartRenderer.EnumRenderType.GUI
 				&& (this.getOutputToSide(pos, parent, fd) || this.getInputFromSide(pos, parent, fd)
 				|| this.getOutputToSide(pos, parent, fd.getOpposite()) || this.getInputFromSide(pos, parent,
 				fd.getOpposite())))
@@ -48,7 +51,7 @@ public class PartANDCell extends PartSimpleGate {
 		CircuitPartRenderer.addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
 
 		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
-		if (type == 0
+		if (type == CircuitPartRenderer.EnumRenderType.GUI
 				&& (this.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || this
 				.getInputFromSide(pos, parent, fd)))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
@@ -57,13 +60,21 @@ public class PartANDCell extends PartSimpleGate {
 		CircuitPartRenderer.addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);
 
 		fd = MiscUtils.rotn(ForgeDirection.WEST, rotation);
-		if (type == 0
+		if (type == CircuitPartRenderer.EnumRenderType.GUI
 				&& (this.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || this
 				.getInputFromSide(pos, parent, fd)))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else
 			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		CircuitPartRenderer.addQuad(x, y, 7 * 16, 2 * 16, 16, 16, rotation);
+
+		Vec2 textureOffset = getTextureOffset(pos, parent, x, y, type);
+		CircuitPartRenderer.addQuad(x, y, textureOffset.x * 16, textureOffset.y * 16, 16, 16, rotation);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Vec2 getTextureOffset(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
+		return new Vec2(7, 2);
 	}
 
 	@Override

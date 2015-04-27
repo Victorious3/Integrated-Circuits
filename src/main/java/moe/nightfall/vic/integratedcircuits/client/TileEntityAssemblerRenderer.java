@@ -15,7 +15,6 @@ import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -269,8 +268,8 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 
 		if (te.excMatrix != null && te.cdata != null) {
 			GL11.glScalef(16 / (float) te.cdata.getSize(), 16 / (float) te.cdata.getSize(), 1);
-			CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.cdata), 0, 0, te.excMatrix, te.size > 16 ? 2
-					: 1);
+			CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.cdata), 0, 0, te.excMatrix, te.size > 16 ? CircuitPartRenderer.EnumRenderType.WORLD_16x
+					: CircuitPartRenderer.EnumRenderType.WORLD);
 		}
 	}
 
