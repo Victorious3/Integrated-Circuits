@@ -3,6 +3,8 @@ package moe.nightfall.vic.integratedcircuits.tile;
 import java.util.List;
 import java.util.Random;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
@@ -51,11 +53,13 @@ public class BlockSocket extends BlockContainer {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
 		return true;
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) {
 		return true;
 	}
@@ -123,6 +127,7 @@ public class BlockSocket extends BlockContainer {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister ir) {
 	}
 

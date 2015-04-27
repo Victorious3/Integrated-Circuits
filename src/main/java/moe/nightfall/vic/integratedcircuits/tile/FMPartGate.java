@@ -3,6 +3,7 @@ package moe.nightfall.vic.integratedcircuits.tile;
 import java.util.Arrays;
 import java.util.List;
 
+import codechicken.multipart.*;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
@@ -11,7 +12,10 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.compat.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
+import moe.nightfall.vic.integratedcircuits.misc.FixedJCuboidPart;
+import moe.nightfall.vic.integratedcircuits.misc.FixedTCuboidPart;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
+import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,16 +30,6 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import codechicken.multipart.IFaceRedstonePart;
-import codechicken.multipart.IRedstonePart;
-import codechicken.multipart.JCuboidPart;
-import codechicken.multipart.JNormalOcclusion;
-import codechicken.multipart.MultipartHelper;
-import codechicken.multipart.NormalOcclusionTest;
-import codechicken.multipart.RedstoneInteractions;
-import codechicken.multipart.TFacePart;
-import codechicken.multipart.TMultiPart;
-import codechicken.multipart.TileMultipart;
 
 import com.google.common.collect.Lists;
 
@@ -292,5 +286,10 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	@Override
 	public void updateInput() {
 		socket.updateInput();
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void drawBreaking(RenderBlocks renderBlocks) {
+		super.drawBreaking(renderBlocks);
 	}
 }

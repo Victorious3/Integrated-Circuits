@@ -1,5 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
@@ -17,10 +19,12 @@ import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements ISimpleBlockRenderingHandler {
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId,
 			RenderBlocks renderer) {
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);

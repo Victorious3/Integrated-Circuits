@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
@@ -44,6 +46,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
@@ -63,6 +66,7 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -93,6 +97,8 @@ public class ClientProxy extends CommonProxy {
 	public static IPartRenderer<ISocket> socketRendererFMP;
 
 	private static String tooltip;
+	public static Map<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
+	public static List<String> icons = Lists.newArrayList();
 
 	@Override
 	public void initialize() {
@@ -223,6 +229,18 @@ public class ClientProxy extends CommonProxy {
 		}
 	}
 
+	@SubscribeEvent
+	public void onTextureStitchEvent(TextureStitchEvent event) {
+		TextureMap map = event.map;
+
+		switch (map.getTextureType()) {
+			case 0:
+				for (String iconString : icons) {
+					event.map.registerIcon(iconString);
+				}
+		}
+	}
+
 	/** Needed because of reflection. */
 	public static void open7SegmentGUI(Gate7Segment part) {
 		Minecraft.getMinecraft().displayGuiScreen(new Gui7Segment(part));
@@ -266,7 +284,7 @@ public class ClientProxy extends CommonProxy {
 				return Cosplay.NANO;
 			else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno
 																											// skin
-				return Cosplay.CIRNO;
+				return Cosplay.NONE;
 		}
 		return Cosplay.NONE;
 	}

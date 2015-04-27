@@ -23,8 +23,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.client.SocketRenderer;
-import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -32,7 +31,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -40,31 +38,22 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.LoaderState.ModState;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class GateRegistry implements IGateRegistry {
 	private BiMap<String, Class<? extends IGate>> registry = HashBiMap.create();
-	private Map<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
 	private Map<Class<?>, List<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
-	private List<String> icons = Lists.newArrayList();
 
 	public GateRegistry() {
-		MinecraftForge.EVENT_BUS.register(this);
-	}
+		//MinecraftForge.EVENT_BUS.register(this);
+		ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider() {
+			@Override
+			public ClassLoader get(ProxyFactory pf) {
+				return Loader.instance().getModClassLoader();
+			}
+		};
 
-	@SubscribeEvent
-	@SideOnly(Side.CLIENT)
-	public void onTextureStitchEvent(TextureStitchEvent event) {
-		TextureMap map = event.map;
-
-		switch (map.getTextureType()) {
-			case 0:
-				for (String iconString : icons) {
-					event.map.registerIcon(iconString);
-				}
-		}
 	}
 
 	@Override
@@ -75,13 +64,13 @@ public class GateRegistry implements IGateRegistry {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public <T extends IGate> void registerGateRenderer(Class<T> clazz, IPartRenderer<T> renderer) {
-		rendererRegistry.put(clazz, renderer);
+		ClientProxy.rendererRegistry.put(clazz, renderer);
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IPartRenderer<IGate> getRenderer(Class<? extends IGate> clazz) {
-		return (IPartRenderer<IGate>) rendererRegistry.get(clazz);
+		return (IPartRenderer<IGate>) ClientProxy.rendererRegistry.get(clazz);
 	}
 
 	@Override
@@ -105,8 +94,9 @@ public class GateRegistry implements IGateRegistry {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IPartRenderer<ISocket> createDefaultSocketRenderer(String iconName) {
-		icons.add(iconName);
+		ClientProxy.icons.add(iconName);
 		return new SocketRenderer(iconName);
 	}
 
@@ -139,6 +129,7 @@ public class GateRegistry implements IGateRegistry {
 			Proxy proxy = (Proxy) pf.create(new Class[0], new Object[0]);
 			proxy.setHandler(pair.getRight());
 			ioProviderRegistry.put(proxy.getClass(), getIOProviderList(clazz));
+
 			return (T) proxy;
 		} catch (Exception e) {
 			IntegratedCircuits.logger.fatal("Couldn't initialize proxy class for " + clazz);
@@ -151,6 +142,7 @@ public class GateRegistry implements IGateRegistry {
 		ProxyFactory pf = pair.getLeft();
 		pf.setHandler(pair.getRight());
 		Class<T> clazz2 = pf.createClass();
+
 		ioProviderRegistry.put(clazz2, getIOProviderList(clazz));
 		return clazz2;
 	}
@@ -248,6 +240,13 @@ public class GateRegistry implements IGateRegistry {
 				provider.socket = ((ISocketWrapper) self).getSocket();
 			}
 			return thisMethod.invoke(provider, args);
+		}
+	}
+
+	private class ModClassLoaderProvider implements ProxyFactory.ClassLoaderProvider {
+		@Override
+		public ClassLoader get(ProxyFactory pf) {
+			return Loader.instance().getModClassLoader();
 		}
 	}
 }
