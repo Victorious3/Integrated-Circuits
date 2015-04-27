@@ -73,14 +73,12 @@ dependencies {
     
     provided "org.javassist:javassist:3.18.1-GA"
     
-    compile "codechicken:CodeChickenLib:${mcVersion}-${cclVersion}:dev"
+	compile "codechicken:CodeChickenLib:${mcVersion}-${cclVersion}:dev"
     compile "codechicken:CodeChickenCore:${mcVersion}-${cccVersion}:dev"
     compile "codechicken:ForgeMultipart:${mcVersion}-${fmpVersion}:dev"
     compile "codechicken:NotEnoughItems:${mcVersion}-${neiVersion}:dev"
     
-    compile("mcp.mobius.waila:Waila:${wailaVersion}_${mcVersion}") {
-        exclude group: "codechicken"
-	}
+    compile "mcp.mobius.waila:Waila:${wailaVersion}_${mcVersion}"
 
     compile("mrtjp:ProjectRed:${mcVersion}-${projectredVersion}:dev") {
         exclude group: "cofh"
