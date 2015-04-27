@@ -12,10 +12,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.compat.BPDevice;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
-import moe.nightfall.vic.integratedcircuits.misc.FixedJCuboidPart;
-import moe.nightfall.vic.integratedcircuits.misc.FixedTCuboidPart;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -36,7 +33,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper {
+public class FMPartGate extends CuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper {
 	private ISocket socket = new Socket(this);
 
 	// TODO Re-implement
@@ -286,10 +283,5 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	@Override
 	public void updateInput() {
 		socket.updateInput();
-	}
-
-	@SideOnly(Side.CLIENT)
-	public void drawBreaking(RenderBlocks renderBlocks) {
-		super.drawBreaking(renderBlocks);
 	}
 }
