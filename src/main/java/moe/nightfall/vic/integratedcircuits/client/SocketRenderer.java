@@ -93,7 +93,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
 				model.generateBox(48, 9, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
 				model.computeNormals();
-				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+				model.apply(new Rotation((i - socket.getRotation()) * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
 				model.apply(t);
 				model.computeLighting(LightModel.standardLightModel);
 				model.render(new IconTransformation(icon));
