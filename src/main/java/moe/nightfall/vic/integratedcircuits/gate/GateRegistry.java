@@ -24,7 +24,6 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.client.SocketRenderer;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
-import net.minecraftforge.common.MinecraftForge;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
@@ -46,13 +45,6 @@ public class GateRegistry implements IGateRegistry {
 	private Map<Class<?>, List<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
 
 	public GateRegistry() {
-		//MinecraftForge.EVENT_BUS.register(this);
-		ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider() {
-			@Override
-			public ClassLoader get(ProxyFactory pf) {
-				return Loader.instance().getModClassLoader();
-			}
-		};
 
 	}
 
@@ -142,7 +134,6 @@ public class GateRegistry implements IGateRegistry {
 		ProxyFactory pf = pair.getLeft();
 		pf.setHandler(pair.getRight());
 		Class<T> clazz2 = pf.createClass();
-
 		ioProviderRegistry.put(clazz2, getIOProviderList(clazz));
 		return clazz2;
 	}
@@ -240,13 +231,6 @@ public class GateRegistry implements IGateRegistry {
 				provider.socket = ((ISocketWrapper) self).getSocket();
 			}
 			return thisMethod.invoke(provider, args);
-		}
-	}
-
-	private class ModClassLoaderProvider implements ProxyFactory.ClassLoaderProvider {
-		@Override
-		public ClassLoader get(ProxyFactory pf) {
-			return Loader.instance().getModClassLoader();
 		}
 	}
 }

@@ -33,7 +33,7 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class FMPartGate extends CuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper {
+public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper {
 	private ISocket socket = new Socket(this);
 
 	// TODO Re-implement
