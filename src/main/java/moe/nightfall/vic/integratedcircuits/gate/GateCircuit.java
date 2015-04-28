@@ -95,25 +95,6 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 			circuitData.updateMatrix();
 	}
 
-	// TODO Re-implement comparator input
-	/*
-	 * public boolean hasComparatorInput(int side) { int r =
-	 * getRotationAbs(side); int abs = Rotation.rotateSide(getSide(), r);
-	 * 
-	 * BlockCoord pos = provider.getPos().offset(abs); Block b =
-	 * provider.getWorld().getBlock(pos.x, pos.y, pos.z); return
-	 * b.hasComparatorInputOverride(); }
-	 * 
-	 * public int updateComparatorInput(int side) { int r =
-	 * getRotationAbs(side); int abs = Rotation.rotateSide(getSide(), r);
-	 * 
-	 * BlockCoord pos = provider.getPos().offset(abs); Block b =
-	 * provider.getWorld().getBlock(pos.x, pos.y, pos.z); if(b != null &&
-	 * b.hasComparatorInputOverride()) return
-	 * b.getComparatorInputOverride(provider.getWorld(), pos.x, pos.y, pos.z,
-	 * abs ^ 1); return 0; }
-	 */
-
 	@Override
 	public void setCircuitData(CircuitData data) {
 		this.circuitData = data;
