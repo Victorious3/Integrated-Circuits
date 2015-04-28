@@ -12,16 +12,16 @@ required because TCuboidPart doesnt use the SideOnly annotation
  */
 public abstract class CuboidPart extends TMultiPart implements ICuboidPart {
     public Iterable<IndexedCuboid6> getSubParts() {
-        return getSubParts();
+        return super.getSubParts();
     }
 
     public Iterable<Cuboid6> getCollisionBoxes() {
-        return getCollisionBoxes();
+        return super.getCollisionBoxes();
     }
 
     @SideOnly(Side.CLIENT)
     public void drawBreaking(RenderBlocks renderBlocks) {
-        drawBreaking(renderBlocks);
+        super.drawBreaking(renderBlocks);
     }
 
     public CuboidPart() {
