@@ -114,10 +114,10 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) {
-		GL11.glColor3f(1, 1, 1);
 		drawDefaultBackground();
 		hoverable = null;
 
+		GL11.glColor3f(1F, 1F, 1F);
 		this.mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_ASSEMBLER_BACKGROUND);
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, this.xSize, this.ySize);
 
