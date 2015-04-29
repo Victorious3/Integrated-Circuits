@@ -87,15 +87,25 @@ public class ContainerAssembler extends ContainerBase {
 	
 	@Override
 	protected boolean doTransferStack(ItemStack stack, int slot) {
-		if((slot < 9 || slot >= 13) && stack.getItem() == IntegratedCircuits.itemLaser) {
+		if(slot >= 13 && stack.getItem() == IntegratedCircuits.itemLaser) {
+			//Transfer lasers to laser slots
 			if(!mergeItemStack(stack, 9, 13, false))
 				return false;
 		} else if(slot < 13) {
+			//Transfer from machine to player
 			if(!mergeItemStack(stack, 13, inventorySlots.size(), false))
 				return false;
 		} else {
-			if(!mergeItemStack(stack, 1, 9, false))
-				return false;
+			//Transfer materials from player to machine
+			if(!mergeItemStack(stack, 1, 9, false)) {
+				if(slot < 40) {
+					//Transfer from inventoy into hotbar
+					if(!mergeItemStack(stack, 40, 49, false))
+						return false;
+					//Transfer from hotbar into inventory
+				} else if(!mergeItemStack(stack, 13, 40, false))
+					return false;
+			}
 		}
 		return true;
 	}
