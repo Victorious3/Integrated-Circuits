@@ -22,8 +22,9 @@ public class ItemSocketFMP extends JItemMultiPart {
 	}
 
 	@Override
-	public TMultiPart newPart(ItemStack stack, EntityPlayer player, World world, BlockCoord crd, int arg4, Vector3 arg5) {
+	public TMultiPart newPart(ItemStack stack, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 arg5) {
 		FMPartGate part = (FMPartGate) MultiPartRegistry.createPart(Constants.MOD_ID + ".socket_fmp", false);
+		part.getSocket().preparePlacement(player, pos, side, stack);
 		return part;
 	}
 

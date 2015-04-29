@@ -7,7 +7,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 
 public class ItemSocket extends ItemBase {
@@ -17,15 +16,9 @@ public class ItemSocket extends ItemBase {
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side,
-			float hitX, float hitY, float hitZ) {
+	public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
 		BlockCoord pos = new BlockCoord(x, y, z);
 		Vector3 vhit = new Vector3(hitX, hitY, hitZ);
-		double d = getHitDepth(vhit, side);
-
-		if (d < 1 && place(stack, player, world, pos, side, vhit))
-			return true;
-
 		pos.offset(side);
 		return place(stack, player, world, pos, side, vhit);
 	}
@@ -46,9 +39,5 @@ public class ItemSocket extends ItemBase {
 			return true;
 		}
 		return false;
-	}
-
-	public double getHitDepth(Vector3 vhit, int side) {
-		return vhit.copy().scalarProject(Rotation.axes[side]) + (side % 2 ^ 1);
 	}
 }
