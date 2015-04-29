@@ -8,13 +8,14 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class ContainerAssembler extends Container {
+public class ContainerAssembler extends ContainerBase {
 	public TileEntityAssembler tileentity;
 
 	public ContainerAssembler(IInventory playerInventory, final TileEntityAssembler tileentity) {
 		this.tileentity = tileentity;
 		this.tileentity.openInventory();
 
+		//Disk slot: 0
 		this.addSlotToContainer(new Slot(this.tileentity, 0, 8, 8) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
@@ -26,6 +27,8 @@ public class ContainerAssembler extends Container {
 				return false;
 			}
 		});
+		
+		//PCB slot: 1
 		this.addSlotToContainer(new Slot(this.tileentity, 1, 8, 113) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
@@ -38,9 +41,11 @@ public class ContainerAssembler extends Container {
 			}
 		});
 
+		//Material input slots: 2-8
 		for (int i = 0; i < 7; i++)
 			this.addSlotToContainer(new Slot(this.tileentity, i + 2, 40 + i * 18, 113));
 
+		//Laser slots: 9-12
 		for (int i = 0; i < 4; i++)
 			this.addSlotToContainer(new Slot(this.tileentity, i + 9, 148, 12 + i * 18) {
 				@Override
@@ -55,29 +60,13 @@ public class ContainerAssembler extends Container {
 
 				@Override
 				public boolean canTakeStack(EntityPlayer player) {
-					return tileentity.getStatus() != tileentity.RUNNING;
+					return tileentity.getStatus() != TileEntityAssembler.RUNNING;
 				}
 			});
 
-		for (int i = 0; i < 3; i++)
-			for (int j = 0; j < 9; j++)
-				this.addSlotToContainer(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 140 + i * 18));
-		for (int i = 0; i < 9; i++)
-			this.addSlotToContainer(new Slot(playerInventory, i, 8 + i * 18, 198));
-	}
-
-	/**
-	 * Gets the current amount that is available of an item type, crawls the
-	 * custom inventory
-	 **/
-	public int getAmountOf(Item item) {
-		int amount = 0;
-		for (int i = 0; i < 7; i++) {
-			Slot s = getSlot(i + 2);
-			if (s.getHasStack() && s.getStack().getItem() == item)
-				amount += s.getStack().stackSize;
-		}
-		return amount;
+		//Player inventory slots: 13-39
+		//Player hotbar slots: 40-48
+		addPlayerInv(playerInventory, 8, 140);
 	}
 
 	@Override
@@ -95,44 +84,19 @@ public class ContainerAssembler extends Container {
 	public boolean canDragIntoSlot(Slot slot) {
 		return slot.slotNumber > 1;
 	}
-
+	
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer player, int id) {
-		Slot slot = getSlot(id);
-		ItemStack stack = slot.getStack();
-
-		if (slot != null && slot.getHasStack() && slot.canTakeStack(player)) {
-			ItemStack stack1 = stack.copy();
-			if ((id < 9 || id > 13) && stack.getItem() == IntegratedCircuits.itemLaser) {
-				// Good that mergeItemStack doesn't care about the slot
-				// properties...
-				for (int i = 9; i < 13; i++) {
-					Slot slot2 = getSlot(i);
-					if (!slot2.getHasStack()) {
-						stack.stackSize--;
-						stack1.stackSize = 1;
-						slot2.putStack(stack1);
-						slot2.onSlotChanged();
-						break;
-					}
-				}
-			} else if (id < 13) {
-				if (!mergeItemStack(stack, 13, getInventory().size() - 1, false))
-					return null;
-			} else if (id >= 13) {
-				if (!mergeItemStack(stack, 2, 9, false))
-					return null;
-			}
-
-			if (stack.stackSize == 0)
-				slot.putStack(null);
-			else
-				slot.onSlotChanged();
-
-			if (stack.stackSize == stack1.stackSize)
-				return null;
-			slot.onPickupFromSlot(player, stack);
+	protected boolean doTransferStack(ItemStack stack, int slot) {
+		if((slot < 9 || slot >= 13) && stack.getItem() == IntegratedCircuits.itemLaser) {
+			if(!mergeItemStack(stack, 9, 13, false))
+				return false;
+		} else if(slot < 13) {
+			if(!mergeItemStack(stack, 13, inventorySlots.size(), false))
+				return false;
+		} else {
+			if(!mergeItemStack(stack, 1, 9, false))
+				return false;
 		}
-		return stack;
+		return true;
 	}
 }
