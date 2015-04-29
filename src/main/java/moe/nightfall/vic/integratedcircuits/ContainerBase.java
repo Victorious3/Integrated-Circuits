@@ -47,6 +47,72 @@ public abstract class ContainerBase extends Container {
 	}
 	
 	/**
+	 * Gets the current amount that is available of an item type, crawls the
+	 * custom inventory
+	 **/
+	public int getAmountOf(Item item) {
+		int amount = 0;
+		for (int i = 0; i < 7; i++) {
+			Slot s = getSlot(i + 2);
+			if (s.getHasStack() && s.getStack().getItem() == item)
+				amount += s.getStack().stackSize;
+		}
+		return amount;
+	}
+	
+	@Override
+	protected boolean mergeItemStack(ItemStack stack, int begin, int end, boolean reverse) {
+		boolean changed = false;
+		if (stack.isStackable()) {
+			int i = reverse ? end - 1 : begin;
+			while (i >= begin && i < end && stack.stackSize > 0) {
+				Slot slot = (Slot) inventorySlots.get(i);
+				ItemStack stackInSlot = slot.getStack();
+				if (stackInSlot != null && stackInSlot.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(stackInSlot, stack)) {
+					int newSize = stackInSlot.stackSize + stack.stackSize;
+					int maxSize = Math.min(stack.getMaxStackSize(), slot.getSlotStackLimit());
+					if (newSize <= maxSize) {
+						stack.stackSize = 0;
+						stackInSlot.stackSize = newSize;
+						slot.onSlotChanged();
+						changed = true;
+					} else if (stackInSlot.stackSize < maxSize) {
+						stack.stackSize -= maxSize - stackInSlot.stackSize;
+						stackInSlot.stackSize = maxSize;
+						slot.onSlotChanged();
+						changed = true;
+					}
+				}
+				if (reverse)
+					i--;
+				else
+					i++;
+			}
+		}
+		if (stack.stackSize > 0) {
+			int i = reverse ? end - 1 : begin;
+			while (i >= begin && i < end && stack.stackSize > 0) {
+				Slot slot = (Slot) inventorySlots.get(i);
+				if (slot.getStack() == null && slot.isItemValid(stack)) {
+					int maxSize = Math.min(stack.getMaxStackSize(), slot.getSlotStackLimit());
+					ItemStack stackInSlot = stack.copy();
+					stackInSlot.stackSize = Math.min(stack.stackSize, maxSize);
+					stack.stackSize -= stackInSlot.stackSize;
+					slot.putStack(stackInSlot);
+					slot.onSlotChanged();
+					changed = true;
+					break;
+				}
+				if (reverse)
+					i--;
+				else
+					i++;
+			}
+		}
+		return changed;
+	}
+	
+	/**
 	 * Adds the slots for the player inventory to the container at the given coordinates.
 	 */
 	protected void addPlayerInv(IInventory invPlayer, int x, int y) {
@@ -64,17 +130,4 @@ public abstract class ContainerBase extends Container {
 	 */
 	protected abstract boolean doTransferStack(ItemStack stack, int slot);
 	
-	/**
-	 * Gets the current amount that is available of an item type, crawls the
-	 * custom inventory
-	 **/
-	public int getAmountOf(Item item) {
-		int amount = 0;
-		for (int i = 0; i < 7; i++) {
-			Slot s = getSlot(i + 2);
-			if (s.getHasStack() && s.getStack().getItem() == item)
-				amount += s.getStack().stackSize;
-		}
-		return amount;
-	}
 }
