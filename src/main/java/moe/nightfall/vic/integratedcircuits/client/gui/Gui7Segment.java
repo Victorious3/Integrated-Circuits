@@ -39,12 +39,18 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 		guiLeft = (width - xSize) / 2;
 		guiTop = (height - ySize) / 2;
 
-		buttonList
-			.add(cbMaster = (new GuiCheckBoxExt(1, guiLeft + 15, guiTop + 50, I18n
-				.format("gui.integratedcircuits.7segment.master"), false, null, this).setColor(0)
-				.setDropShadow(false)));
-		buttonList.add(cbSlave = (new GuiCheckBoxExt(2, guiLeft + 15, guiTop + 70, I18n
-			.format("gui.integratedcircuits.7segment.slave"), true, null, this).setColor(0).setDropShadow(false)));
+		cbMaster = (new GuiCheckBoxExt(1, guiLeft + 15, guiTop + 50,
+				I18n.format("gui.integratedcircuits.7segment.master"), false, null, this)
+				.setColor(0)
+				.setDropShadow(false));
+		
+		cbSlave = (new GuiCheckBoxExt(2, guiLeft + 15, guiTop + 70,
+				I18n.format("gui.integratedcircuits.7segment.slave"), true, null, this)
+				.setColor(0)
+				.setDropShadow(false));
+		
+		buttonList.add(cbMaster);
+		buttonList.add(cbSlave);
 
 		buttonList.add(dropdown = (new GuiDropdown(0, guiLeft + 45, guiTop + 23, 90, 15, Arrays.asList(
 				I18n.format("gui.integratedcircuits.7segment.mode.simple"),
@@ -86,8 +92,8 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 			} else
 				dropdown.setEnabled(true);
 		}
-		CommonProxy.networkWrapper.sendToServer(new Packet7SegmentChangeMode(part.getProvider(), dropdown
-			.getSelectedElement(), cbSlave.isChecked()));
+		CommonProxy.networkWrapper.sendToServer(new Packet7SegmentChangeMode(part.getProvider(),
+				dropdown.getSelectedElement(), cbSlave.isChecked()));
 	}
 
 	@Override
@@ -99,8 +105,7 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 		this.mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_7SEGMENT_BACKGROUND);
 		drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 
-		if (!(x >= guiLeft + 119 && x < guiLeft + 119 + 23 && y >= guiTop + 51 && y < guiTop + 51 + 33 && !dropdown
-			.isOpen()))
+		if (!(x >= guiLeft + 119 && x < guiLeft + 119 + 23 && y >= guiTop + 51 && y < guiTop + 51 + 33 && !dropdown.isOpen()))
 			drawTexturedModalRect(guiLeft + 119, guiTop + 51, 150, 0, 23, 33);
 
 		int display = part.digit;
