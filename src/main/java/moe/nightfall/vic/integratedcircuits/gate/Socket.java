@@ -109,7 +109,8 @@ public class Socket implements ISocket {
 
 	@Override
 	public void notifyPartChange() {
-		updateRedstoneIO();
+		if(!provider.getWorld().isRemote)
+			updateRedstoneIO();
 		provider.notifyPartChange();
 	}
 
