@@ -65,10 +65,9 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 	public void renderStatic(Transformation t) {
 		if (socket != null) {
 			Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
-			Transformation rotation2 = Rotation.sideOrientation(socket.getSide(), 0).at(Vector3.center);
 
-			renderConnections(rotation2.with(t));
 			t = rotation.with(t);
+			renderConnections(t);
 		}
 		super.renderStatic(t);
 
