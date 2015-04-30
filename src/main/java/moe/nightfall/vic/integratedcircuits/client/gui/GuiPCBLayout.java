@@ -7,12 +7,15 @@ import java.util.List;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.ContainerPCBLayout;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiCallback.Action;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartNull;
-import moe.nightfall.vic.integratedcircuits.ic.part.PartTorch;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartNullCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.timed.IConfigurableDelay;
@@ -25,12 +28,6 @@ import moe.nightfall.vic.integratedcircuits.net.PacketPCBClear;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBIO;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
-
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiCallback.Action;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
-
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.ScaledResolution;
@@ -153,20 +150,17 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		int currentPosition = cy + 47;
 		for (CircuitPart.Category category : CircuitPart.Category.values()) {
-			System.out.println(category);
 			List<CircuitPart> parts = CircuitPart.getParts(category);
 			// If the part hasn't got a category, or there are no parts in the
 			// category, do not add the button for the category.
 			if (category == CircuitPart.Category.NONE || parts.size() == 0)
 				continue;
-			if (category == CircuitPart.Category.WIRE)
-				// Wires are strange. Blame Vic.
+			if (category == CircuitPart.Category.WIRE) {
 				this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class),
-						Arrays.asList(new CircuitRenderWrapper(PartWire.class, 1 << 4), new CircuitRenderWrapper(
-								PartWire.class, 2 << 4)), this));
-			else
-				this.buttonList.add(new GuiPartChooser(7, cx + 220, currentPosition, GuiPartChooser
-					.getRenderWrapperParts(parts), this));
+						Arrays.asList(new CircuitRenderWrapper(PartWire.class, 1 << 4), new CircuitRenderWrapper(PartWire.class, 2 << 4)), this));
+			} else {
+				this.buttonList.add(new GuiPartChooser(7, cx + 220, currentPosition, GuiPartChooser.getRenderWrapperParts(parts), this));
+			}
 			currentPosition += 21;
 		}
 

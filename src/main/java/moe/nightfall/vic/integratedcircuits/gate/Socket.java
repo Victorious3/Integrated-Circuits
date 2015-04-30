@@ -109,7 +109,8 @@ public class Socket implements ISocket {
 
 	@Override
 	public void notifyPartChange() {
-		updateRedstoneIO();
+		if(!provider.getWorld().isRemote)
+			updateRedstoneIO();
 		provider.notifyPartChange();
 	}
 
@@ -317,15 +318,35 @@ public class Socket implements ISocket {
 		return getBundledInput(side, 0);
 	}
 
+	// TODO Give the higher one the precedence in case of analog, see
+	// https://github.com/Victorious3/Integrated-Circuits/issues/50
+
 	@Override
 	public byte getBundledInput(int side, int frequency) {
+		if (getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG) {
+			if (getRedstoneOutput(side) != 0)
+				return 0;
+		}
 		byte i = input[side][frequency];
 		return output[side][frequency] > 0 ? 0 : i;
 	}
 
 	@Override
 	public byte getRedstoneOutput(int side) {
-		return getBundledOutput(side, 0);
+		EnumConnectionType conType = getConnectionTypeAtSide(side);
+		if (conType == EnumConnectionType.ANALOG) {
+			// Convert digital to analog, take highest output
+			byte a = 0;
+			byte[] out = getOutput()[side];
+			for (byte i = 0; i < 16; i++) {
+				if (out[i] != 0)
+					a = i;
+			}
+			return a;
+		} else if (conType == EnumConnectionType.SIMPLE) {
+			return getBundledOutput(side, 0);
+		}
+		return 0;
 	}
 
 	@Override

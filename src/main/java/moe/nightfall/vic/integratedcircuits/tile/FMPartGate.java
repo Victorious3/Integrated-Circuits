@@ -3,7 +3,6 @@ package moe.nightfall.vic.integratedcircuits.tile;
 import java.util.Arrays;
 import java.util.List;
 
-import codechicken.multipart.*;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
@@ -27,6 +26,16 @@ import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
+import codechicken.multipart.IFaceRedstonePart;
+import codechicken.multipart.IRedstonePart;
+import codechicken.multipart.JCuboidPart;
+import codechicken.multipart.JNormalOcclusion;
+import codechicken.multipart.MultipartHelper;
+import codechicken.multipart.NormalOcclusionTest;
+import codechicken.multipart.RedstoneInteractions;
+import codechicken.multipart.TFacePart;
+import codechicken.multipart.TMultiPart;
+import codechicken.multipart.TileMultipart;
 
 import com.google.common.collect.Lists;
 
@@ -194,7 +203,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 			return 0;
 		int rot = socket.getSideRel(arg0);
 		EnumConnectionType type = socket.getConnectionTypeAtSide(rot);
-		if (type.isRedstone())
+		if (type.isBundled())
 			return 0;
 		return socket.getRedstoneOutput(rot);
 	}
