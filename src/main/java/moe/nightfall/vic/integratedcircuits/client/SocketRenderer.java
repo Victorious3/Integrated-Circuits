@@ -86,7 +86,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 			double size = getInset(i);
 			EnumConnectionType type = socket.getConnectionTypeAtSide(i);
 			if (type.isRedstone()) {
-				IIcon icon = (socket.getRedstoneIO() & 1 << i) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
+				IIcon icon = (socket.getRedstoneIO() & 1 << (4 -i) % 4) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
 				CCModel model = CCModel.quadModel(72);
 				model.generateBox(00, 7, 2, 0, 2, 0.32, size, 0, 0, 16, 16, 16);
 				model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
