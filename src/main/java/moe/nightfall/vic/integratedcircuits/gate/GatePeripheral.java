@@ -3,17 +3,19 @@ package moe.nightfall.vic.integratedcircuits.gate;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import cpw.mods.fml.common.Optional.Interface;
 import dan200.computercraft.api.filesystem.IMount;
@@ -23,38 +25,57 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
 public abstract class GatePeripheral implements IPeripheral {
-	@Override
-	public final String[] getMethodNames() {
-		MethodProvider provider = getMethodProvider();
-		String[] ret = new String[provider.methods.size()];
-		for (int i = 0; i < provider.methods.size(); i++)
-			ret[i] = provider.methods.get(i).getName();
-		return ret;
-	}
 
-	@Override
-	public final Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments)
-			throws LuaException, InterruptedException {
-		MethodProvider provider = getMethodProvider();
-		Method m = provider.methods.get(method);
-		m.match(arguments);
-		return callMethod(m, arguments);
-	}
+	private final Map<String, Method> methods = Maps.newLinkedHashMap();
+	private final String[] methodNames;
 
-	public final Object[] callMethod(String method, Object[] arguments) throws LuaException, InterruptedException {
-		MethodProvider provider = getMethodProvider();
-		for (int i = 0; i < provider.methods.size(); i++) {
-			Method m = provider.methods.get(i);
-			if (m.name.equals(method)) {
-				return callMethod(m, arguments);
+	public GatePeripheral() {
+		for (Method m : getClass().getMethods()) {
+			if (m.getAnnotation(LuaMethod.class) != null) {
+				methods.put(m.getName(), m);
 			}
 		}
-		return null;
+		methodNames = methods.keySet().toArray(new String[methods.size()]);
 	}
 
-	public abstract Object[] callMethod(Method method, Object[] arguments) throws LuaException, InterruptedException;
+	@Override
+	public final String[] getMethodNames() {
+		return methodNames;
+	}
 
-	public abstract MethodProvider getMethodProvider();
+	@Override
+	public final Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException {
+		String name = (String) methods.keySet().toArray()[method];
+		return callMethod(name, arguments);
+	}
+
+	public final Object[] callMethod(String name, Object[] arguments) throws LuaException, InterruptedException {
+		try {
+			Method m = methods.get(name);
+			if (m == null) {
+				return null;
+			}
+			if (arguments.length != m.getParameterCount()) {
+				throw new LuaException("Illegal amount of parameters!");
+			}
+			for (int i = 0; i < m.getParameterTypes().length; i++) {
+				if (!m.getParameterTypes()[i].isAssignableFrom(arguments[i].getClass()))
+					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + m.getParameterTypes()[i] + "', got '" + arguments[i].getClass() + "'.");
+			}
+			Object o = m.invoke(this, arguments);
+			if (o == null) {
+				return null;
+			} else if (m.getReturnType().isArray()) {
+				return (Object[]) o;
+			} else {
+				return new Object[] { o };
+			}
+		} catch (LuaException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new LuaException(e.getMessage());
+		}
+	}
 
 	@Override
 	public void detach(IComputerAccess computer) {
@@ -69,37 +90,8 @@ public abstract class GatePeripheral implements IPeripheral {
 		return other.getType().equals(getType());
 	}
 
-	public static class Method {
-		private String name;
-		private Class[] parameters;
+	public static @interface LuaMethod {
 
-		private Method(String name, Class[] parameters) {
-			this.name = name;
-			this.parameters = parameters;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void match(Object[] args) throws LuaException {
-			if (args.length != parameters.length)
-				throw new LuaException("Illegal amount of parameters!");
-			for (int i = 0; i < parameters.length; i++) {
-				if (!parameters[i].isAssignableFrom(args[i].getClass()))
-					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + parameters[i]
-							+ "', got '" + args[i].getClass() + "'.");
-			}
-		}
-	}
-
-	public static class MethodProvider {
-		private ArrayList<Method> methods = Lists.newArrayList();
-
-		public MethodProvider registerMethod(String name, Class... parameters) {
-			methods.add(new Method(name, parameters));
-			return this;
-		}
 	}
 
 	@Interface(iface = "dan200.computercraft.api.filesystem.IMount", modid = "ComputerCraft")

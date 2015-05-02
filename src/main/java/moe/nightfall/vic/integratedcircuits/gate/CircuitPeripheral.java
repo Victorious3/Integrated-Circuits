@@ -6,23 +6,14 @@ import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraftforge.common.util.ForgeDirection;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-// TODO TODO TODO Cleanup!
+// TODO Test me!
 public class CircuitPeripheral extends GatePeripheral {
-	private static MethodProvider methodProvider = new MethodProvider()
-		.registerMethod("getGateAt", Double.class, Double.class)
-		.registerMethod("getPowerTo", Double.class, Double.class)
-		.registerMethod("getGateProperties", Double.class, Double.class)
-		.registerMethod("getGateProperty", Double.class, Double.class, String.class)
-		.registerMethod("setGateProperty", Double.class, Double.class, String.class, Object.class)
-		.registerMethod("getOutputToSide", Double.class).registerMethod("getInputFromSide", Double.class)
-		.registerMethod("getGateName", Double.class).registerMethod("getSize").registerMethod("getName")
-		.registerMethod("getAuthor");
 
 	private GateCircuit circuit;
 
@@ -35,95 +26,117 @@ public class CircuitPeripheral extends GatePeripheral {
 		return "ic_circuit";
 	}
 
-	@Override
-	public Object[] callMethod(Method method, Object[] arguments) throws LuaException, InterruptedException {
+	@LuaMethod
+	public Object[] getGateAt(double x, double y) {
 		CircuitData cdata = circuit.getCircuitData();
-		synchronized (cdata) {
-			if (method.getName().equals("getSize"))
-				return new Object[] { cdata.getSize() };
-			else if (method.getName().equals("getName"))
-				return new Object[] { cdata.getProperties().getName() };
-			else if (method.getName().equals("getAuthor"))
-				return new Object[] { cdata.getProperties().getAuthor() };
-			else if (method.getName().equals("getOutputToSide") || method.getName().equals("getInputFromSide")) {
-				int side = ((Double) arguments[0]).intValue();
-				if (side < 0 || side > 3)
-					throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
+		Vec2 pos = getPos(x, y);
+		CircuitPart cp = cdata.getPart(pos);
+		String name = cp.getName(pos, circuit);
+		int id = CircuitPart.getId(cp);
+		int meta = cp.getState(pos, circuit);
+		return new Object[] { name, id, meta };
+	}
 
-				byte[] value = circuit.provider.getOutput()[side];
-				if (method.getName().equals("getOutputToSide"))
-					value = circuit.provider.getOutput()[side];
-				else
-					value = circuit.provider.getInput()[side];
+	@LuaMethod
+	public boolean[] getPowerTo(double x, double y) {
+		CircuitData cdata = circuit.getCircuitData();
+		Vec2 pos = getPos(x, y);
+		CircuitPart cp = cdata.getPart(pos);
 
-				Object[] ret = new Object[value.length];
-				for (int i = 0; i < value.length; i++)
-					ret[i] = Integer.valueOf(value[i]);
-				return ret;
-			} else if (method.getName().equals("getGateName")) {
-				int id = ((Double) arguments[0]).intValue();
-				CircuitPart cp = CircuitPart.getPart(id);
-				return new Object[] { cp };
-			} else {
-				int x = ((Double) arguments[0]).intValue();
-				int y = ((Double) arguments[1]).intValue();
+		boolean b1 = cp.getInputFromSide(pos, circuit, ForgeDirection.NORTH);
+		boolean b2 = cp.getInputFromSide(pos, circuit, ForgeDirection.EAST);
+		boolean b3 = cp.getInputFromSide(pos, circuit, ForgeDirection.SOUTH);
+		boolean b4 = cp.getInputFromSide(pos, circuit, ForgeDirection.WEST);
 
-				Vec2 pos = new Vec2(x, y);
-				int size = cdata.getSize();
-				if (x < 0 || y < 0 || x >= size || y >= size)
-					throw new LuaException(String.format("Supplied position out of bounds (%s|%s) [0->%s]", x, y,
-							size - 1));
-				CircuitPart cp = cdata.getPart(pos);
+		return new boolean[] { b1, b2, b3, b4 };
+	}
 
-				if (method.getName().equals("getGateAt")) {
-					String name = cp.getName(pos, circuit);
-					int id = CircuitPart.getId(cp);
-					int meta = cp.getState(pos, circuit);
-					return new Object[] { name, id, meta };
-				} else if (method.getName().equals("getPowerTo")) {
-					boolean b1 = cp.getInputFromSide(pos, circuit, ForgeDirection.NORTH);
-					boolean b2 = cp.getInputFromSide(pos, circuit, ForgeDirection.EAST);
-					boolean b3 = cp.getInputFromSide(pos, circuit, ForgeDirection.SOUTH);
-					boolean b4 = cp.getInputFromSide(pos, circuit, ForgeDirection.WEST);
+	@LuaMethod
+	public Object[] getGateProperties(double x, double y) {
+		CircuitData cdata = circuit.getCircuitData();
+		CircuitPart cp = cdata.getPart(getPos(x, y));
 
-					return new Object[] { b1, b2, b3, b4 };
-				} else if (method.getName().equals("getGateProperties")) {
-					Map<String, IProperty> properties = cp.stitcher.getProperties();
-					return properties.keySet().toArray();
-				} else if (method.getName().contains("GateProperty")) {
-					int state = cp.getState(pos, circuit);
-					IProperty property = cp.stitcher.getPropertyByName((String) arguments[2]);
-					if (property == null)
-						throw new LuaException(String.format("No property by the name of '&s' found for gate %s",
-								arguments[3], cp.getName(pos, circuit)));
-					if (method.getName().contains("get"))
-						return new Object[] { property.get(state), property.getClass().getSimpleName() };
-					else {
-						if (!Config.enablePropertyEdit)
-							throw new LuaException("Property editing is disabled from the config file.");
-						try {
-							Object obj = arguments[3];
-							if (obj instanceof Double)
-								obj = ((Double) obj).intValue();
-							cp.setProperty(pos, circuit, property, (Comparable) obj);
-							cp.notifyNeighbours(pos, circuit);
-						} catch (Exception e) {
-							throw new LuaException(e.getMessage());
-						}
-					}
-				}
-			}
-		}
-		return null;
+		Map<String, IProperty> properties = cp.stitcher.getProperties();
+		return properties.keySet().toArray();
+	}
+
+	@LuaMethod
+	public Object[] getGateProperty(double x, double y, String name) throws LuaException {
+		CircuitData cdata = circuit.getCircuitData();
+		Vec2 pos = getPos(x, y);
+		CircuitPart cp = cdata.getPart(pos);
+
+		int state = cp.getState(pos, circuit);
+		IProperty property = getProperty(cp, pos, name);
+
+		return new Object[] { property.get(state), property.getClass().getSimpleName() };
+	}
+
+	@LuaMethod
+	public void setGateProperty(double x, double y, String name, Object obj) throws LuaException {
+		CircuitData cdata = circuit.getCircuitData();
+		Vec2 pos = getPos(x, y);
+		CircuitPart cp = cdata.getPart(pos);
+
+		int state = cp.getState(pos, circuit);
+		IProperty property = getProperty(cp, pos, name);
+
+		if (!Config.enablePropertyEdit)
+			throw new LuaException("Property editing is disabled from the config file.");
+		if (obj instanceof Double)
+			obj = ((Double) obj).intValue();
+		cp.setProperty(pos, circuit, property, (Comparable) obj);
+		cp.notifyNeighbours(pos, circuit);
+	}
+
+	@LuaMethod
+	public byte[] getOutputToSide(double side) throws LuaException {
+		if (side < 0 || side > 3)
+			throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
+		return circuit.provider.getOutput()[(int) side];
+	}
+
+	@LuaMethod
+	public byte[] getInputFromSide(double side) throws LuaException {
+		if (side < 0 || side > 3)
+			throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
+		return circuit.provider.getInput()[(int) side];
+	}
+
+	@LuaMethod
+	public double getSize() {
+		return circuit.getCircuitData().getSize();
+	}
+
+	@LuaMethod
+	public String getName() {
+		return circuit.getCircuitData().getProperties().getName();
+	}
+
+	@LuaMethod
+	public String getAuthor() {
+		return circuit.getCircuitData().getProperties().getAuthor();
+	}
+
+	// TODO And this is supposed to work?
+	public String getGateName(double id) {
+		CircuitPart cp = CircuitPart.getPart((int) id);
+		return cp.toString();
+	}
+
+	private Vec2 getPos(double x, double y) {
+		return new Vec2((int) x, (int) y);
+	}
+
+	private IProperty getProperty(CircuitPart part, Vec2 pos, String name) throws LuaException {
+		IProperty property = part.stitcher.getPropertyByName(name);
+		if (property == null)
+			throw new LuaException(String.format("No property by the name of '&s' found for gate %s", name, part.getName(pos, circuit)));
+		return property;
 	}
 
 	@Override
 	public void attach(IComputerAccess computer) {
 		computer.mount("rom/programs/" + Constants.MOD_ID, new FileMount("lua"));
-	}
-
-	@Override
-	public MethodProvider getMethodProvider() {
-		return methodProvider;
 	}
 }
