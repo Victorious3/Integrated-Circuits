@@ -7,6 +7,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.gate.GateRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
@@ -57,6 +58,12 @@ public class API implements IAPI {
 		// Vanilla input
 		input = socket.getWorld().getIndirectPowerLevelTo(pos.x, pos.y, pos.z, abs);
 
+		//Comparator input
+		if(socket.getConnectionTypeAtSide(side).isRedstone() && hasComparatorInput(socket, pos))
+			input = updateComparatorInput(socket, pos, rotation);
+		if (input != 0)
+			return input;
+
 		// Compatibility to Redstone
 		if (input < 15 && socket.getWorld().getBlock(pos.x, pos.y, pos.z) == Blocks.redstone_wire)
 			input = Math.max(input, socket.getWorld().getBlockMetadata(pos.x, pos.y, pos.z));
@@ -71,6 +78,20 @@ public class API implements IAPI {
 				return input;
 		}
 		return input;
+	}
+
+	public boolean hasComparatorInput(ISocket socket, BlockCoord pos)
+	{
+		Block b = socket.getWorld().getBlock(pos.x, pos.y, pos.z);
+		return b.hasComparatorInputOverride();
+	}
+
+	public int updateComparatorInput(ISocket socket, BlockCoord pos, int rotation)
+	{
+		Block b = socket.getWorld().getBlock(pos.x, pos.y, pos.z);
+		if(b != null && b.hasComparatorInputOverride())
+			return b.getComparatorInputOverride(socket.getWorld(), pos.x, pos.y, pos.z, rotation ^ 1);
+		return 0;
 	}
 
 	@Override
