@@ -80,13 +80,13 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 	protected void renderConnections(Transformation t) {
 		if (socket == null || socket.getGate() == null)
 			return;
+		int face = socket.getSide();
+
 		for (int i = 0; i < 4; i++) {
 			double size = getInset(i);
 			EnumConnectionType type = socket.getConnectionTypeAtSide(i);
 			if (type.isRedstone()) {
-				// TODO Someone should go over it and standardize every
-				// rotation.
-				IIcon icon = (socket.getRedstoneIO() & 1 << (((4 - i) % 4) + 4 - socket.getRotation()) % 4) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
+				IIcon icon = (socket.getRedstoneIO() & 1 << i) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
 				CCModel model = CCModel.quadModel(72);
 				model.generateBox(00, 7, 2, 0, 2, 0.32, size, 0, 0, 16, 16, 16);
 				model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
@@ -103,15 +103,16 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
 				model.apply(t);
 				model.computeLighting(LightModel.standardLightModel);
-				model.render(new IconTransformation(i == 2 || i == 1 ? Resources.ICON_IC_WIRE_FLIPPED : Resources.ICON_IC_WIRE));
+				int abs = Rotation.rotateSide(face, socket.getRotationRel(i));
+				boolean flipped = (abs % 2 == 0 && (face == 0 || face == 3 || face == 4)) || (abs % 2 == 1 && (face == 1 || face == 2 || face == 5));
+				model.render(new IconTransformation(flipped ? Resources.ICON_IC_WIRE : Resources.ICON_IC_WIRE_FLIPPED));
 			}
 		}
 	}
 
 	protected double getInset(int side) {
 		double inset;
-		Cuboid6 dimensions = socket.getGate().getDimension().copy();
-		dimensions.apply(new Rotation(socket.getRotation() * Math.PI / 2, 0, 1, 0).at(new Vector3(8, 8, 8)));
+		Cuboid6 dimensions = socket.getGate().getDimension();
 
 		switch (side) {
 			case 0:

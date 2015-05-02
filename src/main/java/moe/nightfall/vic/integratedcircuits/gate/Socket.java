@@ -457,6 +457,7 @@ public class Socket implements ISocket {
 					gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
 					gate.setProvider(this);
 					gate.preparePlacement(player, stack);
+					gate.onAdded();
 
 					MiscUtils.playPlaceSound(getWorld(), getPos());
 					sendDescription();
