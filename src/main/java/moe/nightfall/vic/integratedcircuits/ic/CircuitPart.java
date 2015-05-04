@@ -13,6 +13,7 @@ import moe.nightfall.vic.integratedcircuits.ic.part.PartMultiplexer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartSynchronizer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartTorch;
+import moe.nightfall.vic.integratedcircuits.ic.part.PartTunnel;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartANDCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartBufferCell;
@@ -93,6 +94,7 @@ public abstract class CircuitPart {
 		registerPartConfig(24, new PartInvertCell());
 		registerPartConfig(25, new PartBufferCell());
 		registerPartConfig(26, new PartANDCell());
+		registerPartConfig(27, new PartTunnel());
 	}
 
 	public static void registerPartConfig(int id, CircuitPart part) {
