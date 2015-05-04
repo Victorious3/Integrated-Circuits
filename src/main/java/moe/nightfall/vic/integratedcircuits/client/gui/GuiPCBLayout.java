@@ -16,10 +16,12 @@ import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartNull;
+import moe.nightfall.vic.integratedcircuits.ic.part.PartTunnel;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartNullCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.timed.IConfigurableDelay;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBCache;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangeName;
@@ -86,12 +88,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage.getBoolean(),
 				I18n.format("gui.integratedcircuits.cad.callback.show"), callbackDelete);
 		callbackDelete
-			.addControl(
-					new GuiLabel(75, 7, I18n.format("gui.integratedcircuits.cad.callback.confirm"), 0x333333, true))
+			.addControl(new GuiLabel(75, 7, I18n.format("gui.integratedcircuits.cad.callback.confirm"), 0x333333, true))
 			.addControl(new GuiLabel(75, 25, I18n.format("gui.integratedcircuits.cad.callback.message"), 0, true))
-			.addControl(
-					new GuiLabel(75, 63, I18n.format("gui.integratedcircuits.cad.callback.continue"), 0x333333,
-							true)).addControl(checkboxDelete);
+			.addControl(new GuiLabel(75, 63, I18n.format("gui.integratedcircuits.cad.callback.continue"), 0x333333, true))
+			.addControl(checkboxDelete);
 
 		labelTimed = new GuiLabel(80, 9, "", 0, true);
 		callbackTimed = new GuiCallback(this, 160, 50).addControl(new GuiButtonExt(1, 5, 25, 36, 20, "-1s"))
@@ -156,8 +156,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			if (category == CircuitPart.Category.NONE || parts.size() == 0)
 				continue;
 			if (category == CircuitPart.Category.WIRE) {
-				this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class),
-						Arrays.asList(new CircuitRenderWrapper(PartWire.class, 1 << 4), new CircuitRenderWrapper(PartWire.class, 2 << 4)), this));
+				List<CircuitRenderWrapper> partList = Lists.newArrayList();
+				partList.add(new CircuitRenderWrapper(PartWire.class, 1 << 4));
+				partList.add(new CircuitRenderWrapper(PartWire.class, 2 << 4));
+				partList.addAll(GuiPartChooser.getRenderWrapperParts(parts));
+				this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class), partList, this));
 			} else {
 				this.buttonList.add(new GuiPartChooser(7, cx + 220, currentPosition, GuiPartChooser.getRenderWrapperParts(parts), this));
 			}
@@ -268,6 +271,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) {
 		hoveredElement = null;
+		Tessellator tes = Tessellator.instance;
 
 		GL11.glColor3f(1F, 1F, 1F);
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_CAD_BACKGROUND);
@@ -311,6 +315,38 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		GL11.glColor4f(0F, 0F, 1F, 1F);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+		if (isCtrlKeyDown()) {
+			// Render connections for tunnels
+			tes.startDrawingQuads();
+			for (int x2 = 0; x2 < data.getSize(); x2++) {
+				for (int y2 = 0; y2 < data.getSize(); y2++) {
+					Vec2 pos = new Vec2(x2, y2);
+					CircuitPart part = data.getPart(pos);
+					if (!(part instanceof PartTunnel))
+						continue;
+
+					PartTunnel pt = (PartTunnel) part;
+					Vec2 pos2 = pt.getConnectedPos(pos, te);
+
+					double x3 = x2 * 16 + te.offX;
+					double y3 = y2 * 16 + te.offY;
+
+					if (pt.isConnected(pos2) && pos2.x >= x2 && pos2.y >= y2) {
+						double x4 = pos2.x * 16 + te.offX;
+						double y4 = pos2.y * 16 + te.offY;
+
+						RenderUtils.addLine(x3 + 8, y3 + 8, x4 + 8, y4 + 8, 4);
+					}
+					CircuitPartRenderer.addQuad(x3, y3, 0, 0, 16, 16);
+				}
+			}
+			tes.draw();
+		}
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
 
 		double x2 = (int) ((x - guiLeft - te.offX * te.scale) / 16F / te.scale);
@@ -330,9 +366,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					if (selectedPart.getPart() instanceof PartNull) {
 						GL11.glColor3f(0F, 0.4F, 0F);
 						GL11.glDisable(GL11.GL_TEXTURE_2D);
-						Tessellator.instance.startDrawingQuads();
+						tes.startDrawingQuads();
 						CircuitPartRenderer.addQuad(x2, y2, 2 * 16, 0, 16, 16);
-						Tessellator.instance.draw();
+						tes.draw();
 						GL11.glEnable(GL11.GL_TEXTURE_2D);
 					}
 					CircuitPartRenderer.renderPart(selectedPart, x2, y2);
@@ -354,7 +390,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					x2 = sx;
 					y2 = sy;
 
-					Tessellator.instance.startDrawingQuads();
+					tes.startDrawingQuads();
 					CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
 					if (ey > sy)
 						CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 4 * 16, 0, 16, 16);
@@ -397,7 +433,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
 						}
 					}
-					Tessellator.instance.draw();
+					tes.draw();
 					GL11.glColor3f(1, 1, 1);
 					GL11.glTranslated(-te.offX, -te.offY, 0);
 				}
@@ -412,7 +448,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
-		Tessellator tes = Tessellator.instance;
 		tes.startDrawingQuads();
 
 		int i1 = guiLeft + 17, i2 = guiTop + 44, i3 = 187, i4 = 4;

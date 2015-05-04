@@ -1,7 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.misc;
 
 import moe.nightfall.vic.integratedcircuits.client.Resources;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -13,8 +12,8 @@ import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import codechicken.lib.render.CCRenderState;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -27,6 +26,22 @@ public class RenderUtils {
 		GL11.glTranslatef(-w / 2F, -h / 2F, 0);
 		gui.drawTexturedModalRect(0, 0, u, v, w, h);
 		GL11.glTranslated(-x, -y, 0);
+	}
+
+	public static void addLine(double x, double y, double x2, double y2, double linewidth) {
+		Tessellator tes = Tessellator.instance;
+
+		double g = y2 - y;
+		double a = x2 - x;
+		double angle = Math.atan(g / a);
+		double size = linewidth / 2D;
+		double ox = Math.sin(angle) * size;
+		double oy = Math.cos(angle) * size;
+
+		tes.addVertex(x + ox, y - oy, 0);
+		tes.addVertex(x - ox, y + oy, 0);
+		tes.addVertex(x2 - ox, y2 + oy, 0);
+		tes.addVertex(x2 + ox, y2 - oy, 0);
 	}
 
 	public static void addBox(Tessellator tes, double x1, double y1, double z1, double w, double h, double d) {

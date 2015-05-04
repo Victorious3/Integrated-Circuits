@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartIOBit;
@@ -15,6 +13,7 @@ import moe.nightfall.vic.integratedcircuits.ic.part.PartMultiplexer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartSynchronizer;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartTorch;
+import moe.nightfall.vic.integratedcircuits.ic.part.PartTunnel;
 import moe.nightfall.vic.integratedcircuits.ic.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartANDCell;
 import moe.nightfall.vic.integratedcircuits.ic.part.cell.PartBufferCell;
@@ -47,6 +46,9 @@ import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.collect.Lists;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class CircuitPart {
 	private static HashMap<Integer, CircuitPart> partRegistry = new HashMap<Integer, CircuitPart>();
@@ -92,6 +94,7 @@ public abstract class CircuitPart {
 		registerPartConfig(24, new PartInvertCell());
 		registerPartConfig(25, new PartBufferCell());
 		registerPartConfig(26, new PartANDCell());
+		registerPartConfig(27, new PartTunnel());
 	}
 
 	public static void registerPartConfig(int id, CircuitPart part) {

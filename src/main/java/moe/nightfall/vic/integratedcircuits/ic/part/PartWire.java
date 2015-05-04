@@ -1,25 +1,26 @@
 package moe.nightfall.vic.integratedcircuits.ic.part;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartWire extends CircuitPart {
 	public final IntProperty PROP_COLOR = new IntProperty("COLOR", stitcher, 2);
 
-	@Override
+	// TODO Hardcoded for now, do change!
+	/*@Override
 	public Category getCategory() {
 		return Category.WIRE;
-	}
+	}*/
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
