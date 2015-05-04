@@ -412,8 +412,7 @@ public class Gate7Segment extends Gate {
 
 	@Override
 	public EnumConnectionType getConnectionTypeAtSide(int side) {
-		return isSlave ? EnumConnectionType.NONE : (hasSlaves && side == 3) ? EnumConnectionType.NONE
-				: mode == MODE_SIMPLE ? EnumConnectionType.SIMPLE : mode == MODE_ANALOG ? EnumConnectionType.ANALOG : EnumConnectionType.BUNDLED;
+		return isSlave || (hasSlaves && side == 1) ? EnumConnectionType.NONE : mode == MODE_SIMPLE ? EnumConnectionType.SIMPLE : mode == MODE_ANALOG ? EnumConnectionType.ANALOG : EnumConnectionType.BUNDLED;
 	}
 
 	@Override

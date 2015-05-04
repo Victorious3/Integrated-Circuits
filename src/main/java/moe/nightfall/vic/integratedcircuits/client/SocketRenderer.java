@@ -86,13 +86,13 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 			double size = getInset(i);
 			EnumConnectionType type = socket.getConnectionTypeAtSide(i);
 			if (type.isRedstone()) {
-				IIcon icon = (socket.getRedstoneIO() & 1 << (4 -i) % 4) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
+				IIcon icon = (socket.getRedstoneIO() & 1 << i) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
 				CCModel model = CCModel.quadModel(72);
 				model.generateBox(00, 7, 2, 0, 2, 0.32, size, 0, 0, 16, 16, 16);
 				model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
 				model.generateBox(48, 9, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
 				model.computeNormals();
-				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+				model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
 				model.apply(t);
 				model.computeLighting(LightModel.standardLightModel);
 				model.render(new IconTransformation(icon));
@@ -100,7 +100,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				CCModel model = CCModel.quadModel(24);
 				model.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, size / 16D);
 				model.computeNormals();
-				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+				model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
 				model.apply(t);
 				model.computeLighting(LightModel.standardLightModel);
 				int abs = Rotation.rotateSide(face, socket.getRotationRel(i));
