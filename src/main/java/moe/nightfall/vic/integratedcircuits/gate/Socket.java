@@ -318,17 +318,17 @@ public class Socket implements ISocket {
 		return getBundledInput(side, 0);
 	}
 
-	// TODO Give the higher one the precedence in case of analog, see
-	// https://github.com/Victorious3/Integrated-Circuits/issues/50
-
 	@Override
 	public byte getBundledInput(int side, int frequency) {
+		byte i = input[side][frequency];
 		if (getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG) {
-			if (getRedstoneOutput(side) != 0)
+			if (i <= getRedstoneOutput(side))
+				return 0;
+		} else {
+			if (output[side][frequency] != 0)
 				return 0;
 		}
-		byte i = input[side][frequency];
-		return output[side][frequency] > 0 ? 0 : i;
+		return i;
 	}
 
 	@Override
@@ -336,13 +336,12 @@ public class Socket implements ISocket {
 		EnumConnectionType conType = getConnectionTypeAtSide(side);
 		if (conType == EnumConnectionType.ANALOG) {
 			// Convert digital to analog, take highest output
-			byte a = 0;
 			byte[] out = getOutput()[side];
-			for (byte i = 0; i < 16; i++) {
+			for (byte i = 15; i >= 0; i--) {
 				if (out[i] != 0)
-					a = i;
+					return i;
 			}
-			return a;
+			return 0;
 		} else if (conType == EnumConnectionType.SIMPLE) {
 			return getBundledOutput(side, 0);
 		}

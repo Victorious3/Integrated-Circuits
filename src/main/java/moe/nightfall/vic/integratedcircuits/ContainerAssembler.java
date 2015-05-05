@@ -32,7 +32,8 @@ public class ContainerAssembler extends ContainerBase {
 		this.addSlotToContainer(new Slot(this.tileentity, 1, 8, 113) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
-				return stack.getItem() == IntegratedCircuits.itemPCB && stack.getItemDamage() == 0;
+				return stack.getItem() == IntegratedCircuits.itemPCB && stack.getItemDamage() == 0
+						&& tileentity.getStatus() != TileEntityAssembler.RUNNING;
 			}
 
 			@Override

@@ -96,12 +96,14 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice {
 
 	@Override
 	public byte getRedstonePower(ForgeDirection side) {
-		return (byte) (socket.getRedstoneOutput(socket.getSideRel(side.ordinal())) != 0 ? -1 : 0);
+		int out = socket.getRedstoneOutput(socket.getSideRel(side.ordinal()));
+		return (byte) (17 * out); //BluePower uses unsigned byte values from 0 to 255
 	}
 
 	@Override
 	public void setRedstonePower(ForgeDirection side, byte power) {
 		socket.updateInputPre();
+		power = (byte) (Byte.toUnsignedInt(power) / 17);
 		socket.setInput(socket.getSideRel(side.ordinal()), 0, power);
 	}
 
