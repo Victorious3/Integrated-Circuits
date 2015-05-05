@@ -92,7 +92,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
 				model.generateBox(48, 9, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
 				model.computeNormals();
-				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+				model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
 				model.apply(t);
 				model.computeLighting(LightModel.standardLightModel);
 				model.render(new IconTransformation(icon));
@@ -100,11 +100,12 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				CCModel model = CCModel.quadModel(24);
 				model.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, size / 16D);
 				model.computeNormals();
-				model.apply(new Rotation(i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+				model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
 				model.apply(t);
 				model.computeLighting(LightModel.standardLightModel);
-				int abs = Rotation.rotateSide(face, socket.getRotationRel(i));
-				boolean flipped = (abs % 2 == 0 && (face == 0 || face == 3 || face == 4)) || (abs % 2 == 1 && (face == 1 || face == 2 || face == 5));
+				int abs = socket.getRotationAbs(i);
+				boolean flipped = abs == 3 || (abs == 2 && (face == 0 || face == 3 || face == 4))
+						 || (abs == 0 && (face == 1 || face == 2 || face == 5));
 				model.render(new IconTransformation(flipped ? Resources.ICON_IC_WIRE : Resources.ICON_IC_WIRE_FLIPPED));
 			}
 		}
