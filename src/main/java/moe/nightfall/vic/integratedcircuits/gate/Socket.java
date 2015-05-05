@@ -321,11 +321,11 @@ public class Socket implements ISocket {
 	@Override
 	public byte getBundledInput(int side, int frequency) {
 		byte i = input[side][frequency];
-		if(getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG) {
-			if(i <= getRedstoneOutput(side))
+		if (getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG) {
+			if (i <= getRedstoneOutput(side))
 				return 0;
 		} else {
-			if(output[side][frequency] != 0)
+			if (output[side][frequency] != 0)
 				return 0;
 		}
 		return i;
@@ -336,13 +336,12 @@ public class Socket implements ISocket {
 		EnumConnectionType conType = getConnectionTypeAtSide(side);
 		if (conType == EnumConnectionType.ANALOG) {
 			// Convert digital to analog, take highest output
-			byte a = 0;
 			byte[] out = getOutput()[side];
-			for (byte i = 0; i < 16; i++) {
+			for (byte i = 15; i >= 0; i--) {
 				if (out[i] != 0)
-					a = i;
+					return i;
 			}
-			return a;
+			return 0;
 		} else if (conType == EnumConnectionType.SIMPLE) {
 			return getBundledOutput(side, 0);
 		}
