@@ -103,8 +103,9 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
 				model.apply(t);
 				model.computeLighting(LightModel.standardLightModel);
-				int abs = Rotation.rotateSide(face, socket.getRotationRel(i));
-				boolean flipped = (abs % 2 == 0 && (face == 0 || face == 3 || face == 4)) || (abs % 2 == 1 && (face == 1 || face == 2 || face == 5));
+				int abs = socket.getRotationAbs(i);
+				boolean flipped = abs == 3 || (abs == 2 && (face == 0 || face == 3 || face == 4))
+						 || (abs == 0 && (face == 1 || face == 2 || face == 5));
 				model.render(new IconTransformation(flipped ? Resources.ICON_IC_WIRE : Resources.ICON_IC_WIRE_FLIPPED));
 			}
 		}
