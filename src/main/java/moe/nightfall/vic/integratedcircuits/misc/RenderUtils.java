@@ -30,6 +30,15 @@ public class RenderUtils {
 
 	public static void addLine(double x, double y, double x2, double y2, double linewidth) {
 		Tessellator tes = Tessellator.instance;
+		if (x > x2) {
+			double t = x2;
+			x2 = x;
+			x = t;
+
+			t = y2;
+			y2 = y;
+			y = t;
+		}
 
 		double g = y2 - y;
 		double a = x2 - x;

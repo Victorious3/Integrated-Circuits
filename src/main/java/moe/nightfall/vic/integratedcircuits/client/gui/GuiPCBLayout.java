@@ -44,6 +44,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
+import com.google.common.primitives.Ints;
 
 import cpw.mods.fml.client.config.GuiButtonExt;
 
@@ -273,6 +274,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		hoveredElement = null;
 		Tessellator tes = Tessellator.instance;
 
+		double x2 = (int) ((x - guiLeft - te.offX * te.scale) / 16F / te.scale);
+		double y2 = (int) ((y - guiTop - te.offY * te.scale) / 16F / te.scale);
+
+		ex = (int) x2;
+		ey = (int) y2;
+
 		GL11.glColor3f(1F, 1F, 1F);
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_CAD_BACKGROUND);
 		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
@@ -283,7 +290,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		CircuitData data = te.getCircuitData();
 
 		int w = data.getSize();
-		if (Mouse.isButtonDown(0) && (Math.abs(x - lastX) > 0 || Math.abs(y - lastY) > 0) && isShiftKeyDown()) {
+		if (Mouse.isButtonDown(0) && (x - lastX != 0 || y - lastY != 0) && isShiftKeyDown()) {
 			if (!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187)) {
 				te.offX += (x - lastX) / te.scale;
 				te.offY += (y - lastY) / te.scale;
@@ -315,52 +322,33 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GL11.glColor4f(0F, 0F, 1F, 1F);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glColor4f(1F, 1F, 1F, 1F);
 
-		if (isCtrlKeyDown()) {
-			// Render connections for tunnels
-			tes.startDrawingQuads();
-			for (int x2 = 0; x2 < data.getSize(); x2++) {
-				for (int y2 = 0; y2 < data.getSize(); y2++) {
-					Vec2 pos = new Vec2(x2, y2);
-					CircuitPart part = data.getPart(pos);
-					if (!(part instanceof PartTunnel))
-						continue;
-
-					PartTunnel pt = (PartTunnel) part;
-					Vec2 pos2 = pt.getConnectedPos(pos, te);
-
-					double x3 = x2 * 16 + te.offX;
-					double y3 = y2 * 16 + te.offY;
-
-					if (pt.isConnected(pos2) && pos2.x >= x2 && pos2.y >= y2) {
-						double x4 = pos2.x * 16 + te.offX;
-						double y4 = pos2.y * 16 + te.offY;
-
-						RenderUtils.addLine(x3 + 8, y3 + 8, x4 + 8, y4 + 8, 4);
-					}
-					CircuitPartRenderer.addQuad(x3, y3, 0, 0, 16, 16);
+		boolean ctrl = isCtrlKeyDown();
+		// Render connections for tunnels
+		tes.startDrawingQuads();
+		for (int x3 = 0; x3 < data.getSize(); x3++) {
+			for (int y3 = 0; y3 < data.getSize(); y3++) {
+				if (x3 == ex && y3 == ey && data.getPart(new Vec2(x3, y3)) instanceof PartTunnel && selectedPart == null) {
+					drawTunnelConnection(x3, y3);
+				}
+				if (drag && selectedPart == null) {
+					CircuitPartRenderer.addQuad(sx * 16 + te.offX, sy * 16 + te.offY, 0, 0, 16, 16);
+				}
+				if (ctrl) {
+					drawTunnelConnection(x3, y3);
 				}
 			}
-			tes.draw();
 		}
+		tes.draw();
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
 
-		double x2 = (int) ((x - guiLeft - te.offX * te.scale) / 16F / te.scale);
-		double y2 = (int) ((y - guiTop - te.offY * te.scale) / 16F / te.scale);
-
-		if (selectedPart != null && selectedPart.getPart() instanceof PartWire && drag) {
-			ex = (int) x2;
-			ey = (int) y2;
-		}
-
 		if (x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !isShiftKeyDown() && !blockMouseInput) {
-			if (!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187)
-					&& selectedPart != null) {
-				if (!(selectedPart.getPart() instanceof PartWire) || !drag) {
+			if (!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187)) {
+				if (!drag && selectedPart != null) {
 					x2 = x2 * 16 + te.offX;
 					y2 = y2 * 16 + te.offY;
 					if (selectedPart.getPart() instanceof PartNull) {
@@ -372,70 +360,88 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 						GL11.glEnable(GL11.GL_TEXTURE_2D);
 					}
 					CircuitPartRenderer.renderPart(selectedPart, x2, y2);
-				} else {
-					PartWire wire = (PartWire) selectedPart.getPart();
-					GL11.glTranslated(te.offX, te.offY, 0);
-					switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
-						case 1:
-							GL11.glColor3f(0.4F, 0F, 0F);
-							break;
-						case 2:
-							GL11.glColor3f(0.4F, 0.2F, 0F);
-							break;
-						default:
-							GL11.glColor3f(0F, 0.4F, 0F);
-							break;
-					}
+				} else if (drag) {
+					if (selectedPart == null) {
+						GL11.glColor4f(0F, 0F, 1F, 1F);
+						GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-					x2 = sx;
-					y2 = sy;
-
-					tes.startDrawingQuads();
-					CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
-					if (ey > sy)
-						CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 4 * 16, 0, 16, 16);
-					else if (ey < sy)
-						CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 2 * 16, 0, 16, 16);
-					else if (ex > sx)
-						CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
-					else if (ex < sx)
-						CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
-
-					while (x2 != ex || y2 != ey) {
-						if (y2 < ey)
-							y2++;
-						else if (y2 > ey)
-							y2--;
-						else if (x2 < ex)
-							x2++;
-						else if (x2 > ex)
-							x2--;
-
-						if (y2 != ey)
-							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 6 * 16, 0, 16, 16);
-						else if (y2 == ey && x2 == sx) {
-							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
-							if (ey > sy)
-								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 2 * 16, 0, 16, 16);
-							else if (ey < sy)
-								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 4 * 16, 0, 16, 16);
-							if (ex > sx)
-								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
-							else if (ex < sx)
-								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
-						} else if (x2 != ex)
-							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 5 * 16, 0, 16, 16);
-						else if (x2 == ex) {
-							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
-							if (ex > sx)
-								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
-							else if (ex < sx)
-								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
+						tes.startDrawingQuads();
+						if (data.getPart(new Vec2(ex, ey)) instanceof PartTunnel) {
+							RenderUtils.addLine(sx * 16 + te.offX + 8, sy * 16 + te.offY + 8, ex * 16 + te.offX + 8, ey * 16 + te.offY + 8, 4);
+						} else {
+							double x3 = (x - guiLeft - te.offX * te.scale) / te.scale + te.offX;
+							double y3 = (y - guiTop - te.offY * te.scale) / te.scale + te.offY;
+							RenderUtils.addLine(sx * 16 + te.offX + 8, sy * 16 + te.offY + 8, x3, y3, 4);
 						}
+						tes.draw();
+
+						GL11.glEnable(GL11.GL_TEXTURE_2D);
+						GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
+					} else if (selectedPart.getPart() instanceof PartWire) {
+						PartWire wire = (PartWire) selectedPart.getPart();
+						GL11.glTranslated(te.offX, te.offY, 0);
+						switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
+							case 1:
+								GL11.glColor3f(0.4F, 0F, 0F);
+								break;
+							case 2:
+								GL11.glColor3f(0.4F, 0.2F, 0F);
+								break;
+							default:
+								GL11.glColor3f(0F, 0.4F, 0F);
+								break;
+						}
+
+						x2 = sx;
+						y2 = sy;
+
+						tes.startDrawingQuads();
+						CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
+						if (ey > sy)
+							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 4 * 16, 0, 16, 16);
+						else if (ey < sy)
+							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 2 * 16, 0, 16, 16);
+						else if (ex > sx)
+							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
+						else if (ex < sx)
+							CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
+
+						while (x2 != ex || y2 != ey) {
+							if (y2 < ey)
+								y2++;
+							else if (y2 > ey)
+								y2--;
+							else if (x2 < ex)
+								x2++;
+							else if (x2 > ex)
+								x2--;
+
+							if (y2 != ey)
+								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 6 * 16, 0, 16, 16);
+							else if (y2 == ey && x2 == sx) {
+								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
+								if (ey > sy)
+									CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 2 * 16, 0, 16, 16);
+								else if (ey < sy)
+									CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 4 * 16, 0, 16, 16);
+								if (ex > sx)
+									CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
+								else if (ex < sx)
+									CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
+							} else if (x2 != ex)
+								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 5 * 16, 0, 16, 16);
+							else if (x2 == ex) {
+								CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 0, 0, 16, 16);
+								if (ex > sx)
+									CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 16, 0, 16, 16);
+								else if (ex < sx)
+									CircuitPartRenderer.addQuad(x2 * 16, y2 * 16, 3 * 16, 0, 16, 16);
+							}
+						}
+						tes.draw();
+						GL11.glColor3f(1, 1, 1);
+						GL11.glTranslated(-te.offX, -te.offY, 0);
 					}
-					tes.draw();
-					GL11.glColor3f(1, 1, 1);
-					GL11.glTranslated(-te.offX, -te.offY, 0);
 				}
 			}
 		}
@@ -491,6 +497,34 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glColor3f(1, 1, 1);
 	}
 
+	private void drawTunnelConnection(int x, int y) {
+		Vec2 pos = new Vec2(x, y);
+		CircuitPart part = te.getCircuitData().getPart(pos);
+		if (!(part instanceof PartTunnel))
+			return;
+
+		PartTunnel pt = (PartTunnel) part;
+		Vec2 pos2 = pt.getConnectedPos(pos, te);
+
+		double x3 = x * 16 + te.offX;
+		double y3 = y * 16 + te.offY;
+
+		if (pt.getInput(pos, te)) {
+			Tessellator.instance.setColorRGBA_F(1F, 0F, 0F, 1F);
+		} else {
+			Tessellator.instance.setColorRGBA_F(0F, 0F, 1F, 1F);
+		}
+
+		if (pt.isConnected(pos2)) {
+			double x4 = pos2.x * 16 + te.offX;
+			double y4 = pos2.y * 16 + te.offY;
+
+			RenderUtils.addLine(x3 + 8, y3 + 8, x4 + 8, y4 + 8, 4);
+			CircuitPartRenderer.addQuad(x4, y4, 0, 0, 16, 16);
+		}
+		CircuitPartRenderer.addQuad(x3, y3, 0, 0, 16, 16);
+	}
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int x, int y) {
 		GL11.glColor3f(1, 1, 1);
@@ -498,6 +532,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		int x2 = (int) ((x - guiLeft - te.offX * te.scale) / (16F * te.scale));
 		int y2 = (int) ((y - guiTop - te.offY * te.scale) / (16F * te.scale));
+
+		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
+		int guiScale = scaledresolution.getScaleFactor();
 
 		int w = data.getSize();
 		if (x2 >= 0 && y2 >= 0 && x2 < w && y2 < w && !blockMouseInput && !isShiftKeyDown()) {
@@ -549,9 +586,14 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					labelTimed.setText(String.format("Current delay: %s ticks",
 							((IConfigurableDelay) cp).getConfigurableDelay(pos, te)));
 					callbackTimed.display();
-				} else
+				} else if (cp instanceof PartTunnel) {
+					sx = x2;
+					sy = y2;
+					drag = true;
+				} else {
 					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, flag, ctrlDown, te.xCoord,
 							te.yCoord, te.zCoord));
+				}
 			} else if (selectedPart.getPart() instanceof PartWire) {
 				sx = x2;
 				sy = y2;
@@ -644,36 +686,77 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		if (button != -1 && selectedPart != null && selectedPart.getPart() instanceof PartNull)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.SNAPSHOT, te.xCoord, te.yCoord,
 					te.zCoord));
-		else if (button != -1 && drag && selectedPart != null) {
-			int id = CircuitPart.getId(selectedPart.getPart());
-			int state = selectedPart.getState();
+		else if (button != -1 && drag) {
 			int w = te.getCircuitData().getSize();
 
 			if (ex > 0 && ey > 0 && ex < w - 1 && ey < w - 1 && !blockMouseInput) {
-				ArrayList<Vec2> list = new ArrayList<Vec2>();
-				list.add(new Vec2(sx, sy));
-				while (sx != ex || sy != ey) {
-					if (sy < ey)
-						sy++;
-					else if (sy > ey)
-						sy--;
-					else if (sx < ex)
-						sx++;
-					else if (sx > ex)
-						sx--;
+				if (selectedPart == null) {
+					PartTunnel pt = CircuitPart.getPart(PartTunnel.class);
+					
+					Vec2 first = new Vec2(sx, sy);
+					Vec2 second = new Vec2(ex, ey);
+					
+					if (te.getCircuitData().getPart(second) instanceof PartTunnel) {
+						
+						List<Integer> data = Lists.newArrayList();
+
+						if (pt.isConnected(pt.getConnectedPos(first, te))) {
+							Vec2 part = pt.getConnectedPos(first, te);
+							data.add(part.x);
+							data.add(part.y);
+							data.add(CircuitPart.getId(pt));
+							data.add(pt.setConnectedPos(te.getCircuitData().getMeta(part), new Vec2(255, 255)));
+						}
+
+						data.add(first.x);
+						data.add(first.y);
+						data.add(CircuitPart.getId(pt));
+						data.add(pt.setConnectedPos(te.getCircuitData().getMeta(first), second));
+						
+						if (pt.isConnected(pt.getConnectedPos(second, te))) {
+							Vec2 part = pt.getConnectedPos(second, te);
+							data.add(part.x);
+							data.add(part.y);
+							data.add(CircuitPart.getId(pt));
+							data.add(pt.setConnectedPos(te.getCircuitData().getMeta(part), new Vec2(255, 255)));
+						}
+						
+						data.add(second.x);
+						data.add(second.y);
+						data.add(CircuitPart.getId(pt));
+						data.add(pt.setConnectedPos(te.getCircuitData().getMeta(second), first));
+
+						CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(Ints.toArray(data), true, te.xCoord, te.yCoord, te.zCoord));
+					}
+				} else if(selectedPart.getPart() instanceof PartWire) {
+
+					int id = CircuitPart.getId(selectedPart.getPart());
+					int state = selectedPart.getState();
+
+					ArrayList<Vec2> list = new ArrayList<Vec2>();
 					list.add(new Vec2(sx, sy));
+					while (sx != ex || sy != ey) {
+						if (sy < ey)
+							sy++;
+						else if (sy > ey)
+							sy--;
+						else if (sx < ex)
+							sx++;
+						else if (sx > ex)
+							sx--;
+						list.add(new Vec2(sx, sy));
+					}
+					int[] data = new int[list.size() * 4];
+					for (int i = 0; i < list.size(); i++) {
+						Vec2 pt = list.get(i);
+						int index = i * 4;
+						data[index] = pt.x;
+						data[index + 1] = pt.y;
+						data[index + 2] = id;
+						data[index + 3] = state;
+					}
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(data, true, te.xCoord, te.yCoord, te.zCoord));
 				}
-				int[] data = new int[list.size() * 4];
-				for (int i = 0; i < list.size(); i++) {
-					Vec2 pt = list.get(i);
-					int index = i * 4;
-					data[index] = pt.x;
-					data[index + 1] = pt.y;
-					data[index + 2] = id;
-					data[index + 3] = state;
-				}
-				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(data, true, te.xCoord, te.yCoord,
-						te.zCoord));
 			}
 		}
 		drag = false;

@@ -18,6 +18,12 @@ public class PartTunnel extends CircuitPart {
 		return new Vec2(getProperty(pos, parent, PROP_POS_X), getProperty(pos, parent, PROP_POS_Y));
 	}
 
+	public int setConnectedPos(int data, Vec2 pos) {
+		data = PROP_POS_X.set(pos.x, data);
+		data = PROP_POS_Y.set(pos.y, data);
+		return data;
+	}
+
 	public boolean isConnected(Vec2 pos) {
 		return pos.x != 255 && pos.y != 255;
 	}

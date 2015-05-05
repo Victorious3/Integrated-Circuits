@@ -117,8 +117,8 @@ public abstract class CircuitPart {
 		return idRegistry.get(clazz);
 	}
 
-	public static CircuitPart getPart(Class<? extends CircuitPart> clazz) {
-		return partRegistry.get(getId(clazz));
+	public static <T extends CircuitPart> T getPart(Class<T> clazz) {
+		return (T) partRegistry.get(getId(clazz));
 	}
 
 	/** Returns a CircuitPart from the registry. **/
