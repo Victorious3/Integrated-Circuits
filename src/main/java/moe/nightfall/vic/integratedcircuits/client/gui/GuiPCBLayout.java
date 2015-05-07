@@ -334,6 +334,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					drawTunnelConnection(x3, y3);
 				}
 				if (drag && selectedPart == null) {
+					Tessellator.instance.setColorRGBA_F(0F, 0F, 1F, 1F);
 					CircuitPartRenderer.addQuad(sx * 16 + te.offX, sy * 16 + te.offY, 0, 0, 16, 16);
 				}
 				if (ctrl) {
@@ -509,7 +510,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		double x3 = x * 16 + te.offX;
 		double y3 = y * 16 + te.offY;
 
-		if (pt.getInput(pos, te)) {
+		if (pt.getInput(pos, te) || pt.getProperty(pos, te, pt.PROP_IN)) {
 			Tessellator.instance.setColorRGBA_F(1F, 0F, 0F, 1F);
 		} else {
 			Tessellator.instance.setColorRGBA_F(0F, 0F, 1F, 1F);

@@ -221,6 +221,8 @@ public abstract class CircuitPart {
 	}
 
 	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		if (side == ForgeDirection.UNKNOWN)
+			return false;
 		boolean cc = true;
 		CircuitPart neighbour = getNeighbourOnSide(pos, parent, side);
 		if (neighbour != null)
@@ -290,4 +292,12 @@ public abstract class CircuitPart {
 
 	@SideOnly(Side.CLIENT)
 	public abstract void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type);
+
+	/** Gets called on a client update */
+	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {
+	}
+
+	/** Gets called when the client removes this */
+	public void onRemoved(Vec2 pos, ICircuit parent) {
+	}
 }

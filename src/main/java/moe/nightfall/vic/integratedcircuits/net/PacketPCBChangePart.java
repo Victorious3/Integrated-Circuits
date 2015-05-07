@@ -70,10 +70,19 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart> {
 					cdata.getPart(pos).onClick(pos, te, button, flag);
 				else {
 					int oid = cdata.getID(pos);
+					int ometa = cdata.getMeta(pos);
+
+					if (data[i + 2] != oid)
+						cdata.getPart(pos).onRemoved(pos, te);
+
 					cdata.setID(pos, data[i + 2]);
 					cdata.setMeta(pos, data[i + 3]);
+
 					if (data[i + 2] != oid)
 						cdata.getPart(pos).onPlaced(pos, te);
+					if (data[i + 3] != ometa)
+						cdata.getPart(pos).onChanged(pos, te, ometa);
+
 					cdata.markForUpdate(pos);
 				}
 			}
