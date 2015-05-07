@@ -600,9 +600,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				sy = y2;
 				drag = true;
 			} else {
-				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { x2, y2,
-						CircuitPart.getId(selectedPart.getPart()), selectedPart.getState() },
-						!(selectedPart.getPart() instanceof PartNull), te.xCoord, te.yCoord, te.zCoord));
+				int newID = CircuitPart.getId(selectedPart.getPart());
+				if (newID != te.getCircuitData().getID(new Vec2(x2, y2))) {
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { x2, y2,
+							newID, selectedPart.getState() },
+							!(selectedPart.getPart() instanceof PartNull), te.xCoord, te.yCoord, te.zCoord));
+				}
 			}
 		}
 
@@ -685,8 +688,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			this.selectedChooser = null;
 		}
 		if (button != -1 && selectedPart != null && selectedPart.getPart() instanceof PartNull)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.SNAPSHOT, te.xCoord, te.yCoord,
-					te.zCoord));
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.SNAPSHOT, te.xCoord, te.yCoord, te.zCoord));
 		else if (button != -1 && drag) {
 			int w = te.getCircuitData().getSize();
 

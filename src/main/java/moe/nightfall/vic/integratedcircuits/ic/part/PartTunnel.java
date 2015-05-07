@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.ic.part;
 
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
+import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.EnumRenderType;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
@@ -131,5 +132,14 @@ public class PartTunnel extends CircuitPart {
 	@Override
 	public Category getCategory() {
 		return Category.WIRE;
+	}
+
+	@Override
+	public String getLocalizedName(Vec2 pos, ICircuit parent) {
+		String name = super.getLocalizedName(pos, parent);
+		if (!(parent instanceof CircuitRenderWrapper) && isConnected(getConnectedPos(pos, parent))) {
+			name += " (Linked)";
+		}
+		return name;
 	}
 }

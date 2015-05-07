@@ -22,6 +22,7 @@ tile.integratedcircuits.assembler.name=Assembler
 # parts
 part.integratedcircuits.iobit.name=IOBit
 part.integratedcircuits.torch.name=Torch
+part.integratedcircuits.tunnel.name=Tunnel
 part.integratedcircuits.wire.0.name=Wire
 part.integratedcircuits.wire.1.name=Red Wire
 part.integratedcircuits.wire.2.name=Orange Wire
