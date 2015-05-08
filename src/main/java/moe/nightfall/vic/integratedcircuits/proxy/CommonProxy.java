@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
@@ -218,7 +219,7 @@ public class CommonProxy {
 						ItemStack floppy = drive.getDisk();
 						drive.setDisk(null);
 						event.entityPlayer.setCurrentItemOrArmor(0, floppy);
-					} else if (stack.getItem() != null && stack.getItem() == IntegratedCircuits.itemFloppyDisk
+					} else if (stack.getItem() != null && stack.getItem() == Content.itemFloppyDisk
 							&& drive.getDisk() == null) {
 						drive.setDisk(stack);
 						event.entityPlayer.setCurrentItemOrArmor(0, null);
@@ -243,8 +244,8 @@ public class CommonProxy {
 					assembler.laserHelper.createLaser(result.getRight(), stack2);
 					if (holding == null)
 						event.entityPlayer.inventory.setInventorySlotContents(event.entityPlayer.inventory.currentItem,
-								new ItemStack(IntegratedCircuits.itemLaser));
-					else if (holding.getItem() == IntegratedCircuits.itemLaser) {
+								new ItemStack(Content.itemLaser));
+					else if (holding.getItem() == Content.itemLaser) {
 						holding.stackSize--;
 						if (holding.stackSize <= 0)
 							holding = null;
@@ -261,7 +262,7 @@ public class CommonProxy {
 		if (te.getStatus() == te.RUNNING || !player.isSneaking())
 			return new ImmutablePair(null, null);
 		boolean holdsEmpty = player.getHeldItem() == null;
-		boolean holdsLaser = !holdsEmpty ? player.getHeldItem().getItem() == IntegratedCircuits.itemLaser : false;
+		boolean holdsLaser = !holdsEmpty ? player.getHeldItem().getItem() == Content.itemLaser : false;
 
 		AxisAlignedBB base = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 8 / 16F, 1).offset(x, y, z);
 		AxisAlignedBB boxBase = AxisAlignedBB.getBoundingBox(11 / 16F, 8 / 16F, 11 / 16F, 15 / 16F, 15 / 16F, 15 / 16F);

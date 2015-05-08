@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
@@ -149,7 +149,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 	public Iterable<ItemStack> getDrops() {
 		List<ItemStack> list = Lists.newArrayList();
 		socket.addDrops(list);
-		list.add(new ItemStack(IntegratedCircuits.itemSocketFMP));
+		list.add(new ItemStack(Content.itemSocketFMP));
 		return list;
 	}
 

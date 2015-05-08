@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
@@ -439,7 +439,7 @@ public class Socket implements ISocket {
 			if (!getWorld().isRemote) {
 				if (gate == null && stack.getItem() instanceof IGateItem) {
 					ItemStack solderingIron;
-					if ((solderingIron = InventoryUtils.getFirstItem(IntegratedCircuits.itemSolderingIron,
+					if ((solderingIron = InventoryUtils.getFirstItem(Content.itemSolderingIron,
 							player.inventory)) != null) {
 						solderingIron.damageItem(1, player);
 						if (solderingIron.getItemDamage() == solderingIron.getMaxDamage())
@@ -463,7 +463,7 @@ public class Socket implements ISocket {
 					notifyBlocksAndChanges();
 
 					return true;
-				} else if (gate != null && stack.getItem() == IntegratedCircuits.itemSolderingIron) {
+				} else if (gate != null && stack.getItem() == Content.itemSolderingIron) {
 					stack.damageItem(1, player);
 					if (stack.getItemDamage() == stack.getMaxDamage())
 						player.setCurrentItemOrArmor(0, null);
@@ -482,7 +482,7 @@ public class Socket implements ISocket {
 			}
 
 			String name = stack.getItem().getUnlocalizedName();
-			if (stack.getItem() == IntegratedCircuits.itemScrewdriver || name.equals("item.redlogic.screwdriver")
+			if (stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
 					|| name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver")) {
 				if (!getWorld().isRemote && gate != null) {
 					if (!player.isSneaking())

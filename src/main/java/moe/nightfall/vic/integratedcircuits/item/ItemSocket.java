@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.item;
 
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,7 +29,7 @@ public class ItemSocket extends ItemBase {
 			return false;
 
 		if (world.getBlock(pos.x, pos.y, pos.z).isReplaceable(world, pos.x, pos.y, pos.z)) {
-			world.setBlock(pos.x, pos.y, pos.z, IntegratedCircuits.blockSocket);
+			world.setBlock(pos.x, pos.y, pos.z, Content.blockSocket);
 			TileEntitySocket te = (TileEntitySocket) world.getTileEntity(pos.x, pos.y, pos.z);
 			te.getSocket().preparePlacement(player, pos2, side, stack);
 			MiscUtils.playPlaceSound(world, pos);

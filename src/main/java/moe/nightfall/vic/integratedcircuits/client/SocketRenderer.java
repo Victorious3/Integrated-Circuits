@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
 import moe.nightfall.vic.integratedcircuits.Config;
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
@@ -146,7 +146,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				BlockCoord pos = socket.getPos();
 				if (mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == pos.x && mop.blockY == pos.y
 						&& mop.blockZ == pos.z) {
-					if (!player.inventory.hasItem(IntegratedCircuits.itemSolderingIron)) {
+					if (!player.inventory.hasItem(Content.itemSolderingIron)) {
 						if (Config.enableTooltips) {
 							ClientProxy.drawTooltip(I18n.format("tooltip.integratedcircuits.socket"));
 						}

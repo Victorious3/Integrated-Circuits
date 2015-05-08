@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.LaserHelper;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
@@ -39,7 +39,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	public static final int SETTING_PULL = 0, SETTING_REDSTONE = 1;
 	public static final int RS_ENABLED = 0, RS_INVERTED = 1, RS_DISABLED = 2;
 
-	private static final ItemStack STACK_PCB = new ItemStack(IntegratedCircuits.itemPCB, 1);
+	private static final ItemStack STACK_PCB = new ItemStack(Content.itemPCB, 1);
 
 	public int[][] refMatrix;
 	private int statusCode;
@@ -225,7 +225,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 
 	public void onCircuitFinished() {
 		if (getStackInSlot(1) == null) {
-			contents[1] = new ItemStack(IntegratedCircuits.itemPCB, 1, 1);
+			contents[1] = new ItemStack(Content.itemPCB, 1, 1);
 			NBTTagCompound comp = new NBTTagCompound();
 			comp.setTag("circuit", cdata.writeToNBT(new NBTTagCompound()));
 			comp.setInteger("size", size);
@@ -495,7 +495,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	@Override
 	public boolean canExtractItem(int slot, ItemStack stack, int side) {
 		int con = getConnectionOnSide(side);
-		boolean isPCB = stack.getItem() == IntegratedCircuits.itemPCB && stack.getItemDamage() == 1;
+		boolean isPCB = stack.getItem() == Content.itemPCB && stack.getItemDamage() == 1;
 		if (con == 0)
 			return slot != 1 && !isPCB;
 		else if (con == 1)

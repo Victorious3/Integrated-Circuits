@@ -6,6 +6,7 @@ import java.util.Random;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Constants;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
@@ -40,7 +41,7 @@ public class BlockSocket extends BlockContainer {
 
 	@Override
 	public Item getItemDropped(int par1, Random rand, int par3) {
-		return IntegratedCircuits.itemSocket;
+		return Content.itemSocket;
 	}
 
 	@Override
@@ -49,7 +50,7 @@ public class BlockSocket extends BlockContainer {
 		if (te == null)
 			return null;
 		ItemStack stack = te.getSocket().pickItem(target);
-		return stack != null ? stack : new ItemStack(IntegratedCircuits.itemSocket);
+		return stack != null ? stack : new ItemStack(Content.itemSocket);
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import moe.nightfall.vic.integratedcircuits.Config;
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
@@ -407,7 +407,7 @@ public class Gate7Segment extends Gate {
 
 	@Override
 	public ItemStack getItemStack() {
-		return new ItemStack(IntegratedCircuits.item7Segment, 1, color);
+		return new ItemStack(Content.item7Segment, 1, color);
 	}
 
 	@Override

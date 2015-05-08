@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGatePeripheralProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
@@ -57,7 +57,7 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 
 	@Override
 	public ItemStack getItemStack() {
-		ItemStack stack = new ItemStack(IntegratedCircuits.itemCircuit);
+		ItemStack stack = new ItemStack(Content.itemCircuit);
 		NBTTagCompound comp = new NBTTagCompound();
 		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
 		stack.stackTagCompound = comp;

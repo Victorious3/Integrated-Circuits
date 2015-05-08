@@ -77,26 +77,6 @@ public class IntegratedCircuits {
 	public static boolean developmentEnvironment;
 	public static Logger logger;
 
-	public static ItemSocket itemSocket;
-	public static ItemSocketFMP itemSocketFMP;
-
-	public static ItemCircuit itemCircuit;
-	public static Item7Segment item7Segment;
-
-	public static ItemFloppyDisk itemFloppyDisk;
-	public static ItemPCB itemPCB;
-	public static Item itemLaser;
-
-	public static Item itemSolderingIron;
-	public static Item itemSilicon;
-	public static Item itemSiliconDrop;
-	public static Item itemCoalCompound;
-	public static Item itemPCBChip;
-	public static ItemScrewdriver itemScrewdriver;
-
-	public static BlockSocket blockSocket;
-	public static BlockPCBLayout blockPCBLayout;
-	public static BlockAssembler blockAssembler;
 	public static CreativeTabs creativeTab;
 
 	public static final API API = new API();
@@ -142,39 +122,39 @@ public class IntegratedCircuits {
 			@Override
 			public Item getTabIconItem() {
 				// TODO Render with socket
-				return itemCircuit;
+				return Content.itemCircuit;
 			}
 		};
 
 		IntegratedCircuitsAPI.getGateRegistry().registerGate("circuit", GateCircuit.class);
 		IntegratedCircuitsAPI.getGateRegistry().registerGate("7segment", Gate7Segment.class);
 
-		itemSocket = new ItemSocket();
+		Content.itemSocket = new ItemSocket();
 		if (isFMPLoaded)
-			itemSocketFMP = new ItemSocketFMP();
+			Content.itemSocketFMP = new ItemSocketFMP();
 
-		itemCircuit = new ItemCircuit();
-		item7Segment = new Item7Segment();
-		itemFloppyDisk = new ItemFloppyDisk();
-		itemPCB = new ItemPCB();
-		itemPCBChip = new ItemBase("pcb_chip");
-		itemLaser = new ItemBase("laser").setHasIcon(false);
+		Content.itemCircuit = new ItemCircuit();
+		Content.item7Segment = new Item7Segment();
+		Content.itemFloppyDisk = new ItemFloppyDisk();
+		Content.itemPCB = new ItemPCB();
+		Content.itemPCBChip = new ItemBase("pcb_chip");
+		Content.itemLaser = new ItemBase("laser").setHasIcon(false);
 
-		itemSolderingIron = new ItemBase("soldering_iron").setMaxDamage(25).setMaxStackSize(1).setNoRepair();
+		Content.itemSolderingIron = new ItemBase("soldering_iron").setMaxDamage(25).setMaxStackSize(1).setNoRepair();
 
-		itemSiliconDrop = new ItemBase("silicon_drop");
-		itemScrewdriver = new ItemScrewdriver();
+		Content.itemSiliconDrop = new ItemBase("silicon_drop");
+		Content.itemScrewdriver = new ItemScrewdriver();
 
 		if (!(isBPLoaded || isPRLoaded)) {
-			itemSilicon = new ItemBase("silicon");
-			itemCoalCompound = new ItemBase("coalcompound");
+			Content.itemSilicon = new ItemBase("silicon");
+			Content.itemCoalCompound = new ItemBase("coalcompound");
 		}
 
-		blockPCBLayout = new BlockPCBLayout();
-		blockAssembler = new BlockAssembler();
+		Content.blockPCBLayout = new BlockPCBLayout();
+		Content.blockAssembler = new BlockAssembler();
 
-		GameRegistry.registerBlock(blockPCBLayout, Constants.MOD_ID + ".pcblayout");
-		GameRegistry.registerBlock(blockAssembler, Constants.MOD_ID + ".assembler");
+		GameRegistry.registerBlock(Content.blockPCBLayout, Constants.MOD_ID + ".pcblayout");
+		GameRegistry.registerBlock(Content.blockAssembler, Constants.MOD_ID + ".assembler");
 
 		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, Constants.MOD_ID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");
@@ -215,8 +195,8 @@ public class IntegratedCircuits {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		blockSocket = API.getGateRegistry().createProxyInstance(BlockSocket.class);
-		GameRegistry.registerBlock(blockSocket, Constants.MOD_ID + ".socket");
+		Content.blockSocket = API.getGateRegistry().createProxyInstance(BlockSocket.class);
+		GameRegistry.registerBlock(Content.blockSocket, Constants.MOD_ID + ".socket");
 		socketClass = API.getGateRegistry().createProxyClass(TileEntitySocket.class);
 		GameRegistry.registerTileEntity(socketClass, Constants.MOD_ID + ".socket");
 
@@ -226,8 +206,8 @@ public class IntegratedCircuits {
 		}
 
 		if (isCCLoaded) {
-			ComputerCraftAPI.registerBundledRedstoneProvider((IBundledRedstoneProvider) blockSocket);
-			ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) blockSocket);
+			ComputerCraftAPI.registerBundledRedstoneProvider((IBundledRedstoneProvider) Content.blockSocket);
+			ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) Content.blockSocket);
 		}
 
 		proxy.initialize();
@@ -240,7 +220,7 @@ public class IntegratedCircuits {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		IntegratedCircuitsRecipes.loadRecipes();
+		Recipes.loadRecipes();
 
 		if (Config.enableTracker) {
 			new Thread() {

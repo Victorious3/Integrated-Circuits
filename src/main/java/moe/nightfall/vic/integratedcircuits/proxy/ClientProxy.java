@@ -8,7 +8,9 @@ import java.util.UUID;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import moe.nightfall.vic.integratedcircuits.Constants;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
@@ -124,14 +126,14 @@ public class ClientProxy extends CommonProxy {
 		socketRenderer = IntegratedCircuitsAPI.getGateRegistry().createDefaultSocketRenderer(Constants.MOD_ID + ":ic_base");
 		socketRendererFMP = IntegratedCircuitsAPI.getGateRegistry().createDefaultSocketRenderer(Constants.MOD_ID + ":ic_base_fmp");
 
-		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemCircuit, circuitRenderer);
-		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.item7Segment, segmentRenderer);
+		MinecraftForgeClient.registerItemRenderer(Content.itemCircuit, circuitRenderer);
+		MinecraftForgeClient.registerItemRenderer(Content.item7Segment, segmentRenderer);
 
-		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemSocket, socketRenderer);
+		MinecraftForgeClient.registerItemRenderer(Content.itemSocket, socketRenderer);
 		if (IntegratedCircuits.isFMPLoaded)
-			MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemSocketFMP, socketRendererFMP);
+			MinecraftForgeClient.registerItemRenderer(Content.itemSocketFMP, socketRendererFMP);
 
-		MinecraftForgeClient.registerItemRenderer(IntegratedCircuits.itemLaser, new ItemLaserRenderer());
+		MinecraftForgeClient.registerItemRenderer(Content.itemLaser, new ItemLaserRenderer());
 	}
 
 	@Override

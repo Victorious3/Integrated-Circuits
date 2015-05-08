@@ -32,7 +32,7 @@ public class ContainerAssembler extends ContainerBase {
 		this.addSlotToContainer(new Slot(this.tileentity, 1, 8, 113) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
-				return stack.getItem() == IntegratedCircuits.itemPCB && stack.getItemDamage() == 0
+				return stack.getItem() == Content.itemPCB && stack.getItemDamage() == 0
 						&& tileentity.getStatus() != TileEntityAssembler.RUNNING;
 			}
 
@@ -51,7 +51,7 @@ public class ContainerAssembler extends ContainerBase {
 			this.addSlotToContainer(new Slot(this.tileentity, i + 9, 148, 12 + i * 18) {
 				@Override
 				public boolean isItemValid(ItemStack stack) {
-					return stack.getItem() == IntegratedCircuits.itemLaser;
+					return stack.getItem() == Content.itemLaser;
 				}
 
 				@Override
@@ -88,7 +88,7 @@ public class ContainerAssembler extends ContainerBase {
 	
 	@Override
 	protected boolean doTransferStack(ItemStack stack, int slot) {
-		if(slot >= 13 && stack.getItem() == IntegratedCircuits.itemLaser) {
+		if(slot >= 13 && stack.getItem() == Content.itemLaser) {
 			//Transfer lasers to laser slots
 			if(!mergeItemStack(stack, 9, 13, false))
 				return false;

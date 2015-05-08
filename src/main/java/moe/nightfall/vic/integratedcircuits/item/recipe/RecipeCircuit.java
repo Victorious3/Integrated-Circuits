@@ -3,7 +3,7 @@ package moe.nightfall.vic.integratedcircuits.item.recipe;
 import java.util.Arrays;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
@@ -13,7 +13,7 @@ import net.minecraftforge.oredict.RecipeSorter.Category;
 
 public class RecipeCircuit extends ShapelessRecipes {
 	public RecipeCircuit() {
-		super(new ItemStack(IntegratedCircuits.itemCircuit), Arrays.asList(new ItemStack(IntegratedCircuits.itemPCB, 1,
+		super(new ItemStack(Content.itemCircuit), Arrays.asList(new ItemStack(Content.itemPCB, 1,
 				1)));
 		RecipeSorter.register(Constants.MOD_ID + ":circuit", getClass(), Category.SHAPELESS,
 				"after:minecraft:shapeless");
@@ -24,7 +24,7 @@ public class RecipeCircuit extends ShapelessRecipes {
 		ItemStack stack = null;
 		for (int i = 0; i < crafting.getSizeInventory(); i++) {
 			ItemStack tmp = crafting.getStackInSlot(i);
-			if (tmp != null && tmp.getItem() == IntegratedCircuits.itemPCB && tmp.hasTagCompound()
+			if (tmp != null && tmp.getItem() == Content.itemPCB && tmp.hasTagCompound()
 					&& tmp.getTagCompound().hasKey("circuit")) {
 				stack = tmp;
 				break;
@@ -32,7 +32,7 @@ public class RecipeCircuit extends ShapelessRecipes {
 		}
 		if (stack == null)
 			return null;
-		ItemStack ret = new ItemStack(IntegratedCircuits.itemCircuit);
+		ItemStack ret = new ItemStack(Content.itemCircuit);
 		NBTTagCompound comp = (NBTTagCompound) stack.getTagCompound().copy();
 		ret.setTagCompound(comp);
 		return ret;

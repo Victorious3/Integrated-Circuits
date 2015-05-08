@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
@@ -86,7 +86,7 @@ public abstract class TileEntitySocket extends TileEntity implements ISocketWrap
 
 	@Override
 	public void destroy() {
-		MiscUtils.dropItem(worldObj, new ItemStack(IntegratedCircuits.itemSocket), xCoord, yCoord, zCoord);
+		MiscUtils.dropItem(worldObj, new ItemStack(Content.itemSocket), xCoord, yCoord, zCoord);
 		isDestroyed = true;
 		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 	}
