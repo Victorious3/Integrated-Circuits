@@ -13,6 +13,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 public class PartWire extends CircuitPart {
 	public final IntProperty PROP_COLOR = new IntProperty("COLOR", stitcher, 2);
 
@@ -108,5 +111,15 @@ public class PartWire extends CircuitPart {
 	@Override
 	public String getName(Vec2 pos, ICircuit parent) {
 		return super.getName(pos, parent) + "." + getColor(pos, parent);
+	}
+
+	@Override
+	public Category getCategory() {
+		return Category.WIRE;
+	}
+
+	@Override
+	public Collection<Integer> getSubtypes() {
+		return Arrays.asList(0 << 4, 1 << 4, 2 << 4);
 	}
 }

@@ -152,19 +152,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		int currentPosition = cy + 47;
 		for (CircuitPart.Category category : CircuitPart.Category.values()) {
 			List<CircuitPart> parts = CircuitPart.getParts(category);
-			// If the part hasn't got a category, or there are no parts in the
-			// category, do not add the button for the category.
+			// If the part hasn't got a category, or there are no parts in the category, do not add the button for the category.
 			if (category == CircuitPart.Category.NONE || parts.size() == 0)
 				continue;
-			if (category == CircuitPart.Category.WIRE) {
-				List<CircuitRenderWrapper> partList = Lists.newArrayList();
-				partList.add(new CircuitRenderWrapper(PartWire.class, 1 << 4));
-				partList.add(new CircuitRenderWrapper(PartWire.class, 2 << 4));
-				partList.addAll(GuiPartChooser.getRenderWrapperParts(parts));
-				this.buttonList.add(new GuiPartChooser(3, cx + 220, cy + 152, new CircuitRenderWrapper(PartWire.class), partList, this));
-			} else {
-				this.buttonList.add(new GuiPartChooser(7, cx + 220, currentPosition, GuiPartChooser.getRenderWrapperParts(parts), this));
-			}
+			this.buttonList.add(new GuiPartChooser(7, cx + 220, currentPosition, GuiPartChooser.getRenderWrapperParts(parts), this));
 			currentPosition += 21;
 		}
 

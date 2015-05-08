@@ -1,6 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.client.gui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.client.Resources;
@@ -77,8 +78,12 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 
 	public static List<CircuitRenderWrapper> getRenderWrapperParts(List<CircuitPart> parts) {
 		ArrayList<CircuitRenderWrapper> renderWrappers = new ArrayList<CircuitRenderWrapper>();
-		for (CircuitPart part : parts)
-			renderWrappers.add(new CircuitRenderWrapper(part.getClass()));
+		for (CircuitPart part : parts) {
+			Collection<Integer> subtypes = part.getSubtypes();
+			if (subtypes == null || subtypes.size() == 0) renderWrappers.add(new CircuitRenderWrapper(part.getClass()));
+			else for (int metadata : subtypes)
+					renderWrappers.add(new CircuitRenderWrapper(part.getClass(), metadata));
+		}
 		return renderWrappers;
 	}
 

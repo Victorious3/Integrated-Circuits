@@ -300,4 +300,12 @@ public abstract class CircuitPart {
 	/** Gets called when the client removes this */
 	public void onRemoved(Vec2 pos, ICircuit parent) {
 	}
+
+	/**
+	 * Gets the subtypes of this part
+	 * @return an empty collection, or a collection with all the subtypes
+	 */
+	public Collection<Integer> getSubtypes() {
+		return Collections.emptyList();
+	}
 }
