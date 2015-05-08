@@ -29,7 +29,7 @@ public class ItemSocket extends ItemBase {
 			return false;
 
 		if (world.getBlock(pos.x, pos.y, pos.z).isReplaceable(world, pos.x, pos.y, pos.z)) {
-			world.setBlock(pos.x, pos.y, pos.z, IntegratedCircuits.blockGate);
+			world.setBlock(pos.x, pos.y, pos.z, IntegratedCircuits.blockSocket);
 			TileEntitySocket te = (TileEntitySocket) world.getTileEntity(pos.x, pos.y, pos.z);
 			te.getSocket().preparePlacement(player, pos2, side, stack);
 			MiscUtils.playPlaceSound(world, pos);

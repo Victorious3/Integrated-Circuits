@@ -94,7 +94,7 @@ public class IntegratedCircuits {
 	public static Item itemPCBChip;
 	public static ItemScrewdriver itemScrewdriver;
 
-	public static BlockSocket blockGate;
+	public static BlockSocket blockSocket;
 	public static BlockPCBLayout blockPCBLayout;
 	public static BlockAssembler blockAssembler;
 	public static CreativeTabs creativeTab;
@@ -215,10 +215,10 @@ public class IntegratedCircuits {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		blockGate = API.getGateRegistry().createProxyInstance(BlockSocket.class);
-		GameRegistry.registerBlock(blockGate, Constants.MOD_ID + ".gate");
+		blockSocket = API.getGateRegistry().createProxyInstance(BlockSocket.class);
+		GameRegistry.registerBlock(blockSocket, Constants.MOD_ID + ".socket");
 		socketClass = API.getGateRegistry().createProxyClass(TileEntitySocket.class);
-		GameRegistry.registerTileEntity(socketClass, Constants.MOD_ID + ".gate");
+		GameRegistry.registerTileEntity(socketClass, Constants.MOD_ID + ".socket");
 
 		if (isFMPLoaded) {
 			PartFactory.register(Constants.MOD_ID + ".socket_fmp", API.getGateRegistry().createProxyClass(FMPartGate.class));
@@ -226,8 +226,8 @@ public class IntegratedCircuits {
 		}
 
 		if (isCCLoaded) {
-			ComputerCraftAPI.registerBundledRedstoneProvider((IBundledRedstoneProvider) blockGate);
-			ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) blockGate);
+			ComputerCraftAPI.registerBundledRedstoneProvider((IBundledRedstoneProvider) blockSocket);
+			ComputerCraftAPI.registerPeripheralProvider((IPeripheralProvider) blockSocket);
 		}
 
 		proxy.initialize();

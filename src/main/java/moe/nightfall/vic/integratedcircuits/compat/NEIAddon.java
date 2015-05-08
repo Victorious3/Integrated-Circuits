@@ -10,6 +10,6 @@ public class NEIAddon {
 		if (IntegratedCircuits.isFMPLoaded)
 			API.hideItem(new ItemStack(IntegratedCircuits.itemSocketFMP));
 
-		API.hideItem(new ItemStack(IntegratedCircuits.blockGate));
+		API.hideItem(new ItemStack(IntegratedCircuits.blockSocket));
 	}
 }
