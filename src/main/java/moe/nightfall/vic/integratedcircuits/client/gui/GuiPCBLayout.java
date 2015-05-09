@@ -50,6 +50,9 @@ import com.google.common.primitives.Ints;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverableHandler {
+
+	protected int guiTopOther;
+
 	private int lastX, lastY;
 	public TileEntityPCBLayout te;
 
@@ -100,75 +103,87 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			.addControl(new GuiButtonExt(2, 43, 25, 36, 20, "-50ms"))
 			.addControl(new GuiButtonExt(3, 81, 25, 36, 20, "+50ms"))
 			.addControl(new GuiButtonExt(4, 119, 25, 36, 20, "+1s")).addControl(labelTimed);
+
+		guiInfo();
 	}
 
 	@Override
 	public void initGui() {
-
 		NEIAddon.hideGUI(true);
 
-		int cx = (this.width - this.xSize) / 2;
-		int cy = (this.height - this.ySize) / 2 - 4;
+		super.initGui();
+		this.guiTopOther = (this.height - this.ySize) / 2 - 4;
 
-		GuiPartChooser c1 = new GuiPartChooser(0, cx + 220, cy + 194, 1, this);
+		guiInfo();
+
+		GuiPartChooser c1 = new GuiPartChooser(0, guiLeft + 220, guiTopOther + 194, 1, this);
 		c1.setActive(true);
 
-		buttonPlus = new GuiButtonExt(8, cx + 190, cy + 238, 10, 10, "+");
+		buttonPlus = new GuiButtonExt(8, guiLeft + 190, guiTopOther + 238, 10, 10, "+");
 		this.buttonList.add(buttonPlus);
-		buttonMinus = new GuiButtonExt(9, cx + 201, cy + 238, 10, 10, "-");
+		buttonMinus = new GuiButtonExt(9, guiLeft + 201, guiTopOther + 238, 10, 10, "-");
 		this.buttonList.add(buttonMinus);
 
-		this.buttonList.add(new GuiButtonExt(10, cx + 93, cy + 14, 12, 12, "+"));
-		buttonSize = new GuiButtonExt(11, cx + 110, cy + 14, 38, 12, "");
+		this.buttonList.add(new GuiButtonExt(10, guiLeft + 93, guiTopOther + 14, 12, 12, "+"));
+		buttonSize = new GuiButtonExt(11, guiLeft + 110, guiTopOther + 14, 38, 12, "");
 		this.buttonList.add(buttonSize);
 
-		this.buttonList.add(new GuiButtonExt(12, cx + 210, cy + 10, 10, 10, "I"));
-		this.buttonList.add(new GuiButtonExt(13, cx + 210, cy + 21, 10, 10, "O"));
+		this.buttonList.add(new GuiButtonExt(12, guiLeft + 210, guiTopOther + 10, 10, 10, "I"));
+		this.buttonList.add(new GuiButtonExt(13, guiLeft + 210, guiTopOther + 21, 10, 10, "O"));
 
-		this.buttonList.add(new GuiButtonExt(84, cx + 221, cy + 32, 10, 10, "\u21B6"));
-		this.buttonList.add(new GuiButtonExt(85, cx + 232, cy + 32, 10, 10, "\u21B7"));
+		this.buttonList.add(new GuiButtonExt(84, guiLeft + 221, guiTopOther + 32, 10, 10, "\u21B6"));
+		this.buttonList.add(new GuiButtonExt(85, guiLeft + 232, guiTopOther + 32, 10, 10, "\u21B7"));
 
-		checkN = new GuiIOMode(65, cx + 26, cy + 35, this, 0);
-		checkE = new GuiIOMode(66, cx + 206, cy + 57, this, 1);
-		checkS = new GuiIOMode(67, cx + 26, cy + 237, this, 2);
-		checkW = new GuiIOMode(68, cx + 4, cy + 57, this, 3);
+		checkN = new GuiIOMode(65, guiLeft + 26, guiTopOther + 35, this, 0);
+		checkE = new GuiIOMode(66, guiLeft + 206, guiTopOther + 57, this, 1);
+		checkS = new GuiIOMode(67, guiLeft + 26, guiTopOther + 237, this, 2);
+		checkW = new GuiIOMode(68, guiLeft + 4, guiTopOther + 57, this, 3);
 
 		this.buttonList.add(checkN);
 		this.buttonList.add(checkE);
 		this.buttonList.add(checkS);
 		this.buttonList.add(checkW);
 
-		nameField = new GuiTextField(fontRendererObj, cx + 154, cy + 15, 50, 10);
+		nameField = new GuiTextField(fontRendererObj, guiLeft + 154, guiTopOther + 15, 50, 10);
 		nameField.setText(te.getCircuitData().getProperties().getName());
 		nameField.setMaxStringLength(7);
 		nameField.setCanLoseFocus(true);
 		nameField.setFocused(false);
 
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13, cx + 39 + i * 9, cy + 37, 15 - i, 0, this, te));
+			this.buttonList.add(new GuiIO(i + 13, guiLeft + 39 + i * 9, guiTopOther + 37, 15 - i, 0, this, te));
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13 + 16, cx + 207, cy + 70 + i * 9, 15 - i, 1, this, te));
+			this.buttonList.add(new GuiIO(i + 13 + 16, guiLeft + 207, guiTopOther + 70 + i * 9, 15 - i, 1, this, te));
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13 + 32, cx + 6, cy + 70 + i * 9, i, 3, this, te));
+			this.buttonList.add(new GuiIO(i + 13 + 32, guiLeft + 6, guiTopOther + 70 + i * 9, i, 3, this, te));
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13 + 48, cx + 39 + i * 9, cy + 238, i, 2, this, te));
+			this.buttonList.add(new GuiIO(i + 13 + 48, guiLeft + 39 + i * 9, guiTopOther + 238, i, 2, this, te));
 
-		int currentPosition = cy + 47;
+		int currentPosition = guiTopOther + 47;
 		for (CircuitPart.Category category : CircuitPart.Category.values()) {
 			List<CircuitPart> parts = CircuitPart.getParts(category);
 			// If the part hasn't got a category, or there are no parts in the category, do not add the button for the category.
 			if (category == CircuitPart.Category.NONE || parts.size() == 0)
 				continue;
-			this.buttonList.add(new GuiPartChooser(7, cx + 220, currentPosition, GuiPartChooser.getRenderWrapperParts(parts), this));
+			this.buttonList.add(new GuiPartChooser(7, guiLeft + 220, currentPosition, GuiPartChooser.getRenderWrapperParts(parts), this));
 			currentPosition += 21;
 		}
 
 		// The edit and erase buttons
 		this.buttonList.add(c1);
-		this.buttonList.add(new GuiPartChooser(1, cx + 220, cy + 215, 2, this));
+		this.buttonList.add(new GuiPartChooser(1, guiLeft + 220, guiTopOther + 215, 2, this));
 
 		refreshUI();
-		super.initGui();
+	}
+
+	private void guiInfo() {
+		System.out.println();
+		System.out.println("GUI Info");
+		System.out.println("this.width is " + this.width);
+		System.out.println("this.height is " + this.height);
+		System.out.println("this.xSize is " + this.xSize);
+		System.out.println("this.ySize is " + this.ySize);
+		System.out.println("this.guiLeft = " + this.guiLeft + "; this.guiTop = " + this.guiTop + "; this.guiTopOther = " + this.guiTopOther + ";");
 	}
 
 	public void refreshIO() {
