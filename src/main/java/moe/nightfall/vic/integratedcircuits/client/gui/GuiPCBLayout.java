@@ -11,6 +11,7 @@ import moe.nightfall.vic.integratedcircuits.client.gui.GuiCallback.Action;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
@@ -103,6 +104,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 	@Override
 	public void initGui() {
+
+		NEIAddon.hideGUI(true);
+
 		int cx = (this.width - this.xSize) / 2;
 		int cy = (this.height - this.ySize) / 2 - 4;
 
@@ -780,6 +784,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		super.onGuiClosed();
 		Config.showConfirmMessage.set(checkboxDelete.isChecked());
 		Config.save();
+
+		NEIAddon.hideGUI(false);
 	}
 
 	@Override

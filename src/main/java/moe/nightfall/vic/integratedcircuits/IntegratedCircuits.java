@@ -66,6 +66,7 @@ public class IntegratedCircuits {
 	public static Class<? extends TileEntity> socketClass;
 
 	// TODO Some of those might be obsolete
+	// TODO Move to some helper class called Compat
 	public static boolean isPRLoaded = false;
 	public static boolean isAWLoaded = false;
 	public static boolean isBPLoaded = false;
@@ -73,6 +74,7 @@ public class IntegratedCircuits {
 	public static boolean isRLLoaded = false;
 	public static boolean isMFRLoaded = false;
 	public static boolean isCCLoaded = false;
+	public static boolean isNEILoaded = false;
 
 	public static boolean developmentEnvironment;
 	public static Logger logger;
@@ -112,6 +114,7 @@ public class IntegratedCircuits {
 		logger.info("RedLogic: " + (isRLLoaded = Loader.isModLoaded("RedLogic")));
 		logger.info("MineFactoryReloaded: " + (isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded")));
 		logger.info("Computer Craft: " + (isCCLoaded = Loader.isModLoaded("ComputerCraft")));
+		logger.info("Not Enough Items: " + (isNEILoaded = Loader.isModLoaded("NotEnoughItems")));
 
 		if (isFMPLoaded)
 			logger.info("Forge Multi Part installation found! FMP Compatible gates will be added.");
@@ -212,7 +215,7 @@ public class IntegratedCircuits {
 
 		proxy.initialize();
 
-		if (Loader.isModLoaded("NotEnoughItems") && !MiscUtils.isServer())
+		if (isNEILoaded && !MiscUtils.isServer())
 			new NEIAddon().initialize();
 
 		FMLInterModComms.sendMessage("Waila", "register", "moe.nightfall.vic.integratedcircuits.compat.WailaAddon.registerAddon");
