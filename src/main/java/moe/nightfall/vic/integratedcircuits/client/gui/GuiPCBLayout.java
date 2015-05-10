@@ -52,10 +52,8 @@ import cpw.mods.fml.client.config.GuiButtonExt;
 public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverableHandler {
 
 	// The size of the GUI
-	protected int guiTopOther;
 	protected int guiRight;
 	protected int guiBottom;
-	protected int guiBottomOther;
 
 	// The size of the circuit editor
 	protected int xSizeEditor;
@@ -129,44 +127,44 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		calculateSizes();
 
 		// Zoom buttons
-		buttonPlus = new GuiButtonExt(8, guiRight - 57, guiBottomOther - 12, 10, 10, "+");
+		buttonPlus = new GuiButtonExt(8, guiRight - 57, guiBottom - 16, 10, 10, "+");
 		this.buttonList.add(buttonPlus);
-		buttonMinus = new GuiButtonExt(9, guiRight - 46, guiBottomOther - 12, 10, 10, "-");
+		buttonMinus = new GuiButtonExt(9, guiRight - 46, guiBottom - 16, 10, 10, "-");
 		this.buttonList.add(buttonMinus);
 
 		// Reset / New Circuit button
-		this.buttonList.add(new GuiButtonExt(10, guiRight - 155, guiTopOther + 14, 12, 12, "+"));
+		this.buttonList.add(new GuiButtonExt(10, guiRight - 155, guiTop + 10, 12, 12, "+"));
 
 		// Size Selection button
-		buttonSize = new GuiButtonExt(11, guiRight - 138, guiTopOther + 14, 38, 12, "");
+		buttonSize = new GuiButtonExt(11, guiRight - 138, guiTop + 10, 38, 12, "");
 		this.buttonList.add(buttonSize);
 
 		// Circuit Name text box
-		nameField = new GuiTextField(fontRendererObj, guiRight - 95, guiTopOther + 15, 50, 10);
+		nameField = new GuiTextField(fontRendererObj, guiRight - 95, guiTop + 11, 50, 10);
 		nameField.setText(tileentity.getCircuitData().getProperties().getName());
 		nameField.setMaxStringLength(7);
 		nameField.setCanLoseFocus(true);
 		nameField.setFocused(false);
 
 		// Save and Load buttons
-		this.buttonList.add(new GuiButtonExt(12, guiRight - 38, guiTopOther + 10, 10, 10, "I"));
-		this.buttonList.add(new GuiButtonExt(13, guiRight - 38, guiTopOther + 21, 10, 10, "O"));
+		this.buttonList.add(new GuiButtonExt(12, guiRight - 38, guiTop + 6, 10, 10, "I"));
+		this.buttonList.add(new GuiButtonExt(13, guiRight - 38, guiTop + 17, 10, 10, "O"));
 
 		// The inventory slot containing the blueprint disk
 		this.inventorySlots.getSlot(0).xDisplayPosition = this.xSize - 25;
 		this.inventorySlots.getSlot(0).yDisplayPosition = 8;
 
 		// Undo and Redo buttons
-		this.buttonList.add(new GuiButtonExt(84, guiRight - 28, guiTopOther + 32, 10, 10, "\u21B6"));
-		this.buttonList.add(new GuiButtonExt(85, guiRight - 17, guiTopOther + 32, 10, 10, "\u21B7"));
+		this.buttonList.add(new GuiButtonExt(84, guiRight - 28, guiTop + 28, 10, 10, "\u21B6"));
+		this.buttonList.add(new GuiButtonExt(85, guiRight - 17, guiTop + 28, 10, 10, "\u21B7"));
 
 		// Input Mode buttons
-		int yOffsetCentre = getOffsetCentre(43, 17, guiBottomOther - (ySize - guiBottomOther), 162);
+		int yOffsetCentre = getOffsetCentre(43, 17, guiBottom - (ySize - guiBottom), 170);
 		int xOffsetCentre = getOffsetCentre(38, 65, guiRight - (xSize - guiRight), 170);
 
-		checkN = new GuiIOMode(65, xOffsetCentre, guiTopOther + 35, this, 0);
+		checkN = new GuiIOMode(65, xOffsetCentre, guiTop + 31, this, 0);
 		checkE = new GuiIOMode(66, guiRight - 43, yOffsetCentre, this, 1);
-		checkS = new GuiIOMode(67, xOffsetCentre, guiBottomOther - 13, this, 2);
+		checkS = new GuiIOMode(67, xOffsetCentre, guiBottom - 17, this, 2);
 		checkW = new GuiIOMode(68, guiLeft + 4, yOffsetCentre, this, 3);
 
 		this.buttonList.add(checkN);
@@ -179,7 +177,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		yOffsetCentre += 13;
 		// North / Top Input buttons
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13, xOffsetCentre + i * 9, guiTopOther + 37, 15 - i, 0, this, tileentity));
+			this.buttonList.add(new GuiIO(i + 13, xOffsetCentre + i * 9, guiTop + 33, 15 - i, 0, this, tileentity));
 		// East / Right Input buttons
 		for (int i = 0; i < 16; i++)
 			this.buttonList.add(new GuiIO(i + 13 + 16, guiRight - 42, yOffsetCentre + i * 9, 15 - i, 1, this, tileentity));
@@ -188,12 +186,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			this.buttonList.add(new GuiIO(i + 13 + 32, guiLeft + 6, yOffsetCentre + i * 9, i, 3, this, tileentity));
 		// South / Bottom Input buttons
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13 + 48, xOffsetCentre + i * 9, guiBottomOther - 12, i, 2, this, tileentity));
+			this.buttonList.add(new GuiIO(i + 13 + 48, xOffsetCentre + i * 9, guiBottom - 16, i, 2, this, tileentity));
 
 
 		int toolsXPosition = guiRight - 29;
 
-		int currentPosition = guiTopOther + 47;
+		int currentPosition = guiTop + 43;
 		for (CircuitPart.Category category : CircuitPart.Category.values()) {
 			List<CircuitPart> parts = CircuitPart.getParts(category);
 			// If the part hasn't got a category, or there are no parts in the category, do not add the button for the category.
@@ -204,10 +202,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		}
 
 		// The edit and erase buttons
-		GuiPartChooser c1 = new GuiPartChooser(0, toolsXPosition, guiBottomOther - 56, 1, this);
+		GuiPartChooser c1 = new GuiPartChooser(0, toolsXPosition, guiBottom - 60, 1, this);
 		c1.setActive(true);
 		this.buttonList.add(c1);
-		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, guiBottomOther - 35, 2, this));
+		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, guiBottom - 39, 2, this));
 
 		refreshUI();
 	}
@@ -221,11 +219,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		this.xSize = this.guiRight - this.guiLeft;
 		this.ySize = this.guiBottom - guiTop;
-
-		// TODO: Remove the need for these
-		this.guiTopOther = guiTop - 4;
-		this.guiBottomOther = guiBottom - 4;
-
 
 		this.editorTop = this.guiTop + 44;
 		this.editorLeft = this.guiLeft + 17;
@@ -246,9 +239,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		System.out.println();
 		System.out.println("GUI Info");
 		System.out.println("this.width = " + this.width + "; this.height = " + this.height + ";");
-		System.out.println("this.xSize = " + this.xSize + "; this.ySize = " + this.ySize);
-		System.out.println("this.guiLeft = " + this.guiLeft + "; this.guiTop = " + this.guiTop + "; this.guiTopOther = " + this.guiTopOther + ";");
-		System.out.println("this.guiRight = " + this.guiRight + "; this.guiBottom = " + this.guiBottom + "; this.guiBottomOther = " + this.guiBottomOther + ";");
+		System.out.println("this.xSize = " + this.xSize + "; this.ySize = " + this.ySize + ";");
+		System.out.println("this.guiLeft = " + this.guiLeft + "; this.guiTop = " + this.guiTop + ";");
+		System.out.println("this.guiRight = " + this.guiRight + "; this.guiBottom = " + this.guiBottom + ";");
 		System.out.println("this.xSizeEditor = " + this.xSizeEditor + "; this.ySizeEditor = " + this.ySizeEditor + ";");
 		System.out.println("this.editorLeft = " + this.editorLeft + "; this.editorTop = " + this.editorTop + ";");
 		System.out.println("this.editorRight = " + this.editorRight + "; this.editorBottom = " + this.editorBottom + ";");
