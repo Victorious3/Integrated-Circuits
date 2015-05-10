@@ -83,7 +83,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	public CircuitRenderWrapper selectedPart;
 
 	// Used by the wires
-	// FIXME: Are these the correct names?
 	private int startX, startY, endX, endY;
 	private boolean drag;
 
@@ -158,14 +157,26 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(new GuiButtonExt(84, guiRight - 28, guiTop + 28, 10, 10, "\u21B6"));
 		this.buttonList.add(new GuiButtonExt(85, guiRight - 17, guiTop + 28, 10, 10, "\u21B7"));
 
-		// Input Mode buttons
+
+		// TODO: Make these relative based off of the editor size and position.
+
+		// Input button positions
 		int yOffsetCentre = getOffsetCentre(43, 17, guiBottom - (ySize - guiBottom), 170);
 		int xOffsetCentre = getOffsetCentre(38, 65, guiRight - (xSize - guiRight), 170);
+		int topEditorOffset = editorTop - 11;
+		int leftEditorOffset = editorLeft - 11;
+		int rightEditorOffset = editorRight + 1;
+		int bottomEditorOffset = editorBottom + 1;
 
-		checkN = new GuiIOMode(65, xOffsetCentre, guiTop + 31, this, 0);
-		checkE = new GuiIOMode(66, guiRight - 43, yOffsetCentre, this, 1);
-		checkS = new GuiIOMode(67, xOffsetCentre, guiBottom - 17, this, 2);
-		checkW = new GuiIOMode(68, guiLeft + 4, yOffsetCentre, this, 3);
+		// Input Mode buttons
+		//checkN = new GuiIOMode(65, xOffsetCentre, guiTop + 31, this, 0);
+		checkN = new GuiIOMode(65, xOffsetCentre, topEditorOffset - 1, this, 0);
+		//checkE = new GuiIOMode(66, guiRight - 43, yOffsetCentre, this, 1);
+		checkE = new GuiIOMode(66, rightEditorOffset, yOffsetCentre, this, 1);
+		//checkS = new GuiIOMode(67, xOffsetCentre, guiBottom - 17, this, 2);
+		checkS = new GuiIOMode(67, xOffsetCentre, bottomEditorOffset, this, 2);
+		//checkW = new GuiIOMode(68, guiLeft + 4, yOffsetCentre, this, 3);
+		checkW = new GuiIOMode(68, leftEditorOffset - 1, yOffsetCentre, this, 3);
 
 		this.buttonList.add(checkN);
 		this.buttonList.add(checkE);
@@ -177,16 +188,17 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		yOffsetCentre += 13;
 		// North / Top Input buttons
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13, xOffsetCentre + i * 9, guiTop + 33, 15 - i, 0, this, tileentity));
+			//this.buttonList.add(new GuiIO(i + 13, xOffsetCentre + i * 9, guiTop + 33, 15 - i, 0, this, tileentity));
+			this.buttonList.add(new GuiIO(i + 13, xOffsetCentre + i * 9, topEditorOffset, 15 - i, 0, this, tileentity));
 		// East / Right Input buttons
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13 + 16, guiRight - 42, yOffsetCentre + i * 9, 15 - i, 1, this, tileentity));
+			this.buttonList.add(new GuiIO(i + 13 + 16, rightEditorOffset + 2, yOffsetCentre + i * 9, 15 - i, 1, this, tileentity));
 		// West / Left Input buttons
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13 + 32, guiLeft + 6, yOffsetCentre + i * 9, i, 3, this, tileentity));
+			this.buttonList.add(new GuiIO(i + 13 + 32, leftEditorOffset, yOffsetCentre + i * 9, i, 3, this, tileentity));
 		// South / Bottom Input buttons
 		for (int i = 0; i < 16; i++)
-			this.buttonList.add(new GuiIO(i + 13 + 48, xOffsetCentre + i * 9, guiBottom - 16, i, 2, this, tileentity));
+			this.buttonList.add(new GuiIO(i + 13 + 48, xOffsetCentre + i * 9, bottomEditorOffset + 2, i, 2, this, tileentity));
 
 
 		int toolsXPosition = guiRight - 29;
@@ -221,7 +233,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.ySize = this.guiBottom - guiTop;
 
 		this.editorTop = this.guiTop + 44;
-		this.editorLeft = this.guiLeft + 17;
+		//this.editorLeft = this.guiLeft + 17;
+		this.editorLeft = this.guiLeft + 44;
 		this.editorBottom = this.guiBottom - 18;
 		this.editorRight = this.guiRight - 44;
 
@@ -351,9 +364,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		endX = (int) mouseX;
 		endY = (int) mouseY;
 
-		GL11.glColor3f(1F, 1F, 1F);
-		mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_CAD_BACKGROUND);
-		this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
+		//GL11.glColor3f(1F, 1F, 1F);
+		//mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_CAD_BACKGROUND);
+		//this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
@@ -365,14 +378,15 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		mouseDrag(x, y, w, editorLeft, editorTop, editorRight, editorBottom);
 
 		// Draw the name of the CAD
-		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0x333333);
+		// TODO: Change back to normal after background drawing is done.
+		//fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0x333333);
+		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0xFFFFFF);
 
 		GL11.glPushMatrix();
 		GL11.glTranslated(guiLeft, guiTop, 0);
-		// TODO: Draw the background dynamically
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 
-
+		// Render the "board"
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor((int) ((editorLeft) * guiScale),
 			this.mc.displayHeight - (int) ((editorTop) * guiScale) - ySizeEditor * guiScale,
@@ -383,7 +397,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		CircuitPartRenderer.renderPerfboard(tileentity.offX, tileentity.offY, data);
 		CircuitPartRenderer.renderParts(tileentity, tileentity.offX, tileentity.offY);
 
-		// TODO: What does this code do?
+
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -662,8 +676,10 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		// x = 217
 		// y = 235
 		// xSize = 248
-		// ySize = 249
-		fontRendererObj.drawString((int) (tileentity.scale * 100) + "%", this.xSize - 31, this.ySize - 15, 0x333333);
+		// ySize = 24
+		// TODO: Change back to normal after background drawing is done.
+		//fontRendererObj.drawString((int) (tileentity.scale * 100) + "%", this.xSize - 31, this.ySize - 15, 0x333333);
+		fontRendererObj.drawString((int) (tileentity.scale * 100) + "%", this.xSize - 31, this.ySize - 15, 0xFFFFFF);
 		GL11.glColor3f(1, 1, 1);
 	}
 
