@@ -109,7 +109,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			.addControl(checkboxDelete);
 
 		labelTimed = new GuiLabel(80, 9, "", 0, true);
-		callbackTimed = new GuiCallback(this, 160, 50).addControl(new GuiButtonExt(1, 5, 25, 36, 20, "-1s"))
+		callbackTimed = new GuiCallback(this, 160, 50)
+			.addControl(new GuiButtonExt(1, 5, 25, 36, 20, "-1s"))
 			.addControl(new GuiButtonExt(2, 43, 25, 36, 20, "-50ms"))
 			.addControl(new GuiButtonExt(3, 81, 25, 36, 20, "+50ms"))
 			.addControl(new GuiButtonExt(4, 119, 25, 36, 20, "+1s")).addControl(labelTimed);
@@ -126,9 +127,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		calculateSizes();
 
 		// Zoom buttons
-		buttonPlus = new GuiButtonExt(8, guiRight - 57, guiBottom - 16, 10, 10, "+");
+		buttonPlus = new GuiButtonExt(8, guiRight - 85, guiBottom - 16, 10, 10, "+");
 		this.buttonList.add(buttonPlus);
-		buttonMinus = new GuiButtonExt(9, guiRight - 46, guiBottom - 16, 10, 10, "-");
+		buttonMinus = new GuiButtonExt(9, guiRight - 74, guiBottom - 16, 10, 10, "-");
 		this.buttonList.add(buttonMinus);
 
 		// Reset / New Circuit button
@@ -161,21 +162,17 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		// TODO: Make these relative based off of the editor size and position.
 
 		// Input button positions
-		int yOffsetCentre = getOffsetCentre(43, 17, guiBottom - (ySize - guiBottom), 170);
-		int xOffsetCentre = getOffsetCentre(38, 65, guiRight - (xSize - guiRight), 170);
+		int yOffsetCentre = getOffsetCentre(editorTop - guiTop, guiBottom - editorBottom, guiBottom - (ySize - guiBottom), 170) + 1;
+		int xOffsetCentre = getOffsetCentre(editorLeft - guiLeft, guiRight - editorRight, guiRight - (xSize - guiRight), 170) + 1;
 		int topEditorOffset = editorTop - 11;
 		int leftEditorOffset = editorLeft - 11;
 		int rightEditorOffset = editorRight + 1;
 		int bottomEditorOffset = editorBottom + 1;
 
 		// Input Mode buttons
-		//checkN = new GuiIOMode(65, xOffsetCentre, guiTop + 31, this, 0);
 		checkN = new GuiIOMode(65, xOffsetCentre, topEditorOffset - 1, this, 0);
-		//checkE = new GuiIOMode(66, guiRight - 43, yOffsetCentre, this, 1);
 		checkE = new GuiIOMode(66, rightEditorOffset, yOffsetCentre, this, 1);
-		//checkS = new GuiIOMode(67, xOffsetCentre, guiBottom - 17, this, 2);
 		checkS = new GuiIOMode(67, xOffsetCentre, bottomEditorOffset, this, 2);
-		//checkW = new GuiIOMode(68, guiLeft + 4, yOffsetCentre, this, 3);
 		checkW = new GuiIOMode(68, leftEditorOffset - 1, yOffsetCentre, this, 3);
 
 		this.buttonList.add(checkN);
@@ -188,7 +185,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		yOffsetCentre += 13;
 		// North / Top Input buttons
 		for (int i = 0; i < 16; i++)
-			//this.buttonList.add(new GuiIO(i + 13, xOffsetCentre + i * 9, guiTop + 33, 15 - i, 0, this, tileentity));
 			this.buttonList.add(new GuiIO(i + 13, xOffsetCentre + i * 9, topEditorOffset, 15 - i, 0, this, tileentity));
 		// East / Right Input buttons
 		for (int i = 0; i < 16; i++)
@@ -214,10 +210,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		}
 
 		// The edit and erase buttons
-		GuiPartChooser c1 = new GuiPartChooser(0, toolsXPosition, guiBottom - 60, 1, this);
+		currentPosition = (guiBottom - 47);
+		GuiPartChooser c1 = new GuiPartChooser(0, toolsXPosition, currentPosition, 1, this);
 		c1.setActive(true);
 		this.buttonList.add(c1);
-		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, guiBottom - 39, 2, this));
+		currentPosition += 21;
+		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, currentPosition, 2, this));
 
 		refreshUI();
 	}
@@ -233,7 +231,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.ySize = this.guiBottom - guiTop;
 
 		this.editorTop = this.guiTop + 44;
-		//this.editorLeft = this.guiLeft + 17;
 		this.editorLeft = this.guiLeft + 44;
 		this.editorBottom = this.guiBottom - 18;
 		this.editorRight = this.guiRight - 44;
@@ -378,8 +375,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		mouseDrag(x, y, w, editorLeft, editorTop, editorRight, editorBottom);
 
 		// Draw the name of the CAD
-		// TODO: Change back to normal after background drawing is done.
-		//fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0x333333);
 		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0xFFFFFF);
 
 		GL11.glPushMatrix();
@@ -460,7 +455,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		tessellator.setColorRGBA_F(0, 0, 0, 0.8F);
 		tessellator.addVertex(gradientRight, gradientTop, 0);
 		tessellator.addVertex(gradientLeft, gradientTop, 0);
-
 
 		// Bottom gradient
 		tessellator.setColorRGBA_F(0, 0, 0, 0.8F);
@@ -601,13 +595,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		lastX = x;
 		lastY = y;
 
-		// TODO: Are these changes correct? There might still be some hardcoded values...
-		// xSizeEditor = 188
-		// ySizeEditor = 188
-		// 204 - 16 = 188
-		// xSize = 248
-		// ySize = 249
-		// this.editorBottom = 231;
 		double maxX = ((xSizeEditor + 16) / tileentity.scale) - 16;
 		double minX = (-(w * 16) + editorLeft / tileentity.scale) + 16;
 		double maxY = (editorBottom / tileentity.scale) - 16;
@@ -673,13 +660,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			drawHoveringText(hoveredElement.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
 		RenderHelper.enableGUIStandardItemLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);
-		// x = 217
-		// y = 235
-		// xSize = 248
-		// ySize = 24
-		// TODO: Change back to normal after background drawing is done.
-		//fontRendererObj.drawString((int) (tileentity.scale * 100) + "%", this.xSize - 31, this.ySize - 15, 0x333333);
-		fontRendererObj.drawString((int) (tileentity.scale * 100) + "%", this.xSize - 31, this.ySize - 15, 0xFFFFFF);
+		fontRendererObj.drawString((int) (tileentity.scale * 100) + "%", this.xSize - 62, this.ySize - 15, 0xFFFFFF);
 		GL11.glColor3f(1, 1, 1);
 	}
 
