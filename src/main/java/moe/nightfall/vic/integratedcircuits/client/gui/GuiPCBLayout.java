@@ -95,8 +95,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 	public GuiPCBLayout(ContainerPCBLayout container) {
 		super(container);
-		//this.xSize = 248;
-		//this.ySize = 249;
 		this.tileentity = container.tileentity;
 
 		callbackDelete = new GuiCallback(this, 150, 100, Action.OK, Action.CANCEL);
@@ -114,8 +112,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			.addControl(new GuiButtonExt(2, 43, 25, 36, 20, "-50ms"))
 			.addControl(new GuiButtonExt(3, 81, 25, 36, 20, "+50ms"))
 			.addControl(new GuiButtonExt(4, 119, 25, 36, 20, "+1s")).addControl(labelTimed);
-
-		guiInfo();
 	}
 
 	@Override
@@ -158,9 +154,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(new GuiButtonExt(84, guiRight - 28, guiTop + 28, 10, 10, "\u21B6"));
 		this.buttonList.add(new GuiButtonExt(85, guiRight - 17, guiTop + 28, 10, 10, "\u21B7"));
 
-
-		// TODO: Make these relative based off of the editor size and position.
-
 		// Input button positions
 		int yOffsetCentre = getOffsetCentre(editorTop - guiTop, guiBottom - editorBottom, guiBottom - (ySize - guiBottom), 170) + 1;
 		int xOffsetCentre = getOffsetCentre(editorLeft - guiLeft, guiRight - editorRight, guiRight - (xSize - guiRight), 170) + 1;
@@ -197,7 +190,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			this.buttonList.add(new GuiIO(i + 13 + 48, xOffsetCentre + i * 9, bottomEditorOffset + 2, i, 2, this, tileentity));
 
 
-		int toolsXPosition = guiRight - 29;
+		int toolsXPosition = guiRight - 27;
 
 		int currentPosition = guiTop + 43;
 		for (CircuitPart.Category category : CircuitPart.Category.values()) {
@@ -237,14 +230,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		this.xSizeEditor = this.editorRight - this.editorLeft;
 		this.ySizeEditor = this.editorBottom - this.editorTop;
-
-		guiInfo();
 	}
 
 	protected static int getOffsetCentre(int topOffset, int bottomOffset, int fullLength, int thingLength) {
 		return ((topOffset + fullLength - bottomOffset) / 2) - (thingLength / 2);
 	}
 
+	/** Debugging tool, used to help with positioning. **/
 	private void guiInfo() {
 		System.out.println();
 		System.out.println("GUI Info");
@@ -361,18 +353,19 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		endX = (int) mouseX;
 		endY = (int) mouseY;
 
-		//GL11.glColor3f(1F, 1F, 1F);
-		//mc.getTextureManager().bindTexture(Resources.RESOURCE_GUI_CAD_BACKGROUND);
-		//this.drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
-
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
+
+		// Draw the "border"
+		drawHollowRect(guiLeft, guiTop, guiRight, guiBottom, editorLeft, editorTop, editorRight, editorBottom, 0xAA3A404A);
+
 
 		CircuitData data = tileentity.getCircuitData();
 
 		int w = data.getSize();
 
 		mouseDrag(x, y, w, editorLeft, editorTop, editorRight, editorBottom);
+
 
 		// Draw the name of the CAD
 		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0xFFFFFF);
@@ -391,7 +384,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		CircuitPartRenderer.renderPerfboard(tileentity.offX, tileentity.offY, data);
 		CircuitPartRenderer.renderParts(tileentity, tileentity.offX, tileentity.offY);
-
 
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -444,6 +436,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		nameField.drawTextBox();
 		GL11.glColor3f(1, 1, 1);
+	}
+
+	private static void drawHollowRect(int outerLeft, int outerTop, int outerRight, int outerBottom, int innerLeft, int innerTop, int innerRight, int innerBottom, int colour) {
+		drawRect(outerLeft, outerTop, innerRight, innerTop, colour);
+		drawRect(outerLeft, innerTop, innerLeft, outerBottom, colour);
+		drawRect(innerLeft, innerBottom, outerRight, outerBottom, colour);
+		drawRect(innerRight, outerTop, outerRight, innerBottom, colour);
 	}
 
 	// TODO: Make this less hardcoded?
