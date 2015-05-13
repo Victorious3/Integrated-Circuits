@@ -28,7 +28,7 @@ public class GuiIOMode extends GuiButton implements IHoverable {
 	public boolean mousePressed(Minecraft mc, int x, int y) {
 		boolean b = parent.blockMouseInput ? false : super.mousePressed(mc, x, y);
 		if (b)
-			parent.te.setInputMode(side, EnumConnectionType.values()[(mode.ordinal() + 1) % 3]);
+			parent.tileentity.setInputMode(side, EnumConnectionType.values()[(mode.ordinal() + 1) % 3]);
 		return b;
 	}
 
@@ -50,7 +50,7 @@ public class GuiIOMode extends GuiButton implements IHoverable {
 	}
 
 	public void refresh() {
-		mode = parent.te.getCircuitData().getProperties().getModeAtSide(side);
+		mode = parent.tileentity.getCircuitData().getProperties().getModeAtSide(side);
 	}
 
 	@Override
