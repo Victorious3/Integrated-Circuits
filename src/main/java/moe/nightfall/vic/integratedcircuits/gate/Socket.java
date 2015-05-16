@@ -499,14 +499,17 @@ public class Socket implements ISocket {
 		return false;
 	}
 
-	private void rotate() {
+	@Override
+	public boolean rotate() {
 		setRotation((getRotation() + 1) % 4);
-		getWriteStream(0).writeByte(orientation);
+		if (!getWorld().isRemote)
+			getWriteStream(0).writeByte(orientation);
 		notifyBlocksAndChanges();
-		if (gate != null) {
+		if (gate != null && !getWorld().isRemote) {
 			gate.onRotated();
 			updateInput();
 		}
+		return true;
 	}
 
 	@Override
