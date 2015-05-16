@@ -62,8 +62,8 @@ public class BlockSocket extends BlockContainer {
 
 	@Override
 	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
-		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
-		return te.getSocket().rotate();
+		return !world.isRemote &&
+			((TileEntitySocket) world.getTileEntity(x, y, z)).getSocket().rotate();
 	}
 
 	@Override

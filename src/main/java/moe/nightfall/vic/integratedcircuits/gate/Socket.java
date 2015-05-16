@@ -482,10 +482,12 @@ public class Socket implements ISocket {
 			}
 
 			String name = stack.getItem().getUnlocalizedName();
+
+			// FIXME: Some screwdrivers don't seem to work...
 			if (stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
 					|| name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver")) {
 				if (!getWorld().isRemote && gate != null) {
-					if (!player.isSneaking())
+					if (!player.isSneaking() && !name.equals("item.bluepower:screwdriver"))
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
@@ -493,6 +495,7 @@ public class Socket implements ISocket {
 				stack.damageItem(1, player);
 				return true;
 			}
+
 		}
 		if (gate != null)
 			return gate.activate(player, hit, stack);

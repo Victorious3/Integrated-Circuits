@@ -201,4 +201,10 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 	public void setCircuitData(CircuitData data) {
 		this.circuitData = data;
 	}
+
+	public boolean rotate() {
+		this.rotation = rotation + 1 & 3;
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		return true;
+	}
 }
