@@ -258,34 +258,23 @@ public class ClientProxy extends CommonProxy {
 		String uuidStr = uuid.toString();
 		// Is this someone who has deserved it?
 		if (uuidStr.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
-		uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
-		uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
-		uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
-		uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") /*
-																 * || // skyem
-																 * uuidStr .
-																 * equals (
-																 * "771422e7-904c-4952-bb55-de9590f97739"
-																 * )
-																 */) { // andrejsavikin
+		    uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
+		    uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
+		    uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
+		    uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758")) {
 			// Work out what skin they have
 			if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro
-																											// skin
 				return Cosplay.SHIRO;
 			else if (skinID.equals("skins/d45286a47c460daddedd3f02accf8b0a5b65a86dfcbffdb86e955b95e075aa")) // Jibril
-																											// skin
 				return Cosplay.JIBRIL;
 			else if (skinID.equals("skins/7c53efc23da1887fe82b42921fcc714f76fb0e62fb032eae7039a7134e2110")) // Steph
-																											// skin
 				return Cosplay.STEPH;
 			else if (skinID.equals("skins/3f98d0a766e1170d389ad283860329485e5be7668bdbfe45ff04c9ba5a8a2")) // Mami
-																											// skin
 				return Cosplay.MAMI;
 			else if (skinID.equals("skins/23295447ce21e83e36da7360ee1fe34c15b9391fb564773c954e59c83ff6d1f9")) // Nano
-																												// skin
 				return Cosplay.NANO;
 			else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno
-																											// skin
+				// Disabled?
 				return Cosplay.NONE;
 		}
 		return Cosplay.NONE;

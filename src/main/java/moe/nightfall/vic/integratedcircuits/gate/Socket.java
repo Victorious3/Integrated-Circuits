@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import buildcraft.api.tools.IToolWrench;
 import moe.nightfall.vic.integratedcircuits.Content;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
@@ -484,10 +486,15 @@ public class Socket implements ISocket {
 			String name = stack.getItem().getUnlocalizedName();
 
 			// FIXME: Some screwdrivers don't seem to work...
-			if (stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
-					|| name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver")) {
+			// Is it a tool?
+			boolean tool = (IntegratedCircuits.isBCToolsAPIThere && stack.getItem() instanceof IToolWrench)
+				        || stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
+				        || name.equals("item.projectred.core.screwdriver") || name.equals("item.bluepower:screwdriver");
+			// Does it rotate already?
+			boolean toolRotate = name.equals("item.bluepower:screwdriver") || (IntegratedCircuits.isBCToolsAPIThere && stack.getItem() instanceof IToolWrench);
+			if (tool) {
 				if (!getWorld().isRemote && gate != null) {
-					if (!player.isSneaking() && !name.equals("item.bluepower:screwdriver"))
+					if (!player.isSneaking() && !toolRotate)
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
@@ -495,6 +502,7 @@ public class Socket implements ISocket {
 				stack.damageItem(1, player);
 				return true;
 			}
+
 
 		}
 		if (gate != null)

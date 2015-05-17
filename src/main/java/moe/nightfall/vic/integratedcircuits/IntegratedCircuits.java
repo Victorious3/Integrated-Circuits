@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import cpw.mods.fml.common.ModAPIManager;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
@@ -75,6 +76,8 @@ public class IntegratedCircuits {
 	public static boolean isMFRLoaded = false;
 	public static boolean isCCLoaded = false;
 	public static boolean isNEILoaded = false;
+	// TODO BETTER NAME?
+	public static boolean isBCToolsAPIThere = false;
 
 	public static boolean developmentEnvironment;
 	public static Logger logger;
@@ -115,6 +118,8 @@ public class IntegratedCircuits {
 		logger.info("MineFactoryReloaded: " + (isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded")));
 		logger.info("Computer Craft: " + (isCCLoaded = Loader.isModLoaded("ComputerCraft")));
 		logger.info("Not Enough Items: " + (isNEILoaded = Loader.isModLoaded("NotEnoughItems")));
+		logger.info("Searching for compatible APIs");
+		logger.info("BuildCraft Tools API: " + (isBCToolsAPIThere = ModAPIManager.INSTANCE.hasAPI("BuildCraftAPI|tools")));
 
 		if (isFMPLoaded)
 			logger.info("Forge Multi Part installation found! FMP Compatible gates will be added.");
