@@ -644,7 +644,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		int w = data.getSize();
 		if (x2 >= 0 && y2 >= 0 && x2 < w && y2 < w && !blockMouseInput && !isShiftKeyDown()) {
-			if (!(x < guiLeft + 17 || y < guiTop + 44 || x > guiLeft + 17 + 187 || y > guiTop + 44 + 187)) {
+			if (x >= editorLeft && x < editorRight && y >= editorTop && y < editorBottom) {
 				Vec2 pos = new Vec2(x2, y2);
 				CircuitPart part = data.getPart(pos);
 				if (!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell)) {
