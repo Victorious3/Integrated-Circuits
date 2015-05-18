@@ -805,7 +805,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					Vec2 first = new Vec2(startX, startY);
 					Vec2 second = new Vec2(endX, endY);
 					
-					if (tileentity.getCircuitData().getPart(second) instanceof PartTunnel) {
+					if (tileentity.getCircuitData().getPart(second) instanceof PartTunnel && !first.equals(second)) {
 						
 						List<Integer> data = Lists.newArrayList();
 
