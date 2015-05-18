@@ -295,6 +295,8 @@ public abstract class CircuitPart {
 
 	/** Gets called on a client update */
 	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {
+		updateInput(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 
 	/** Gets called when the client removes this */
