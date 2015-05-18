@@ -25,8 +25,8 @@ public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit
 
 	// Used for the GUI.
 	public float scale = 0.33F;
-	public double offX = 63;
-	public double offY = 145;
+	public double offX = 0;
+	public double offY = 0;
 
 	public int[] in = new int[4];
 	public int[] out = new int[4];
