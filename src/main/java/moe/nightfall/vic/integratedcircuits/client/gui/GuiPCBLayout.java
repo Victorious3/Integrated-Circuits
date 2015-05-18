@@ -87,9 +87,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	private boolean drag;
 
 	// Callbacks
-	private GuiCallback callbackDelete;
+	private GuiCallback<GuiPCBLayout> callbackDelete;
 	private GuiCheckBoxExt checkboxDelete;
-	private GuiCallback callbackTimed;
+	private GuiCallback<GuiPCBLayout> callbackTimed;
 	private GuiLabel labelTimed;
 	private CircuitRenderWrapper timedPart;
 
@@ -97,7 +97,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		super(container);
 		this.tileentity = container.tileentity;
 
-		callbackDelete = new GuiCallback(this, 150, 100, Action.OK, Action.CANCEL);
+		callbackDelete = new GuiCallback<GuiPCBLayout>(this, 150, 100, Action.OK, Action.CANCEL);
 		checkboxDelete = new GuiCheckBoxExt(1, 7, 78, null, Config.showConfirmMessage.getBoolean(),
 				I18n.format("gui.integratedcircuits.cad.callback.show"), callbackDelete);
 		callbackDelete
@@ -107,7 +107,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			.addControl(checkboxDelete);
 
 		labelTimed = new GuiLabel(80, 9, "", 0, true);
-		callbackTimed = new GuiCallback(this, 160, 50)
+		callbackTimed = new GuiCallback<GuiPCBLayout>(this, 160, 50)
 			.addControl(new GuiButtonExt(1, 5, 25, 36, 20, "-1s"))
 			.addControl(new GuiButtonExt(2, 43, 25, 36, 20, "-50ms"))
 			.addControl(new GuiButtonExt(3, 81, 25, 36, 20, "+50ms"))
