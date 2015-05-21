@@ -1,5 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.misc;
 
+import java.util.Objects;
+
 import net.minecraftforge.common.util.ForgeDirection;
 
 /** An int value pair **/
@@ -20,13 +22,13 @@ public class Vec2 implements Cloneable {
 		return new Vec2(x + dir.offsetX, y + dir.offsetZ);
 	}
 
+	public double distanceTo(Vec2 other) {
+		return Math.sqrt(Math.pow(other.x - x, 2) + Math.pow(other.y - y, 2));
+	}
+
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + x;
-		result = prime * result + y;
-		return result;
+		return Objects.hash(x, y);
 	}
 
 	@Override

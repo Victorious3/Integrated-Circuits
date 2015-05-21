@@ -4,6 +4,7 @@ import java.util.Random;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
@@ -69,7 +70,7 @@ public class PartRandomizer extends PartDelayedAction {
 	}
 
 	@Override
-	public void getCraftingCost(CraftingAmount cost) {
+	public void getCraftingCost(CraftingAmount cost, CircuitData parent, Vec2 pos) {
 		cost.add(new ItemAmount(Items.redstone, 0.15));
 		cost.add(new ItemAmount(Items.glowstone_dust, 0.1));
 	}

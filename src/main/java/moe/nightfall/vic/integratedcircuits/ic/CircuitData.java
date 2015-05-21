@@ -407,12 +407,13 @@ public class CircuitData implements Cloneable {
 	public void calculateCost() {
 		cost = new CraftingAmount();
 		amount = 0;
-		for (int[] i1 : id) {
-			for (int i : i1) {
-				CircuitPart part = CircuitPart.getPart(i);
+		for (int x = 1; x < size - 1; x++) {
+			for (int y = 1; y < size - 1; y++) {
+				Vec2 pos = new Vec2(x, y);
+				CircuitPart part = getPart(pos);
 				if (part instanceof PartNull)
 					continue;
-				part.getCraftingCost(cost);
+				part.getCraftingCost(cost, this, pos);
 				amount++;
 			}
 		}

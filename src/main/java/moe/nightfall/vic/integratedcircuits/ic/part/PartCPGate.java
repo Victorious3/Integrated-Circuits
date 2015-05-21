@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Content;
+import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
@@ -70,7 +71,7 @@ public abstract class PartCPGate extends CircuitPart {
 	}
 
 	@Override
-	public void getCraftingCost(CraftingAmount cost) {
+	public void getCraftingCost(CraftingAmount cost, CircuitData parent, Vec2 pos) {
 		cost.add(new ItemAmount(Items.redstone, 0.048));
 		cost.add(new ItemAmount(Content.itemSiliconDrop, 0.1));
 	}

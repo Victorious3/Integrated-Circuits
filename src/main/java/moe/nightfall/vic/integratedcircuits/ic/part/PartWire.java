@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.ic.part;
 
+import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
@@ -104,7 +105,7 @@ public class PartWire extends CircuitPart {
 	}
 
 	@Override
-	public void getCraftingCost(CraftingAmount cost) {
+	public void getCraftingCost(CraftingAmount cost, CircuitData parent, Vec2 pos) {
 		cost.add(new ItemAmount(Items.redstone, 0.05));
 	}
 

@@ -205,7 +205,7 @@ public abstract class CircuitPart {
 		return Lists.newArrayList();
 	}
 
-	public void getCraftingCost(CraftingAmount amount) {
+	public void getCraftingCost(CraftingAmount amount, CircuitData parent, Vec2 pos) {
 	}
 
 	public final int getState(Vec2 pos, ICircuit parent) {

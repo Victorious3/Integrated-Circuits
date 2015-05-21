@@ -17,7 +17,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -238,9 +237,10 @@ public class LaserHelper {
 				if (!te.excMatrix[x][y]) {
 					// Check if the items needed to craft the selected part are
 					// supplied
-					CircuitPart part = te.cdata.getPart(new Vec2(x, y));
+					Vec2 pos = new Vec2(x, y);
+					CircuitPart part = te.cdata.getPart(pos);
 					CraftingAmount amount = new CraftingAmount();
-					part.getCraftingCost(amount);
+					part.getCraftingCost(amount, te.cdata, pos);
 					ItemAmount insufficient = te.craftingSupply.getInsufficient();
 					if (!te.craftingSupply.request(amount)) {
 						te.updateStatus(te.OUT_OF_MATERIALS);

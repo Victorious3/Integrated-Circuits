@@ -1,14 +1,19 @@
 package moe.nightfall.vic.integratedcircuits.ic.part;
 
+import moe.nightfall.vic.integratedcircuits.Content;
+import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.EnumRenderType;
 import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
+import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
+import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class PartTunnel extends CircuitPart {
@@ -141,5 +146,17 @@ public class PartTunnel extends CircuitPart {
 			name += " (Linked)";
 		}
 		return name;
+	}
+
+	@Override
+	public void getCraftingCost(CraftingAmount amount, CircuitData parent, Vec2 pos) {
+		amount.add(new ItemAmount(Items.redstone, 0.1));
+		amount.add(new ItemAmount(Content.itemSiliconDrop, 0.1));
+
+		int data = parent.getMeta(pos);
+		Vec2 end = new Vec2(PROP_POS_X.get(data), PROP_POS_Y.get(data));
+		if (isConnected(end)) {
+			amount.add(new ItemAmount(Items.redstone, 0.1 * pos.distanceTo(end)));
+		}
 	}
 }

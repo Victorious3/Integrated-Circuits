@@ -210,6 +210,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		currentPosition += 21;
 		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, currentPosition, 2, this));
 
+		// GUI rollover on the left
+		GuiRollover rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, currentPosition, rightEditorOffset, Resources.RESOURCE_GUI_CAD_BACKGROUND)
+			.addCategory("Label", 0, 0)
+			.addCategory("Area", 0, 16)
+			.addCategory("Simulation", 0, 32);
+		this.buttonList.add(rollover);
+
 		refreshUI();
 	}
 	
@@ -306,11 +313,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		else if (button.id == 12)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(false, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 84)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord,
-					tileentity.zCoord));
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 85)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord,
-					tileentity.zCoord));
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 	}
 
 	@Override
@@ -385,7 +390,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 
 		// Draw the name of the CAD
-		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 8, guiTop + 12, 0xFFFFFF);
+		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 45, guiTop + 12, 0xFFFFFF);
 
 		GL11.glPushMatrix();
 		GL11.glTranslated(guiLeft, guiTop, 0);
