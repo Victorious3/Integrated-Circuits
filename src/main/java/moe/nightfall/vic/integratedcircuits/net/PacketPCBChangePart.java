@@ -80,7 +80,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart> {
 
 					if (data[i + 2] != oid)
 						cdata.getPart(pos).onPlaced(pos, te);
-					if (data[i + 3] != ometa)
+					else if (data[i + 3] != ometa)
 						cdata.getPart(pos).onChanged(pos, te, ometa);
 
 					cdata.markForUpdate(pos);
