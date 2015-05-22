@@ -414,23 +414,26 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 
 		boolean ctrl = isCtrlKeyDown();
+
 		// Render connections for tunnels
-		tessellator.startDrawingQuads();
-		for (int x3 = 0; x3 < data.getSize(); x3++) {
-			for (int y3 = 0; y3 < data.getSize(); y3++) {
-				if (x3 == endX && y3 == endY && data.getPart(new Vec2(x3, y3)) instanceof PartTunnel && selectedPart == null) {
-					drawTunnelConnection(x3, y3);
-				}
-				if (drag && selectedPart == null) {
-					Tessellator.instance.setColorRGBA_F(0F, 0F, 1F, 1F);
-					CircuitPartRenderer.addQuad(startX * 16 + getRelativeOffX(), startY * 16 + getRelativeOffY(), 0, 0, 16, 16);
-				}
-				if (ctrl) {
-					drawTunnelConnection(x3, y3);
+		if (!isShiftKeyDown()) {
+			tessellator.startDrawingQuads();
+			for (int x3 = 0; x3 < data.getSize(); x3++) {
+				for (int y3 = 0; y3 < data.getSize(); y3++) {
+					if (x3 == endX && y3 == endY && data.getPart(new Vec2(x3, y3)) instanceof PartTunnel && selectedPart == null) {
+						drawTunnelConnection(x3, y3);
+					}
+					if (drag && selectedPart == null) {
+						Tessellator.instance.setColorRGBA_F(0F, 0F, 1F, 1F);
+						CircuitPartRenderer.addQuad(startX * 16 + getRelativeOffX(), startY * 16 + getRelativeOffY(), 0, 0, 16, 16);
+					}
+					if (ctrl) {
+						drawTunnelConnection(x3, y3);
+					}
 				}
 			}
+			tessellator.draw();
 		}
-		tessellator.draw();
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
@@ -782,21 +785,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				buttonMinus.enabled = false;
 			if (tileentity.scale == 2F)
 				buttonPlus.enabled = false;
-		}
-
-		double change = (double) tileentity.scale / (double) oldScale;
-		double nw = w * 16 * tileentity.scale;
-
-		if (i > 0) {
-			tileentity.offX = tileentity.offX / change;
-			tileentity.offY = tileentity.offY / change;
-			tileentity.offX -= (nw - ow) / 2 / tileentity.scale;
-			tileentity.offY -= (nw - ow) / 2 / tileentity.scale;
-		} else if (i < 0) {
-			tileentity.offX -= (nw - ow) / 2 / oldScale;
-			tileentity.offY -= (nw - ow) / 2 / oldScale;
-			tileentity.offX = tileentity.offX / change;
-			tileentity.offY = tileentity.offY / change;
 		}
 	}
 
