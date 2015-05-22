@@ -613,16 +613,17 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				tileentity.offY += (y - lastY) / tileentity.scale;
 			}
 		}
+
 		lastX = x;
 		lastY = y;
 
-		double maxX = ((xSizeEditor + 16) / tileentity.scale) - 16;
-		double minX = (-(w * 16) + editorLeft / tileentity.scale) + 16;
-		double maxY = (editorBottom / tileentity.scale) - 16;
-		double minY = (-(w * 16) + editorTop / tileentity.scale) + 16;
+		double maxX = xSizeEditor / 2 / tileentity.scale + (w * 16) / 2 - 16;
+		double minX = -xSizeEditor / 2 / tileentity.scale - (w * 16) / 2 + 16;
+		double maxY = ySizeEditor / 2 / tileentity.scale + (w * 16) / 2 - 16;
+		double minY = -ySizeEditor / 2 / tileentity.scale - (w * 16) / 2 + 16;
+
 		tileentity.offX = tileentity.offX > maxX ? maxX : tileentity.offX < minX ? minX : tileentity.offX;
 		tileentity.offY = tileentity.offY > maxY ? maxY : tileentity.offY < minY ? minY : tileentity.offY;
-
 	}
 
 	private void drawTunnelConnection(int x, int y) {
