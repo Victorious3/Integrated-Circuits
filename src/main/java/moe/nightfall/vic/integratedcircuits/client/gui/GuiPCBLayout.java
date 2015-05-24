@@ -211,7 +211,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, currentPosition, 2, this));
 
 		// GUI rollover on the left
-		GuiRollover rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, currentPosition, rightEditorOffset, Resources.RESOURCE_GUI_CAD_BACKGROUND)
+		GuiRollover rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
 			.addCategory("Label", 0, 0)
 			.addCategory("Area", 0, 16)
 			.addCategory("Simulation", 0, 32);
