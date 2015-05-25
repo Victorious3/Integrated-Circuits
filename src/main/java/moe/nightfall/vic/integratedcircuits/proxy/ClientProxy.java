@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
@@ -17,9 +14,9 @@ import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
-import moe.nightfall.vic.integratedcircuits.client.ItemLaserRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Gate7SegmentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.GateCircuitRenderer;
+import moe.nightfall.vic.integratedcircuits.client.ItemLaserRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.SemiTransparentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.ShaderHelper;
@@ -75,6 +72,9 @@ import net.minecraftforge.event.world.WorldEvent;
 import org.lwjgl.opengl.ARBShaderObjects;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -622,8 +622,8 @@ public class ClientProxy extends CommonProxy {
 
 			NanoProperties properties = (NanoProperties) event.entityPlayer.getExtendedProperties("nano");
 			if (properties == null)
-				event.entityPlayer.registerExtendedProperties("nano", properties = new NanoProperties());
-			boolean isJumping = player.motionY > player.jumpMovementFactor;
+				player.registerExtendedProperties("nano", properties = new NanoProperties());
+			boolean isJumping = player.posY - player.lastTickPosY > player.jumpMovementFactor;
 			if (isJumping && !properties.isJumping)
 				properties.lastJumpStart = System.currentTimeMillis();
 			else if (!isJumping && properties.isJumping) {
