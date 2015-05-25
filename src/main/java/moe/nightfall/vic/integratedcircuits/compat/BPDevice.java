@@ -103,7 +103,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice {
 	@Override
 	public void setRedstonePower(ForgeDirection side, byte power) {
 		socket.updateInputPre();
-		power = (byte) (Byte.toUnsignedInt(power) / 17);
+		power = (byte) ((power & 0xFF) / 17); //Convert signed byte to unsigned int
 		socket.setInput(socket.getSideRel(side.ordinal()), 0, power);
 	}
 
