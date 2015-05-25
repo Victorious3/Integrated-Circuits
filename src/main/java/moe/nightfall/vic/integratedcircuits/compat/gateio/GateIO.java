@@ -11,8 +11,8 @@ public final class GateIO {
 	public static void initialize() {
 		IGateRegistry registry = IntegratedCircuitsAPI.getGateRegistry();
 
-		registry.registerGateIOProvider(new GPProjectRed.GPProjectRedTile(), IntegratedCircuitsAPI.TILE);
-		registry.registerGateIOProvider(new GPProjectRed.GPProjectRedFMP(), IntegratedCircuitsAPI.TILE_FMP);
+		registry.registerGateIOProvider(new GPProjectRedTile(), IntegratedCircuitsAPI.TILE);
+		registry.registerGateIOProvider(new GPProjectRedFMP(), IntegratedCircuitsAPI.TILE_FMP);
 		registry.registerGateIOProvider(new GPBluePower(), IntegratedCircuitsAPI.TILE, IntegratedCircuitsAPI.TILE_FMP);
 		registry.registerGateIOProvider(new GPRedLogic(), IntegratedCircuitsAPI.TILE);
 		registry.registerGateIOProvider(new GPOpenComputers(), IntegratedCircuitsAPI.TILE);
