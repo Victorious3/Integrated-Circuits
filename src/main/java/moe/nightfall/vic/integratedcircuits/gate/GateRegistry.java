@@ -105,7 +105,9 @@ public class GateRegistry implements IGateRegistry {
 			IntegratedCircuits.logger.fatal("Tried to register gate provider instance after initialization phase: "
 					+ Loader.instance().activeModContainer());
 		}
-		List<GateIOProvider> list = ioProviderRegistry.getOrDefault(clazz, new LinkedList());
+		List<GateIOProvider> list = ioProviderRegistry.get(clazz);
+		if(list == null)
+			list = new LinkedList<GateIOProvider>();
 		list.add(provider);
 		ioProviderRegistry.put(clazz, list);
 	}
@@ -141,7 +143,9 @@ public class GateRegistry implements IGateRegistry {
 	private Pair<ProxyFactory, ProxyCache> createProxyFactory(Class<?> clazz) {
 		try {
 			IntegratedCircuits.logger.info("Creating proxy class for " + clazz);
-			List<GateIOProvider> list = ioProviderRegistry.getOrDefault(clazz, new LinkedList());
+			List<GateIOProvider> list = ioProviderRegistry.get(clazz);
+			if(list == null)
+				list = new LinkedList<GateIOProvider>();
 			ProxyFactory pf = new ProxyFactory();
 			pf.setSuperclass(clazz);
 			HashSet<Class> proxyInterfaces = Sets.newHashSet();

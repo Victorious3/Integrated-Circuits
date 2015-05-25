@@ -55,12 +55,13 @@ public abstract class GatePeripheral implements IPeripheral {
 			if (m == null) {
 				return null;
 			}
-			if (arguments.length != m.getParameterCount()) {
+			Class<?>[] paramTypes = m.getParameterTypes();
+			if (arguments.length != paramTypes.length) {
 				throw new LuaException("Illegal amount of parameters!");
 			}
-			for (int i = 0; i < m.getParameterTypes().length; i++) {
-				if (!m.getParameterTypes()[i].isAssignableFrom(arguments[i].getClass()))
-					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + m.getParameterTypes()[i] + "', got '" + arguments[i].getClass() + "'.");
+			for (int i = 0; i < paramTypes.length; i++) {
+				if (!paramTypes[i].isAssignableFrom(arguments[i].getClass()))
+					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + paramTypes[i] + "', got '" + arguments[i].getClass() + "'.");
 			}
 			Object o = m.invoke(this, arguments);
 			if (o == null) {
