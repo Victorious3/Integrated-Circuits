@@ -30,6 +30,7 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -115,7 +116,7 @@ public class ClientProxy extends CommonProxy {
 
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPCBLayout.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
-		ClientRegistry.bindTileEntitySpecialRenderer(IntegratedCircuits.socketClass, gateRenderer);
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySocket.class, gateRenderer);
 
 		circuitRenderer = new GateCircuitRenderer();
 		segmentRenderer = new Gate7SegmentRenderer();

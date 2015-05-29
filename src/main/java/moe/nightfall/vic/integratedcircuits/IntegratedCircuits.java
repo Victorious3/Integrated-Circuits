@@ -63,8 +63,6 @@ import dan200.computercraft.api.redstone.IBundledRedstoneProvider;
 @Mod(modid = "integratedcircuits", dependencies = "required-after:CodeChickenCore; after:ComputerCraft; after:ForgeMultipart@[1.1.2.332,)", guiFactory = "moe.nightfall.vic.integratedcircuits.client.gui.IntegratedCircuitsGuiFactory")
 public class IntegratedCircuits {
 
-	public static Class<? extends TileEntity> socketClass;
-
 	// TODO Some of those might be obsolete
 	// TODO Move to some helper class called Compat
 	public static boolean isPRLoaded = false;
@@ -198,13 +196,12 @@ public class IntegratedCircuits {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		Content.blockSocket = API.getGateRegistry().createProxyInstance(BlockSocket.class);
+		Content.blockSocket = new BlockSocket();
 		GameRegistry.registerBlock(Content.blockSocket, Constants.MOD_ID + ".socket");
-		socketClass = API.getGateRegistry().createProxyClass(TileEntitySocket.class);
-		GameRegistry.registerTileEntity(socketClass, Constants.MOD_ID + ".socket");
+		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".socket");
 
 		if (isFMPLoaded) {
-			PartFactory.register(Constants.MOD_ID + ".socket_fmp", API.getGateRegistry().createProxyClass(FMPartGate.class));
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartGate.class);
 			PartFactory.initialize();
 		}
 

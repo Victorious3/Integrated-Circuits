@@ -1,6 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.compat.gateio;
 
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI.Type;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 
@@ -11,13 +12,13 @@ public final class GateIO {
 	public static void initialize() {
 		IGateRegistry registry = IntegratedCircuitsAPI.getGateRegistry();
 
-		registry.registerGateIOProvider(new GPProjectRedTile(), IntegratedCircuitsAPI.TILE);
-		registry.registerGateIOProvider(new GPProjectRedFMP(), IntegratedCircuitsAPI.TILE_FMP);
-		registry.registerGateIOProvider(new GPBluePower(), IntegratedCircuitsAPI.TILE, IntegratedCircuitsAPI.TILE_FMP);
-		registry.registerGateIOProvider(new GPRedLogic(), IntegratedCircuitsAPI.TILE);
-		registry.registerGateIOProvider(new GPOpenComputers(), IntegratedCircuitsAPI.TILE);
-		registry.registerGateIOProvider(new GPMinefactoryReloaded(), IntegratedCircuitsAPI.BLOCK);
-		registry.registerGateIOProvider(new GPComputerCraft(), IntegratedCircuitsAPI.BLOCK);
+		registry.registerGateIOProvider(new GPProjectRedTile(), Type.TILE);
+		registry.registerGateIOProvider(new GPProjectRedFMP(), Type.TILE_FMP);
+		registry.registerGateIOProvider(new GPBluePower(), Type.TILE, Type.TILE_FMP);
+		registry.registerGateIOProvider(new GPRedLogic(), Type.TILE);
+		registry.registerGateIOProvider(new GPOpenComputers(), Type.TILE);
+		registry.registerGateIOProvider(new GPMinefactoryReloaded(), Type.BLOCK);
+		registry.registerGateIOProvider(new GPComputerCraft(), Type.BLOCK);
 	}
 
 	public static byte[] getBundledSignal(ISocket socket, int dir) {

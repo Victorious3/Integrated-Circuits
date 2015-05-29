@@ -15,16 +15,8 @@ import codechicken.lib.vec.BlockCoord;
 public class IntegratedCircuitsAPI {
 	private static IAPI instance;
 
-	public static final Class<?> TILE = findClass("moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket");
-	public static final Class<?> TILE_FMP = findClass("moe.nightfall.vic.integratedcircuits.tile.FMPartGate");
-	public static final Class<?> BLOCK = findClass("moe.nightfall.vic.integratedcircuits.tile.BlockSocket");
-
-	private static Class<?> findClass(String className) {
-		try {
-			return Class.forName(className);
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
+	public static enum Type {
+		TILE, TILE_FMP, BLOCK;
 	}
 
 	public static IAPI getInstance() {

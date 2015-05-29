@@ -1,8 +1,9 @@
 package moe.nightfall.vic.integratedcircuits.api.gate;
 
+import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
+import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI.Type;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 
 public interface IGateRegistry {
 	public void registerGate(String gateID, Class<? extends IGate> clazz);
@@ -29,9 +30,5 @@ public interface IGateRegistry {
 	@SideOnly(Side.CLIENT)
 	public IPartRenderer<ISocket> createDefaultSocketRenderer(String iconName);
 
-	public void registerGateIOProvider(GateIOProvider instance, Class<?>... classes);
-
-	public <T> T createProxyInstance(Class<T> clazz);
-
-	public <T> Class<T> createProxyClass(Class<T> clazz);
+	public void registerGateIOProvider(GateIOProvider instance, Type... elements);
 }
