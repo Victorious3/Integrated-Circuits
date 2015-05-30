@@ -1,13 +1,13 @@
 package moe.nightfall.vic.integratedcircuits.compat.gateio;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
-import moe.nightfall.vic.integratedcircuits.tile.FMPartGate;
 import mrtjp.projectred.api.IBundledEmitter;
 import mrtjp.projectred.api.IConnectable;
 import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.tileentity.TileEntity;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Rotation;
+import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
 import cpw.mods.fml.common.Optional.Interface;
@@ -41,7 +41,7 @@ public class GPProjectRedFMP extends GPProjectRed implements IBundledEmitter, IC
 
 		// Internal signal
 		if ((abs & 6) != (socket.getSide() & 6)) {
-			TMultiPart tp = ((TileMultipart) ((FMPartGate) socket.getWrapper()).getTile()).partMap(abs);
+			TMultiPart tp = ((TileMultipart) ((JCuboidPart) socket.getWrapper()).getTile()).partMap(abs);
 			power = updateBundledPartSignal(tp, Rotation.rotationTo(abs, socket.getSide()));
 			if (power != null)
 				return power;
@@ -67,7 +67,7 @@ public class GPProjectRedFMP extends GPProjectRed implements IBundledEmitter, IC
 		}
 
 		// Internal signal
-		TMultiPart tp = ((TileMultipart) ((FMPartGate) socket.getWrapper()).getTile()).partMap(abs);
+		TMultiPart tp = ((TileMultipart) ((JCuboidPart) socket.getWrapper()).getTile()).partMap(abs);
 		if ((abs & 6) != (socket.getSide() & 6)) {
 			power = updatePartSignal(tp, Rotation.rotationTo(abs, socket.getSide()));
 			if (power > 0)

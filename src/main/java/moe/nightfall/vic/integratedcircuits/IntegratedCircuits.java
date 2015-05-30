@@ -29,12 +29,11 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.BlockAssembler;
 import moe.nightfall.vic.integratedcircuits.tile.BlockPCBLayout;
-import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
-import moe.nightfall.vic.integratedcircuits.tile.FMPartGate;
 import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
+import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
@@ -195,13 +194,17 @@ public class IntegratedCircuits {
 	}
 
 	@EventHandler
-	public void init(FMLInitializationEvent event) {
-		Content.blockSocket = new BlockSocket();
+	public void init(FMLInitializationEvent event) throws Exception {
+
+		// Initialize with reflection so that the transformer doesn't run upon
+		// constructing this class.
+		Content.blockSocket = (Block) Class.forName("moe.nightfall.vic.integratedcircuits.tile.BlockSocket").newInstance();
+
 		GameRegistry.registerBlock(Content.blockSocket, Constants.MOD_ID + ".socket");
 		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".socket");
 
 		if (isFMPLoaded) {
-			PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartGate.class);
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", (Class<? extends TMultiPart>) Class.forName("moe.nightfall.vic.integratedcircuits.tile.FMPartGate"));
 			PartFactory.initialize();
 		}
 

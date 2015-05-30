@@ -2,7 +2,7 @@ package moe.nightfall.vic.integratedcircuits.item;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import moe.nightfall.vic.integratedcircuits.tile.FMPartGate;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -23,9 +23,9 @@ public class ItemSocketFMP extends JItemMultiPart {
 
 	@Override
 	public TMultiPart newPart(ItemStack stack, EntityPlayer player, World world, BlockCoord pos, int side, Vector3 arg5) {
-		FMPartGate part = (FMPartGate) MultiPartRegistry.createPart(Constants.MOD_ID + ".socket_fmp", false);
+		ISocketWrapper part = (ISocketWrapper) MultiPartRegistry.createPart(Constants.MOD_ID + ".socket_fmp", false);
 		part.getSocket().preparePlacement(player, pos, side, stack);
-		return part;
+		return (TMultiPart) part;
 	}
 
 	@Override

@@ -16,7 +16,15 @@ public class IntegratedCircuitsAPI {
 	private static IAPI instance;
 
 	public static enum Type {
-		TILE, TILE_FMP, BLOCK;
+		TILE("moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket"),
+		TILE_FMP("moe.nightfall.vic.integratedcircuits.tile.FMPartGate"),
+		BLOCK("moe.nightfall.vic.integratedcircuits.tile.BlockSocket");
+
+		public final String classname;
+
+		Type(String classname) {
+			this.classname = classname;
+		}
 	}
 
 	public static IAPI getInstance() {

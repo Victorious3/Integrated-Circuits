@@ -1,8 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.gate;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
@@ -13,22 +13,83 @@ import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.SocketRenderer;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
+import uk.co.qmunity.lib.part.compat.fmp.FMPPart;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.jcraft.jorbis.Block;
 
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.LoaderState.ModState;
+import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class GateRegistry implements IGateRegistry {
+	
+	private boolean lock = false;
+	
 	private BiMap<String, Class<? extends IGate>> registry = HashBiMap.create();
-	private Map<Type, List<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
+	private Map<Type, Set<GateIOProvider>> ioProviderRegistry = Maps.newHashMap();
+
+	private Map<Type, Set<Class<?>>> interfaceMap;
+	private Map<Class<?>, GateIOProvider> ioProviderMap;
 
 	public GateRegistry() {
 
+	}
+
+	/**
+	 * Invoked by ASM
+	 */
+	public GateIOProvider getProvider(Class<?> intf) {
+		return ioProviderMap.get(intf);
+	}
+
+	public void lock() {
+		if(!lock) {
+
+			IntegratedCircuits.logger.info("Locking IO provider registry and building caches");
+
+			// Building caches
+
+			ioProviderMap = Maps.newHashMap();
+			interfaceMap = Maps.newEnumMap(Type.class);
+
+			for (Type type : ioProviderRegistry.keySet()) {
+				Set<GateIOProvider> ioProviderSet = ioProviderRegistry.get(type);
+				for (GateIOProvider provider : ioProviderSet) {
+					Interface intf = provider.getClass().getAnnotation(Interface.class);
+					if (intf != null)
+						addInterface(intf, provider, type);
+					InterfaceList intfList = provider.getClass().getAnnotation(InterfaceList.class);
+					if (intfList != null) {
+						for (Interface intf2 : intfList.value()) {
+							addInterface(intf2, provider, type);
+						}
+					}
+				}
+			}
+		}
+		lock = true;
+	}
+
+	private void addInterface(Interface intf, GateIOProvider provider, Type type) {
+		if (Loader.isModLoaded(intf.modid())) {
+			try {
+				Class<?> intfClazz = Class.forName(intf.iface());
+				ioProviderMap.put(intfClazz, provider);
+				Set<Class<?>> set = interfaceMap.get(type);
+				set = set == null ? new HashSet<Class<?>>() : set;
+				set.add(intfClazz);
+				interfaceMap.put(type, set);
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException("Invalid interface specified on io provider " + provider.getClass() + " : " + intf.iface());
+			}
+		}
 	}
 
 	@Override
@@ -82,20 +143,33 @@ public class GateRegistry implements IGateRegistry {
 	}
 
 	private void registerGateIOProvider(GateIOProvider provider, Type element) {
-		if (Loader.instance()
-			.getModState(Loader.instance().getModObjectList().inverse().get(IntegratedCircuits.instance))
-			.compareTo(ModState.INITIALIZED) > 0) {
-			IntegratedCircuits.logger.fatal("Tried to register gate provider instance after initialization phase: "
-					+ Loader.instance().activeModContainer());
+		if (lock) {
+			IntegratedCircuits.logger.fatal("Tried to register gate provider instance after initialization phase: "+ Loader.instance().activeModContainer());
+			return;
 		}
-		List<GateIOProvider> list = ioProviderRegistry.get(element);
-		if(list == null)
-			list = new LinkedList<GateIOProvider>();
-		list.add(provider);
-		ioProviderRegistry.put(element, list);
+		Set<GateIOProvider> set = ioProviderRegistry.get(element);
+		if (set == null)
+			set = Sets.newHashSet();
+		set.add(provider);
+		ioProviderRegistry.put(element, set);
 	}
 
-	public List<GateIOProvider> getIOProviderList(Class<?> clazz) {
-		return ioProviderRegistry.get(clazz);
+	public Set<GateIOProvider> getIOProviderList(Type type) {
+		return ioProviderRegistry.get(type);
+	}
+
+	public Set<GateIOProvider> getIOProviderList(Class<?> clazz) {
+		if (clazz == FMPPart.class)
+			return ioProviderRegistry.get(Type.TILE_FMP);
+		if (clazz == TileEntitySocket.class)
+			return ioProviderRegistry.get(Type.TILE);
+		if (clazz == Block.class)
+			return ioProviderRegistry.get(Type.BLOCK);
+		return null;
+	}
+
+	public Set<Class<?>> getInterfaceMapping(Type type) {
+		Set<Class<?>> set = interfaceMap.get(type);
+		return set != null ? set : new HashSet<Class<?>>();
 	}
 }

@@ -8,15 +8,14 @@ import codechicken.multipart.TMultiPart;
 
 import com.google.common.collect.Maps;
 
-//TODO Use the GateRegistry instead, not sure if I'll ever create a part that is NOT a gate.
 public class PartFactory implements IPartFactory {
-	private static HashMap<String, Class<? extends FMPartGate>> parts = Maps.newHashMap();
+	private static HashMap<String, Class<? extends TMultiPart>> parts = Maps.newHashMap();
 	public static PartFactory instance = new PartFactory();
 
 	private PartFactory() {
 	}
 
-	public static void register(String type, Class<? extends FMPartGate> clazz) {
+	public static void register(String type, Class<? extends TMultiPart> clazz) {
 		parts.put(type, clazz);
 	}
 

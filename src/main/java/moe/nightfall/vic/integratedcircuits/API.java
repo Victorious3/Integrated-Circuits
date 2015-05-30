@@ -1,6 +1,7 @@
 package moe.nightfall.vic.integratedcircuits;
 
 import java.util.List;
+import java.util.Set;
 
 import moe.nightfall.vic.integratedcircuits.api.IAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
@@ -70,7 +71,7 @@ public class API implements IAPI {
 		if (input != 0)
 			return input;
 
-		List<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
+		Set<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
 		for (GateIOProvider provider : providerList) {
 			provider.socket = socket;
 			input = provider.calculateRedstoneInput(side, rotation, abs, pos);
@@ -105,7 +106,7 @@ public class API implements IAPI {
 		if (input != null)
 			return input;
 
-		List<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
+		Set<GateIOProvider> providerList = gateRegistry.getIOProviderList(socket.getWrapper().getClass());
 		for (GateIOProvider provider : providerList) {
 			provider.socket = socket;
 			input = provider.calculateBundledInput(side, rotation, abs, pos);
