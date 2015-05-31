@@ -378,8 +378,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) {
 		hoveredElement = null;
-		Tessellator tes = Tessellator.instance;
-
+		
 		double mouseX = boardAbs2RelX(x);
 		double mouseY = boardAbs2RelY(y);
 
@@ -415,23 +414,19 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		//Render the circuit board
 		CircuitPartRenderer.renderPerfboard(data);
 		CircuitPartRenderer.renderParts(tileentity);
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		if(!isShiftKeyDown())
 			renderTunnelConnections(data, isCtrlKeyDown());
+		cadCursor(mouseX, mouseY, data, data.getSize(), editorLeft, editorTop, editorRight, editorBottom);
+		GL11.glDisable(GL11.GL_BLEND);
 
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		GL11.glPopMatrix();
 
 		//Draw inner gradient
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glDisable(GL11.GL_ALPHA_TEST);
-		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-		GL11.glShadeModel(GL11.GL_SMOOTH);
 		drawGradients(editorLeft, editorTop, editorRight, editorBottom, 4);
-		GL11.glShadeModel(GL11.GL_FLAT);
-		GL11.glDisable(GL11.GL_BLEND);
-		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 		nameField.drawTextBox();
 		GL11.glColor3f(1, 1, 1);
@@ -447,6 +442,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	// TODO: Make this less hardcoded?
 	private void drawGradients(int gradientLeft, int gradientTop, int gradientRight, int gradientBottom, int gradientSize) {
 		Tessellator tes = Tessellator.instance;
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
 		tes.startDrawingQuads();
 		// Top gradient
 		tes.setColorRGBA_F(0, 0, 0, 0);
@@ -481,105 +481,110 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		tes.addVertex(gradientRight, gradientTop, 0);
 
 		tes.draw();
+		
+		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	private void cadCursor(int x, int y, Tessellator tessellator, double mouseX, double mouseY, CircuitData data, int w, int left, int top, int right, int bottom) {
+	private void cadCursor(double mouseX, double mouseY, CircuitData data, int w, int left, int top, int right, int bottom) {
+		Tessellator tes = Tessellator.instance;
 		if (mouseX > 0 && mouseY > 0 && mouseX < w - 1 && mouseY < w - 1 && !isShiftKeyDown() && !blockMouseInput) {
-			if (!(x < left || y < top || x > right || y > bottom)) {
-				if (!drag && selectedPart != null) {
-					mouseX = mouseX * 16 + getBoardLeft();
-					mouseY = mouseY * 16 + getBoardTop();
-					if (selectedPart.getPart() instanceof PartNull) {
-						GL11.glColor3f(0F, 0.4F, 0F);
-						GL11.glDisable(GL11.GL_TEXTURE_2D);
-						tessellator.startDrawingQuads();
-						CircuitPartRenderer.addQuad(mouseX, mouseY, 2 * 16, 0, 16, 16);
-						tessellator.draw();
-						GL11.glEnable(GL11.GL_TEXTURE_2D);
+			int gridX = (int) mouseX;
+			int gridY = (int) mouseY;
+			if (!drag && selectedPart != null) {
+				if (selectedPart.getPart() instanceof PartNull) {
+					GL11.glColor3f(0F, 0.4F, 0F);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+					tes.startDrawingQuads();
+					CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1);
+					tes.draw();
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+				}
+				//FIXME: Part rendering probably needs to be changed
+				GL11.glPushMatrix();
+				GL11.glTranslated(gridX, gridY, 0);
+				GL11.glScaled(1F / 16, 1F / 16, 1F / 16);
+				CircuitPartRenderer.renderPart(selectedPart, 0, 0);
+				GL11.glPopMatrix();
+			} else if (drag) {
+				if (selectedPart == null) {
+					GL11.glColor4f(0F, 0F, 1F, 1F);
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+					tes.startDrawingQuads();
+					if (data.getPart(new Vec2(endX, endY)) instanceof PartTunnel) {
+						RenderUtils.addLine(startX + 0.5, startY + 0.5, endX + 0.5, endY + 0.5, 0.25);
+					} else {
+						RenderUtils.addLine(startX + 0.5, startY + 0.5, mouseX, mouseY, 0.25);
 					}
-					CircuitPartRenderer.renderPart(selectedPart, mouseX, mouseY);
-				} else if (drag) {
-					if (selectedPart == null) {
-						GL11.glColor4f(0F, 0F, 1F, 1F);
-						GL11.glDisable(GL11.GL_TEXTURE_2D);
+					tes.draw();
 
-						tessellator.startDrawingQuads();
-						if (data.getPart(new Vec2(endX, endY)) instanceof PartTunnel) {
-							RenderUtils.addLine(startX * 16 + getBoardLeft() + 8, startY * 16 + getBoardTop() + 8, endX * 16 + getBoardLeft() + 8, endY * 16 + getBoardTop() + 8, 4);
-						} else {
-							double x3 = (x - guiLeft - getBoardLeft() * tileentity.scale) / tileentity.scale + getBoardLeft();
-							double y3 = (y - guiTop - getBoardTop() * tileentity.scale) / tileentity.scale + getBoardTop();
-							RenderUtils.addLine(startX * 16 + getBoardLeft() + 8, startY * 16 + getBoardTop() + 8, x3, y3, 4);
-						}
-						tessellator.draw();
-
-						GL11.glEnable(GL11.GL_TEXTURE_2D);
-						GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
-					} else if (selectedPart.getPart() instanceof PartWire) {
-						PartWire wire = (PartWire) selectedPart.getPart();
-						GL11.glTranslated(getBoardLeft(), getBoardTop(), 0);
-						switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
-							case 1:
-								GL11.glColor3f(0.4F, 0F, 0F);
-								break;
-							case 2:
-								GL11.glColor3f(0.4F, 0.2F, 0F);
-								break;
-							default:
-								GL11.glColor3f(0F, 0.4F, 0F);
-								break;
-						}
-
-						mouseX = startX;
-						mouseY = startY;
-
-						tessellator.startDrawingQuads();
-						CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 0, 0, 16, 16);
-						if (endY > startY)
-							CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 4 * 16, 0, 16, 16);
-						else if (endY < startY)
-							CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 2 * 16, 0, 16, 16);
-						else if (endX > startX)
-							CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 3 * 16, 0, 16, 16);
-						else if (endX < startX)
-							CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 16, 0, 16, 16);
-
-						while (mouseX != endX || mouseY != endY) {
-							if (mouseY < endY)
-								mouseY++;
-							else if (mouseY > endY)
-								mouseY--;
-							else if (mouseX < endX)
-								mouseX++;
-							else if (mouseX > endX)
-								mouseX--;
-
-							if (mouseY != endY)
-								CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 6 * 16, 0, 16, 16);
-							else if (mouseY == endY && mouseX == startX) {
-								CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 0, 0, 16, 16);
-								if (endY > startY)
-									CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 2 * 16, 0, 16, 16);
-								else if (endY < startY)
-									CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 4 * 16, 0, 16, 16);
-								if (endX > startX)
-									CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 3 * 16, 0, 16, 16);
-								else if (endX < startX)
-									CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 16, 0, 16, 16);
-							} else if (mouseX != endX)
-								CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 5 * 16, 0, 16, 16);
-							else if (mouseX == endX) {
-								CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 0, 0, 16, 16);
-								if (endX > startX)
-									CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 16, 0, 16, 16);
-								else if (endX < startX)
-									CircuitPartRenderer.addQuad(mouseX * 16, mouseY * 16, 3 * 16, 0, 16, 16);
-							}
-						}
-						tessellator.draw();
-						GL11.glColor3f(1, 1, 1);
-						GL11.glTranslated(-getBoardLeft(), -getBoardTop(), 0);
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+					GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
+				} else if (selectedPart.getPart() instanceof PartWire) {
+					PartWire wire = (PartWire) selectedPart.getPart();
+					switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
+						case 1:
+							GL11.glColor3f(0.4F, 0F, 0F);
+							break;
+						case 2:
+							GL11.glColor3f(0.4F, 0.2F, 0F);
+							break;
+						default:
+							GL11.glColor3f(0F, 0.4F, 0F);
+							break;
 					}
+					
+					gridX = startX;
+					gridY = startY;
+
+					tes.startDrawingQuads();
+					CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+					if (endY > startY)
+						CircuitPartRenderer.addQuad(gridX, gridY, 4, 0, 1, 1, 1, 1, 16, 16, 0);
+					else if (endY < startY)
+						CircuitPartRenderer.addQuad(gridX, gridY, 2, 0, 1, 1, 1, 1, 16, 16, 0);
+					else if (endX > startX)
+						CircuitPartRenderer.addQuad(gridX, gridY, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+					else if (endX < startX)
+						CircuitPartRenderer.addQuad(gridX, gridY, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+
+					while (gridX != endX || gridY != endY) {
+						if (gridY < endY)
+							gridY++;
+						else if (gridY > endY)
+							gridY--;
+						else if (gridX < endX)
+							gridX++;
+						else if (gridX > endX)
+							gridX--;
+
+						if (gridY != endY)
+							CircuitPartRenderer.addQuad(gridX, gridY, 6, 0, 1, 1, 1, 1, 16, 16, 0);
+						else if (gridY == endY && gridX == startX) {
+							CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+							if (endY > startY)
+								CircuitPartRenderer.addQuad(gridX, gridY, 2, 0, 1, 1, 1, 1, 16, 16, 0);
+							else if (endY < startY)
+								CircuitPartRenderer.addQuad(gridX, gridY, 4, 0, 1, 1, 1, 1, 16, 16, 0);
+							if (endX > startX)
+								CircuitPartRenderer.addQuad(gridX, gridY, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+							else if (endX < startX)
+								CircuitPartRenderer.addQuad(gridX, gridY, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+						} else if (gridX != endX)
+							CircuitPartRenderer.addQuad(gridX, gridY, 5, 0, 1, 1, 1, 1, 16, 16, 0);
+						else if (gridX == endX) {
+							CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+							if (endX > startX)
+								CircuitPartRenderer.addQuad(gridX, gridY, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+							else if (endX < startX)
+								CircuitPartRenderer.addQuad(gridX, gridY, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+						}
+					}
+					tes.draw();
+					GL11.glColor3f(1, 1, 1);
 				}
 			}
 		}
@@ -605,8 +610,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	
 	private void renderTunnelConnections(CircuitData data, boolean ctrl) {
 		Tessellator tes = Tessellator.instance;
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		tes.startDrawingQuads();
 		for (int x = 0; x < data.getSize(); x++)
@@ -620,7 +623,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			}
 		tes.draw();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_BLEND);
 	}
 
 	private void drawTunnelConnection(int firstX, int firstY) {
@@ -642,7 +644,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			double secondX = pos2.x;
 			double secondY = pos2.y;
 
-			RenderUtils.addLine(firstX + 0.5, firstY + 0.5, secondX + 0.5, secondY + 0.5, 0.3);
+			RenderUtils.addLine(firstX + 0.5, firstY + 0.5, secondX + 0.5, secondY + 0.5, 0.25);
 			CircuitPartRenderer.addQuad(secondX, secondY, 0, 0, 1, 1);
 		}
 		CircuitPartRenderer.addQuad(firstX, firstY, 0, 0, 1, 1);
