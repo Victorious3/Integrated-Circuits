@@ -64,14 +64,9 @@ minecraft {
     replace "\${version}", project.version
 }
 
-configurations {
-    provided
-    compile.extendsFrom provided
-}
-
 dependencies {
 
-	compile "codechicken:CodeChickenLib:${mcVersion}-${cclVersion}:dev"
+    compile "codechicken:CodeChickenLib:${mcVersion}-${cclVersion}:dev"
     compile "codechicken:CodeChickenCore:${mcVersion}-${cccVersion}:dev"
     compile "codechicken:ForgeMultipart:${mcVersion}-${fmpVersion}:dev"
     compile "codechicken:NotEnoughItems:${mcVersion}-${neiVersion}:dev"
@@ -107,21 +102,13 @@ processResources {
     }
 }
 
+def commonManifest = {
+    attributes 'FMLCorePlugin': 'moe.nightfall.vic.integratedcircuits.asm.FMLLoadingPlugin'
+    attributes 'FMLCorePluginContainsFMLMod': 'true'
+}
+
 jar {
-    from {
-        (configurations.provided).collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    } {
-        exclude "META-INF/*.SF"
-        exclude "META-INF/*.DSA"
-        exclude "META-INF/*.RSA"
-    }
-    
-    manifest {
-        attributes 'FMLCorePlugin': 'moe.nightfall.vic.integratedcircuits.asm.FMLLoadingPlugin'
-        attributes 'FMLCorePluginContainsFMLMod': 'true'
-    }
+    manifest = commonManifest
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -132,6 +119,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task deobfJar(type: Jar) {
     from sourceSets.main.output
     classifier = 'deobf'
+    manifest = commonManifest
 }
 
 artifacts {
