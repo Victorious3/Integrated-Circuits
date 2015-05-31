@@ -159,12 +159,12 @@ public class GateRegistry implements IGateRegistry {
 	}
 
 	public Set<GateIOProvider> getIOProviderList(Class<?> clazz) {
-		if (clazz == FMPartGate.class)
-			return ioProviderRegistry.get(Type.TILE_FMP);
 		if (clazz == TileEntitySocket.class)
 			return ioProviderRegistry.get(Type.TILE);
 		if (clazz == Block.class)
 			return ioProviderRegistry.get(Type.BLOCK);
+		if (IntegratedCircuits.isFMPLoaded && clazz == FMPartGate.class)
+			return ioProviderRegistry.get(Type.TILE_FMP);
 		return null;
 	}
 
