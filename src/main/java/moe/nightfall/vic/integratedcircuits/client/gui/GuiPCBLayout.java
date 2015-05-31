@@ -260,19 +260,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		return ((topOffset + fullLength - bottomOffset) / 2) - (thingLength / 2);
 	}
 
-	/** Debugging tool, used to help with positioning. **/
-	private void guiInfo() {
-		System.out.println();
-		System.out.println("GUI Info");
-		System.out.println("this.width = " + this.width + "; this.height = " + this.height + ";");
-		System.out.println("this.xSize = " + this.xSize + "; this.ySize = " + this.ySize + ";");
-		System.out.println("this.guiLeft = " + this.guiLeft + "; this.guiTop = " + this.guiTop + ";");
-		System.out.println("this.guiRight = " + this.guiRight + "; this.guiBottom = " + this.guiBottom + ";");
-		System.out.println("this.xSizeEditor = " + this.xSizeEditor + "; this.ySizeEditor = " + this.ySizeEditor + ";");
-		System.out.println("this.editorLeft = " + this.editorLeft + "; this.editorTop = " + this.editorTop + ";");
-		System.out.println("this.editorRight = " + this.editorRight + "; this.editorBottom = " + this.editorBottom + ";");
-	}
-
 	public void refreshIO() {
 		checkN.refresh();
 		checkE.refresh();
@@ -381,64 +368,27 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		// Draw the "border"
 		drawHollowRect(guiLeft, guiTop, guiRight, guiBottom, editorLeft, editorTop, editorRight, editorBottom, 0xAA3A404A);
 
-
 		CircuitData data = tileentity.getCircuitData();
 
 		int w = data.getSize();
 
 		mouseDrag(x, y, w, editorLeft, editorTop, editorRight, editorBottom);
 
-
 		// Draw the name of the CAD
 		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 45, guiTop + 12, 0xFFFFFF);
 
-		GL11.glPushMatrix();
-		GL11.glTranslated(guiLeft, guiTop, 0);
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 
 		// Render the "board"
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor((int) ((editorLeft) * guiScale),
-			this.mc.displayHeight - (int) ((editorTop) * guiScale) - ySizeEditor * guiScale,
-			(int) (xSizeEditor * guiScale),
-			(int) (ySizeEditor * guiScale));
+		GL11.glScissor(editorLeft * guiScale, this.mc.displayHeight - editorBottom * guiScale,
+				xSizeEditor * guiScale, ySizeEditor * guiScale);
+		
+		GL11.glPushMatrix();
+		GL11.glTranslated(guiLeft, guiTop, 0);
 		GL11.glScalef(tileentity.scale, tileentity.scale, 1F);
 
-		CircuitPartRenderer.renderPerfboard(getRelativeOffX(), getRelativeOffY(), data);
-		CircuitPartRenderer.renderParts(tileentity, getRelativeOffX(), getRelativeOffY());
-
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(1F, 1F, 1F, 1F);
-
-
-		boolean ctrl = isCtrlKeyDown();
-
-		// Render connections for tunnels
-		if (!isShiftKeyDown()) {
-			tessellator.startDrawingQuads();
-			for (int x3 = 0; x3 < data.getSize(); x3++) {
-				for (int y3 = 0; y3 < data.getSize(); y3++) {
-					if (x3 == endX && y3 == endY && data.getPart(new Vec2(x3, y3)) instanceof PartTunnel && selectedPart == null) {
-						drawTunnelConnection(x3, y3);
-					}
-					if (drag && selectedPart == null) {
-						Tessellator.instance.setColorRGBA_F(0F, 0F, 1F, 1F);
-						CircuitPartRenderer.addQuad(startX * 16 + getRelativeOffX(), startY * 16 + getRelativeOffY(), 0, 0, 16, 16);
-					}
-					if (ctrl) {
-						drawTunnelConnection(x3, y3);
-					}
-				}
-			}
-			tessellator.draw();
-		}
-
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
-
-		cadCursor(x, y, tessellator, mouseX, mouseY, data, w, editorLeft, editorTop, editorRight, editorBottom);
+		//Rendering of the board goes here
 
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		GL11.glPopMatrix();
