@@ -65,7 +65,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 	private int lastX, lastY;
 	public TileEntityPCBLayout tileentity;
-
+	
 	private GuiTextField nameField;
 	private GuiButtonExt buttonPlus;
 	private GuiButtonExt buttonMinus;
@@ -220,28 +220,40 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		refreshUI();
 	}
 	
-	//TODO: The handling of the circuit board position should be refactored 
-	protected double getBoardSize() {
-		return 16 * tileentity.getCircuitData().getSize();
+	private double getCircuitSize() {
+		return tileentity.getCircuitData().getSize();
 	}
 	
-	protected double getRelativeOffX() {
-		return tileentity.offX + (editorLeft + xSizeEditor / 2) / tileentity.scale - getBoardSize() / 2;
+	private double getBoardSize() {
+		return CircuitPartRenderer.PART_SIZE * getCircuitSize();
 	}
 	
-	protected double getRelativeOffY() {
-		return tileentity.offY + (editorTop + ySizeEditor / 2) / tileentity.scale - getBoardSize() / 2;
+	//Functions to convert between screen coordinates and circuit board coordinates
+	private double boardAbs2RelX(double absX) {
+		return (absX - (editorLeft + xSizeEditor/2 + tileentity.offX)) / tileentity.scale + getBoardSize()/2;
 	}
 	
-	protected double getRelBoardX(double absX) {
-		return (absX - guiLeft - getRelativeOffX() * tileentity.scale) / (16F * tileentity.scale);
+	private double boardAbs2RelY(double absY) {
+		return (absY - (editorTop + ySizeEditor/2 + tileentity.offY)) / tileentity.scale + getBoardSize()/2;
 	}
 	
-	protected double getRelBoardY(double absY) {
-		return (absY - guiTop - getRelativeOffY() * tileentity.scale) / (16F * tileentity.scale);
+	private double boardRel2AbsX(double relX) {
+		return (relX - getBoardSize()/2) * tileentity.scale + (editorLeft + xSizeEditor/2 + tileentity.offX);
+	}
+	
+	private double boardRel2AbsY(double relY) {
+		return (relY - getBoardSize()/2) * tileentity.scale + (editorTop + ySizeEditor/2 + tileentity.offY);
+	}
+	
+	private double getBoardLeft() {
+		return boardRel2AbsX(0);
+	}
+	
+	private double getBoardTop() {
+		return boardRel2AbsY(0);
 	}
 
-	protected void calculateSizes() {
+	private void calculateSizes() {
 		this.guiTop = 0;
 		this.guiLeft = 0;
 
@@ -260,7 +272,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		this.ySizeEditor = this.editorBottom - this.editorTop;
 	}
 
-	protected static int getOffsetCentre(int topOffset, int bottomOffset, int fullLength, int thingLength) {
+	private static int getOffsetCentre(int topOffset, int bottomOffset, int fullLength, int thingLength) {
 		return ((topOffset + fullLength - bottomOffset) / 2) - (thingLength / 2);
 	}
 
@@ -360,8 +372,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		hoveredElement = null;
 		Tessellator tes = Tessellator.instance;
 
-		double mouseX = (int) getRelBoardX(x);
-		double mouseY = (int) getRelBoardY(y);
+		double mouseX = (int) boardAbs2RelX(x);
+		double mouseY = (int) boardAbs2RelY(y);
 
 		endX = (int) mouseX;
 		endY = (int) mouseY;
@@ -467,8 +479,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		if (mouseX > 0 && mouseY > 0 && mouseX < w - 1 && mouseY < w - 1 && !isShiftKeyDown() && !blockMouseInput) {
 			if (!(x < left || y < top || x > right || y > bottom)) {
 				if (!drag && selectedPart != null) {
-					mouseX = mouseX * 16 + getRelativeOffX();
-					mouseY = mouseY * 16 + getRelativeOffY();
+					mouseX = mouseX * 16 + getBoardLeft();
+					mouseY = mouseY * 16 + getBoardTop();
 					if (selectedPart.getPart() instanceof PartNull) {
 						GL11.glColor3f(0F, 0.4F, 0F);
 						GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -485,11 +497,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 						tessellator.startDrawingQuads();
 						if (data.getPart(new Vec2(endX, endY)) instanceof PartTunnel) {
-							RenderUtils.addLine(startX * 16 + getRelativeOffX() + 8, startY * 16 + getRelativeOffY() + 8, endX * 16 + getRelativeOffX() + 8, endY * 16 + getRelativeOffY() + 8, 4);
+							RenderUtils.addLine(startX * 16 + getBoardLeft() + 8, startY * 16 + getBoardTop() + 8, endX * 16 + getBoardLeft() + 8, endY * 16 + getBoardTop() + 8, 4);
 						} else {
-							double x3 = (x - guiLeft - getRelativeOffX() * tileentity.scale) / tileentity.scale + getRelativeOffX();
-							double y3 = (y - guiTop - getRelativeOffY() * tileentity.scale) / tileentity.scale + getRelativeOffY();
-							RenderUtils.addLine(startX * 16 + getRelativeOffX() + 8, startY * 16 + getRelativeOffY() + 8, x3, y3, 4);
+							double x3 = (x - guiLeft - getBoardLeft() * tileentity.scale) / tileentity.scale + getBoardLeft();
+							double y3 = (y - guiTop - getBoardTop() * tileentity.scale) / tileentity.scale + getBoardTop();
+							RenderUtils.addLine(startX * 16 + getBoardLeft() + 8, startY * 16 + getBoardTop() + 8, x3, y3, 4);
 						}
 						tessellator.draw();
 
@@ -497,7 +509,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 						GL11.glColor4f(0.6F, 0.6F, 0.6F, 0.7F);
 					} else if (selectedPart.getPart() instanceof PartWire) {
 						PartWire wire = (PartWire) selectedPart.getPart();
-						GL11.glTranslated(getRelativeOffX(), getRelativeOffY(), 0);
+						GL11.glTranslated(getBoardLeft(), getBoardTop(), 0);
 						switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
 							case 1:
 								GL11.glColor3f(0.4F, 0F, 0F);
@@ -558,7 +570,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 						}
 						tessellator.draw();
 						GL11.glColor3f(1, 1, 1);
-						GL11.glTranslated(-getRelativeOffX(), -getRelativeOffY(), 0);
+						GL11.glTranslated(-getBoardLeft(), -getBoardTop(), 0);
 					}
 				}
 			}
@@ -594,8 +606,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		PartTunnel pt = (PartTunnel) part;
 		Vec2 pos2 = pt.getConnectedPos(pos, tileentity);
 
-		double x3 = x * 16 + getRelativeOffX();
-		double y3 = y * 16 + getRelativeOffY();
+		double x3 = x * 16 + getBoardLeft();
+		double y3 = y * 16 + getBoardTop();
 
 		if (pt.getInput(pos, tileentity) || pt.getProperty(pos, tileentity, pt.PROP_IN)) {
 			Tessellator.instance.setColorRGBA_F(1F, 0F, 0F, 1F);
@@ -604,8 +616,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		}
 
 		if (pt.isConnected(pos2)) {
-			double x4 = pos2.x * 16 + getRelativeOffX();
-			double y4 = pos2.y * 16 + getRelativeOffY();
+			double x4 = pos2.x * 16 + getBoardLeft();
+			double y4 = pos2.y * 16 + getBoardTop();
 
 			RenderUtils.addLine(x3 + 8, y3 + 8, x4 + 8, y4 + 8, 4);
 			CircuitPartRenderer.addQuad(x4, y4, 0, 0, 16, 16);
@@ -618,8 +630,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glColor3f(1, 1, 1);
 		CircuitData data = tileentity.getCircuitData();
 
-		int x2 = (int) getRelBoardX(x);
-		int y2 = (int) getRelBoardY(y);
+		int x2 = (int) boardAbs2RelX(x);
+		int y2 = (int) boardAbs2RelY(y);
 
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
@@ -661,8 +673,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		CircuitData data = tileentity.getCircuitData();
 
 		boolean ctrlDown = isCtrlKeyDown();
-		int x2 = (int) getRelBoardX(x);
-		int y2 = (int) getRelBoardY(y);
+		int x2 = (int) boardAbs2RelX(x);
+		int y2 = (int) boardAbs2RelY(y);
 		int w = data.getSize();
 
 		drag = false;
@@ -705,8 +717,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		super.mouseClickMove(x, y, par3, par4);
 
 		if (selectedPart != null && selectedPart.getPart() instanceof PartNull) {
-			int x2 = (int) getRelBoardX(x);
-			int y2 = (int) getRelBoardY(y);
+			int x2 = (int) boardAbs2RelX(x);
+			int y2 = (int) boardAbs2RelY(y);
 			int w = tileentity.getCircuitData().getSize();
 			boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 

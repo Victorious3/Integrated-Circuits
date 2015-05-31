@@ -1,7 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.cp;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
@@ -15,9 +13,14 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 @SideOnly(Side.CLIENT)
 public class CircuitPartRenderer {
 
+	public static final int PART_SIZE = 16;
+	
 	public enum EnumRenderType {
 		GUI, WORLD, WORLD_16x
 	}
