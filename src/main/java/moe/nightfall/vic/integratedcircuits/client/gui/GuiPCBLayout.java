@@ -226,26 +226,26 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	
 	//Functions to convert between screen coordinates and circuit board coordinates
 	private double boardAbs2RelX(double absX) {
-		return (absX - (editorLeft + xSizeEditor/2 + tileentity.offX)) / getScaleFactor() + getBoardSize()/2;
+		return (absX - (editorLeft + xSizeEditor/2 + tileentity.offX)) / getScaleFactor() + getBoardSize()/2.0;
 	}
 	
 	private double boardAbs2RelY(double absY) {
-		return (absY - (editorTop + ySizeEditor/2 + tileentity.offY)) / getScaleFactor() + getBoardSize()/2;
+		return (absY - (editorTop + ySizeEditor/2 + tileentity.offY)) / getScaleFactor() + getBoardSize()/2.0;
 	}
 	
 	private double boardRel2AbsX(double relX) {
-		return (relX - getBoardSize()/2) * getScaleFactor() + (editorLeft + xSizeEditor/2 + tileentity.offX);
+		return (relX - getBoardSize()/2.0) * getScaleFactor() + (editorLeft + xSizeEditor/2.0 + tileentity.offX);
 	}
 	
 	private double boardRel2AbsY(double relY) {
-		return (relY - getBoardSize()/2) * getScaleFactor() + (editorTop + ySizeEditor/2 + tileentity.offY);
+		return (relY - getBoardSize()/2.0) * getScaleFactor() + (editorTop + ySizeEditor/2.0 + tileentity.offY);
 	}
 	
 	private float getScaleFactor() {
 		return SCALE * tileentity.scale;
 	}
 	
-	private double getBoardSize() {
+	private int getBoardSize() {
 		return tileentity.getCircuitData().getSize();
 	}
 	
@@ -281,7 +281,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	}
 
 	private static int getOffsetCentre(int topOffset, int bottomOffset, int fullLength, int thingLength) {
-		return ((topOffset + fullLength - bottomOffset) / 2) - (thingLength / 2);
+		return (topOffset + fullLength - bottomOffset - thingLength) / 2;
 	}
 
 	public void refreshIO() {
@@ -408,9 +408,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		GL11.glPushMatrix();
 		//Scale and translate to the center of the screen
-		GL11.glTranslated(editorLeft + xSizeEditor/2 + tileentity.offX, editorTop + ySizeEditor/2 + tileentity.offY, 0);
+		GL11.glTranslated(editorLeft + xSizeEditor/2.0 + tileentity.offX, editorTop + ySizeEditor/2.0 + tileentity.offY, 0);
 		GL11.glScalef(getScaleFactor(), getScaleFactor(), 1F);
-		GL11.glTranslated(-getBoardSize()/2, -getBoardSize()/2, 0);
+		GL11.glTranslated(-getBoardSize()/2.0, -getBoardSize()/2.0, 0);
 
 		//Render the circuit board
 		CircuitPartRenderer.renderPerfboard(data);
