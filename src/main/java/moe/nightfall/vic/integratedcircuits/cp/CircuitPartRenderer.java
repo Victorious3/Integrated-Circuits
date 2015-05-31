@@ -144,7 +144,7 @@ public class CircuitPartRenderer {
 		for (int x2 = 0; x2 < w; x2++) {
 			for (int y2 = 0; y2 < w; y2++) {
 				Vec2 pos = new Vec2(x2, y2);
-				renderPartPayload(pos, circuit, circuit.getCircuitData().getPart(pos), x2 * 16, y2 * 16, EnumRenderType.GUI);
+				renderPartPayload(pos, circuit, circuit.getCircuitData().getPart(pos), x2 * PART_SIZE, y2 * PART_SIZE, EnumRenderType.GUI);
 			}
 		}
 		tes.draw();

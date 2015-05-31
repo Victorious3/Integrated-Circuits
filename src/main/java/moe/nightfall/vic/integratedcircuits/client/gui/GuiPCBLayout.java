@@ -376,55 +376,28 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) {
+	protected void drawGuiContainerBackgroundLayer(float partialTick, int x, int y) {
 		hoveredElement = null;
 		
-		double mouseX = boardAbs2RelX(x);
-		double mouseY = boardAbs2RelY(y);
+		double relX = boardAbs2RelX(x);
+		double relY = boardAbs2RelY(y);
 
-		endX = (int) mouseX;
-		endY = (int) mouseY;
-
-		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
-		int guiScale = scaledresolution.getScaleFactor();
-
-		// Draw the "border"
-		drawHollowRect(guiLeft, guiTop, guiRight, guiBottom, editorLeft, editorTop, editorRight, editorBottom, 0xAA3A404A);
-
-		CircuitData data = tileentity.getCircuitData();
+		endX = (int) relX;
+		endY = (int) relY;
 
 		mouseDrag(x, y, editorLeft, editorTop, editorRight, editorBottom);
+		
+		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
+		int guiScale = scaledresolution.getScaleFactor();
+		
+		// Draw the "border"
+		drawHollowRect(guiLeft, guiTop, guiRight, guiBottom, editorLeft, editorTop, editorRight, editorBottom, 0xAA3A404A);
 
 		// Draw the name of the CAD
 		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 45, guiTop + 12, 0xFFFFFF);
 
 		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
-
-		// Render the "board"
-		GL11.glEnable(GL11.GL_SCISSOR_TEST);
-		GL11.glScissor(editorLeft * guiScale, this.mc.displayHeight - editorBottom * guiScale,
-				xSizeEditor * guiScale, ySizeEditor * guiScale);
-		
-		GL11.glPushMatrix();
-		//Scale and translate to the center of the screen
-		GL11.glTranslated(editorLeft + xSizeEditor/2.0 + tileentity.offX, editorTop + ySizeEditor/2.0 + tileentity.offY, 0);
-		GL11.glScalef(getScaleFactor(), getScaleFactor(), 1F);
-		GL11.glTranslated(-getBoardSize()/2.0, -getBoardSize()/2.0, 0);
-
-		//Render the circuit board
-		CircuitPartRenderer.renderPerfboard(data);
-		CircuitPartRenderer.renderParts(tileentity);
-		
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-		if(!isShiftKeyDown())
-			renderTunnelConnections(data, isCtrlKeyDown());
-		cadCursor(mouseX, mouseY, data, data.getSize(), editorLeft, editorTop, editorRight, editorBottom);
-		GL11.glDisable(GL11.GL_BLEND);
-
-		GL11.glDisable(GL11.GL_SCISSOR_TEST);
-		GL11.glPopMatrix();
-
+		renderCircuitBoard(relX, relY, guiScale);
 		//Draw inner gradient
 		drawGradients(editorLeft, editorTop, editorRight, editorBottom, 4);
 
@@ -502,11 +475,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 					tes.draw();
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
 				}
-				//FIXME: Part rendering probably needs to be changed
+				
+				final int PART_SIZE = CircuitPartRenderer.PART_SIZE;
 				GL11.glPushMatrix();
-				GL11.glTranslated(gridX, gridY, 0);
-				GL11.glScaled(1F / 16, 1F / 16, 1F / 16);
-				CircuitPartRenderer.renderPart(selectedPart, 0, 0);
+				GL11.glScaled(1F / PART_SIZE, 1F / PART_SIZE, 1);
+				CircuitPartRenderer.renderPart(selectedPart, gridX * PART_SIZE, gridY * PART_SIZE);
 				GL11.glPopMatrix();
 			} else if (drag) {
 				if (selectedPart == null) {
@@ -608,6 +581,34 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		lastY = y;
 	}
 	
+	private void renderCircuitBoard(double mouseX, double mouseY, int guiScale) {
+		CircuitData data = tileentity.getCircuitData();
+		
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		GL11.glScissor(editorLeft * guiScale, this.mc.displayHeight - editorBottom * guiScale,
+				xSizeEditor * guiScale, ySizeEditor * guiScale);
+		
+		GL11.glPushMatrix();
+		//Scale and translate to the center of the screen
+		GL11.glTranslated(editorLeft + xSizeEditor/2.0 + tileentity.offX, editorTop + ySizeEditor/2.0 + tileentity.offY, 0);
+		GL11.glScalef(getScaleFactor(), getScaleFactor(), 1F);
+		GL11.glTranslated(-getBoardSize()/2.0, -getBoardSize()/2.0, 0);
+
+		//Render the circuit board
+		CircuitPartRenderer.renderPerfboard(data);
+		CircuitPartRenderer.renderParts(tileentity);
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		if(!isShiftKeyDown())
+			renderTunnelConnections(data, isCtrlKeyDown());
+		cadCursor(mouseX, mouseY, data, data.getSize(), editorLeft, editorTop, editorRight, editorBottom);
+		GL11.glDisable(GL11.GL_BLEND);
+
+		GL11.glPopMatrix();
+		GL11.glDisable(GL11.GL_SCISSOR_TEST);
+	}
+	
 	private void renderTunnelConnections(CircuitData data, boolean ctrl) {
 		Tessellator tes = Tessellator.instance;
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -651,31 +652,28 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int x, int y) {
+	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		GL11.glColor3f(1, 1, 1);
 		CircuitData data = tileentity.getCircuitData();
 
-		int x2 = (int) boardAbs2RelX(x);
-		int y2 = (int) boardAbs2RelY(y);
-
-		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
-		int guiScale = scaledresolution.getScaleFactor();
+		int gridX = (int) boardAbs2RelX(mouseX);
+		int gridY = (int) boardAbs2RelY(mouseY);
 
 		int w = data.getSize();
-		if (x2 >= 0 && y2 >= 0 && x2 < w && y2 < w && !blockMouseInput && !isShiftKeyDown()) {
-			if (x >= editorLeft && x < editorRight && y >= editorTop && y < editorBottom) {
-				Vec2 pos = new Vec2(x2, y2);
+		if (gridX >= 0 && gridY >= 0 && gridX < w && gridY < w && !blockMouseInput && !isShiftKeyDown()) {
+			if (mouseX >= editorLeft && mouseX < editorRight && mouseY >= editorTop && mouseY < editorBottom) {
+				Vec2 pos = new Vec2(gridX, gridY);
 				CircuitPart part = data.getPart(pos);
 				if (!(part instanceof PartNull || part instanceof PartWire || part instanceof PartNullCell)) {
 					ArrayList<String> text = Lists.newArrayList();
 					text.add(part.getLocalizedName(pos, tileentity));
 					text.addAll(part.getInformation(pos, tileentity, selectedPart == null, isCtrlKeyDown()));
-					drawHoveringText(text, x - guiLeft, y - guiTop, this.fontRendererObj);
+					drawHoveringText(text, mouseX - guiLeft, mouseY - guiTop, this.fontRendererObj);
 				}
 			}
 		}
 		if (hoveredElement != null)
-			drawHoveringText(hoveredElement.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
+			drawHoveringText(hoveredElement.getHoverInformation(), mouseX - guiLeft, mouseY - guiTop, this.fontRendererObj);
 		RenderHelper.enableGUIStandardItemLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		fontRendererObj.drawString((int) (tileentity.scale * 100) + "%", this.xSize - 62, this.ySize - 15, 0xFFFFFF);
@@ -683,29 +681,29 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	}
 
 	@Override
-	protected void mouseClicked(int x, int y, int flag) {
-		nameField.mouseClicked(x, y, flag);
+	protected void mouseClicked(int mouseX, int mouseY, int flag) {
+		nameField.mouseClicked(mouseX, mouseY, flag);
 		if (blockMouseInput) {
-			super.mouseClicked(x, y, flag);
+			super.mouseClicked(mouseX, mouseY, flag);
 			return;
 		}
 
-		if (x < editorLeft || y < editorTop || x > editorRight || y > editorBottom) {
-			super.mouseClicked(x, y, flag);
+		if (mouseX < editorLeft || mouseY < editorTop || mouseX > editorRight || mouseY > editorBottom) {
+			super.mouseClicked(mouseX, mouseY, flag);
 			return;
 		}
 
 		CircuitData data = tileentity.getCircuitData();
 
 		boolean ctrlDown = isCtrlKeyDown();
-		int x2 = (int) boardAbs2RelX(x);
-		int y2 = (int) boardAbs2RelY(y);
+		int gridX = (int) boardAbs2RelX(mouseX);
+		int gridY = (int) boardAbs2RelY(mouseY);
 		int w = data.getSize();
 
 		drag = false;
-		if (x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !isShiftKeyDown()) {
+		if (gridX > 0 && gridY > 0 && gridX < w - 1 && gridY < w - 1 && !isShiftKeyDown()) {
 			if (selectedPart == null) {
-				Vec2 pos = new Vec2(x2, y2);
+				Vec2 pos = new Vec2(gridX, gridY);
 				CircuitPart cp = data.getPart(pos);
 				if (cp instanceof IConfigurableDelay && ctrlDown) {
 					timedPart = new CircuitRenderWrapper(tileentity.getCircuitData(), cp, pos);
@@ -713,44 +711,44 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							((IConfigurableDelay) cp).getConfigurableDelay(pos, tileentity)));
 					callbackTimed.display();
 				} else if (cp instanceof PartTunnel) {
-					startX = x2;
-					startY = y2;
+					startX = gridX;
+					startY = gridY;
 					drag = true;
 				} else {
-					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(x2, y2, flag, ctrlDown, tileentity.xCoord,
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(gridX, gridY, flag, ctrlDown, tileentity.xCoord,
 							tileentity.yCoord, tileentity.zCoord));
 				}
 			} else if (selectedPart.getPart() instanceof PartWire) {
-				startX = x2;
-				startY = y2;
+				startX = gridX;
+				startY = gridY;
 				drag = true;
 			} else {
 				int newID = CircuitPart.getId(selectedPart.getPart());
-				if (newID != tileentity.getCircuitData().getID(new Vec2(x2, y2))) {
-					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { x2, y2,
+				if (newID != tileentity.getCircuitData().getID(new Vec2(gridX, gridY))) {
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { gridX, gridY,
 							newID, selectedPart.getState() },
 							!(selectedPart.getPart() instanceof PartNull), tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 				}
 			}
 		}
 
-		super.mouseClicked(x, y, flag);
+		super.mouseClicked(mouseX, mouseY, flag);
 	}
 
 	@Override
-	protected void mouseClickMove(int x, int y, int par3, long par4) {
-		super.mouseClickMove(x, y, par3, par4);
+	protected void mouseClickMove(int mouseX, int mouseY, int button, long timeSinceClick) {
+		super.mouseClickMove(mouseX, mouseY, button, timeSinceClick);
 
 		if (selectedPart != null && selectedPart.getPart() instanceof PartNull) {
-			int x2 = (int) boardAbs2RelX(x);
-			int y2 = (int) boardAbs2RelY(y);
+			int boardX = (int) boardAbs2RelX(mouseX);
+			int boardY = (int) boardAbs2RelY(mouseY);
 			int w = tileentity.getCircuitData().getSize();
 			boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 
-			if (x2 > 0 && y2 > 0 && x2 < w - 1 && y2 < w - 1 && !shiftDown) {
-				Vec2 pos = new Vec2(x2, y2);
+			if (boardX > 0 && boardY > 0 && boardX < w - 1 && boardY < w - 1 && !shiftDown) {
+				Vec2 pos = new Vec2(boardX, boardY);
 				if (!(tileentity.getCircuitData().getPart(pos) instanceof PartNull)) {
-					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { x2, y2, 0, 0 }, false,
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { boardX, boardY, 0, 0 }, false,
 							tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 				}
 			}
