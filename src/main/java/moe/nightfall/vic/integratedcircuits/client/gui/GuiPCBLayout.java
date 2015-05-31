@@ -44,6 +44,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import codechicken.lib.math.MathHelper;
+
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 
@@ -222,15 +224,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		refreshUI();
 	}
 	
-	private double getBoardSize() {
-		return tileentity.getCircuitData().getSize();
-	}
-	
 	//Functions to convert between screen coordinates and circuit board coordinates
-	private float getScaleFactor() {
-		return SCALE * tileentity.scale;
-	}
-	
 	private double boardAbs2RelX(double absX) {
 		return (absX - (editorLeft + xSizeEditor/2 + tileentity.offX)) / getScaleFactor() + getBoardSize()/2;
 	}
@@ -245,6 +239,18 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	
 	private double boardRel2AbsY(double relY) {
 		return (relY - getBoardSize()/2) * getScaleFactor() + (editorTop + ySizeEditor/2 + tileentity.offY);
+	}
+	
+	private float getScaleFactor() {
+		return SCALE * tileentity.scale;
+	}
+	
+	private double getBoardSize() {
+		return tileentity.getCircuitData().getSize();
+	}
+	
+	private double getAbsBoardSize() {
+		return getScaleFactor() * getBoardSize();
 	}
 	
 	private double getBoardLeft() {
@@ -374,8 +380,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		hoveredElement = null;
 		Tessellator tes = Tessellator.instance;
 
-		double mouseX = (int) boardAbs2RelX(x);
-		double mouseY = (int) boardAbs2RelY(y);
+		double mouseX = boardAbs2RelX(x);
+		double mouseY = boardAbs2RelY(y);
 
 		endX = (int) mouseX;
 		endY = (int) mouseY;
@@ -388,9 +394,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 		CircuitData data = tileentity.getCircuitData();
 
-		int w = data.getSize();
-
-		mouseDrag(x, y, w, editorLeft, editorTop, editorRight, editorBottom);
+		mouseDrag(x, y, editorLeft, editorTop, editorRight, editorBottom);
 
 		// Draw the name of the CAD
 		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 45, guiTop + 12, 0xFFFFFF);
@@ -579,24 +583,22 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		}
 	}
 
-	private void mouseDrag(int x, int y, int w, int left, int top, int right, int bottom) {
+	private void mouseDrag(int x, int y, int left, int top, int right, int bottom) {
 		if (Mouse.isButtonDown(0) && (x - lastX != 0 || y - lastY != 0) && isShiftKeyDown()) {
 			if (!(x < left || y < top || x > right || y > bottom)) {
-				tileentity.offX += (x - lastX) / tileentity.scale;
-				tileentity.offY += (y - lastY) / tileentity.scale;
+				tileentity.offX += (x - lastX);
+				tileentity.offY += (y - lastY);
+				
+				double limitX = (xSizeEditor + getAbsBoardSize())/2.0;
+				double limitY = (ySizeEditor + getAbsBoardSize())/2.0;
+				
+				tileentity.offX = MathHelper.clip(tileentity.offX, -limitX, limitX);
+				tileentity.offY = MathHelper.clip(tileentity.offY, -limitY, limitY);
 			}
 		}
-
+		
 		lastX = x;
 		lastY = y;
-
-		double maxX = xSizeEditor / 2 / tileentity.scale + (w * 16) / 2 - 16;
-		double minX = -xSizeEditor / 2 / tileentity.scale - (w * 16) / 2 + 16;
-		double maxY = ySizeEditor / 2 / tileentity.scale + (w * 16) / 2 - 16;
-		double minY = -ySizeEditor / 2 / tileentity.scale - (w * 16) / 2 + 16;
-
-		tileentity.offX = tileentity.offX > maxX ? maxX : tileentity.offX < minX ? minX : tileentity.offX;
-		tileentity.offY = tileentity.offY > maxY ? maxY : tileentity.offY < minY ? minY : tileentity.offY;
 	}
 
 	private void drawTunnelConnection(int x, int y) {
