@@ -13,8 +13,8 @@ import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.SocketRenderer;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
+import moe.nightfall.vic.integratedcircuits.tile.FMPartGate;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
-import uk.co.qmunity.lib.part.compat.fmp.FMPPart;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -159,7 +159,7 @@ public class GateRegistry implements IGateRegistry {
 	}
 
 	public Set<GateIOProvider> getIOProviderList(Class<?> clazz) {
-		if (clazz == FMPPart.class)
+		if (clazz == FMPartGate.class)
 			return ioProviderRegistry.get(Type.TILE_FMP);
 		if (clazz == TileEntitySocket.class)
 			return ioProviderRegistry.get(Type.TILE);

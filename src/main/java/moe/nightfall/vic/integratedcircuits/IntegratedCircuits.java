@@ -17,21 +17,9 @@ import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
-import moe.nightfall.vic.integratedcircuits.item.Item7Segment;
-import moe.nightfall.vic.integratedcircuits.item.ItemBase;
-import moe.nightfall.vic.integratedcircuits.item.ItemCircuit;
-import moe.nightfall.vic.integratedcircuits.item.ItemFloppyDisk;
-import moe.nightfall.vic.integratedcircuits.item.ItemPCB;
-import moe.nightfall.vic.integratedcircuits.item.ItemScrewdriver;
-import moe.nightfall.vic.integratedcircuits.item.ItemSocket;
-import moe.nightfall.vic.integratedcircuits.item.ItemSocketFMP;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
-import moe.nightfall.vic.integratedcircuits.tile.BlockAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.BlockPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -129,38 +117,10 @@ public class IntegratedCircuits {
 		IntegratedCircuitsAPI.getGateRegistry().registerGate("circuit", GateCircuit.class);
 		IntegratedCircuitsAPI.getGateRegistry().registerGate("7segment", Gate7Segment.class);
 
-		Content.itemSocket = new ItemSocket();
-		if (isFMPLoaded)
-			Content.itemSocketFMP = new ItemSocketFMP();
-
-		Content.itemCircuit = new ItemCircuit();
-		Content.item7Segment = new Item7Segment();
-		Content.itemFloppyDisk = new ItemFloppyDisk();
-		Content.itemPCB = new ItemPCB();
-		Content.itemPCBChip = new ItemBase("pcb_chip");
-		Content.itemLaser = new ItemBase("laser").setHasIcon(false);
-
-		Content.itemSolderingIron = new ItemBase("soldering_iron").setMaxDamage(25).setMaxStackSize(1).setNoRepair();
-
-		Content.itemSiliconDrop = new ItemBase("silicon_drop");
-		Content.itemScrewdriver = new ItemScrewdriver();
-
-		if (!(isBPLoaded || isPRLoaded)) {
-			Content.itemSilicon = new ItemBase("silicon");
-			Content.itemCoalCompound = new ItemBase("coalcompound");
-		}
-
-		Content.blockPCBLayout = new BlockPCBLayout();
-		Content.blockAssembler = new BlockAssembler();
-
-		GameRegistry.registerBlock(Content.blockPCBLayout, Constants.MOD_ID + ".pcblayout");
-		GameRegistry.registerBlock(Content.blockAssembler, Constants.MOD_ID + ".assembler");
-
-		GameRegistry.registerTileEntity(TileEntityPCBLayout.class, Constants.MOD_ID + ".pcblayoutcad");
-		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");
+		// Initialize content
+		Content.init();
 
 		// Register socket provider
-
 		if (isFMPLoaded) {
 			IntegratedCircuitsAPI.registerSocketProvider(new ISocketProvider() {
 				@Override

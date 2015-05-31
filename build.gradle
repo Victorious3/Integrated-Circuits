@@ -117,6 +117,11 @@ jar {
         exclude "META-INF/*.DSA"
         exclude "META-INF/*.RSA"
     }
+    
+    manifest {
+        attributes 'FMLCorePlugin': 'moe.nightfall.vic.integratedcircuits.asm.FMLLoadingPlugin'
+        attributes 'FMLCorePluginContainsFMLMod': 'true'
+    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
