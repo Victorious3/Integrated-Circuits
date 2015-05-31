@@ -221,12 +221,16 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	}
 	
 	//TODO: The handling of the circuit board position should be refactored 
+	protected double getBoardSize() {
+		return 16 * tileentity.getCircuitData().getSize();
+	}
+	
 	protected double getRelativeOffX() {
-		return tileentity.offX + (editorLeft + xSizeEditor / 2) / tileentity.scale - 8 * tileentity.getCircuitData().getSize();
+		return tileentity.offX + (editorLeft + xSizeEditor / 2) / tileentity.scale - getBoardSize() / 2;
 	}
 	
 	protected double getRelativeOffY() {
-		return tileentity.offY + (editorTop + ySizeEditor / 2) / tileentity.scale - 8 * tileentity.getCircuitData().getSize();
+		return tileentity.offY + (editorTop + ySizeEditor / 2) / tileentity.scale - getBoardSize() / 2;
 	}
 	
 	protected double getRelBoardX(double absX) {
@@ -354,7 +358,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float par1, int x, int y) {
 		hoveredElement = null;
-		Tessellator tessellator = Tessellator.instance;
+		Tessellator tes = Tessellator.instance;
 
 		double mouseX = (int) getRelBoardX(x);
 		double mouseY = (int) getRelBoardY(y);
@@ -385,25 +389,25 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 				xSizeEditor * guiScale, ySizeEditor * guiScale);
 		
 		GL11.glPushMatrix();
-		GL11.glTranslated(guiLeft, guiTop, 0);
+		//Scale and translate to the center of the screen
+		GL11.glTranslated(editorLeft + xSizeEditor/2 + tileentity.offX, editorTop + ySizeEditor/2 + tileentity.offY, 0);
 		GL11.glScalef(tileentity.scale, tileentity.scale, 1F);
+		GL11.glTranslated(-getBoardSize()/2, -getBoardSize()/2, 0);
 
-		//Rendering of the board goes here
+		//Render the circuit board
+		CircuitPartRenderer.renderPerfboard(data);
+		CircuitPartRenderer.renderParts(tileentity);
 
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		GL11.glPopMatrix();
 
+		//Draw inner gradient
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
 		GL11.glShadeModel(GL11.GL_SMOOTH);
-		tessellator.startDrawingQuads();
-
-		// Draw inner gradient
-		drawGradients(tessellator, editorLeft, editorTop, editorRight, editorBottom, 4);
-
-		tessellator.draw();
+		drawGradients(editorLeft, editorTop, editorRight, editorBottom, 4);
 		GL11.glShadeModel(GL11.GL_FLAT);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
@@ -421,40 +425,42 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	}
 
 	// TODO: Make this less hardcoded?
-	private void drawGradients(Tessellator tessellator, int gradientLeft, int gradientTop, int gradientRight, int gradientBottom, int gradientSize) {
+	private void drawGradients(int gradientLeft, int gradientTop, int gradientRight, int gradientBottom, int gradientSize) {
+		Tessellator tes = Tessellator.instance;
+		tes.startDrawingQuads();
 		// Top gradient
-		tessellator.setColorRGBA_F(0, 0, 0, 0);
-		tessellator.addVertex(gradientLeft, gradientTop + gradientSize, 0);
-		tessellator.addVertex(gradientRight, gradientTop + gradientSize, 0);
-		tessellator.setColorRGBA_F(0, 0, 0, 0.8F);
-		tessellator.addVertex(gradientRight, gradientTop, 0);
-		tessellator.addVertex(gradientLeft, gradientTop, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(gradientLeft, gradientTop + gradientSize, 0);
+		tes.addVertex(gradientRight, gradientTop + gradientSize, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(gradientRight, gradientTop, 0);
+		tes.addVertex(gradientLeft, gradientTop, 0);
 
 		// Bottom gradient
-		tessellator.setColorRGBA_F(0, 0, 0, 0.8F);
-		tessellator.addVertex(gradientLeft, gradientBottom, 0);
-		tessellator.addVertex(gradientRight, gradientBottom, 0);
-		tessellator.setColorRGBA_F(0, 0, 0, 0);
-		tessellator.addVertex(gradientRight, gradientBottom - gradientSize, 0);
-		tessellator.addVertex(gradientLeft, gradientBottom - gradientSize, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(gradientLeft, gradientBottom, 0);
+		tes.addVertex(gradientRight, gradientBottom, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(gradientRight, gradientBottom - gradientSize, 0);
+		tes.addVertex(gradientLeft, gradientBottom - gradientSize, 0);
 
 		// Left gradient
-		tessellator.setColorRGBA_F(0, 0, 0, 0.8F);
-		tessellator.addVertex(gradientLeft, gradientTop, 0);
-		tessellator.addVertex(gradientLeft, gradientBottom, 0);
-		tessellator.setColorRGBA_F(0, 0, 0, 0);
-		tessellator.addVertex(gradientLeft + gradientSize, gradientBottom, 0);
-		tessellator.addVertex(gradientLeft + gradientSize, gradientTop, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(gradientLeft, gradientTop, 0);
+		tes.addVertex(gradientLeft, gradientBottom, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(gradientLeft + gradientSize, gradientBottom, 0);
+		tes.addVertex(gradientLeft + gradientSize, gradientTop, 0);
 
 		// Right gradient
-		tessellator.setColorRGBA_F(0, 0, 0, 0);
-		tessellator.addVertex(gradientRight - gradientSize, gradientTop, 0);
-		tessellator.addVertex(gradientRight - gradientSize, gradientBottom, 0);
-		tessellator.setColorRGBA_F(0, 0, 0, 0.8F);
-		tessellator.addVertex(gradientRight, gradientBottom, 0);
-		tessellator.addVertex(gradientRight, gradientTop, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0);
+		tes.addVertex(gradientRight - gradientSize, gradientTop, 0);
+		tes.addVertex(gradientRight - gradientSize, gradientBottom, 0);
+		tes.setColorRGBA_F(0, 0, 0, 0.8F);
+		tes.addVertex(gradientRight, gradientBottom, 0);
+		tes.addVertex(gradientRight, gradientTop, 0);
 
-
+		tes.draw();
 	}
 
 	private void cadCursor(int x, int y, Tessellator tessellator, double mouseX, double mouseY, CircuitData data, int w, int left, int top, int right, int bottom) {

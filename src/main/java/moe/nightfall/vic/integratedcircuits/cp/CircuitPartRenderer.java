@@ -131,11 +131,10 @@ public class CircuitPartRenderer {
 		}
 	}
 
-	public static void renderParts(ICircuit circuit, double offX, double offY) {
+	public static void renderParts(ICircuit circuit) {
 		Tessellator tes = Tessellator.instance;
 		int w = circuit.getCircuitData().getSize();
 
-		GL11.glTranslated(offX, offY, 0);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		tes.startDrawingQuads();
 		for (int x2 = 0; x2 < w; x2++) {
@@ -145,7 +144,6 @@ public class CircuitPartRenderer {
 			}
 		}
 		tes.draw();
-		GL11.glTranslated(-offX, -offY, 0);
 	}
 
 	public static void renderParts(ICircuit circuit, double offX, double offY, boolean[][] exc, EnumRenderType type) {
@@ -166,27 +164,24 @@ public class CircuitPartRenderer {
 		GL11.glTranslated(-offX, -offY, 0);
 	}
 
-	public static void renderPerfboard(double offX, double offY, CircuitData data) {
+	public static void renderPerfboard(CircuitData data) {
 		Tessellator tes = Tessellator.instance;
-		int w = data.getSize();
+		int size = data.getSize();
 
-		GL11.glTranslated(offX, offY, 0);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF1);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, data.getSize() * 16, data.getSize() * 16, 16, 16, 16D / data.getSize(),
-				16D / data.getSize(), 0);
+		addQuad(0, 0, 0, 0, size * 16, size * 16, 16, 16, 16D / size, 16D / size, 0);
 		tes.draw();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF2);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, 16, data.getSize() * 16, 16, 16, 16D, 16D / data.getSize(), 0);
-		addQuad(data.getSize() * 16 - 16, 0, 0, 0, 16, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 0);
-		addQuad(0, 0, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
-		addQuad(0, data.getSize() * 16 - 16, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
+		addQuad(0, 0, 0, 0, 16, size * 16, 16, 16, 16D, 16D / size, 0);
+		addQuad(size * 16 - 16, 0, 0, 0, 16, size * 16, 16, 16, 16, 16D / size, 0);
+		addQuad(0, 0, 0, 0, size * 16, 16, 16, 16, 16D / size, 16, 0);
+		addQuad(0, data.getSize() * 16 - 16, 0, 0, size * 16, 16, 16, 16, 16D / size, 16, 0);
 		tes.draw();
-		GL11.glTranslated(-offX, -offY, 0);
 	}
 
 	public static void renderPartGate(Vec2 pos, ICircuit parent, PartCPGate gate, double x, double y, EnumRenderType type) {
