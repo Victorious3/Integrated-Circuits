@@ -1,5 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.cp;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
@@ -12,9 +14,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class CircuitPartRenderer {
@@ -139,6 +138,8 @@ public class CircuitPartRenderer {
 		int w = circuit.getCircuitData().getSize();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
+		GL11.glPushMatrix();
+		GL11.glScalef(1F / PART_SIZE, 1F / PART_SIZE, 1F / PART_SIZE);
 		tes.startDrawingQuads();
 		for (int x2 = 0; x2 < w; x2++) {
 			for (int y2 = 0; y2 < w; y2++) {
@@ -147,6 +148,7 @@ public class CircuitPartRenderer {
 			}
 		}
 		tes.draw();
+		GL11.glPopMatrix();
 	}
 
 	public static void renderParts(ICircuit circuit, double offX, double offY, boolean[][] exc, EnumRenderType type) {
@@ -174,16 +176,16 @@ public class CircuitPartRenderer {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF1);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, size * 16, size * 16, 16, 16, 16D / size, 16D / size, 0);
+		addQuad(0, 0, 0, 0, size, size, 16, 16, 16D / size, 16D / size, 0);
 		tes.draw();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF2);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, 16, size * 16, 16, 16, 16D, 16D / size, 0);
-		addQuad(size * 16 - 16, 0, 0, 0, 16, size * 16, 16, 16, 16, 16D / size, 0);
-		addQuad(0, 0, 0, 0, size * 16, 16, 16, 16, 16D / size, 16, 0);
-		addQuad(0, data.getSize() * 16 - 16, 0, 0, size * 16, 16, 16, 16, 16D / size, 16, 0);
+		addQuad(0, 0, 0, 0, 1, size, 16, 16, 16D, 16D / size, 0);
+		addQuad(size - 1, 0, 0, 0, 1, size, 16, 16, 16, 16D / size, 0);
+		addQuad(0, 0, 0, 0, size, 1, 16, 16, 16D / size, 16, 0);
+		addQuad(0, size - 1, 0, 0, size, 1, 16, 16, 16D / size, 16, 0);
 		tes.draw();
 	}
 

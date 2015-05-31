@@ -85,6 +85,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	// Used by the wires
 	private int startX, startY, endX, endY;
 	private boolean drag;
+	
+	private static final float SCALE = 16f; 
 
 	// Callbacks
 	private GuiCallback<GuiPCBLayout> callbackDelete;
@@ -220,29 +222,29 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		refreshUI();
 	}
 	
-	private double getCircuitSize() {
+	private double getBoardSize() {
 		return tileentity.getCircuitData().getSize();
 	}
 	
-	private double getBoardSize() {
-		return CircuitPartRenderer.PART_SIZE * getCircuitSize();
+	//Functions to convert between screen coordinates and circuit board coordinates
+	private float getScaleFactor() {
+		return SCALE * tileentity.scale;
 	}
 	
-	//Functions to convert between screen coordinates and circuit board coordinates
 	private double boardAbs2RelX(double absX) {
-		return (absX - (editorLeft + xSizeEditor/2 + tileentity.offX)) / tileentity.scale + getBoardSize()/2;
+		return (absX - (editorLeft + xSizeEditor/2 + tileentity.offX)) / getScaleFactor() + getBoardSize()/2;
 	}
 	
 	private double boardAbs2RelY(double absY) {
-		return (absY - (editorTop + ySizeEditor/2 + tileentity.offY)) / tileentity.scale + getBoardSize()/2;
+		return (absY - (editorTop + ySizeEditor/2 + tileentity.offY)) / getScaleFactor() + getBoardSize()/2;
 	}
 	
 	private double boardRel2AbsX(double relX) {
-		return (relX - getBoardSize()/2) * tileentity.scale + (editorLeft + xSizeEditor/2 + tileentity.offX);
+		return (relX - getBoardSize()/2) * getScaleFactor() + (editorLeft + xSizeEditor/2 + tileentity.offX);
 	}
 	
 	private double boardRel2AbsY(double relY) {
-		return (relY - getBoardSize()/2) * tileentity.scale + (editorTop + ySizeEditor/2 + tileentity.offY);
+		return (relY - getBoardSize()/2) * getScaleFactor() + (editorTop + ySizeEditor/2 + tileentity.offY);
 	}
 	
 	private double getBoardLeft() {
@@ -403,7 +405,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glPushMatrix();
 		//Scale and translate to the center of the screen
 		GL11.glTranslated(editorLeft + xSizeEditor/2 + tileentity.offX, editorTop + ySizeEditor/2 + tileentity.offY, 0);
-		GL11.glScalef(tileentity.scale, tileentity.scale, 1F);
+		GL11.glScalef(getScaleFactor(), getScaleFactor(), 1F);
 		GL11.glTranslated(-getBoardSize()/2, -getBoardSize()/2, 0);
 
 		//Render the circuit board
