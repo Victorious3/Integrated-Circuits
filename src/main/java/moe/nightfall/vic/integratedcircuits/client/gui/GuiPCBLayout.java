@@ -756,27 +756,29 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	}
 
 	private void scale(int i) {
-		int w = tileentity.getCircuitData().getSize();
-
-		double ow = w * 16 * tileentity.scale;
-		float oldScale = tileentity.scale;
-
 		int index = scales.indexOf(tileentity.scale);
 
 		if (i > 0 && index + 1 < scales.size())
-			tileentity.scale = scales.get(index + 1);
+			scaleAround(0, 0, tileentity.scale, scales.get(index + 1));
 		if (i < 0 && index - 1 >= 0)
-			tileentity.scale = scales.get(index - 1);
+			scaleAround(0, 0, tileentity.scale, scales.get(index - 1));
 
 		if (i != 0) {
 			buttonMinus.enabled = true;
 			buttonPlus.enabled = true;
 
-			if (tileentity.scale == 0.17F)
+			if (tileentity.scale == scales.get(0))
 				buttonMinus.enabled = false;
-			if (tileentity.scale == 2F)
+			if (tileentity.scale == scales.get(scales.size()-1))
 				buttonPlus.enabled = false;
 		}
+	}
+	
+	private void scaleAround(double centerX, double centerY, float from, float to) {
+		tileentity.scale = to;
+		double factor = to / from;
+		tileentity.offX = centerX + factor * (tileentity.offX - centerX); 
+		tileentity.offY = centerY + factor * (tileentity.offY - centerY); 
 	}
 
 	@Override
@@ -786,7 +788,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		super.handleMouseInput();
 	}
 
-	private static List<Float> scales = Arrays.asList(0.17F, 0.2F, 0.25F, 0.33F, 0.5F, 0.67F, 1F, 1.5F, 2F);
+	private static final List<Float> scales = Arrays.asList(0.17F, 0.2F, 0.25F, 0.33F, 0.5F, 0.67F, 1F, 1.5F, 2F);
 
 	@Override
 	protected void mouseMovedOrUp(int x, int y, int button) {
