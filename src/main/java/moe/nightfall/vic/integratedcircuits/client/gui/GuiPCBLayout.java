@@ -415,6 +415,8 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		//Render the circuit board
 		CircuitPartRenderer.renderPerfboard(data);
 		CircuitPartRenderer.renderParts(tileentity);
+		if(!isShiftKeyDown())
+			renderTunnelConnections(data, isCtrlKeyDown());
 
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 		GL11.glPopMatrix();
@@ -600,18 +602,35 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		lastX = x;
 		lastY = y;
 	}
+	
+	private void renderTunnelConnections(CircuitData data, boolean ctrl) {
+		Tessellator tes = Tessellator.instance;
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		tes.startDrawingQuads();
+		for (int x = 0; x < data.getSize(); x++)
+			for (int y = 0; y < data.getSize(); y++) {
+				if (ctrl || x == endX && y == endY && data.getPart(new Vec2(x, y)) instanceof PartTunnel && selectedPart == null)
+					drawTunnelConnection(x, y);
+				if (drag && selectedPart == null) {
+					tes.setColorRGBA_F(0, 0, 1, 1);
+					CircuitPartRenderer.addQuad(startX, startY, 0, 0, 1, 1);
+				}
+			}
+		tes.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_BLEND);
+	}
 
-	private void drawTunnelConnection(int x, int y) {
-		Vec2 pos = new Vec2(x, y);
+	private void drawTunnelConnection(int firstX, int firstY) {
+		Vec2 pos = new Vec2(firstX, firstY);
 		CircuitPart part = tileentity.getCircuitData().getPart(pos);
 		if (!(part instanceof PartTunnel))
 			return;
 
 		PartTunnel pt = (PartTunnel) part;
 		Vec2 pos2 = pt.getConnectedPos(pos, tileentity);
-
-		double x3 = x * 16 + getBoardLeft();
-		double y3 = y * 16 + getBoardTop();
 
 		if (pt.getInput(pos, tileentity) || pt.getProperty(pos, tileentity, pt.PROP_IN)) {
 			Tessellator.instance.setColorRGBA_F(1F, 0F, 0F, 1F);
@@ -620,13 +639,13 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		}
 
 		if (pt.isConnected(pos2)) {
-			double x4 = pos2.x * 16 + getBoardLeft();
-			double y4 = pos2.y * 16 + getBoardTop();
+			double secondX = pos2.x;
+			double secondY = pos2.y;
 
-			RenderUtils.addLine(x3 + 8, y3 + 8, x4 + 8, y4 + 8, 4);
-			CircuitPartRenderer.addQuad(x4, y4, 0, 0, 16, 16);
+			RenderUtils.addLine(firstX + 0.5, firstY + 0.5, secondX + 0.5, secondY + 0.5, 0.3);
+			CircuitPartRenderer.addQuad(secondX, secondY, 0, 0, 1, 1);
 		}
-		CircuitPartRenderer.addQuad(x3, y3, 0, 0, 16, 16);
+		CircuitPartRenderer.addQuad(firstX, firstY, 0, 0, 1, 1);
 	}
 
 	@Override
