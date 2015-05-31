@@ -6,9 +6,9 @@ import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;

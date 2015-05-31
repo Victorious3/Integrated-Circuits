@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits;
 
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;

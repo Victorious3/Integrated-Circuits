@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;

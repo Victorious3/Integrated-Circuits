@@ -6,7 +6,7 @@ import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiAssembler;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingSupply;
 import moe.nightfall.vic.integratedcircuits.misc.IOptionsProvider;
 import moe.nightfall.vic.integratedcircuits.misc.InventoryUtils;

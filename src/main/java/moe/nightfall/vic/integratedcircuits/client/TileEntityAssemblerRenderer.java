@@ -9,12 +9,11 @@ import moe.nightfall.vic.integratedcircuits.LaserHelper;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.ModelFloppy;
 import moe.nightfall.vic.integratedcircuits.LaserHelper.Laser;
 import moe.nightfall.vic.integratedcircuits.client.model.ModelLaser;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPartRenderer.CircuitRenderWrapper;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
-
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureUtil;

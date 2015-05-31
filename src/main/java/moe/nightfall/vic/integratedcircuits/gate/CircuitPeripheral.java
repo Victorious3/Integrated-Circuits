@@ -4,8 +4,8 @@ import java.util.Map;
 
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IProperty;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraftforge.common.util.ForgeDirection;

@@ -2,7 +2,7 @@ package moe.nightfall.vic.integratedcircuits.net;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
 import net.minecraft.entity.player.EntityPlayer;

@@ -2,9 +2,9 @@ package moe.nightfall.vic.integratedcircuits.tile;
 
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitCache;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitData;
-import moe.nightfall.vic.integratedcircuits.ic.ICircuit;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitCache;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
+import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.net.PacketFloppyDisk;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangeInput;
