@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import buildcraft.api.tools.IToolWrench;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
@@ -17,6 +16,7 @@ import moe.nightfall.vic.integratedcircuits.misc.InventoryUtils;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
@@ -483,15 +483,17 @@ public class Socket implements ISocket {
 				}
 			}
 
-			String name = stack.getItem().getUnlocalizedName();
+			Item item = stack.getItem();
+			String name = item.getUnlocalizedName();
 
-			// FIXME: Some screwdrivers don't seem to work...
+			// FIXME: Some screwdrivers don't seem to work... they seem to be the fault of the other mods, though.
 			// Is it a tool?
-			boolean tool = (IntegratedCircuits.isBCToolsAPIThere && stack.getItem() instanceof IToolWrench)
-				        || stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
-				        || name.equals("item.projectred.core.screwdriver") || name.equals("item.bluepower:screwdriver");
 			// Does it rotate already?
-			boolean toolRotate = name.equals("item.bluepower:screwdriver") || (IntegratedCircuits.isBCToolsAPIThere && stack.getItem() instanceof IToolWrench);
+			boolean toolRotate = (IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
+							  || (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench);
+			boolean tool = (IntegratedCircuits.isPRLoaded && item instanceof mrtjp.projectred.api.IScrewdriver)
+						|| item == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
+				        || toolRotate;
 			if (tool) {
 				if (!getWorld().isRemote && gate != null) {
 					if (!player.isSneaking() && !toolRotate)

@@ -78,6 +78,7 @@ public class IntegratedCircuits {
 	public static boolean isNEILoaded = false;
 	// TODO BETTER NAME?
 	public static boolean isBCToolsAPIThere = false;
+	public static boolean isBPAPIThere = false;
 
 	public static boolean developmentEnvironment;
 	public static Logger logger;
@@ -112,7 +113,7 @@ public class IntegratedCircuits {
 		logger.info("Searching for compatible mods");
 		logger.info("ProjRed|Transmission: " + (isPRLoaded = Loader.isModLoaded("ProjRed|Transmission")));
 		logger.info("armourersWorkshop: " + (isAWLoaded = Loader.isModLoaded("armourersWorkshop")));
-		logger.info("bluepower: " + (isBPLoaded = Loader.isModLoaded("bluepower")));
+		logger.info("BluePower: " + (isBPLoaded = Loader.isModLoaded("bluepower")));
 		logger.info("ForgeMultipart: " + (isFMPLoaded = Loader.isModLoaded("ForgeMultipart")));
 		logger.info("RedLogic: " + (isRLLoaded = Loader.isModLoaded("RedLogic")));
 		logger.info("MineFactoryReloaded: " + (isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded")));
@@ -120,6 +121,7 @@ public class IntegratedCircuits {
 		logger.info("Not Enough Items: " + (isNEILoaded = Loader.isModLoaded("NotEnoughItems")));
 		logger.info("Searching for compatible APIs");
 		logger.info("BuildCraft Tools API: " + (isBCToolsAPIThere = ModAPIManager.INSTANCE.hasAPI("BuildCraftAPI|tools")));
+		logger.info("BluePower API: " + (isBPAPIThere = ModAPIManager.INSTANCE.hasAPI("bluepowerAPI")));
 
 		if (isFMPLoaded)
 			logger.info("Forge Multi Part installation found! FMP Compatible gates will be added.");
