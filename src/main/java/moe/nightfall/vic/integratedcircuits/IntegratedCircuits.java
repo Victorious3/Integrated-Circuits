@@ -11,7 +11,6 @@ import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
-import moe.nightfall.vic.integratedcircuits.asm.FMLLoadingPlugin;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
 import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
@@ -78,7 +77,6 @@ public class IntegratedCircuits {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
 		developmentEnvironment = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
-		FMLLoadingPlugin.ensureFirst();
 
 		// Initialize API
 		Field apiField = IntegratedCircuitsAPI.class.getDeclaredField("instance");
