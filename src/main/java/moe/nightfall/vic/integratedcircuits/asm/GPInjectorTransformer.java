@@ -86,11 +86,7 @@ public class GPInjectorTransformer implements IClassTransformer, Opcodes {
 
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 		clazzNode.accept(cw);
-		byte[] bytes = cw.toByteArray();
-
-
-
-		return bytes;
+		return cw.toByteArray();
 	}
 
 	public String[] getExceptionTypes(Executable exec) {
