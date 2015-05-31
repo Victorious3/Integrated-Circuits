@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
+import li.cil.oc.common.asm.ClassTransformer;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
@@ -14,9 +15,9 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
 import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
-import moe.nightfall.vic.integratedcircuits.ic.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
@@ -58,6 +59,7 @@ public class IntegratedCircuits {
 	public static boolean isFMPLoaded = false;
 	public static boolean isRLLoaded = false;
 	public static boolean isMFRLoaded = false;
+	public static boolean isOCLoaded = false;
 	public static boolean isCCLoaded = false;
 	public static boolean isNEILoaded = false;
 
@@ -98,6 +100,7 @@ public class IntegratedCircuits {
 		logger.info("ForgeMultipart: " + (isFMPLoaded = Loader.isModLoaded("ForgeMultipart")));
 		logger.info("RedLogic: " + (isRLLoaded = Loader.isModLoaded("RedLogic")));
 		logger.info("MineFactoryReloaded: " + (isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded")));
+		logger.info("Open Computers: " + (isOCLoaded = Loader.isModLoaded("OpenComputers")));
 		logger.info("Computer Craft: " + (isCCLoaded = Loader.isModLoaded("ComputerCraft")));
 		logger.info("Not Enough Items: " + (isNEILoaded = Loader.isModLoaded("NotEnoughItems")));
 
@@ -155,6 +158,16 @@ public class IntegratedCircuits {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) throws Exception {
+
+		// Remove exceptions concerning my interfaces, needed for OC support:
+		if (isOCLoaded) {
+			try {
+				scala.collection.mutable.AbstractBuffer<String> buffer = (scala.collection.mutable.AbstractBuffer<String>) ClassTransformer.simpleComponentErrors();
+				buffer.$minus$eq("moe.nightfall.vic.integratedcircuits.compat.gateio.GPOpenComputers");
+			} catch (Throwable t) {
+				// No way...
+			}
+		}
 
 		// Initialize with reflection so that the transformer doesn't run upon
 		// constructing this class.
