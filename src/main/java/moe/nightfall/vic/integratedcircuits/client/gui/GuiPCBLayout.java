@@ -461,9 +461,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 
-	private void cadCursor(double mouseX, double mouseY, CircuitData data, int w, int left, int top, int right, int bottom) {
+	private void renderCadCursor(double mouseX, double mouseY, CircuitData data, int size) {
 		Tessellator tes = Tessellator.instance;
-		if (mouseX > 0 && mouseY > 0 && mouseX < w - 1 && mouseY < w - 1 && !isShiftKeyDown() && !blockMouseInput) {
+		if (mouseX > 0 && mouseY > 0 && mouseX < size - 1 && mouseY < size - 1 && !isShiftKeyDown() && !blockMouseInput) {
 			int gridX = (int) mouseX;
 			int gridY = (int) mouseY;
 			if (!drag && selectedPart != null) {
@@ -509,58 +509,61 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							GL11.glColor3f(0F, 0.4F, 0F);
 							break;
 					}
-					
-					gridX = startX;
-					gridY = startY;
-
-					tes.startDrawingQuads();
-					CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1, 1, 1, 16, 16, 0);
-					if (endY > startY)
-						CircuitPartRenderer.addQuad(gridX, gridY, 4, 0, 1, 1, 1, 1, 16, 16, 0);
-					else if (endY < startY)
-						CircuitPartRenderer.addQuad(gridX, gridY, 2, 0, 1, 1, 1, 1, 16, 16, 0);
-					else if (endX > startX)
-						CircuitPartRenderer.addQuad(gridX, gridY, 3, 0, 1, 1, 1, 1, 16, 16, 0);
-					else if (endX < startX)
-						CircuitPartRenderer.addQuad(gridX, gridY, 1, 0, 1, 1, 1, 1, 16, 16, 0);
-
-					while (gridX != endX || gridY != endY) {
-						if (gridY < endY)
-							gridY++;
-						else if (gridY > endY)
-							gridY--;
-						else if (gridX < endX)
-							gridX++;
-						else if (gridX > endX)
-							gridX--;
-
-						if (gridY != endY)
-							CircuitPartRenderer.addQuad(gridX, gridY, 6, 0, 1, 1, 1, 1, 16, 16, 0);
-						else if (gridY == endY && gridX == startX) {
-							CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1, 1, 1, 16, 16, 0);
-							if (endY > startY)
-								CircuitPartRenderer.addQuad(gridX, gridY, 2, 0, 1, 1, 1, 1, 16, 16, 0);
-							else if (endY < startY)
-								CircuitPartRenderer.addQuad(gridX, gridY, 4, 0, 1, 1, 1, 1, 16, 16, 0);
-							if (endX > startX)
-								CircuitPartRenderer.addQuad(gridX, gridY, 3, 0, 1, 1, 1, 1, 16, 16, 0);
-							else if (endX < startX)
-								CircuitPartRenderer.addQuad(gridX, gridY, 1, 0, 1, 1, 1, 1, 16, 16, 0);
-						} else if (gridX != endX)
-							CircuitPartRenderer.addQuad(gridX, gridY, 5, 0, 1, 1, 1, 1, 16, 16, 0);
-						else if (gridX == endX) {
-							CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1, 1, 1, 16, 16, 0);
-							if (endX > startX)
-								CircuitPartRenderer.addQuad(gridX, gridY, 1, 0, 1, 1, 1, 1, 16, 16, 0);
-							else if (endX < startX)
-								CircuitPartRenderer.addQuad(gridX, gridY, 3, 0, 1, 1, 1, 1, 16, 16, 0);
-						}
-					}
-					tes.draw();
+					renderDraggedWire();
 					GL11.glColor3f(1, 1, 1);
 				}
 			}
 		}
+	}
+	
+	private void renderDraggedWire() {
+		int x = startX;
+		int y = startY;
+
+		Tessellator.instance.startDrawingQuads();
+		CircuitPartRenderer.addQuad(x, y, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+		if (endY > startY)
+			CircuitPartRenderer.addQuad(x, y, 4, 0, 1, 1, 1, 1, 16, 16, 0);
+		else if (endY < startY)
+			CircuitPartRenderer.addQuad(x, y, 2, 0, 1, 1, 1, 1, 16, 16, 0);
+		else if (endX > startX)
+			CircuitPartRenderer.addQuad(x, y, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+		else if (endX < startX)
+			CircuitPartRenderer.addQuad(x, y, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+
+		while (x != endX || y != endY) {
+			if (y < endY)
+				y++;
+			else if (y > endY)
+				y--;
+			else if (x < endX)
+				x++;
+			else if (x > endX)
+				x--;
+
+			if (y != endY)
+				CircuitPartRenderer.addQuad(x, y, 6, 0, 1, 1, 1, 1, 16, 16, 0);
+			else if (y == endY && x == startX) {
+				CircuitPartRenderer.addQuad(x, y, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+				if (endY > startY)
+					CircuitPartRenderer.addQuad(x, y, 2, 0, 1, 1, 1, 1, 16, 16, 0);
+				else if (endY < startY)
+					CircuitPartRenderer.addQuad(x, y, 4, 0, 1, 1, 1, 1, 16, 16, 0);
+				if (endX > startX)
+					CircuitPartRenderer.addQuad(x, y, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+				else if (endX < startX)
+					CircuitPartRenderer.addQuad(x, y, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+			} else if (x != endX)
+				CircuitPartRenderer.addQuad(x, y, 5, 0, 1, 1, 1, 1, 16, 16, 0);
+			else if (x == endX) {
+				CircuitPartRenderer.addQuad(x, y, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+				if (endX > startX)
+					CircuitPartRenderer.addQuad(x, y, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+				else if (endX < startX)
+					CircuitPartRenderer.addQuad(x, y, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+			}
+		}
+		Tessellator.instance.draw();
 	}
 
 	private void mouseDrag(int x, int y, int left, int top, int right, int bottom) {
@@ -602,7 +605,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		if(!isShiftKeyDown())
 			renderTunnelConnections(data, isCtrlKeyDown());
-		cadCursor(mouseX, mouseY, data, data.getSize(), editorLeft, editorTop, editorRight, editorBottom);
+		renderCadCursor(mouseX, mouseY, data, data.getSize());
 		GL11.glDisable(GL11.GL_BLEND);
 
 		GL11.glPopMatrix();
