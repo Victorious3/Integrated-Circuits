@@ -287,7 +287,7 @@ public class ClientProxy extends CommonProxy {
 				return Cosplay.NANO;
 			else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno
 																											// skin
-				return Cosplay.NONE;
+				return Cosplay.CIRNO;
 		}
 		return Cosplay.NONE;
 	}
