@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import buildcraft.api.tools.IToolWrench;
 import moe.nightfall.vic.integratedcircuits.Content;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
@@ -482,10 +484,17 @@ public class Socket implements ISocket {
 			}
 
 			String name = stack.getItem().getUnlocalizedName();
-			if (stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
-					|| name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver")) {
+
+			// FIXME: Some screwdrivers don't seem to work...
+			// Is it a tool?
+			boolean tool = (IntegratedCircuits.isBCToolsAPIThere && stack.getItem() instanceof IToolWrench)
+				        || stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
+				        || name.equals("item.projectred.core.screwdriver") || name.equals("item.bluepower:screwdriver");
+			// Does it rotate already?
+			boolean toolRotate = name.equals("item.bluepower:screwdriver") || (IntegratedCircuits.isBCToolsAPIThere && stack.getItem() instanceof IToolWrench);
+			if (tool) {
 				if (!getWorld().isRemote && gate != null) {
-					if (!player.isSneaking())
+					if (!player.isSneaking() && !toolRotate)
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
@@ -493,20 +502,25 @@ public class Socket implements ISocket {
 				stack.damageItem(1, player);
 				return true;
 			}
+
+
 		}
 		if (gate != null)
 			return gate.activate(player, hit, stack);
 		return false;
 	}
 
-	private void rotate() {
+	@Override
+	public boolean rotate() {
 		setRotation((getRotation() + 1) % 4);
-		getWriteStream(0).writeByte(orientation);
+		if (!getWorld().isRemote)
+			getWriteStream(0).writeByte(orientation);
 		notifyBlocksAndChanges();
-		if (gate != null) {
+		if (gate != null && !getWorld().isRemote) {
 			gate.onRotated();
 			updateInput();
 		}
+		return true;
 	}
 
 	@Override

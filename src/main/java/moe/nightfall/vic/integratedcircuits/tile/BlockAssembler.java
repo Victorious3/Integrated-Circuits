@@ -119,6 +119,11 @@ public class BlockAssembler extends BlockContainer {
 	}
 
 	@Override
+	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+		return ((TileEntityAssembler) world.getTileEntity(x, y, z)).rotate();
+	}
+
+	@Override
 	public boolean isOpaqueCube() {
 		return false;
 	}

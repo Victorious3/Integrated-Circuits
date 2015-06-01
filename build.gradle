@@ -46,6 +46,10 @@ repositories {
         name "immibis-core"
         artifactPattern "https://dl.dropboxusercontent.com/u/2944265/mods/autobuilt/files/[module]-[revision].[ext]"
     }
+    ivy {
+        name "BuildCraft"
+        artifactPattern "http://www.mod-buildcraft.com/releases/BuildCraft/[revision]/[module]-[revision]-[classifier].[ext]"
+    }
 }
 
 apply plugin: 'forge'
@@ -82,10 +86,10 @@ dependencies {
 
     compile "qmunity:QmunityLib:${qmlVersion}:deobf"
     compile "com.bluepowermod:BluePower:${bluepowerVersion}:deobf"
-    compile "com.mod-buildcraft:buildcraft:${buildcraftVersion}:api"
     compile "li.cil.oc:OpenComputers:MC${mcVersion}-${ocVersion}:dev"
     compile name: "redlogic", version: "${redlogicVersion}", ext: "jar"
     compile name: "immibis-core", version: "${imcVersion}", ext: "jar"
+	compile name: "buildcraft", version: "${buildcraftVersion}", classifier: "dev"
 }
 
 processResources {

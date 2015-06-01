@@ -528,4 +528,10 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	public boolean hasWork() {
 		return getStatus() != IDLE;
 	}
+
+	public boolean rotate() {
+		this.rotation = rotation + 1 & 3;
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		return true;
+	}
 }
