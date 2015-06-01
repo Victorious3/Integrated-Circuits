@@ -1,6 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.asm;
 
-import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -89,10 +88,10 @@ public class GPInjectorTransformer implements IClassTransformer, Opcodes {
 		return cw.toByteArray();
 	}
 
-	public String[] getExceptionTypes(Executable exec) {
-		Class<?>[] execTypes = exec.getExceptionTypes();
+	public String[] getExceptionTypes(Method m) {
+		Class<?>[] execTypes = m.getExceptionTypes();
 		String[] exc = new String[execTypes.length];
-		for (int i = 0; i < exec.getExceptionTypes().length; i++) {
+		for (int i = 0; i < m.getExceptionTypes().length; i++) {
 			exc[i] = Type.getInternalName(execTypes[i]);
 		}
 		return exc;
