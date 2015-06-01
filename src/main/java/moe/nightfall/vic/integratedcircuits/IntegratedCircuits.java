@@ -3,11 +3,11 @@ package moe.nightfall.vic.integratedcircuits;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import li.cil.oc.common.asm.ClassTransformer;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
@@ -162,8 +162,10 @@ public class IntegratedCircuits {
 		// Remove exceptions concerning my interfaces, needed for OC support:
 		if (isOCLoaded) {
 			try {
-				scala.collection.mutable.AbstractBuffer<String> buffer = (scala.collection.mutable.AbstractBuffer<String>) ClassTransformer.simpleComponentErrors();
-				buffer.$minus$eq("moe.nightfall.vic.integratedcircuits.compat.gateio.GPOpenComputers");
+				Class transformerClazz = Class.forName("li.cil.oc.common.asm.ClassTransformer");
+				Method simpleComponentErrors = transformerClazz.getMethod("simpleComponentErrors");
+				Object buffer = simpleComponentErrors.invoke(null);
+				buffer.getClass().getMethod("$minus$eq", Object.class).invoke(buffer, "moe.nightfall.vic.integratedcircuits.compat.gateio.GPOpenComputers");
 			} catch (Throwable t) {
 				// No way...
 			}
