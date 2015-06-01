@@ -145,7 +145,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				MovingObjectPosition mop = Minecraft.getMinecraft().objectMouseOver;
 				BlockCoord pos = socket.getPos();
 				if (mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == pos.x && mop.blockY == pos.y
-						&& mop.blockZ == pos.z) {
+						&& mop.blockZ == pos.z && mop.sideHit == (socket.getSide() ^ 1)) {
 					if (!player.inventory.hasItem(Content.itemSolderingIron)) {
 						if (Config.enableTooltips) {
 							ClientProxy.drawTooltip(I18n.format("tooltip.integratedcircuits.socket"));

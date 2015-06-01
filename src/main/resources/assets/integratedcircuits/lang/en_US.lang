@@ -8,9 +8,10 @@ item.integratedcircuits.silicon.name=Silicon
 item.integratedcircuits.silicon_drop.name=Silicon Drop
 item.integratedcircuits.coalcompound.name=Sandy Coal Compound
 item.integratedcircuits.screwdriver.name=Screwdriver
+item.integratedcircuits.soldering_iron.name=Soldering Iron
 
 item.integratedcircuits.socket.name=Empty Socket
-item.integratedcircuits.socket_fmp.name=Empty FMP Socket //TODO set the name on empty fmp sockets
+item.integratedcircuits.socket_fmp.name=Empty FMP Socket
 
 item.integratedcircuits.7segment.name=Segment
 item.integratedcircuits.circuit.name=Integrated Circuit (%s)
