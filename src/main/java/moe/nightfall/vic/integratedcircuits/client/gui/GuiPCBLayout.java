@@ -230,19 +230,19 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	
 	//Functions to convert between screen coordinates and circuit board coordinates
 	private double boardAbs2RelX(double absX) {
-		return (absX - (editorLeft + xSizeEditor/2 + tileentity.offX)) / getScaleFactor() + getBoardSize()/2.0;
+		return (absX - getAbsBoardOffsetX()) / getScaleFactor() + getBoardSize()/2.0;
 	}
 	
 	private double boardAbs2RelY(double absY) {
-		return (absY - (editorTop + ySizeEditor/2 + tileentity.offY)) / getScaleFactor() + getBoardSize()/2.0;
+		return (absY - getAbsBoardOffsetY()) / getScaleFactor() + getBoardSize()/2.0;
 	}
 	
 	private double boardRel2AbsX(double relX) {
-		return (relX - getBoardSize()/2.0) * getScaleFactor() + (editorLeft + xSizeEditor/2.0 + tileentity.offX);
+		return (relX - getBoardSize()/2.0) * getScaleFactor() + getAbsBoardOffsetX();
 	}
 	
 	private double boardRel2AbsY(double relY) {
-		return (relY - getBoardSize()/2.0) * getScaleFactor() + (editorTop + ySizeEditor/2.0 + tileentity.offY);
+		return (relY - getBoardSize()/2.0) * getScaleFactor() + getAbsBoardOffsetY();
 	}
 	
 	private float getScaleFactor() {
@@ -255,6 +255,14 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	
 	private double getAbsBoardSize() {
 		return getScaleFactor() * getBoardSize();
+	}
+	
+	private double getAbsBoardOffsetX() {
+		return editorLeft + xSizeEditor/2.0 + tileentity.offX;
+	}
+	
+	private double getAbsBoardOffsetY() {
+		return editorTop + ySizeEditor/2.0 + tileentity.offY;
 	}
 	
 	private double getBoardLeft() {
@@ -323,7 +331,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		// Draw the name of the CAD
 		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 45, guiTop + 12, 0xFFFFFF);
 
-		mc.getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		renderCircuitBoard(relX, relY, guiScale);
 		//Draw inner gradient
 		drawGradients(editorLeft, editorTop, editorRight, editorBottom, 4);
@@ -426,7 +433,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		
 		GL11.glPushMatrix();
 		//Scale and translate to the center of the screen
-		GL11.glTranslated(editorLeft + xSizeEditor/2.0 + tileentity.offX, editorTop + ySizeEditor/2.0 + tileentity.offY, 0);
+		GL11.glTranslated(getAbsBoardOffsetX(), getAbsBoardOffsetY(), 0);
 		GL11.glScalef(getScaleFactor(), getScaleFactor(), 1F);
 		GL11.glTranslated(-getBoardSize()/2.0, -getBoardSize()/2.0, 0);
 
