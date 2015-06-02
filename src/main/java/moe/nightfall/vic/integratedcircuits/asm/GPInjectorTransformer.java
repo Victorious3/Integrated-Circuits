@@ -68,7 +68,7 @@ public class GPInjectorTransformer implements IClassTransformer, Opcodes {
 
 				// add parameters
 				Class<?>[] parameters = m.getParameterTypes();
-				for (int i = 0; i < m.getParameterCount(); i++) {
+				for (int i = 0; i < parameters.length; i++) {
 					mv.visitVarInsn(Type.getType(parameters[i]).getOpcode(ILOAD), i + 1);
 				}
 
