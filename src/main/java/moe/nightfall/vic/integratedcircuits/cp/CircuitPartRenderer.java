@@ -18,6 +18,8 @@ import org.lwjgl.opengl.GL11;
 @SideOnly(Side.CLIENT)
 public class CircuitPartRenderer {
 
+	public static final int PART_SIZE = 16;
+	
 	public enum EnumRenderType {
 		GUI, WORLD, WORLD_16x
 	}
@@ -35,7 +37,7 @@ public class CircuitPartRenderer {
 	private static void renderPartPayload(Vec2 pos, ICircuit parent, CircuitPart part, double x, double y, EnumRenderType type) {
 		if (type == EnumRenderType.WORLD_16x && !(part instanceof PartNull || part instanceof PartWire || part instanceof PartIOBit)) {
 			Tessellator.instance.setColorRGBA_F(0, 0, 0, 1);
-			addQuad(x, y, 0, 15 * 16, 16, 16);
+			addQuad(x, y, 0, 15 * 16, PART_SIZE, PART_SIZE);
 		}
 
 		part.renderPart(pos, parent, x, y, type);
@@ -131,62 +133,63 @@ public class CircuitPartRenderer {
 		}
 	}
 
-	public static void renderParts(ICircuit circuit, double offX, double offY) {
+	public static void renderParts(ICircuit circuit) {
 		Tessellator tes = Tessellator.instance;
 		int w = circuit.getCircuitData().getSize();
 
-		GL11.glTranslated(offX, offY, 0);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
+		GL11.glPushMatrix();
+		GL11.glScalef(1F / PART_SIZE, 1F / PART_SIZE, 1);
 		tes.startDrawingQuads();
 		for (int x2 = 0; x2 < w; x2++) {
 			for (int y2 = 0; y2 < w; y2++) {
 				Vec2 pos = new Vec2(x2, y2);
-				renderPartPayload(pos, circuit, circuit.getCircuitData().getPart(pos), x2 * 16, y2 * 16, EnumRenderType.GUI);
+				renderPartPayload(pos, circuit, circuit.getCircuitData().getPart(pos), x2 * PART_SIZE, y2 * PART_SIZE, EnumRenderType.GUI);
 			}
 		}
 		tes.draw();
-		GL11.glTranslated(-offX, -offY, 0);
+		GL11.glPopMatrix();
 	}
 
 	public static void renderParts(ICircuit circuit, double offX, double offY, boolean[][] exc, EnumRenderType type) {
 		Tessellator tes = Tessellator.instance;
 		int w = circuit.getCircuitData().getSize();
 
+		GL11.glPushMatrix();
 		GL11.glTranslated(offX, offY, 0);
+		if (type == EnumRenderType.GUI)
+			GL11.glScalef(1F / PART_SIZE, 1F / PART_SIZE, 1);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		tes.startDrawingQuads();
 		for (int x2 = 0; x2 < w; x2++) {
 			for (int y2 = 0; y2 < w; y2++) {
 				Vec2 pos = new Vec2(x2, y2);
 				if (exc[x2][y2])
-					renderPartPayload(pos, circuit, circuit.getCircuitData().getPart(pos), x2 * 16, y2 * 16, type);
+					renderPartPayload(pos, circuit, circuit.getCircuitData().getPart(pos), x2 * PART_SIZE, y2 * PART_SIZE, type);
 			}
 		}
 		tes.draw();
-		GL11.glTranslated(-offX, -offY, 0);
+		GL11.glPopMatrix();
 	}
 
-	public static void renderPerfboard(double offX, double offY, CircuitData data) {
+	public static void renderPerfboard(CircuitData data) {
 		Tessellator tes = Tessellator.instance;
-		int w = data.getSize();
+		int size = data.getSize();
 
-		GL11.glTranslated(offX, offY, 0);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF1);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, data.getSize() * 16, data.getSize() * 16, 16, 16, 16D / data.getSize(),
-				16D / data.getSize(), 0);
+		addQuad(0, 0, 0, 0, size, size, 16, 16, 16D / size, 16D / size, 0);
 		tes.draw();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF2);
 		tes.startDrawingQuads();
 		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, 16, data.getSize() * 16, 16, 16, 16D, 16D / data.getSize(), 0);
-		addQuad(data.getSize() * 16 - 16, 0, 0, 0, 16, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 0);
-		addQuad(0, 0, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
-		addQuad(0, data.getSize() * 16 - 16, 0, 0, data.getSize() * 16, 16, 16, 16, 16D / data.getSize(), 16, 0);
+		addQuad(0, 0, 0, 0, 1, size, 16, 16, 16D, 16D / size, 0);
+		addQuad(size - 1, 0, 0, 0, 1, size, 16, 16, 16, 16D / size, 0);
+		addQuad(0, 0, 0, 0, size, 1, 16, 16, 16D / size, 16, 0);
+		addQuad(0, size - 1, 0, 0, size, 1, 16, 16, 16D / size, 16, 0);
 		tes.draw();
-		GL11.glTranslated(-offX, -offY, 0);
 	}
 
 	public static void renderPartGate(Vec2 pos, ICircuit parent, PartCPGate gate, double x, double y, EnumRenderType type) {
@@ -199,7 +202,7 @@ public class CircuitPartRenderer {
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(x, y, 2 * 16, 0, 16, 16);
+			addQuad(x, y, 2 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
 		if (gate.canConnectToSide(pos, parent, ForgeDirection.SOUTH)) {
@@ -210,7 +213,7 @@ public class CircuitPartRenderer {
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(x, y, 4 * 16, 0, 16, 16);
+			addQuad(x, y, 4 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
 		if (gate.canConnectToSide(pos, parent, ForgeDirection.WEST)) {
@@ -221,7 +224,7 @@ public class CircuitPartRenderer {
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(x, y, 1 * 16, 0, 16, 16);
+			addQuad(x, y, 1 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
 		if (gate.canConnectToSide(pos, parent, ForgeDirection.EAST)) {
@@ -232,7 +235,7 @@ public class CircuitPartRenderer {
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-			addQuad(x, y, 3 * 16, 0, 16, 16);
+			addQuad(x, y, 3 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
 		tes.setColorRGBA_F(0F, 1F, 0F, 1F);
@@ -254,7 +257,7 @@ public class CircuitPartRenderer {
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else
 			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
-		addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
+		addQuad(x, y, 0, 2 * 16, PART_SIZE, PART_SIZE, rotation);
 
 		if (type == EnumRenderType.GUI
 				&& (cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, rotation))
