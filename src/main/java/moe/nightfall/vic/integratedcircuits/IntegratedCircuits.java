@@ -20,12 +20,13 @@ import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
+import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
 import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
-import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -38,6 +39,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.ModClassLoader;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -79,6 +81,10 @@ public class IntegratedCircuits {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
 		developmentEnvironment = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
+
+		Field transformers = LaunchClassLoader.class.getDeclaredField("transformers");
+		transformers.setAccessible(true);
+		System.out.println(transformers.get(ModClassLoader.class.getClassLoader()));
 
 		// Initialize API
 		Field apiField = IntegratedCircuitsAPI.class.getDeclaredField("instance");
@@ -173,7 +179,7 @@ public class IntegratedCircuits {
 
 		// Initialize with reflection so that the transformer doesn't run upon
 		// constructing this class.
-		Content.blockSocket = (Block) Class.forName("moe.nightfall.vic.integratedcircuits.tile.BlockSocket").newInstance();
+		Content.blockSocket = BlockSocket.class.newInstance();
 
 		GameRegistry.registerBlock(Content.blockSocket, Constants.MOD_ID + ".socket");
 		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".socket");

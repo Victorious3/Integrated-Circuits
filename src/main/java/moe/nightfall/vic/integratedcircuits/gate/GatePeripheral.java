@@ -3,6 +3,10 @@ package moe.nightfall.vic.integratedcircuits.gate;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -16,6 +20,7 @@ import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Primitives;
 
 import cpw.mods.fml.common.Optional.Interface;
 import dan200.computercraft.api.filesystem.IMount;
@@ -60,6 +65,7 @@ public abstract class GatePeripheral implements IPeripheral {
 				throw new LuaException("Illegal amount of parameters!");
 			}
 			for (int i = 0; i < paramTypes.length; i++) {
+				paramTypes[i] = Primitives.wrap(paramTypes[i]);
 				if (!paramTypes[i].isAssignableFrom(arguments[i].getClass()))
 					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + paramTypes[i] + "', got '" + arguments[i].getClass() + "'.");
 			}
@@ -91,6 +97,8 @@ public abstract class GatePeripheral implements IPeripheral {
 		return other.getType().equals(getType());
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.METHOD)
 	public static @interface LuaMethod {
 
 	}

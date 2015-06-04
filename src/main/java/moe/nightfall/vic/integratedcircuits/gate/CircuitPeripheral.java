@@ -9,6 +9,9 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IProperty;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
@@ -38,7 +41,7 @@ public class CircuitPeripheral extends GatePeripheral {
 	}
 
 	@LuaMethod
-	public boolean[] getPowerTo(double x, double y) {
+	public Object[] getPowerTo(double x, double y) {
 		CircuitData cdata = circuit.getCircuitData();
 		Vec2 pos = getPos(x, y);
 		CircuitPart cp = cdata.getPart(pos);
@@ -48,7 +51,7 @@ public class CircuitPeripheral extends GatePeripheral {
 		boolean b3 = cp.getInputFromSide(pos, circuit, ForgeDirection.SOUTH);
 		boolean b4 = cp.getInputFromSide(pos, circuit, ForgeDirection.WEST);
 
-		return new boolean[] { b1, b2, b3, b4 };
+		return new Boolean[] { b1, b2, b3, b4 };
 	}
 
 	@LuaMethod
@@ -90,17 +93,17 @@ public class CircuitPeripheral extends GatePeripheral {
 	}
 
 	@LuaMethod
-	public byte[] getOutputToSide(double side) throws LuaException {
+	public Object[] getOutputToSide(double side) throws LuaException {
 		if (side < 0 || side > 3)
 			throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
-		return circuit.provider.getOutput()[(int) side];
+		return ArrayUtils.toObject(circuit.provider.getOutput()[(int) side]);
 	}
 
 	@LuaMethod
-	public byte[] getInputFromSide(double side) throws LuaException {
+	public Object[] getInputFromSide(double side) throws LuaException {
 		if (side < 0 || side > 3)
 			throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
-		return circuit.provider.getInput()[(int) side];
+		return ArrayUtils.toObject(circuit.provider.getInput()[(int) side]);
 	}
 
 	@LuaMethod
@@ -118,7 +121,7 @@ public class CircuitPeripheral extends GatePeripheral {
 		return circuit.getCircuitData().getProperties().getAuthor();
 	}
 
-	// TODO And this is supposed to work?
+	@LuaMethod
 	public String getGateName(double id) {
 		CircuitPart cp = CircuitPart.getPart((int) id);
 		return cp.toString();
