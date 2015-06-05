@@ -601,8 +601,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	
 	@Override
 	public void handleMouseInput() {
-		scale(Mouse.getEventDWheel());
-
+		int wheelD = Mouse.getEventDWheel();
+		if (wheelD != 0) {
+			int mouseX = Mouse.getEventX() * this.width/this.mc.displayWidth;
+			int mouseY = this.height - 1 - Mouse.getEventY() * this.height/this.mc.displayHeight;
+			scale(mouseX - (editorLeft + xSizeEditor/2.0), mouseY - (editorTop + ySizeEditor/2.0), wheelD);
+		}
 		super.handleMouseInput();
 	}
 	
@@ -784,23 +788,21 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		lastY = y;
 	}
 	
-	private void scale(int i) {
+	private void scale(double centerX, double centerY, int i) {
 		int index = scales.indexOf(tileentity.scale);
 
 		if (i > 0 && index + 1 < scales.size())
-			scaleAround(0, 0, tileentity.scale, scales.get(index + 1));
+			scaleAround(centerX, centerY, tileentity.scale, scales.get(index + 1));
 		if (i < 0 && index - 1 >= 0)
-			scaleAround(0, 0, tileentity.scale, scales.get(index - 1));
+			scaleAround(centerX, centerY, tileentity.scale, scales.get(index - 1));
 
-		if (i != 0) {
-			buttonMinus.enabled = true;
-			buttonPlus.enabled = true;
+		buttonMinus.enabled = true;
+		buttonPlus.enabled = true;
 
-			if (tileentity.scale == scales.get(0))
-				buttonMinus.enabled = false;
-			if (tileentity.scale == scales.get(scales.size()-1))
-				buttonPlus.enabled = false;
-		}
+		if (tileentity.scale == scales.get(0))
+			buttonMinus.enabled = false;
+		if (tileentity.scale == scales.get(scales.size()-1))
+			buttonPlus.enabled = false;
 	}
 	
 	private void scaleAround(double centerX, double centerY, float from, float to) {
@@ -813,9 +815,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == 8)
-			scale(1);
+			scale(0.0, 0.0, 1);
 		else if (button.id == 9)
-			scale(-1);
+			scale(0.0, 0.0, -1);
 		else if (button.id == 10) {
 			callback = 1;
 			if (checkboxDelete.isChecked())
