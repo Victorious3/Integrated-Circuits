@@ -247,9 +247,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == 8)
-			scale(0.0, 0.0, 1);
+			scale(tileentity.offX, tileentity.offY, 1);
 		else if (button.id == 9)
-			scale(0.0, 0.0, -1);
+			scale(tileentity.offX, tileentity.offY, -1);
 		else if (button.id == 10) {
 			callback = 1;
 			if (checkboxDelete.isChecked())
@@ -656,7 +656,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		if (wheelD != 0) {
 			int mouseX = Mouse.getEventX() * this.width/this.mc.displayWidth;
 			int mouseY = this.height - 1 - Mouse.getEventY() * this.height/this.mc.displayHeight;
-			scale(mouseX - (editorLeft + xSizeEditor/2.0), mouseY - (editorTop + ySizeEditor/2.0), wheelD);
+			if (mouseX >= getBoardLeft() && mouseX >= editorLeft && mouseX < getBoardRight() && mouseX < editorRight
+					&& mouseY >= getBoardTop() && mouseY >= editorTop && mouseY < getBoardBottom() && mouseY < editorBottom)
+				scale(mouseX - (editorLeft + xSizeEditor/2.0), mouseY - (editorTop + ySizeEditor/2.0), wheelD);
+			else
+				scale(tileentity.offX, tileentity.offY, wheelD);
 		}
 		super.handleMouseInput();
 	}
@@ -859,10 +863,12 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	private void scaleAround(double centerX, double centerY, float from, float to) {
 		tileentity.scale = to;
 		double factor = to / from;
-		tileentity.offX = centerX + factor * (tileentity.offX - centerX); 
-		tileentity.offY = centerY + factor * (tileentity.offY - centerY); 
+		if (centerX != tileentity.offX)
+			tileentity.offX = centerX + factor * (tileentity.offX - centerX);
+		if (centerY != tileentity.offY)
+			tileentity.offY = centerY + factor * (tileentity.offY - centerY); 
 	}
-	
+
 	@Override
 	public void onCallback(GuiCallback gui, Action result, int id) {
 		int w = tileentity.getCircuitData().getSize();
