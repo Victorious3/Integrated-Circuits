@@ -42,8 +42,8 @@ import com.google.common.collect.Lists;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper {
-	private ISocket socket = new Socket(this);
+public class FMPartSocket extends JCuboidPart implements JNormalOcclusion, TFacePart, IFaceRedstonePart, ISocketWrapper {
+	private ISocket socket = IntegratedCircuitsAPI.getGateRegistry().createSocketInstance(this);
 
 	// TODO Re-implement
 	private BPDevice bpDevice;
@@ -268,7 +268,7 @@ public class FMPartGate extends JCuboidPart implements JNormalOcclusion, TFacePa
 			return power;
 
 		// Internal signal
-		TMultiPart tp = ((TileMultipart) ((FMPartGate) socket.getWrapper()).getTile()).partMap(abs);
+		TMultiPart tp = ((TileMultipart) ((FMPartSocket) socket.getWrapper()).getTile()).partMap(abs);
 		if (tp instanceof IRedstonePart) {
 			IRedstonePart rp = (IRedstonePart) tp;
 			power = Math.max(rp.strongPowerLevel(face), rp.weakPowerLevel(face)) << 4;

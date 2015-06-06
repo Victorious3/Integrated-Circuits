@@ -4,7 +4,6 @@ import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
-import moe.nightfall.vic.integratedcircuits.gate.Socket;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -17,7 +16,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
 
 public class TileEntitySocket extends TileEntity implements ISocketWrapper {
-	public ISocket socket = new Socket(this);
+	public ISocket socket = IntegratedCircuitsAPI.getGateRegistry().createSocketInstance(this);
 
 	public boolean isDestroyed;
 

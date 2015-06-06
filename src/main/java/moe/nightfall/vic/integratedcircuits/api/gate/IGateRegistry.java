@@ -21,6 +21,8 @@ public interface IGateRegistry {
 
 	public IGate createGateInstace(String gateID);
 
+	public ISocket createSocketInstance(ISocketWrapper wrapper);
+
 	/**
 	 * Creates a default socket renderer with a texture name.
 	 * 

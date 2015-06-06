@@ -11,9 +11,10 @@ import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateRegistry;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.client.SocketRenderer;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
-import moe.nightfall.vic.integratedcircuits.tile.FMPartGate;
+import moe.nightfall.vic.integratedcircuits.tile.FMPartSocket;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 
 import com.google.common.collect.BiMap;
@@ -163,7 +164,7 @@ public class GateRegistry implements IGateRegistry {
 			return ioProviderRegistry.get(Type.TILE);
 		if (clazz == Block.class)
 			return ioProviderRegistry.get(Type.BLOCK);
-		if (IntegratedCircuits.isFMPLoaded && clazz == FMPartGate.class)
+		if (IntegratedCircuits.isFMPLoaded && clazz == FMPartSocket.class)
 			return ioProviderRegistry.get(Type.TILE_FMP);
 		return null;
 	}
@@ -171,5 +172,10 @@ public class GateRegistry implements IGateRegistry {
 	public Set<Class<?>> getInterfaceMapping(Type type) {
 		Set<Class<?>> set = interfaceMap.get(type);
 		return set != null ? set : new HashSet<Class<?>>();
+	}
+
+	@Override
+	public ISocket createSocketInstance(ISocketWrapper wrapper) {
+		return new Socket(wrapper);
 	}
 }
