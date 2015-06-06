@@ -18,6 +18,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockPCBLayout extends BlockContainer {
 	public BlockPCBLayout() {
@@ -98,5 +99,10 @@ public class BlockPCBLayout extends BlockContainer {
 
 	@Override
 	public void registerBlockIcons(IIconRegister ir) {
+	}
+
+	@Override
+	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+		return ((TileEntityPCBLayout) world.getTileEntity(x, y, z)).rotate();
 	}
 }

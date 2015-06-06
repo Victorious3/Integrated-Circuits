@@ -69,4 +69,10 @@ public interface ISocket extends ISocketBase {
 			return this == SIMPLE || this == ANALOG;
 		}
 	}
+
+	/**
+	 * Rotates the socket (or gate in the socket)
+	 * @return true if successful.
+	 */
+	public boolean rotate();
 }
