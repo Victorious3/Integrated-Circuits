@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.client.gui;
+package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
 import java.util.ArrayList;
 

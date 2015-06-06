@@ -5,6 +5,8 @@ import moe.nightfall.vic.integratedcircuits.api.gate.IGatePeripheralProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
+import moe.nightfall.vic.integratedcircuits.gate.peripheral.CircuitPeripheral;
+import moe.nightfall.vic.integratedcircuits.gate.peripheral.GatePeripheral;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

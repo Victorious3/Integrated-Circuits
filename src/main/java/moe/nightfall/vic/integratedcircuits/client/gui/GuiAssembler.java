@@ -4,6 +4,8 @@ import moe.nightfall.vic.integratedcircuits.ContainerAssembler;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCraftingList;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiStateLabel;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitProperties;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;

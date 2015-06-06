@@ -1,9 +1,10 @@
-package moe.nightfall.vic.integratedcircuits.client.gui;
+package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
 import java.util.Arrays;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.client.Resources;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;

@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.client.gui;
+package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,6 +12,9 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
+import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import cpw.mods.fml.client.config.GuiUtils;
@@ -24,6 +27,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	private ResourceLocation resource;
 	private Map<String, List<GuiButton>> buttonMap = Maps.newLinkedHashMap();
 	private Map<String, Vec2> categoryMap = Maps.newLinkedHashMap();
+	private List<String> categoryList = Lists.newArrayList();
 
 	private int currentHeight;
 	private int nextHeight;
@@ -43,8 +47,13 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		return categoryMap.size() * boxHeight;
 	}
 
-	public GuiRollover addCategory(String category, int u, int v) {
+	public GuiRollover addCategory(String category, int u, int v, GuiButton... buttons) {
 		categoryMap.put(category, new Vec2(u, v));
+		buttonMap.put(category, new ArrayList<GuiButton>());
+		categoryList.add(category);
+		for (GuiButton button : buttons) {
+			add(button, category);
+		}
 		return this;
 	}
 
@@ -52,9 +61,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		if (!categoryMap.containsKey(category))
 			throw new RuntimeException();
 		List<GuiButton> list = buttonMap.get(category);
-		list = list == null ? new ArrayList<GuiButton>() : list;
 		list.add(button);
-		buttonMap.put(category, list);
 		return this;
 	}
 
@@ -78,6 +85,11 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 
 		if (!this.visible)
 			return;
+
+		// Who's bright idea was it to disable this?!
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glTranslatef(0, 0, 10);
+
 		this.field_146123_n = mx >= this.xPosition && my >= this.yPosition && mx < this.xPosition + this.width && my < this.yPosition + this.height;
 		double interpolate = MathHelper.clamp_double((System.currentTimeMillis() - startTime) / timeToOpen, 0, 1);
 
@@ -93,7 +105,10 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 				int ypos = yPosition + j * boxHeight;
 				if (i > selected && moving != 0)
 					ypos += offset;
-				GuiUtils.drawContinuousTexturedBox(xPosition, ypos, 0, 66, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
+				int iconOffset = 66;
+				if (field_146123_n && my > ypos && my < ypos + boxHeight)
+					iconOffset = 86;
+				GuiUtils.drawContinuousTexturedBox(xPosition, ypos, 0, iconOffset, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
 				j++;
 			}
 		}
@@ -112,13 +127,43 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 			}
 		}
 
+		int height = (int) (interpolate * (nextHeight - currentHeight)) + currentHeight;
 		if (moving != 0 || selected != -1) {
-			int height = (int) (interpolate * (nextHeight - currentHeight)) + currentHeight;
 
-			Vec2 value = (Vec2) categoryMap.values().toArray()[selected];
+			Vec2 value = categoryMap.get(categoryList.get(selected));
 			GuiUtils.drawContinuousTexturedBox(buttonTextures, xPosition, yPosition + height, 0, 86, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
 			mc.renderEngine.bindTexture(resource);
 			drawTexturedModalRect(xPosition, yPosition + height, value.x, value.y, 16, 16);
+		}
+
+		if (selected != -1) {
+			GL11.glTranslatef(0, 0, -5);
+
+			double interpolate2 = interpolate;
+			if (moving == -1) {
+				interpolate2 = 1 - interpolate2;
+			}
+
+			// draw buttons
+			List<GuiButton> buttons = buttonMap.get(categoryList.get(selected));
+			int buttonOffset = (int) (5 * interpolate2);
+			
+			for (GuiButton button : buttons) {
+				int i = (button.height + 1);
+				buttonOffset += i * interpolate2;
+				button.yPosition = xPosition + height - buttonOffset;
+				button.xPosition = xPosition;
+
+				button.drawButton(Minecraft.getMinecraft(), mx, my);
+			}
+			
+			GL11.glTranslatef(0, 0, -5);
+			if (buttons.size() > 0) {
+				// draw bridge
+				GuiUtils.drawContinuousTexturedBox(buttonTextures, xPosition + width / 2 - 5, yPosition + height - buttonOffset - (int) (5 * interpolate2), 0, 66, 12, buttonOffset + boxHeight, 200, 20, 2, 3, 2, 2, this.zLevel);
+			}
+			
+			GL11.glTranslatef(0, 0, 10);
 		}
 
 		if (interpolate == 1) {
@@ -131,6 +176,9 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 				moving = 0;
 			}
 		}
+
+		GL11.glTranslatef(0, 0, -10);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 
 	@Override

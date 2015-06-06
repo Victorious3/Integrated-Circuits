@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.client.gui;
+package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;

@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.gate;
+package moe.nightfall.vic.integratedcircuits.gate.peripheral;
 
 import java.util.Map;
 
@@ -6,6 +6,7 @@ import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
+import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IProperty;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -96,14 +97,14 @@ public class CircuitPeripheral extends GatePeripheral {
 	public Object[] getOutputToSide(double side) throws LuaException {
 		if (side < 0 || side > 3)
 			throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
-		return ArrayUtils.toObject(circuit.provider.getOutput()[(int) side]);
+		return ArrayUtils.toObject(circuit.getProvider().getOutput()[(int) side]);
 	}
 
 	@LuaMethod
 	public Object[] getInputFromSide(double side) throws LuaException {
 		if (side < 0 || side > 3)
 			throw new LuaException(String.format("Illegal side provided. (%s) [0->3]", side));
-		return ArrayUtils.toObject(circuit.provider.getInput()[(int) side]);
+		return ArrayUtils.toObject(circuit.getProvider().getInput()[(int) side]);
 	}
 
 	@LuaMethod

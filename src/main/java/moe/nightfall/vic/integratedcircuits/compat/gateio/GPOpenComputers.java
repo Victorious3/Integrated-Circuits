@@ -7,7 +7,7 @@ import li.cil.oc.api.network.SidedComponent;
 import li.cil.oc.api.network.SimpleComponent;
 import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGatePeripheralProvider;
-import moe.nightfall.vic.integratedcircuits.gate.GatePeripheral;
+import moe.nightfall.vic.integratedcircuits.gate.peripheral.GatePeripheral;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;

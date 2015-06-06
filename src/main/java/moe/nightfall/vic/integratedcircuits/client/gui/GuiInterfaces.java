@@ -2,7 +2,8 @@ package moe.nightfall.vic.integratedcircuits.client.gui;
 
 import java.util.List;
 
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiCallback.Action;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCallback;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCallback.Action;
 
 public abstract class GuiInterfaces {
 	public interface IHoverable {

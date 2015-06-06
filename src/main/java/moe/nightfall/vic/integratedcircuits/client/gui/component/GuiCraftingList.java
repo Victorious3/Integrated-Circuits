@@ -1,5 +1,6 @@
-package moe.nightfall.vic.integratedcircuits.client.gui;
+package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiAssembler;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;

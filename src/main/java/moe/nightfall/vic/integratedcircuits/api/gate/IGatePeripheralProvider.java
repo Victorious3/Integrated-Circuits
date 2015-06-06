@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.api.gate;
 
-import moe.nightfall.vic.integratedcircuits.gate.GatePeripheral;
+import moe.nightfall.vic.integratedcircuits.gate.peripheral.GatePeripheral;
 
 public interface IGatePeripheralProvider {
 	public boolean hasPeripheral(int side);

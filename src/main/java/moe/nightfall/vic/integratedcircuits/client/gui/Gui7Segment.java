@@ -6,6 +6,8 @@ import moe.nightfall.vic.integratedcircuits.client.Gate7SegmentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCheckBoxExt;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiDropdown;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.net.Packet7SegmentChangeMode;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;

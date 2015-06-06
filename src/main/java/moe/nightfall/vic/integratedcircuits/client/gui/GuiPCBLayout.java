@@ -7,10 +7,19 @@ import java.util.List;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.ContainerPCBLayout;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiCallback.Action;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCallback;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCallback.Action;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCheckBoxExt;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiIO;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiIOMode;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiIconButton;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiLabel;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiPartChooser;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiRollover;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiStateLabel;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
@@ -98,6 +107,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	private GuiLabel labelTimed;
 	private CircuitRenderWrapper timedPart;
 	
+	// Simulation
+	private GuiStateLabel labelPlayState;
+
 	private int callback;
 	
 	private static final List<Float> scales = Arrays.asList(0.17F, 0.2F, 0.25F, 0.33F, 0.5F, 0.67F, 1F, 1.5F, 2F);
@@ -222,12 +234,44 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		GuiRollover rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
 			.addCategory("Label", 0, 0)
 			.addCategory("Area", 0, 16)
-			.addCategory("Simulation", 0, 32);
+			.addCategory("Simulation", 0, 32,
+					new GuiIconButton(90, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(0, 0),
+					new GuiButtonExt(91, 0, 0, 18, 18, "test")
+			);
+
 		this.buttonList.add(rollover);
 
 		refreshUI();
 	}
 	
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		if (button.id == 8)
+			scale(0.0, 0.0, 1);
+		else if (button.id == 9)
+			scale(0.0, 0.0, -1);
+		else if (button.id == 10) {
+			callback = 1;
+			if (checkboxDelete.isChecked())
+				callbackDelete.display();
+			else
+				onCallback(callbackDelete, Action.OK, 0);
+		} else if (button.id == 11) {
+			callback = 2;
+			if (checkboxDelete.isChecked())
+				callbackDelete.display();
+			else
+				onCallback(callbackDelete, Action.OK, 0);
+		} else if (button.id == 13)
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(true, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+		else if (button.id == 12)
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(false, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+		else if (button.id == 84)
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+		else if (button.id == 85)
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+	}
+
 	//Functions to convert between screen coordinates and circuit board coordinates
 	private double boardAbs2RelX(double absX) {
 		return (absX - getAbsBoardOffsetX()) / getScaleFactor() + getBoardSize()/2.0;
@@ -375,7 +419,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		drawRect(innerRight, outerTop, outerRight, innerBottom, colour);
 	}
 
-	// TODO: Make this less hardcoded?
 	private void drawGradients(int gradientLeft, int gradientTop, int gradientRight, int gradientBottom, int gradientSize) {
 		Tessellator tes = Tessellator.instance;
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -812,34 +855,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		tileentity.offY = centerY + factor * (tileentity.offY - centerY); 
 	}
 	
-	@Override
-	protected void actionPerformed(GuiButton button) {
-		if (button.id == 8)
-			scale(0.0, 0.0, 1);
-		else if (button.id == 9)
-			scale(0.0, 0.0, -1);
-		else if (button.id == 10) {
-			callback = 1;
-			if (checkboxDelete.isChecked())
-				callbackDelete.display();
-			else
-				onCallback(callbackDelete, Action.OK, 0);
-		} else if (button.id == 11) {
-			callback = 2;
-			if (checkboxDelete.isChecked())
-				callbackDelete.display();
-			else
-				onCallback(callbackDelete, Action.OK, 0);
-		} else if (button.id == 13)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(true, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
-		else if (button.id == 12)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(false, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
-		else if (button.id == 84)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
-		else if (button.id == 85)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
-	}
-
 	@Override
 	public void onCallback(GuiCallback gui, Action result, int id) {
 		int w = tileentity.getCircuitData().getSize();
