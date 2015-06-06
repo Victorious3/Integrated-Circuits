@@ -830,12 +830,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			if (!(x < left || y < top || x > right || y > bottom)) {
 				tileentity.offX += (x - lastX);
 				tileentity.offY += (y - lastY);
-				
-				double limitX = (xSizeEditor + getAbsBoardSize())/2.0;
-				double limitY = (ySizeEditor + getAbsBoardSize())/2.0;
-				
-				tileentity.offX = MathHelper.clip(tileentity.offX, -limitX, limitX);
-				tileentity.offY = MathHelper.clip(tileentity.offY, -limitY, limitY);
+				clipOffsets();
 			}
 		}
 		
@@ -866,7 +861,17 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		if (centerX != tileentity.offX)
 			tileentity.offX = centerX + factor * (tileentity.offX - centerX);
 		if (centerY != tileentity.offY)
-			tileentity.offY = centerY + factor * (tileentity.offY - centerY); 
+			tileentity.offY = centerY + factor * (tileentity.offY - centerY);
+		clipOffsets();
+	}
+	
+	private void clipOffsets() {
+		double innerSize = getScaleFactor() * (getBoardSize() - 2);
+		double limitX = (xSizeEditor + innerSize)/2.0;
+		double limitY = (ySizeEditor + innerSize)/2.0;
+		
+		tileentity.offX = MathHelper.clip(tileentity.offX, -limitX, limitX);
+		tileentity.offY = MathHelper.clip(tileentity.offY, -limitY, limitY);
 	}
 
 	@Override
