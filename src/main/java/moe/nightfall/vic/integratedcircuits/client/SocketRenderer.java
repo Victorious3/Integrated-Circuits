@@ -54,6 +54,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 		socket = null;
 	}
 
+	@Override
 	public void prepareDynamic(ISocket socket, float partialTicks) {
 		this.partialTicks = partialTicks;
 		this.socket = socket;
@@ -62,6 +63,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				.prepareDynamic(socket.getGate(), partialTicks);
 	}
 
+	@Override
 	public void renderStatic(Transformation t) {
 		if (socket != null) {
 			Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
@@ -132,6 +134,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 		return inset;
 	}
 
+	@Override
 	public void renderDynamic(Transformation t) {
 		if (socket != null && socket.getGate() != null) {
 			Transformation rotation = Rotation.sideOrientation(socket.getSide(), socket.getRotation()).at(Vector3.center);
