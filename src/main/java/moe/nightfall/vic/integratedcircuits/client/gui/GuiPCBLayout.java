@@ -313,8 +313,16 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		return boardRel2AbsX(0);
 	}
 	
+	private double getBoardRight() {
+		return boardRel2AbsX(getBoardSize());
+	}
+	
 	private double getBoardTop() {
 		return boardRel2AbsY(0);
+	}
+	
+	private double getBoardBottom() {
+		return boardRel2AbsY(getBoardSize());
 	}
 
 	private void calculateSizes() {
