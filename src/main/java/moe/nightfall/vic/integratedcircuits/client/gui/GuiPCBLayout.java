@@ -547,9 +547,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 	private void renderCadCursor(double mouseX, double mouseY, CircuitData data, int size) {
 		Tessellator tes = Tessellator.instance;
-		if (mouseX > 0 && mouseY > 0 && mouseX < size - 1 && mouseY < size - 1 && !isShiftKeyDown() && !blockMouseInput) {
-			int gridX = (int) mouseX;
-			int gridY = (int) mouseY;
+		int gridX = (int) mouseX;
+		int gridY = (int) mouseY;
+		if (gridX > 0 && gridY > 0 && gridX < size - 1 && gridY < size - 1 && !isShiftKeyDown() && !blockMouseInput) {
 			if (!drag && selectedPart != null) {
 				if (selectedPart.getPart() instanceof PartNull) {
 					GL11.glColor3f(0F, 0.4F, 0F);
