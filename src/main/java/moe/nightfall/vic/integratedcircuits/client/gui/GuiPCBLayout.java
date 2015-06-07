@@ -247,9 +247,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		if (button.id == 8)
-			scale(0.0, 0.0, 1);
+			scale(tileentity.offX, tileentity.offY, 1);
 		else if (button.id == 9)
-			scale(0.0, 0.0, -1);
+			scale(tileentity.offX, tileentity.offY, -1);
 		else if (button.id == 10) {
 			callback = 1;
 			if (checkboxDelete.isChecked())
@@ -313,8 +313,16 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		return boardRel2AbsX(0);
 	}
 	
+	private double getBoardRight() {
+		return boardRel2AbsX(getBoardSize());
+	}
+	
 	private double getBoardTop() {
 		return boardRel2AbsY(0);
+	}
+	
+	private double getBoardBottom() {
+		return boardRel2AbsY(getBoardSize());
 	}
 
 	private void calculateSizes() {
@@ -539,9 +547,9 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 
 	private void renderCadCursor(double mouseX, double mouseY, CircuitData data, int size) {
 		Tessellator tes = Tessellator.instance;
-		if (mouseX > 0 && mouseY > 0 && mouseX < size - 1 && mouseY < size - 1 && !isShiftKeyDown() && !blockMouseInput) {
-			int gridX = (int) mouseX;
-			int gridY = (int) mouseY;
+		int gridX = (int) mouseX;
+		int gridY = (int) mouseY;
+		if (gridX > 0 && gridY > 0 && gridX < size - 1 && gridY < size - 1 && !isShiftKeyDown() && !blockMouseInput) {
 			if (!drag && selectedPart != null) {
 				if (selectedPart.getPart() instanceof PartNull) {
 					GL11.glColor3f(0F, 0.4F, 0F);
@@ -648,7 +656,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 		if (wheelD != 0) {
 			int mouseX = Mouse.getEventX() * this.width/this.mc.displayWidth;
 			int mouseY = this.height - 1 - Mouse.getEventY() * this.height/this.mc.displayHeight;
-			scale(mouseX - (editorLeft + xSizeEditor/2.0), mouseY - (editorTop + ySizeEditor/2.0), wheelD);
+			if (mouseX >= getBoardLeft() && mouseX >= editorLeft && mouseX < getBoardRight() && mouseX < editorRight
+					&& mouseY >= getBoardTop() && mouseY >= editorTop && mouseY < getBoardBottom() && mouseY < editorBottom)
+				scale(mouseX - (editorLeft + xSizeEditor/2.0), mouseY - (editorTop + ySizeEditor/2.0), wheelD);
+			else
+				scale(tileentity.offX, tileentity.offY, wheelD);
 		}
 		super.handleMouseInput();
 	}
@@ -758,11 +770,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							data.add(CircuitPart.getId(pt));
 							data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
 						}
-
-						data.add(first.x);
-						data.add(first.y);
-						data.add(CircuitPart.getId(pt));
-						data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(first), second));
 						
 						if (pt.isConnected(pt.getConnectedPos(second, tileentity))) {
 							Vec2 part = pt.getConnectedPos(second, tileentity);
@@ -771,6 +778,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							data.add(CircuitPart.getId(pt));
 							data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
 						}
+
+						data.add(first.x);
+						data.add(first.y);
+						data.add(CircuitPart.getId(pt));
+						data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(first), second));
 						
 						data.add(second.x);
 						data.add(second.y);
@@ -818,12 +830,7 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 			if (!(x < left || y < top || x > right || y > bottom)) {
 				tileentity.offX += (x - lastX);
 				tileentity.offY += (y - lastY);
-				
-				double limitX = (xSizeEditor + getAbsBoardSize())/2.0;
-				double limitY = (ySizeEditor + getAbsBoardSize())/2.0;
-				
-				tileentity.offX = MathHelper.clip(tileentity.offX, -limitX, limitX);
-				tileentity.offY = MathHelper.clip(tileentity.offY, -limitY, limitY);
+				clipOffsets();
 			}
 		}
 		
@@ -851,10 +858,22 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 	private void scaleAround(double centerX, double centerY, float from, float to) {
 		tileentity.scale = to;
 		double factor = to / from;
-		tileentity.offX = centerX + factor * (tileentity.offX - centerX); 
-		tileentity.offY = centerY + factor * (tileentity.offY - centerY); 
+		if (centerX != tileentity.offX)
+			tileentity.offX = centerX + factor * (tileentity.offX - centerX);
+		if (centerY != tileentity.offY)
+			tileentity.offY = centerY + factor * (tileentity.offY - centerY);
+		clipOffsets();
 	}
 	
+	private void clipOffsets() {
+		double innerSize = getScaleFactor() * (getBoardSize() - 2);
+		double limitX = (xSizeEditor + innerSize)/2.0;
+		double limitY = (ySizeEditor + innerSize)/2.0;
+		
+		tileentity.offX = MathHelper.clip(tileentity.offX, -limitX, limitX);
+		tileentity.offY = MathHelper.clip(tileentity.offY, -limitY, limitY);
+	}
+
 	@Override
 	public void onCallback(GuiCallback gui, Action result, int id) {
 		int w = tileentity.getCircuitData().getSize();
