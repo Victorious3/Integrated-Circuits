@@ -171,19 +171,6 @@ public class IntegratedCircuits {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) throws Exception {
-
-		// Remove exceptions concerning my interfaces, needed for OC support:
-		if (isOCLoaded) {
-			try {
-				Class transformerClazz = Class.forName("li.cil.oc.common.asm.ClassTransformer");
-				Method simpleComponentErrors = transformerClazz.getMethod("simpleComponentErrors");
-				Object buffer = simpleComponentErrors.invoke(null);
-				buffer.getClass().getMethod("$minus$eq", Object.class).invoke(buffer, "moe.nightfall.vic.integratedcircuits.compat.gateio.GPOpenComputers");
-			} catch (Throwable t) {
-				// No way...
-			}
-		}
-
 		// Initialize with reflection so that the transformer doesn't run upon
 		// constructing this class.
 		Content.blockSocket = BlockSocket.class.newInstance();
@@ -192,7 +179,7 @@ public class IntegratedCircuits {
 		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".socket");
 
 		if (isFMPLoaded) {
-			PartFactory.register(Constants.MOD_ID + ".socket_fmp", (Class<? extends TMultiPart>) Class.forName("moe.nightfall.vic.integratedcircuits.tile.FMPartGate"));
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", (Class<? extends TMultiPart>) Class.forName("moe.nightfall.vic.integratedcircuits.tile.FMPartSocket"));
 			PartFactory.initialize();
 		}
 
