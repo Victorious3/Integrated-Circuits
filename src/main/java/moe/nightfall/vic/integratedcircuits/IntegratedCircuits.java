@@ -3,12 +3,10 @@ package moe.nightfall.vic.integratedcircuits;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import cpw.mods.fml.common.ModAPIManager;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
@@ -22,6 +20,7 @@ import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
+import moe.nightfall.vic.integratedcircuits.tile.FMPartSocket;
 import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.creativetab.CreativeTabs;
@@ -40,6 +39,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.ModAPIManager;
 import cpw.mods.fml.common.ModClassLoader;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -179,7 +179,7 @@ public class IntegratedCircuits {
 		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".socket");
 
 		if (isFMPLoaded) {
-			PartFactory.register(Constants.MOD_ID + ".socket_fmp", (Class<? extends TMultiPart>) Class.forName("moe.nightfall.vic.integratedcircuits.tile.FMPartSocket"));
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartSocket.class);
 			PartFactory.initialize();
 		}
 
