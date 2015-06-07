@@ -770,11 +770,6 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							data.add(CircuitPart.getId(pt));
 							data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
 						}
-
-						data.add(first.x);
-						data.add(first.y);
-						data.add(CircuitPart.getId(pt));
-						data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(first), second));
 						
 						if (pt.isConnected(pt.getConnectedPos(second, tileentity))) {
 							Vec2 part = pt.getConnectedPos(second, tileentity);
@@ -783,6 +778,11 @@ public class GuiPCBLayout extends GuiContainer implements IGuiCallback, IHoverab
 							data.add(CircuitPart.getId(pt));
 							data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
 						}
+
+						data.add(first.x);
+						data.add(first.y);
+						data.add(CircuitPart.getId(pt));
+						data.add(pt.setConnectedPos(tileentity.getCircuitData().getMeta(first), second));
 						
 						data.add(second.x);
 						data.add(second.y);
