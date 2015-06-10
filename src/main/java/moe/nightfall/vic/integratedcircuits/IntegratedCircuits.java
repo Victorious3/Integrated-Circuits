@@ -186,7 +186,7 @@ public class IntegratedCircuits {
 		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".socket");
 
 		if (isFMPLoaded) {
-			PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartSocket.class;
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartSocket.class);
 			PartFactory.initialize();
 		}
 
