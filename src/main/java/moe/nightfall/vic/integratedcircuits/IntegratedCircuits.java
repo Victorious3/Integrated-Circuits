@@ -21,6 +21,7 @@ import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
+import moe.nightfall.vic.integratedcircuits.tile.FMPartSocket;
 import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.creativetab.CreativeTabs;
@@ -185,7 +186,7 @@ public class IntegratedCircuits {
 		GameRegistry.registerTileEntity(TileEntitySocket.class, Constants.MOD_ID + ".socket");
 
 		if (isFMPLoaded) {
-			PartFactory.register(Constants.MOD_ID + ".socket_fmp", (Class<? extends TMultiPart>) Class.forName("moe.nightfall.vic.integratedcircuits.tile.FMPartGate"));
+			PartFactory.register(Constants.MOD_ID + ".socket_fmp", FMPartSocket.class;
 			PartFactory.initialize();
 		}
 
