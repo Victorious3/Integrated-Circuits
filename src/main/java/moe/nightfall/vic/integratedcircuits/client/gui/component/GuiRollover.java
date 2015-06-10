@@ -65,18 +65,27 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		return this;
 	}
 
+	private int calcHeight(int index) {
+		int height = 5;
+		List<GuiButton> buttons = buttonMap.get(categoryList.get(index));
+		for (GuiButton button : buttons) {
+			height += button.height + 1;
+		}
+		return height;
+	}
+
 	private void moveDown(int y) {
 		moving = 1;
 		startTime = System.currentTimeMillis();
 		selected = y;
 		currentHeight = y * boxHeight;
-		nextHeight = height - 18;
+		nextHeight = calcHeight(selected);
 	}
 
 	private void moveUp() {
 		moving = -1;
 		startTime = System.currentTimeMillis();
-		currentHeight = height - 18;
+		currentHeight = nextHeight;
 		nextHeight = selected * boxHeight;
 	}
 
