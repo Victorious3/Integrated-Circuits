@@ -26,9 +26,4 @@ public class PartXORGate extends Part2I1O {
 	public Vec2 getTextureOffset(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
 		return new Vec2(9, 0);
 	}
-
-	@Override
-	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd) {
-		return fd == ForgeDirection.NORTH;
-	}
 }
