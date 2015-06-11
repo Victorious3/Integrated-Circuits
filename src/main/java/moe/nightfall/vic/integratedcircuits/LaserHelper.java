@@ -16,10 +16,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import java.util.ArrayList;
 
 public class LaserHelper {
 	private Laser[] lasers = new Laser[4];
@@ -116,6 +116,13 @@ public class LaserHelper {
 
 	public void start() {
 		te.excMatrix = new boolean[te.size][te.size];
+		te.excTargets =
+			new ArrayList<TileEntityAssembler.LaserTarget>(te.size * te.size);
+		for (int i = 0; i < te.size; i++) {
+			for (int j = 0; j < te.size; j++) {
+				te.excTargets.add(new TileEntityAssembler.LaserTarget(i, j));
+			}
+		}
 		isRunning = true;
 		for (Laser laser : lasers)
 			if (laser != null)
@@ -150,8 +157,6 @@ public class LaserHelper {
 		private TileEntityAssembler te;
 		public boolean isActive = true, isRunning = false;
 		private int lastModified;
-		private ForgeDirection direction;
-		private int step, max, turn;
 
 		private Laser(TileEntityAssembler te, int id) {
 			this.te = te;
@@ -169,10 +174,6 @@ public class LaserHelper {
 			isRunning = tag.getBoolean("isRunning");
 			x = tag.getInteger("x");
 			y = tag.getInteger("y");
-			step = tag.getInteger("step");
-			max = tag.getInteger("max");
-			turn = tag.getInteger("turn");
-			direction = ForgeDirection.getOrientation(tag.getInteger("direction"));
 		}
 
 		public NBTTagCompound writeToNBT(NBTTagCompound tag) {
@@ -180,10 +181,6 @@ public class LaserHelper {
 			tag.setBoolean("isRunning", isRunning);
 			tag.setInteger("x", x);
 			tag.setInteger("y", y);
-			tag.setInteger("step", step);
-			tag.setInteger("max", max);
-			tag.setInteger("turn", turn);
-			tag.setInteger("direction", direction.ordinal());
 			return tag;
 		}
 
@@ -233,8 +230,10 @@ public class LaserHelper {
 		}
 
 		public void findNext() {
-			while (isRunning) {
-				if (!te.excMatrix[x][y]) {
+			te.sortExcTargets(x, y, id);
+			int i = 0;
+			while(isRunning) {
+				if(!te.excMatrix[x][y]) {
 					// Check if the items needed to craft the selected part are
 					// supplied
 					Vec2 pos = new Vec2(x, y);
@@ -261,24 +260,17 @@ public class LaserHelper {
 					}
 				}
 
-				x += direction.offsetX;
-				y += direction.offsetZ;
-
-				step--;
 				te.laserHelper.position++;
 
-				if (step <= 0) {
-					turn++;
-					step = max;
-					direction = MiscUtils.rot(direction);
-					if (turn == 2) {
-						max--;
-						turn = 0;
-						if (max < 0) {
-							isRunning = false;
-							reset();
-						}
-					}
+				if (i >= te.excTargets.size()) {
+					isRunning = false;
+					reset();
+				} else {
+					final TileEntityAssembler.LaserTarget tgt = te.excTargets.get(i);
+					x = tgt.x;
+					y = tgt.y;
+					te.excTargets.set(i, tgt.invalid);
+					i++;
 				}
 			}
 		}
@@ -308,10 +300,6 @@ public class LaserHelper {
 		}
 
 		public void reset() {
-			step = te.size - 1;
-			max = te.size - 1;
-			turn = 0;
-
 			x = 0;
 			y = 0;
 
@@ -325,21 +313,6 @@ public class LaserHelper {
 					break;
 				case 3:
 					y = te.size - 1;
-					break;
-			}
-
-			switch (id) {
-				case 0:
-					direction = ForgeDirection.WEST;
-					break;
-				case 1:
-					direction = ForgeDirection.SOUTH;
-					break;
-				case 2:
-					direction = ForgeDirection.EAST;
-					break;
-				default:
-					direction = ForgeDirection.NORTH;
 					break;
 			}
 
