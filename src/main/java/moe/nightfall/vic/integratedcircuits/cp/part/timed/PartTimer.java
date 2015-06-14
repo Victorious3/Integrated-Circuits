@@ -57,7 +57,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
 		boolean b = invertProperty(pos, parent, PROP_OUT);
-		setDelay(pos, parent, b ? getConfigurableDelay(pos, parent) : resetDelay);
+		setDelay(pos, parent, b ? resetDelay : getConfigurableDelay(pos, parent));
 		super.onDelay(pos, parent);
 	}
 
