@@ -21,13 +21,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
 	public final IntProperty PROP_DELAY = new IntProperty("DELAY", stitcher, 255);
 
-	@Override
-	protected int getDelay(Vec2 pos, ICircuit parent) {
-		if (!getProperty(pos, parent, PROP_OUT))
-			return getConfigurableDelay(pos, parent);
-		else
-			return 2;
-	}
+	static final int resetDelay = 2;
 
 	@Override
 	public int getConfigurableDelay(Vec2 pos, ICircuit parent) {
@@ -44,7 +38,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 		setState(pos, parent, 10 << 16);
 		updateInput(pos, parent);
 		if (!getInputFromSide(pos, parent, ForgeDirection.SOUTH))
-			setDelay(pos, parent, true);
+			setDelay(pos, parent, getConfigurableDelay(pos, parent));
 	}
 
 	@Override
@@ -54,16 +48,16 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 			return;
 		setProperty(pos, parent, PROP_OUT, false);
 		if (getInputFromSide(pos, parent, side)) {
-			setDelay(pos, parent, false);
+			setDelay(pos, parent, 0);
 			notifyNeighbours(pos, parent);
 		} else
-			setDelay(pos, parent, true);
+			setDelay(pos, parent, getConfigurableDelay(pos, parent));
 	}
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
-		invertProperty(pos, parent, PROP_OUT);
-		setDelay(pos, parent, true);
+		boolean b = invertProperty(pos, parent, PROP_OUT);
+		setDelay(pos, parent, b ? getConfigurableDelay(pos, parent) : resetDelay);
 		super.onDelay(pos, parent);
 	}
 

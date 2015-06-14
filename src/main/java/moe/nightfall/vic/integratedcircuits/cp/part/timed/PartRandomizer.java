@@ -17,21 +17,18 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartRandomizer extends PartDelayedAction {
 	public final IntProperty PROP_RANDOM = new IntProperty("RANDOM", stitcher, 7);
 
-	@Override
-	protected int getDelay(Vec2 pos, ICircuit parent) {
-		return 2;
-	}
+	static final int actionDelay = 2;
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
-		setDelay(pos, parent, true);
+		setDelay(pos, parent, actionDelay);
 	}
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
 		setProperty(pos, parent, PROP_RANDOM, new Random().nextInt(7));
 		notifyNeighbours(pos, parent);
-		setDelay(pos, parent, true);
+		setDelay(pos, parent, actionDelay);
 	}
 
 	@Override
@@ -63,10 +60,10 @@ public class PartRandomizer extends PartDelayedAction {
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if (s2 != ForgeDirection.SOUTH)
 			return;
-		if (!getInputFromSide(pos, parent, side))
-			setDelay(pos, parent, false);
+		if (getInputFromSide(pos, parent, side))
+			setDelay(pos, parent, actionDelay);
 		else
-			setDelay(pos, parent, true);
+			setDelay(pos, parent, 0);
 	}
 
 	@Override

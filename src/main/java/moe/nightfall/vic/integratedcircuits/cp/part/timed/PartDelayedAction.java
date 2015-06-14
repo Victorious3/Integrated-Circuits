@@ -11,8 +11,6 @@ public abstract class PartDelayedAction extends PartCPGate {
 	public final BooleanProperty PROP_ACTIVE = new BooleanProperty("ACTIVE", stitcher);
 	public final IntProperty PROP_CURRENT_DELAY = new IntProperty("CURRENT_DELAY", stitcher, 255);
 
-	protected abstract int getDelay(Vec2 pos, ICircuit parent);
-
 	public int getCurrentDelay(Vec2 pos, ICircuit parent) {
 		return getProperty(pos, parent, PROP_CURRENT_DELAY);
 	}
@@ -37,10 +35,10 @@ public abstract class PartDelayedAction extends PartCPGate {
 		notifyNeighbours(pos, parent);
 	}
 
-	protected void setDelay(Vec2 pos, ICircuit parent, boolean delay) {
-		setProperty(pos, parent, PROP_CURRENT_DELAY, getDelay(pos, parent));
-		setProperty(pos, parent, PROP_ACTIVE, delay);
-		if (delay)
+	protected void setDelay(Vec2 pos, ICircuit parent, int delay) {
+		setProperty(pos, parent, PROP_CURRENT_DELAY, delay);
+		setProperty(pos, parent, PROP_ACTIVE, delay == 0 ? false : true);
+		if (delay != 0)
 			scheduleTick(pos, parent);
 	}
 }

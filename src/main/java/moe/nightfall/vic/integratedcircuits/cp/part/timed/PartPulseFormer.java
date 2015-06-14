@@ -11,6 +11,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartPulseFormer extends PartDelayedAction {
 	public BooleanProperty PROP_OUTPUT = new BooleanProperty("OUTPUT", stitcher);
 
+	static final int actionDelay = 2;
+
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
@@ -19,7 +21,7 @@ public class PartPulseFormer extends PartDelayedAction {
 		if (getInputFromSide(pos, parent, side)) {
 			setProperty(pos, parent, PROP_OUTPUT, true);
 			notifyNeighbours(pos, parent);
-			setDelay(pos, parent, true);
+			setDelay(pos, parent, actionDelay);
 		}
 	}
 
@@ -41,11 +43,6 @@ public class PartPulseFormer extends PartDelayedAction {
 	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		ForgeDirection f2 = toInternal(pos, parent, side);
 		return f2 == ForgeDirection.NORTH || f2 == ForgeDirection.SOUTH;
-	}
-
-	@Override
-	protected int getDelay(Vec2 pos, ICircuit parent) {
-		return 2;
 	}
 
 	@Override

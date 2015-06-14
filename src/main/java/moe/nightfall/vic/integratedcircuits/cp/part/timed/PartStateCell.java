@@ -21,6 +21,8 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 	private final BooleanProperty PROP_OUT_WEST = new BooleanProperty("OUT_WEST", stitcher);
 	private final BooleanProperty PROP_OUT_NORTH = new BooleanProperty("OUT_NORTH", stitcher);
 
+	static final int pulseDelay = 2;
+
 	@Override
 	public int getConfigurableDelay(Vec2 pos, ICircuit parent) {
 		return getProperty(pos, parent, PROP_DELAY);
@@ -32,19 +34,12 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 	}
 
 	@Override
-	protected int getDelay(Vec2 pos, ICircuit parent) {
-		if (getProperty(pos, parent, PROP_OUT_NORTH))
-			return 2;
-		return getConfigurableDelay(pos, parent);
-	}
-
-	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.WEST && getProperty(pos, parent, PROP_OUT_WEST))
-			return true;
-		if (s2 == ForgeDirection.NORTH && getProperty(pos, parent, PROP_OUT_NORTH))
-			return true;
+		if (s2 == ForgeDirection.WEST)
+			return getProperty(pos, parent, PROP_OUT_WEST);
+		if (s2 == ForgeDirection.NORTH)
+			return getProperty(pos, parent, PROP_OUT_NORTH);
 		return false;
 	}
 
@@ -61,7 +56,7 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 		else if (getProperty(pos, parent, PROP_OUT_WEST)) {
 			setProperty(pos, parent, PROP_OUT_WEST, false);
 			setProperty(pos, parent, PROP_OUT_NORTH, true);
-			setDelay(pos, parent, true);
+			setDelay(pos, parent, pulseDelay);
 		}
 		super.onDelay(pos, parent);
 	}
@@ -80,14 +75,14 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 				setProperty(pos, parent, PROP_OUT_WEST, true);
 				setProperty(pos, parent, PROP_OUT_NORTH, false);
 				notifyNeighbours(pos, parent);
+				setDelay(pos, parent, 0);
 			} else if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)))
-				setDelay(pos, parent, true);
+				setDelay(pos, parent, getConfigurableDelay(pos, parent));
 		} else if (s2 == ForgeDirection.EAST && getProperty(pos, parent, PROP_OUT_WEST)) {
 			if (getInputFromSide(pos, parent, side))
-				setDelay(pos, parent, false);
+				setDelay(pos, parent, 0);
 			else if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
-				setDelay(pos, parent, true);
-			notifyNeighbours(pos, parent);
+				setDelay(pos, parent, getConfigurableDelay(pos, parent));
 		}
 	}
 
