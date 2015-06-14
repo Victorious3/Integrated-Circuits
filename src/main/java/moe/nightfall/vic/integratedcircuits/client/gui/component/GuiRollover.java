@@ -66,8 +66,8 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	}
 
 	private int calcHeight(int index) {
-		int height = 5;
 		List<GuiButton> buttons = buttonMap.get(categoryList.get(index));
+		int height = buttons.size() > 0 ? 10 : 0;
 		for (GuiButton button : buttons) {
 			height += button.height + 1;
 		}
@@ -78,7 +78,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		moving = 1;
 		startTime = System.currentTimeMillis();
 		selected = y;
-		currentHeight = y * boxHeight;
+		currentHeight = 0;
 		nextHeight = calcHeight(selected);
 	}
 
@@ -86,7 +86,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		moving = -1;
 		startTime = System.currentTimeMillis();
 		currentHeight = nextHeight;
-		nextHeight = selected * boxHeight;
+		nextHeight = 0;
 	}
 
 	@Override
@@ -101,75 +101,54 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 
 		this.field_146123_n = mx >= this.xPosition && my >= this.yPosition && mx < this.xPosition + this.width && my < this.yPosition + this.height;
 		double interpolate = MathHelper.clamp_double((System.currentTimeMillis() - startTime) / timeToOpen, 0, 1);
+		int height = (int) (interpolate * (nextHeight - currentHeight)) + currentHeight;
 
-		int offset = boxHeight - (int) (interpolate * boxHeight) * moving;
-		if (moving == -1) {
-			offset -= boxHeight;
-		}
-
-		int j = 0;
 		mc.renderEngine.bindTexture(buttonTextures);
 		for (int i = 0; i < categoryMap.size(); i++) {
-			if (i != selected) {
-				int ypos = yPosition + j * boxHeight;
-				if (i > selected && moving != 0)
-					ypos += offset;
-				int iconOffset = 66;
-				if (field_146123_n && my > ypos && my < ypos + boxHeight)
-					iconOffset = 86;
-				GuiUtils.drawContinuousTexturedBox(xPosition, ypos, 0, iconOffset, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
-				j++;
-			}
+			int ypos = yPosition + i * boxHeight;
+			if (i >= selected)
+				ypos += height;
+			int iconOffset = 66;
+			if (i == selected || (field_146123_n && my > ypos && my < ypos + boxHeight))
+				iconOffset = 86;
+			GuiUtils.drawContinuousTexturedBox(xPosition, ypos, 0, iconOffset, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
 		}
 
-		j = 0;
 		mc.renderEngine.bindTexture(resource);
 		Iterator<Vec2> iterator = categoryMap.values().iterator();
 		for (int i = 0; i < categoryMap.size(); i++) {
 			Vec2 value = iterator.next();
-			if (i != selected) {
-				int ypos = yPosition + j * boxHeight;
-				if (i > selected && moving != 0)
-					ypos += offset;
-				drawTexturedModalRect(xPosition, ypos, value.x, value.y, 16, 16);
-				j++;
-			}
-		}
-
-		int height = (int) (interpolate * (nextHeight - currentHeight)) + currentHeight;
-		if (moving != 0 || selected != -1) {
-
-			Vec2 value = categoryMap.get(categoryList.get(selected));
-			GuiUtils.drawContinuousTexturedBox(buttonTextures, xPosition, yPosition + height, 0, 86, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
-			mc.renderEngine.bindTexture(resource);
-			drawTexturedModalRect(xPosition, yPosition + height, value.x, value.y, 16, 16);
+			int ypos = yPosition + i * boxHeight;
+			if (i >= selected)
+				ypos += height;
+			drawTexturedModalRect(xPosition, ypos, value.x, value.y, 16, 16);
 		}
 
 		if (selected != -1) {
 			GL11.glTranslatef(0, 0, -5);
 
-			double interpolate2 = interpolate;
-			if (moving == -1) {
-				interpolate2 = 1 - interpolate2;
-			}
-
 			// draw buttons
 			List<GuiButton> buttons = buttonMap.get(categoryList.get(selected));
-			int buttonOffset = (int) (5 * interpolate2);
-			
-			for (GuiButton button : buttons) {
-				int i = (button.height + 1);
-				buttonOffset += i * interpolate2;
-				button.yPosition = xPosition + height - buttonOffset;
-				button.xPosition = xPosition;
 
+			double interpolate2 = interpolate;
+			int height2 = moving == -1 ? currentHeight : nextHeight;
+			if (moving == -1) {
+				interpolate2 = 1 - interpolate;
+			}
+
+			int buttonOffset = (int) (height2 - Math.floor(boxHeight * interpolate2));
+
+			for (GuiButton button : buttons) {
+				buttonOffset += (button.height + 1) * interpolate2;
+				button.yPosition = yPosition + buttonOffset - 5;
+				button.xPosition = xPosition + 5;
 				button.drawButton(Minecraft.getMinecraft(), mx, my);
 			}
 			
 			GL11.glTranslatef(0, 0, -5);
 			if (buttons.size() > 0) {
 				// draw bridge
-				GuiUtils.drawContinuousTexturedBox(buttonTextures, xPosition + width / 2 - 5, yPosition + height - buttonOffset - (int) (5 * interpolate2), 0, 66, 12, buttonOffset + boxHeight, 200, 20, 2, 3, 2, 2, this.zLevel);
+				GuiUtils.drawContinuousTexturedBox(buttonTextures, xPosition + width / 2 - 5, yPosition + height2 - 8, 0, 66, 12, height, 200, 20, 2, 3, 2, 2, this.zLevel);
 			}
 			
 			GL11.glTranslatef(0, 0, 10);
@@ -207,12 +186,18 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 
 		// Exclude clicking in-between the buttons
 		float fy = (my - yPosition) / (float) boxHeight;
+		if (selected != -1 && fy > selected) {
+			fy = (my - yPosition - nextHeight - selected * boxHeight) / (float) boxHeight;
+			fy += selected;
+			if (fy < selected)
+				return false;
+			System.out.println(fy);
+		}
+
 		if (fy - Math.floor(fy) > (16F / boxHeight))
 			return false;
 
 		int y = (int) fy;
-		if (selected != -1 && y >= selected)
-			y++;
 
 		if (y != selected && y < categoryMap.size()) {
 			if (selected != -1) {
@@ -221,11 +206,11 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 			} else {
 				moveDown(y);
 			}
-		} else if (my > xPosition + height - 18 && selected != -1) {
+		} else if (y == selected) {
 			moveUp();
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override
