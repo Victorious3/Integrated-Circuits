@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import moe.nightfall.vic.integratedcircuits.Content;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
@@ -15,6 +16,7 @@ import moe.nightfall.vic.integratedcircuits.misc.InventoryUtils;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
@@ -481,11 +483,20 @@ public class Socket implements ISocket {
 				}
 			}
 
-			String name = stack.getItem().getUnlocalizedName();
-			if (stack.getItem() == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
-					|| name.equals("item.bluepower:screwdriver") || name.equals("item.projectred.core.screwdriver")) {
+			Item item = stack.getItem();
+			String name = item.getUnlocalizedName();
+
+			// FIXME: Some screwdrivers don't seem to work... they seem to be the fault of the other mods, though.
+			// Is it a tool?
+			// Does it rotate already?
+			boolean toolRotate = (IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
+							  || (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench);
+			boolean tool = (IntegratedCircuits.isPRLoaded && item instanceof mrtjp.projectred.api.IScrewdriver)
+						|| item == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
+				        || toolRotate;
+			if (tool) {
 				if (!getWorld().isRemote && gate != null) {
-					if (!player.isSneaking())
+					if (!player.isSneaking() && !toolRotate)
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
@@ -493,20 +504,25 @@ public class Socket implements ISocket {
 				stack.damageItem(1, player);
 				return true;
 			}
+
+
 		}
 		if (gate != null)
 			return gate.activate(player, hit, stack);
 		return false;
 	}
 
-	private void rotate() {
+	@Override
+	public boolean rotate() {
 		setRotation((getRotation() + 1) % 4);
-		getWriteStream(0).writeByte(orientation);
+		if (!getWorld().isRemote)
+			getWriteStream(0).writeByte(orientation);
 		notifyBlocksAndChanges();
-		if (gate != null) {
+		if (gate != null && !getWorld().isRemote) {
 			gate.onRotated();
 			updateInput();
 		}
+		return true;
 	}
 
 	@Override

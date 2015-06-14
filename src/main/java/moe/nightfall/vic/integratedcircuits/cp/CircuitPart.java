@@ -237,17 +237,19 @@ public abstract class CircuitPart {
 		updateInput(pos, parent);
 	}
 
+	public void scheduleInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		parent.getCircuitData().scheduleInputChange(pos, side);
+	}
+
 	/** Check every side to update the internal buffer **/
 	public final void updateInput(Vec2 pos, ICircuit parent) {
 		int input = 0;
 		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.NORTH) != null ? getNeighbourOnSide(pos, parent,
 				ForgeDirection.NORTH).getOutputToSide(pos.offset(ForgeDirection.NORTH), parent, ForgeDirection.SOUTH) ? 1
-				: 0
-				: 0) << 3;
+				: 0 : 0) << 3;
 		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.SOUTH) != null ? getNeighbourOnSide(pos, parent,
 				ForgeDirection.SOUTH).getOutputToSide(pos.offset(ForgeDirection.SOUTH), parent, ForgeDirection.NORTH) ? 1
-				: 0
-				: 0) << 2;
+				: 0 : 0) << 2;
 		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.WEST) != null ? getNeighbourOnSide(pos, parent,
 				ForgeDirection.WEST).getOutputToSide(pos.offset(ForgeDirection.WEST), parent, ForgeDirection.EAST) ? 1
 				: 0 : 0) << 1;
@@ -267,12 +269,13 @@ public abstract class CircuitPart {
 			Vec2 pos2 = pos.offset(fd);
 			CircuitPart part = getNeighbourOnSide(pos, parent, fd);
 
-			boolean b = canConnectToSide(pos, parent, fd) && part.canConnectToSide(pos2, parent, fd.getOpposite())
+			if (part != null) {
+				boolean b = canConnectToSide(pos, parent, fd) && part.canConnectToSide(pos2, parent, fd.getOpposite())
 					&& getOutputToSide(pos, parent, fd) != part.getInputFromSide(pos2, parent, fd.getOpposite());
-
-			if (part != null && b) {
-				part.onInputChange(pos2, parent, fd.getOpposite());
-				part.markForUpdate(pos2, parent);
+				if (b) {
+					part.scheduleInputChange(pos2, parent, fd.getOpposite());
+					part.markForUpdate(pos2, parent);
+				}
 			}
 
 			markForUpdate(pos, parent);

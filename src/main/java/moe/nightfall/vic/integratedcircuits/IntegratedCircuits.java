@@ -3,7 +3,6 @@ package moe.nightfall.vic.integratedcircuits;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -40,6 +39,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.ModAPIManager;
 import cpw.mods.fml.common.ModClassLoader;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -65,6 +65,9 @@ public class IntegratedCircuits {
 	public static boolean isOCLoaded = false;
 	public static boolean isCCLoaded = false;
 	public static boolean isNEILoaded = false;
+	// TODO BETTER NAME?
+	public static boolean isBCToolsAPIThere = false;
+	public static boolean isBPAPIThere = false;
 
 	public static boolean developmentEnvironment;
 	public static Logger logger;
@@ -103,13 +106,16 @@ public class IntegratedCircuits {
 		logger.info("Searching for compatible mods");
 		logger.info("ProjRed|Transmission: " + (isPRLoaded = Loader.isModLoaded("ProjRed|Transmission")));
 		logger.info("armourersWorkshop: " + (isAWLoaded = Loader.isModLoaded("armourersWorkshop")));
-		logger.info("bluepower: " + (isBPLoaded = Loader.isModLoaded("bluepower")));
+		logger.info("BluePower: " + (isBPLoaded = Loader.isModLoaded("bluepower")));
 		logger.info("ForgeMultipart: " + (isFMPLoaded = Loader.isModLoaded("ForgeMultipart")));
 		logger.info("RedLogic: " + (isRLLoaded = Loader.isModLoaded("RedLogic")));
 		logger.info("MineFactoryReloaded: " + (isMFRLoaded = Loader.isModLoaded("MineFactoryReloaded")));
 		logger.info("Open Computers: " + (isOCLoaded = Loader.isModLoaded("OpenComputers")));
 		logger.info("Computer Craft: " + (isCCLoaded = Loader.isModLoaded("ComputerCraft")));
 		logger.info("Not Enough Items: " + (isNEILoaded = Loader.isModLoaded("NotEnoughItems")));
+		logger.info("Searching for compatible APIs");
+		logger.info("BuildCraft Tools API: " + (isBCToolsAPIThere = ModAPIManager.INSTANCE.hasAPI("BuildCraftAPI|tools")));
+		logger.info("BluePower API: " + (isBPAPIThere = ModAPIManager.INSTANCE.hasAPI("bluepowerAPI")));
 
 		if (isFMPLoaded)
 			logger.info("Forge Multi Part installation found! FMP Compatible gates will be added.");
@@ -165,19 +171,6 @@ public class IntegratedCircuits {
 
 	@EventHandler
 	public void init(FMLInitializationEvent event) throws Exception {
-
-		// Remove exceptions concerning my interfaces, needed for OC support:
-		if (isOCLoaded) {
-			try {
-				Class transformerClazz = Class.forName("li.cil.oc.common.asm.ClassTransformer");
-				Method simpleComponentErrors = transformerClazz.getMethod("simpleComponentErrors");
-				Object buffer = simpleComponentErrors.invoke(null);
-				buffer.getClass().getMethod("$minus$eq", Object.class).invoke(buffer, "moe.nightfall.vic.integratedcircuits.compat.gateio.GPOpenComputers");
-			} catch (Throwable t) {
-				// No way...
-			}
-		}
-
 		// Initialize with reflection so that the transformer doesn't run upon
 		// constructing this class.
 		Content.blockSocket = BlockSocket.class.newInstance();

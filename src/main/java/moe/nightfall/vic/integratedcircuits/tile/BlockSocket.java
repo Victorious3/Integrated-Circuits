@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import codechicken.lib.vec.Cuboid6;
 
 import com.google.common.collect.Lists;
+import net.minecraftforge.common.util.ForgeDirection;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -57,6 +58,12 @@ public class BlockSocket extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	public boolean addDestroyEffects(World world, int x, int y, int z, int meta, EffectRenderer effectRenderer) {
 		return true;
+	}
+
+	@Override
+	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+		return !world.isRemote &&
+			((TileEntitySocket) world.getTileEntity(x, y, z)).getSocket().rotate();
 	}
 
 	@Override

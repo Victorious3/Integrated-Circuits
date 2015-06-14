@@ -5,6 +5,7 @@ import li.cil.oc.api.machine.Context;
 import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SidedComponent;
 import li.cil.oc.api.network.SimpleComponent;
+import li.cil.oc.api.network.SimpleComponent.SkipInjection;
 import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGatePeripheralProvider;
 import moe.nightfall.vic.integratedcircuits.gate.peripheral.GatePeripheral;
@@ -13,6 +14,7 @@ import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
 import cpw.mods.fml.common.Optional.Method;
 
+@SkipInjection
 @InterfaceList({
 		@Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers"),
 		@Interface(iface = "li.cil.oc.api.network.SidedComponent", modid = "OpenComputers"),
