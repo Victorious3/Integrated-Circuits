@@ -1,7 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.cp.part.cell;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartSimpleGate;
@@ -9,6 +7,8 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartANDCell extends PartSimpleGate {
 	@Override
@@ -21,8 +21,7 @@ public class PartANDCell extends PartSimpleGate {
 		super.onInputChange(pos, parent, side);
 		ForgeDirection fd = toInternal(pos, parent, side);
 		if (fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH)
-			getNeighbourOnSide(pos, parent, side.getOpposite()).onInputChange(pos.offset(side.getOpposite()), parent,
-					side);
+			getNeighbourOnSide(pos, parent, side.getOpposite()).scheduleInputChange(pos.offset(side.getOpposite()), parent, side);
 		markForUpdate(pos, parent);
 	}
 

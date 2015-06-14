@@ -2,7 +2,9 @@ package moe.nightfall.vic.integratedcircuits.cp;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
@@ -25,11 +27,15 @@ import com.google.common.primitives.Ints;
  * internal arrays if you use them outside of the tick loop.
  */
 public class CircuitData implements Cloneable {
+
 	private int size;
 	private int[][] meta;
 	private int[][] id;
+
 	private HashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
 	private HashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
+	private HashMap<Vec2, Integer> inputQueue = new LinkedHashMap<Vec2, Integer>();
+
 	private boolean hasChanged;
 
 	private CraftingAmount cost;
@@ -39,6 +45,7 @@ public class CircuitData implements Cloneable {
 	private boolean queueEnabled = true;
 	private CircuitProperties prop = new CircuitProperties();
 
+	// private constructor for cloning
 	private CircuitData() {
 	};
 
@@ -47,8 +54,7 @@ public class CircuitData implements Cloneable {
 		this.size = size;
 	}
 
-	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule,
-			CircuitProperties prop) {
+	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule, CircuitProperties prop) {
 		this.parent = parent;
 		this.prop = prop;
 		this.size = size;
@@ -71,7 +77,7 @@ public class CircuitData implements Cloneable {
 		clone.cost = cost;
 		clone.parent = parent;
 		clone.prop = prop;
-		clone.setChanged(hasChanged);
+		clone.hasChanged = hasChanged;
 
 		for (int i = 0; i < size; i++)
 			clone.id[i] = id[i].clone();
@@ -254,7 +260,6 @@ public class CircuitData implements Cloneable {
 			return CircuitPart.getPart(PartNull.class);
 		CircuitPart part = CircuitPart.getPart(id[pos.x][pos.y]);
 		if (part == null) {
-			// TODO: More information?
 			IntegratedCircuits.logger.warn("Removed circuit part! " + pos);
 			setID(pos, 0);
 			setMeta(pos, 0);
@@ -267,6 +272,11 @@ public class CircuitData implements Cloneable {
 		tickSchedule.add(pos);
 	}
 
+	public void scheduleInputChange(Vec2 pos, ForgeDirection side) {
+		int val = inputQueue.containsKey(pos) ? inputQueue.get(pos) : 0;
+		inputQueue.put(pos, val |= 1 << side.ordinal());
+	}
+
 	public void markForUpdate(Vec2 pos) {
 		if (!queueEnabled)
 			return;
@@ -274,11 +284,29 @@ public class CircuitData implements Cloneable {
 	}
 
 	public synchronized void updateMatrix() {
-		LinkedHashSet<Vec2> tmp = (LinkedHashSet<Vec2>) tickSchedule.clone();
+		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
 		tickSchedule.clear();
+
+		// first iteration
 		for (Vec2 v : tmp) {
 			getPart(v).onScheduledTick(v, parent);
 		}
+
+		// second iteration
+		while (inputQueue.size() > 0) {
+			HashMap<Vec2, Integer> tmp2 = (HashMap<Vec2, Integer>) inputQueue.clone();
+			inputQueue.clear();
+			for (Vec2 vec : tmp2.keySet()) {
+				int val = tmp2.get(vec);
+				for (ForgeDirection fd : ForgeDirection.values()) {
+					if (val >> fd.ordinal() != 0) {
+						getPart(vec).onInputChange(vec, parent, fd);
+					}
+				}
+			}
+		}
+
+		// third iteration
 		for (int x = 0; x < size; x++) {
 			for (int y = 0; y < size; y++) {
 				Vec2 pos = new Vec2(x, y);

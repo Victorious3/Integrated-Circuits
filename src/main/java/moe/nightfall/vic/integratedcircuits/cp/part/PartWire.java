@@ -84,7 +84,6 @@ public class PartWire extends CircuitPart {
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		super.onInputChange(pos, parent, side);
-		System.out.println(pos + " " + Integer.toBinaryString(getProperty(pos, parent, PROP_INPUT)));
 		notifyNeighbours(pos, parent);
 	}
 

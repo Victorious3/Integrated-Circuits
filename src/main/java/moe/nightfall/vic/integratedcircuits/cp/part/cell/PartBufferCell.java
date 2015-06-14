@@ -1,12 +1,12 @@
 package moe.nightfall.vic.integratedcircuits.cp.part.cell;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartSimpleGate;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraftforge.common.util.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartBufferCell extends PartSimpleGate {
 	@Override
@@ -18,7 +18,7 @@ public class PartBufferCell extends PartSimpleGate {
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		super.onInputChange(pos, parent, side);
 		ForgeDirection dir = toInternal(pos, parent, side);
-		getNeighbourOnSide(pos, parent, side.getOpposite()).onInputChange(pos.offset(side.getOpposite()), parent, side);
+		getNeighbourOnSide(pos, parent, side.getOpposite()).scheduleInputChange(pos.offset(side.getOpposite()), parent, side);
 		markForUpdate(pos, parent);
 	}
 
