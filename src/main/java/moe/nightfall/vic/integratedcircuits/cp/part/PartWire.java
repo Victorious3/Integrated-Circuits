@@ -1,5 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.cp.part;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
@@ -13,9 +16,6 @@ import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 public class PartWire extends CircuitPart {
 	public final IntProperty PROP_COLOR = new IntProperty("COLOR", stitcher, 2);
@@ -84,6 +84,7 @@ public class PartWire extends CircuitPart {
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		super.onInputChange(pos, parent, side);
+		System.out.println(pos + " " + Integer.toBinaryString(getProperty(pos, parent, PROP_INPUT)));
 		notifyNeighbours(pos, parent);
 	}
 

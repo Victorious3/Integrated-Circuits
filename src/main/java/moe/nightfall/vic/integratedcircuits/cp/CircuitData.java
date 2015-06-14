@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.cp;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
@@ -27,8 +28,8 @@ public class CircuitData implements Cloneable {
 	private int size;
 	private int[][] meta;
 	private int[][] id;
-	private LinkedHashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
-	private LinkedHashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
+	private HashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
+	private HashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	private boolean hasChanged;
 
 	private CraftingAmount cost;
@@ -78,9 +79,9 @@ public class CircuitData implements Cloneable {
 			clone.meta[i] = meta[i].clone();
 
 		for (Vec2 vec : tickSchedule)
-			clone.tickSchedule.add(vec.clone());
+			clone.tickSchedule.add(vec);
 		for (Vec2 vec : updateQueue)
-			clone.tickSchedule.add(vec.clone());
+			clone.tickSchedule.add(vec);
 
 		return clone;
 	}
@@ -263,13 +264,13 @@ public class CircuitData implements Cloneable {
 	}
 
 	public void scheduleTick(Vec2 pos) {
-		tickSchedule.add(pos.clone());
+		tickSchedule.add(pos);
 	}
 
 	public void markForUpdate(Vec2 pos) {
 		if (!queueEnabled)
 			return;
-		updateQueue.add(pos.clone());
+		updateQueue.add(pos);
 	}
 
 	public synchronized void updateMatrix() {

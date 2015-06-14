@@ -242,12 +242,10 @@ public abstract class CircuitPart {
 		int input = 0;
 		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.NORTH) != null ? getNeighbourOnSide(pos, parent,
 				ForgeDirection.NORTH).getOutputToSide(pos.offset(ForgeDirection.NORTH), parent, ForgeDirection.SOUTH) ? 1
-				: 0
-				: 0) << 3;
+				: 0 : 0) << 3;
 		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.SOUTH) != null ? getNeighbourOnSide(pos, parent,
 				ForgeDirection.SOUTH).getOutputToSide(pos.offset(ForgeDirection.SOUTH), parent, ForgeDirection.NORTH) ? 1
-				: 0
-				: 0) << 2;
+				: 0 : 0) << 2;
 		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.WEST) != null ? getNeighbourOnSide(pos, parent,
 				ForgeDirection.WEST).getOutputToSide(pos.offset(ForgeDirection.WEST), parent, ForgeDirection.EAST) ? 1
 				: 0 : 0) << 1;
