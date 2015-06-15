@@ -280,7 +280,7 @@ public class CircuitData implements Cloneable {
 
 	public void togglePostponedInputChange(Vec2 pos, ForgeDirection side) {
 		int val = postponedInputChanges.containsKey(pos) ? postponedInputChanges.get(pos) : 0;
-		inputQueue.put(pos, val ^= 1 << side.ordinal());
+		postponedInputChanges.put(pos, val ^= 1 << side.ordinal());
 	}
 
 	public void markForUpdate(Vec2 pos) {
