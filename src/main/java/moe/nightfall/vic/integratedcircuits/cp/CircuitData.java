@@ -35,6 +35,7 @@ public class CircuitData implements Cloneable {
 	private HashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
 	private HashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	private HashMap<Vec2, Integer> inputQueue = new LinkedHashMap<Vec2, Integer>();
+	private HashMap<Vec2, Integer> plannedInputUpdates = new LinkedHashMap<Vec2, Integer>();
 
 	private boolean hasChanged;
 
@@ -271,10 +272,15 @@ public class CircuitData implements Cloneable {
 	public void scheduleTick(Vec2 pos) {
 		tickSchedule.add(pos);
 	}
-
+	
 	public void scheduleInputChange(Vec2 pos, ForgeDirection side) {
 		int val = inputQueue.containsKey(pos) ? inputQueue.get(pos) : 0;
 		inputQueue.put(pos, val |= 1 << side.ordinal());
+	}
+
+	public void togglePlannedInputUpdate(Vec2 pos, ForgeDirection side) {
+		int val = plannedInputUpdates.containsKey(pos) ? plannedInputUpdates.get(pos) : 0;
+		inputQueue.put(pos, val ^= 1 << side.ordinal());
 	}
 
 	public void markForUpdate(Vec2 pos) {
@@ -284,15 +290,14 @@ public class CircuitData implements Cloneable {
 	}
 
 	public synchronized void updateMatrix() {
+		// Scheduled ticks
 		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
 		tickSchedule.clear();
-
-		// first iteration
 		for (Vec2 v : tmp) {
 			getPart(v).onScheduledTick(v, parent);
 		}
 
-		// second iteration
+		// Instantaneous signal propagation
 		while (inputQueue.size() > 0) {
 			HashMap<Vec2, Integer> tmp2 = (HashMap<Vec2, Integer>) inputQueue.clone();
 			inputQueue.clear();
@@ -305,14 +310,20 @@ public class CircuitData implements Cloneable {
 				}
 			}
 		}
-
-		// third iteration
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				Vec2 pos = new Vec2(x, y);
-				getPart(pos).onTick(pos, parent);
+				
+		// Planned synchronous input updates
+		// Gates must not call updateInputs or togglePlannnedInputUpdate there
+		for (Vec2 vec : plannedInputUpdates.keySet()) {
+			int val = plannedInputUpdates.get(vec);
+			for (ForgeDirection fd : ForgeDirection.values()) {
+				if (((val >> fd.ordinal()) & 1) != 0) {
+					getPart(vec).onPlannedInputUpdate(vec, parent, fd);
+				}
 			}
 		}
+
+		// These do not propagate between ticks
+		plannedInputUpdates.clear();
 	}
 
 	public static CircuitData readFromNBT(NBTTagCompound compound) {

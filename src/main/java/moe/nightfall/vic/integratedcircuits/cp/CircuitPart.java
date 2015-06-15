@@ -173,17 +173,20 @@ public abstract class CircuitPart {
 		notifyNeighbours(pos, parent);
 	}
 
-	// TODO Isn't really used anywhere. Leaving the iteration in doesn't make
-	// much sense, but maybe the repeater could make use of it.
-	@Deprecated
-	public void onTick(Vec2 pos, ICircuit parent) {
-	}
-
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+	}
+	
+	public void onPlannedInputUpdate(Vec2 pos, ICircuit parent, ForgeDirection side) {
 	}
 
 	public final void scheduleTick(Vec2 pos, ICircuit parent) {
 		parent.getCircuitData().scheduleTick(pos);
+	}
+
+	// Pass all the updates you want to process synchronously there.
+	// Make sure you ALWAYS do so, if you do, because it TOGGLES and not sets.
+	public final void togglePlannedInputUpdate(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		parent.getCircuitData().togglePlannedInputUpdate(pos, side);
 	}
 
 	public final void markForUpdate(Vec2 pos, ICircuit parent) {
