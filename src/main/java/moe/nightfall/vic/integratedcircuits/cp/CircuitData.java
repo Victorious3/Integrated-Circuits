@@ -35,7 +35,7 @@ public class CircuitData implements Cloneable {
 	private HashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
 	private HashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	private HashMap<Vec2, Integer> inputQueue = new LinkedHashMap<Vec2, Integer>();
-	private HashMap<Vec2, Integer> plannedInputUpdates = new LinkedHashMap<Vec2, Integer>();
+	private HashMap<Vec2, Integer> postponedInputChanges = new LinkedHashMap<Vec2, Integer>();
 
 	private boolean hasChanged;
 
@@ -278,8 +278,8 @@ public class CircuitData implements Cloneable {
 		inputQueue.put(pos, val |= 1 << side.ordinal());
 	}
 
-	public void togglePlannedInputUpdate(Vec2 pos, ForgeDirection side) {
-		int val = plannedInputUpdates.containsKey(pos) ? plannedInputUpdates.get(pos) : 0;
+	public void togglePostponedInputChange(Vec2 pos, ForgeDirection side) {
+		int val = postponedInputChanges.containsKey(pos) ? postponedInputChanges.get(pos) : 0;
 		inputQueue.put(pos, val ^= 1 << side.ordinal());
 	}
 
@@ -313,17 +313,17 @@ public class CircuitData implements Cloneable {
 				
 		// Planned synchronous input updates
 		// Gates must not call updateInputs or togglePlannnedInputUpdate there
-		for (Vec2 vec : plannedInputUpdates.keySet()) {
-			int val = plannedInputUpdates.get(vec);
+		for (Vec2 vec : postponedInputChanges.keySet()) {
+			int val = postponedInputChanges.get(vec);
 			for (ForgeDirection fd : ForgeDirection.values()) {
 				if (((val >> fd.ordinal()) & 1) != 0) {
-					getPart(vec).onPlannedInputUpdate(vec, parent, fd);
+					getPart(vec).onPostponedInputChange(vec, parent, fd);
 				}
 			}
 		}
 
 		// These do not propagate between ticks
-		plannedInputUpdates.clear();
+		postponedInputChanges.clear();
 	}
 
 	public static CircuitData readFromNBT(NBTTagCompound compound) {

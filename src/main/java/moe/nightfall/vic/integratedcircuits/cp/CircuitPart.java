@@ -176,7 +176,7 @@ public abstract class CircuitPart {
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
 	}
 	
-	public void onPlannedInputUpdate(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public void onPostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 	}
 
 	public final void scheduleTick(Vec2 pos, ICircuit parent) {
@@ -185,8 +185,8 @@ public abstract class CircuitPart {
 
 	// Pass all the updates you want to process synchronously there.
 	// Make sure you ALWAYS do so, if you do, because it TOGGLES and not sets.
-	public final void togglePlannedInputUpdate(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		parent.getCircuitData().togglePlannedInputUpdate(pos, side);
+	public final void togglePostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		parent.getCircuitData().togglePostponedInputChange(pos, side);
 	}
 
 	public final void markForUpdate(Vec2 pos, ICircuit parent) {
