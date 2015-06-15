@@ -220,17 +220,25 @@ public abstract class CircuitPart {
 		return true;
 	}
 
-	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public final boolean hasConnectionOnSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		if (side == ForgeDirection.UNKNOWN)
 			return false;
-		boolean cc = true;
 		CircuitPart neighbour = getNeighbourOnSide(pos, parent, side);
-		if (neighbour != null)
-			cc = neighbour.canConnectToSide(pos.offset(side), parent, side.getOpposite());
-		if (!(canConnectToSide(pos, parent, side) && cc))
+		if (neighbour == null)
+			return false;
+		return canConnectToSide(pos, parent, side)
+			&& neighbour.canConnectToSide(pos.offset(side), parent, side.getOpposite());
+	}
+
+	public final boolean getCachedInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		if (side == ForgeDirection.UNKNOWN)
 			return false;
 		boolean in = (getProperty(pos, parent, PROP_INPUT) << (side.ordinal() - 2) & 8) != 0;
 		return in;
+	}
+
+	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		return hasConnectionOnSide(pos, parent, side) && getCachedInputFromSide(pos, parent, side);
 	}
 
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
@@ -244,18 +252,12 @@ public abstract class CircuitPart {
 	/** Check every side to update the internal buffer **/
 	public final void updateInput(Vec2 pos, ICircuit parent) {
 		int input = 0;
-		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.NORTH) != null ? getNeighbourOnSide(pos, parent,
-				ForgeDirection.NORTH).getOutputToSide(pos.offset(ForgeDirection.NORTH), parent, ForgeDirection.SOUTH) ? 1
-				: 0 : 0) << 3;
-		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.SOUTH) != null ? getNeighbourOnSide(pos, parent,
-				ForgeDirection.SOUTH).getOutputToSide(pos.offset(ForgeDirection.SOUTH), parent, ForgeDirection.NORTH) ? 1
-				: 0 : 0) << 2;
-		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.WEST) != null ? getNeighbourOnSide(pos, parent,
-				ForgeDirection.WEST).getOutputToSide(pos.offset(ForgeDirection.WEST), parent, ForgeDirection.EAST) ? 1
-				: 0 : 0) << 1;
-		input |= (getNeighbourOnSide(pos, parent, ForgeDirection.EAST) != null ? getNeighbourOnSide(pos, parent,
-				ForgeDirection.EAST).getOutputToSide(pos.offset(ForgeDirection.EAST), parent, ForgeDirection.WEST) ? 1
-				: 0 : 0);
+		for (int i = 2; i < 6; i++) {
+			ForgeDirection fd = ForgeDirection.getOrientation(i);
+			if (hasConnectionOnSide(pos, parent, fd) && getNeighbourOnSide(pos, parent, fd)
+					.getOutputToSide(pos.offset(fd), parent, fd.getOpposite()))
+				input |= 8 >> (i - 2);
+		}
 		setProperty(pos, parent, PROP_INPUT, input);
 	}
 
@@ -266,19 +268,19 @@ public abstract class CircuitPart {
 	public final void notifyNeighbours(Vec2 pos, ICircuit parent) {
 		for (int i = 2; i < 6; i++) {
 			ForgeDirection fd = ForgeDirection.getOrientation(i);
-			Vec2 pos2 = pos.offset(fd);
 			CircuitPart part = getNeighbourOnSide(pos, parent, fd);
 
 			if (part != null) {
-				boolean b = canConnectToSide(pos, parent, fd) && part.canConnectToSide(pos2, parent, fd.getOpposite())
-					&& getOutputToSide(pos, parent, fd) != part.getInputFromSide(pos2, parent, fd.getOpposite());
+				ForgeDirection fd2 = fd.getOpposite();
+				Vec2 pos2 = pos.offset(fd);
+				boolean b = (hasConnectionOnSide(pos, parent, fd) && getOutputToSide(pos, parent, fd))
+						!= part.getCachedInputFromSide(pos2, parent, fd2);
 				if (b) {
-					part.scheduleInputChange(pos2, parent, fd.getOpposite());
+					part.scheduleInputChange(pos2, parent, fd2);
 					part.markForUpdate(pos2, parent);
 				}
+				markForUpdate(pos, parent);
 			}
-
-			markForUpdate(pos, parent);
 		}
 	}
 

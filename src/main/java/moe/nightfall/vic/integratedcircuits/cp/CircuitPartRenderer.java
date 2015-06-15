@@ -45,37 +45,10 @@ public class CircuitPartRenderer {
 
 	@SideOnly(Side.CLIENT)
 	public static int checkConnections(Vec2 pos, ICircuit parent, CircuitPart part) {
-		boolean c1 = false;
-		if (pos.y > 0) {
-			CircuitPart n = part.getNeighbourOnSide(pos, parent, ForgeDirection.NORTH);
-			c1 = part.canConnectToSide(pos, parent, ForgeDirection.NORTH)
-					&& n.canConnectToSide(pos.offset(ForgeDirection.NORTH), parent, ForgeDirection.SOUTH)
-					&& !(n instanceof PartNull);
-		}
-
-		boolean c2 = false;
-		if (pos.y < parent.getCircuitData().getSize()) {
-			CircuitPart n = part.getNeighbourOnSide(pos, parent, ForgeDirection.SOUTH);
-			c2 = part.canConnectToSide(pos, parent, ForgeDirection.SOUTH)
-					&& n.canConnectToSide(pos.offset(ForgeDirection.SOUTH), parent, ForgeDirection.NORTH)
-					&& !(n instanceof PartNull);
-		}
-
-		boolean c3 = false;
-		if (pos.x > 0) {
-			CircuitPart n = part.getNeighbourOnSide(pos, parent, ForgeDirection.WEST);
-			c3 = part.canConnectToSide(pos, parent, ForgeDirection.WEST)
-					&& n.canConnectToSide(pos.offset(ForgeDirection.WEST), parent, ForgeDirection.EAST)
-					&& !(n instanceof PartNull);
-		}
-
-		boolean c4 = false;
-		if (pos.x < parent.getCircuitData().getSize()) {
-			CircuitPart n = part.getNeighbourOnSide(pos, parent, ForgeDirection.EAST);
-			c4 = part.canConnectToSide(pos, parent, ForgeDirection.EAST)
-					&& n.canConnectToSide(pos.offset(ForgeDirection.EAST), parent, ForgeDirection.WEST)
-					&& !(n instanceof PartNull);
-		}
+		boolean c1 = part.hasConnectionOnSide(pos, parent, ForgeDirection.NORTH);
+		boolean c2 = part.hasConnectionOnSide(pos, parent, ForgeDirection.SOUTH);
+		boolean c3 = part.hasConnectionOnSide(pos, parent, ForgeDirection.WEST);
+		boolean c4 = part.hasConnectionOnSide(pos, parent, ForgeDirection.EAST);
 
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
@@ -195,10 +168,9 @@ public class CircuitPartRenderer {
 	public static void renderPartGate(Vec2 pos, ICircuit parent, PartCPGate gate, double x, double y, EnumRenderType type) {
 		Tessellator tes = Tessellator.instance;
 		if (gate.canConnectToSide(pos, parent, ForgeDirection.NORTH)) {
-			if (type == EnumRenderType.GUI
-					&& (gate.getNeighbourOnSide(pos, parent, ForgeDirection.NORTH).getInputFromSide(
-					pos.offset(ForgeDirection.NORTH), parent, ForgeDirection.SOUTH) || gate.getInputFromSide(
-					pos, parent, ForgeDirection.NORTH)))
+			if (type == EnumRenderType.GUI && (
+					gate.getOutputToSide(pos, parent, ForgeDirection.NORTH)
+					|| gate.getInputFromSide(pos, parent, ForgeDirection.NORTH)))
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
@@ -206,10 +178,9 @@ public class CircuitPartRenderer {
 		}
 
 		if (gate.canConnectToSide(pos, parent, ForgeDirection.SOUTH)) {
-			if (type == EnumRenderType.GUI
-					&& (gate.getNeighbourOnSide(pos, parent, ForgeDirection.SOUTH).getInputFromSide(
-					pos.offset(ForgeDirection.SOUTH), parent, ForgeDirection.NORTH) || gate.getInputFromSide(
-					pos, parent, ForgeDirection.SOUTH)))
+			if (type == EnumRenderType.GUI && (
+					gate.getOutputToSide(pos, parent, ForgeDirection.SOUTH)
+					|| gate.getInputFromSide(pos, parent, ForgeDirection.SOUTH)))
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
@@ -217,10 +188,9 @@ public class CircuitPartRenderer {
 		}
 
 		if (gate.canConnectToSide(pos, parent, ForgeDirection.WEST)) {
-			if (type == EnumRenderType.GUI
-					&& (gate.getNeighbourOnSide(pos, parent, ForgeDirection.WEST).getInputFromSide(
-					pos.offset(ForgeDirection.WEST), parent, ForgeDirection.EAST) || gate.getInputFromSide(pos,
-					parent, ForgeDirection.WEST)))
+			if (type == EnumRenderType.GUI && (
+					gate.getOutputToSide(pos, parent, ForgeDirection.WEST)
+					|| gate.getInputFromSide(pos, parent, ForgeDirection.WEST)))
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
@@ -228,10 +198,9 @@ public class CircuitPartRenderer {
 		}
 
 		if (gate.canConnectToSide(pos, parent, ForgeDirection.EAST)) {
-			if (type == EnumRenderType.GUI
-					&& (gate.getNeighbourOnSide(pos, parent, ForgeDirection.EAST).getInputFromSide(
-					pos.offset(ForgeDirection.EAST), parent, ForgeDirection.WEST) || gate.getInputFromSide(pos,
-					parent, ForgeDirection.EAST)))
+			if (type == EnumRenderType.GUI && (
+					gate.getOutputToSide(pos, parent, ForgeDirection.EAST)
+					|| gate.getInputFromSide(pos, parent, ForgeDirection.EAST)))
 				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 			else
 				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
@@ -252,8 +221,8 @@ public class CircuitPartRenderer {
 		if (type == EnumRenderType.GUI
 				&& (cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.NORTH, rotation))
 				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.NORTH, rotation))
-				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation)) || cell
-				.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation))))
+				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation))
+				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation))))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else
 			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
@@ -262,8 +231,8 @@ public class CircuitPartRenderer {
 		if (type == EnumRenderType.GUI
 				&& (cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, rotation))
 				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, rotation))
-				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation)) || cell
-				.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation))))
+				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation))
+				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation))))
 			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
 		else
 			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);

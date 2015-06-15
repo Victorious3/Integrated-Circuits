@@ -17,26 +17,17 @@ public class PartBufferCell extends PartSimpleGate {
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		super.onInputChange(pos, parent, side);
-		ForgeDirection dir = toInternal(pos, parent, side);
-		getNeighbourOnSide(pos, parent, side.getOpposite()).scheduleInputChange(pos.offset(side.getOpposite()), parent, side);
-		markForUpdate(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection fd = toInternal(pos, parent, side);
-		if (fd == ForgeDirection.EAST)
-			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.WEST));
-		else if (fd == ForgeDirection.WEST)
-			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST));
-
-		boolean out = super.getOutputToSide(pos, parent, side);
-		if (fd == ForgeDirection.NORTH && !out)
-			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH));
-		else if (fd == ForgeDirection.SOUTH && !out)
-			return getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.NORTH));
-
-		return out;
+		// A-la NullCell
+		if (getInputFromSide(pos, parent, side.getOpposite()) && !getInputFromSide(pos, parent, side))
+			return true;
+		
+		// But also works as BufferGate
+		return super.getOutputToSide(pos, parent, side);
 	}
 
 	@Override
@@ -56,11 +47,9 @@ public class PartBufferCell extends PartSimpleGate {
 
 	@Override
 	protected void calcOutput(Vec2 pos, ICircuit parent) {
-		setOutput(
-				pos,
-				parent,
-				(getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)) || getInputFromSide(pos,
-						parent, toExternal(pos, parent, ForgeDirection.WEST))));
+		ForgeDirection east = toExternal(pos, parent, ForgeDirection.EAST);
+		setOutput(pos, parent,
+			getInputFromSide(pos, parent, east) || getInputFromSide(pos, parent, east.getOpposite()));
 	}
 
 	@Override
