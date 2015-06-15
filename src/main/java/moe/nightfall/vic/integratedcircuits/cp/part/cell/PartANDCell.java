@@ -19,17 +19,18 @@ public class PartANDCell extends PartSimpleGate {
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		super.onInputChange(pos, parent, side);
-		ForgeDirection fd = toInternal(pos, parent, side);
-		if (fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH)
-			getNeighbourOnSide(pos, parent, side.getOpposite()).scheduleInputChange(pos.offset(side.getOpposite()), parent, side);
-		markForUpdate(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		ForgeDirection fd = toInternal(pos, parent, side);
-		if (fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH)
-			return getInputFromSide(pos, parent, side.getOpposite());
+		// A-la NullCell (only NORTH<=>SOUTH)
+		if ((fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) &&
+				getInputFromSide(pos, parent, side.getOpposite()) && !getInputFromSide(pos, parent, side))
+			return true;
+		
+		// Act as AND gate
 		return super.getOutputToSide(pos, parent, side);
 	}
 
