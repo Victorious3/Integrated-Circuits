@@ -299,7 +299,7 @@ public class CircuitData implements Cloneable {
 			for (Vec2 vec : tmp2.keySet()) {
 				int val = tmp2.get(vec);
 				for (ForgeDirection fd : ForgeDirection.values()) {
-					if (val >> fd.ordinal() != 0) {
+					if (((val >> fd.ordinal()) & 1) != 0) {
 						getPart(vec).onInputChange(vec, parent, fd);
 					}
 				}
