@@ -9,8 +9,24 @@ import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PartSequencer extends PartTimer {
+public class PartSequencer extends PartDelayedAction implements IConfigurableDelay {
 	public final IntProperty PROP_OUTPUT_SIDE = new IntProperty("OUTPUT_SIDE", stitcher, 3);
+	public final IntProperty PROP_DELAY = new IntProperty("DELAY", stitcher, 255);
+
+	@Override
+	protected int getDelay(Vec2 pos, ICircuit parent) {
+		return getConfigurableDelay(pos, parent);
+	}
+
+	@Override
+	public int getConfigurableDelay(Vec2 pos, ICircuit parent) {
+		return getProperty(pos, parent, PROP_DELAY);
+	}
+
+	@Override
+	public void setConfigurableDelay(Vec2 pos, ICircuit parent, int delay) {
+		setProperty(pos, parent, PROP_DELAY, delay);
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
@@ -19,22 +35,21 @@ public class PartSequencer extends PartTimer {
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
+	public void onPlaced(Vec2 pos, ICircuit parent) {
+		setProperty(pos, parent, PROP_OUTPUT_SIDE, 0);
+		setConfigurableDelay(pos, parent, 10);
+		setDelay(pos, parent, true);
 	}
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
-		if (!getProperty(pos, parent, PROP_OUT))
-			cycleProperty(pos, parent, PROP_OUTPUT_SIDE);
-		super.onDelay(pos, parent);
+		cycleProperty(pos, parent, PROP_OUTPUT_SIDE);
+		notifyNeighbours(pos, parent);
+		setDelay(pos, parent, true);
 	}
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		if (MiscUtils.getDirection(getProperty(pos, parent, PROP_OUTPUT_SIDE)) == toInternal(pos, parent, side))
-			return getProperty(pos, parent, PROP_OUT);
-		else
-			return false;
+		return MiscUtils.getDirection(getProperty(pos, parent, PROP_OUTPUT_SIDE)) == toInternal(pos, parent, side);
 	}
 }
