@@ -14,8 +14,12 @@ public class PartPulseFormer extends PartDelayedAction {
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
-		if ((toInternal(pos, parent, side) != ForgeDirection.SOUTH))
-			return;
+		if ((toInternal(pos, parent, side) == ForgeDirection.SOUTH))
+			togglePostponedInputChange(pos, parent, side);
+	}
+
+	@Override
+	public void onPostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		if (getInputFromSide(pos, parent, side)) {
 			setProperty(pos, parent, PROP_OUTPUT, true);
 			notifyNeighbours(pos, parent);
@@ -51,6 +55,6 @@ public class PartPulseFormer extends PartDelayedAction {
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
 		setProperty(pos, parent, PROP_OUTPUT, false);
-		super.onDelay(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 }
