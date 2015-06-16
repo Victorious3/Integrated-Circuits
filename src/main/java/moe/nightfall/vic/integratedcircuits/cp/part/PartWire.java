@@ -83,7 +83,7 @@ public class PartWire extends CircuitPart {
 
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		super.onInputChange(pos, parent, side);
+		updateInput(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 
