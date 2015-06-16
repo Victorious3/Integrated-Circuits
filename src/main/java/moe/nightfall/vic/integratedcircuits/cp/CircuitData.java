@@ -291,12 +291,19 @@ public class CircuitData implements Cloneable {
 
 	public synchronized void updateMatrix() {
 		// Single update round:
-		//  1. Process synchronous input changes (postponed from previous tick)
-		//  2. Process scheduled ticks (again, from previous tick)
+		//  1. Process scheduled ticks (from previous tick)
+		//  2. Process synchronous input changes (postponed from previous tick)
 		//  3. Propagate signals "instantaneously"
 		//     (so that inputQueue is empty between ticks)
 		
 		// Stage 1
+		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
+		tickSchedule.clear();
+		for (Vec2 v : tmp) {
+			getPart(v).onScheduledTick(v, parent);
+		}
+		
+		// Stage 2
 		for (Vec2 vec : postponedInputChanges.keySet()) {
 			int val = postponedInputChanges.get(vec);
 			for (ForgeDirection fd : ForgeDirection.values()) {
@@ -306,13 +313,6 @@ public class CircuitData implements Cloneable {
 			}
 		}
 		postponedInputChanges.clear();
-		
-		// Stage 2
-		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
-		tickSchedule.clear();
-		for (Vec2 v : tmp) {
-			getPart(v).onScheduledTick(v, parent);
-		}
 		
 		// Stage 3
 		while (inputQueue.size() > 0) {
