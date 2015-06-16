@@ -273,9 +273,23 @@ public class CircuitData implements Cloneable {
 		tickSchedule.add(pos);
 	}
 	
-	public void scheduleInputChange(Vec2 pos, ForgeDirection side) {
-		int val = inputQueue.containsKey(pos) ? inputQueue.get(pos) : 0;
-		inputQueue.put(pos, val |= 1 << side.ordinal());
+	public void scheduleInputChange(Vec2 pos, ForgeDirection side, boolean differs) {
+		boolean contains = inputQueue.containsKey(pos);
+		if (contains || differs) {
+			int oldVal = contains ? inputQueue.get(pos) : 0;
+			int newVal = oldVal;
+			int bit = 1 << side.ordinal();
+			if (differs)
+				newVal |= bit;
+			else
+				newVal &= ~bit;
+			if (oldVal != newVal) {
+				if (newVal != 0)
+					inputQueue.put(pos, newVal);
+				else
+					inputQueue.remove(pos);
+			}
+		}
 	}
 
 	public void togglePostponedInputChange(Vec2 pos, ForgeDirection side) {

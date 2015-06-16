@@ -245,12 +245,12 @@ public abstract class CircuitPart {
 	// To be used ONLY inside onInputChange handler.
 	// Pass updates you want to process synchronously there.
 	// Make sure you do so either ALWAYS or NEVER for specific side.
-	public final void togglePostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public void togglePostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		parent.getCircuitData().togglePostponedInputChange(pos, side);
 	}
 
-	public void scheduleInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		parent.getCircuitData().scheduleInputChange(pos, side);
+	public void scheduleInputChange(Vec2 pos, ICircuit parent, ForgeDirection side, boolean differs) {
+		parent.getCircuitData().scheduleInputChange(pos, side, differs);
 	}
 
 	// Check every side to update the internal buffer
@@ -278,10 +278,14 @@ public abstract class CircuitPart {
 			if (part != null) {
 				ForgeDirection fd2 = fd.getOpposite();
 				Vec2 pos2 = pos.offset(fd);
-				boolean b = (hasConnectionOnSide(pos, parent, fd) && getOutputToSide(pos, parent, fd))
-						!= part.getCachedInputFromSide(pos2, parent, fd2);
-				if (b) {
-					part.scheduleInputChange(pos2, parent, fd2);
+				boolean conn = hasConnectionOnSide(pos, parent, fd);
+				boolean out = getOutputToSide(pos, parent, fd);
+				boolean in = part.getCachedInputFromSide(pos2, parent, fd2);
+				if ((conn && out) != in) {
+					part.scheduleInputChange(pos2, parent, fd2, true);
+					part.markForUpdate(pos2, parent);
+				} else if (conn && (out == in)) {
+					part.scheduleInputChange(pos2, parent, fd2, false);
 					part.markForUpdate(pos2, parent);
 				}
 				markForUpdate(pos, parent);

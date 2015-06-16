@@ -68,7 +68,7 @@ public class PartTunnel extends CircuitPart {
 		// notifyNeighbors analog for paired tunnel
 		if (part != null && getOutputToSide(pos, parent, ForgeDirection.UNKNOWN) != part.getProperty(pos2, parent, PROP_IN)) {
 			// Unlike notifyNeighbors, nothing can be done here after disconnect from paired tunnel.
-			part.scheduleInputChange(pos2, parent, ForgeDirection.UNKNOWN);
+			part.scheduleInputChange(pos2, parent, ForgeDirection.UNKNOWN, true);
 			part.markForUpdate(pos2, parent);
 		}
 	}
@@ -109,7 +109,7 @@ public class PartTunnel extends CircuitPart {
 					oldPart.setProperty(oldPos2, parent, PROP_POS_X, 255);
 					oldPart.setProperty(oldPos2, parent, PROP_POS_Y, 255);
 					if (oldPart.getProperty(oldPos2, parent, PROP_IN))
-						oldPart.scheduleInputChange(oldPos2, parent, ForgeDirection.UNKNOWN);
+						oldPart.scheduleInputChange(oldPos2, parent, ForgeDirection.UNKNOWN, true);
 					oldPart.markForUpdate(oldPos2, parent);
 				}
 			}
@@ -120,7 +120,7 @@ public class PartTunnel extends CircuitPart {
 			notifyNeighbours(pos, parent);
 			// notifyNeighbors analog for paired tunnel
 			if (part != null && getOutputToSide(pos, parent, ForgeDirection.UNKNOWN) != part.getProperty(pos2, parent, PROP_IN)) {
-				part.scheduleInputChange(pos2, parent, ForgeDirection.UNKNOWN);
+				part.scheduleInputChange(pos2, parent, ForgeDirection.UNKNOWN, true);
 				part.markForUpdate(pos2, parent);
 			}
 		}
@@ -136,7 +136,7 @@ public class PartTunnel extends CircuitPart {
 			part.setProperty(pos2, parent, PROP_POS_X, 255);
 			part.setProperty(pos2, parent, PROP_POS_Y, 255);
 			if (part.getProperty(pos2, parent, PROP_IN))
-				part.scheduleInputChange(pos2, parent, ForgeDirection.UNKNOWN);
+				part.scheduleInputChange(pos2, parent, ForgeDirection.UNKNOWN, true);
 			part.markForUpdate(pos2, parent);
 		}
 	}
