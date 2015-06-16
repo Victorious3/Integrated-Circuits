@@ -41,10 +41,10 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.WEST && getProperty(pos, parent, PROP_OUT_WEST))
-			return true;
-		if (s2 == ForgeDirection.NORTH && getProperty(pos, parent, PROP_OUT_NORTH))
-			return true;
+		if (s2 == ForgeDirection.WEST)
+			return getProperty(pos, parent, PROP_OUT_WEST);
+		if (s2 == ForgeDirection.NORTH)
+			return getProperty(pos, parent, PROP_OUT_NORTH);
 		return false;
 	}
 
@@ -63,22 +63,30 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 			setProperty(pos, parent, PROP_OUT_NORTH, true);
 			setDelay(pos, parent, true);
 		}
-		super.onDelay(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
-		setProperty(pos, parent, PROP_DELAY, 20);
+		setConfigurableDelay(pos, parent, 20);
 	}
 
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
 		ForgeDirection s2 = toInternal(pos, parent, side);
+		if (s2 == ForgeDirection.SOUTH || s2 == ForgeDirection.EAST)
+			togglePostponedInputChange(pos, parent, side);
+	}
+
+	@Override
+	public void onPostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		ForgeDirection s2 = toInternal(pos, parent, side);
 		if (s2 == ForgeDirection.SOUTH) {
 			if (getInputFromSide(pos, parent, side)) {
 				setProperty(pos, parent, PROP_OUT_WEST, true);
 				setProperty(pos, parent, PROP_OUT_NORTH, false);
+				setDelay(pos, parent, false);
 				notifyNeighbours(pos, parent);
 			} else if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)))
 				setDelay(pos, parent, true);
@@ -87,7 +95,6 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 				setDelay(pos, parent, false);
 			else if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
 				setDelay(pos, parent, true);
-			notifyNeighbours(pos, parent);
 		}
 	}
 
