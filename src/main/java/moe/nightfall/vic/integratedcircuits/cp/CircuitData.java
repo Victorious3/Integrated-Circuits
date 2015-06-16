@@ -290,14 +290,31 @@ public class CircuitData implements Cloneable {
 	}
 
 	public synchronized void updateMatrix() {
-		// Scheduled ticks
+		// Single update round:
+		//  1. Process synchronous input changes (postponed from previous tick)
+		//  2. Process scheduled ticks (again, from previous tick)
+		//  3. Propagate signals "instantaneously"
+		//     (so that inputQueue is empty between ticks)
+		
+		// Stage 1
+		for (Vec2 vec : postponedInputChanges.keySet()) {
+			int val = postponedInputChanges.get(vec);
+			for (ForgeDirection fd : ForgeDirection.values()) {
+				if (((val >> fd.ordinal()) & 1) != 0) {
+					getPart(vec).onPostponedInputChange(vec, parent, fd);
+				}
+			}
+		}
+		postponedInputChanges.clear();
+		
+		// Stage 2
 		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
 		tickSchedule.clear();
 		for (Vec2 v : tmp) {
 			getPart(v).onScheduledTick(v, parent);
 		}
-
-		// Instantaneous signal propagation
+		
+		// Stage 3
 		while (inputQueue.size() > 0) {
 			HashMap<Vec2, Integer> tmp2 = (HashMap<Vec2, Integer>) inputQueue.clone();
 			inputQueue.clear();
@@ -310,20 +327,6 @@ public class CircuitData implements Cloneable {
 				}
 			}
 		}
-				
-		// Planned synchronous input updates
-		// Gates must not call updateInputs or togglePlannnedInputUpdate there
-		for (Vec2 vec : postponedInputChanges.keySet()) {
-			int val = postponedInputChanges.get(vec);
-			for (ForgeDirection fd : ForgeDirection.values()) {
-				if (((val >> fd.ordinal()) & 1) != 0) {
-					getPart(vec).onPostponedInputChange(vec, parent, fd);
-				}
-			}
-		}
-
-		// These do not propagate between ticks
-		postponedInputChanges.clear();
 	}
 
 	public static CircuitData readFromNBT(NBTTagCompound compound) {

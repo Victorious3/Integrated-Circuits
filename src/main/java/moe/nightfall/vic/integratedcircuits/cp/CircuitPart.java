@@ -183,12 +183,6 @@ public abstract class CircuitPart {
 		parent.getCircuitData().scheduleTick(pos);
 	}
 
-	// Pass all the updates you want to process synchronously there.
-	// Make sure you ALWAYS do so, if you do, because it TOGGLES and not sets.
-	public final void togglePostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		parent.getCircuitData().togglePostponedInputChange(pos, side);
-	}
-
 	public final void markForUpdate(Vec2 pos, ICircuit parent) {
 		parent.getCircuitData().markForUpdate(pos);
 	}
@@ -248,11 +242,19 @@ public abstract class CircuitPart {
 		updateInput(pos, parent);
 	}
 
+	// To be used ONLY inside onInputChange handler.
+	// Pass updates you want to process synchronously there.
+	// Make sure you do so either ALWAYS or NEVER for specific side.
+	public final void togglePostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		parent.getCircuitData().togglePostponedInputChange(pos, side);
+	}
+
 	public void scheduleInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		parent.getCircuitData().scheduleInputChange(pos, side);
 	}
 
-	/** Check every side to update the internal buffer **/
+	// Check every side to update the internal buffer
+	// Must ONLY be called from onInputChange handler.
 	public final void updateInput(Vec2 pos, ICircuit parent) {
 		int input = 0;
 		for (int i = 2; i < 6; i++) {
