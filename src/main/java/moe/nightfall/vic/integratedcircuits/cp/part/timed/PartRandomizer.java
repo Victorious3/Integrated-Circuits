@@ -36,8 +36,6 @@ public class PartRandomizer extends PartDelayedAction {
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
-			return false;
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if (s2 == ForgeDirection.SOUTH)
 			return false;
@@ -59,14 +57,14 @@ public class PartRandomizer extends PartDelayedAction {
 
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		super.onInputChange(pos, parent, side);
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 != ForgeDirection.SOUTH)
-			return;
-		if (!getInputFromSide(pos, parent, side))
-			setDelay(pos, parent, false);
-		else
-			setDelay(pos, parent, true);
+		updateInput(pos, parent);
+		if (toInternal(pos, parent, side) == ForgeDirection.SOUTH)
+			togglePostponedInputChange(pos, parent, side);
+	}
+
+	@Override
+	public void onPostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		setDelay(pos, parent, getInputFromSide(pos, parent, side));
 	}
 
 	@Override

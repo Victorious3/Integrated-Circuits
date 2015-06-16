@@ -14,7 +14,7 @@ public class PartPulseFormer extends PartDelayedAction {
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
-		if ((toInternal(pos, parent, side) == ForgeDirection.SOUTH))
+		if (toInternal(pos, parent, side) == ForgeDirection.SOUTH)
 			togglePostponedInputChange(pos, parent, side);
 	}
 
