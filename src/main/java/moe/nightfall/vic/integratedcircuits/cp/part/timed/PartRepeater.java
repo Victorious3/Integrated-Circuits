@@ -14,23 +14,27 @@ import net.minecraftforge.common.util.ForgeDirection;
 public class PartRepeater extends PartDelayedAction {
 	public final IntProperty PROP_DELAY = new IntProperty("DELAY", stitcher, 255);
 	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
+	public final BooleanProperty PROP_BUSY = new BooleanProperty("BUSY", stitcher);
 
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) {
-		return getProperty(pos, parent, PROP_DELAY);
+		return getProperty(pos, parent, PROP_BUSY)
+				? getProperty(pos, parent, PROP_DELAY)
+				: 1; // Cooldown after output toggle
 	}
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
 		setProperty(pos, parent, PROP_DELAY, 2);
 		setProperty(pos, parent, PROP_OUT, false);
+		setProperty(pos, parent, PROP_BUSY, false);
 	}
 
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		super.onClick(pos, parent, button, ctrl);
 		if (button == 0 && ctrl) {
-			int delay = getDelay(pos, parent);
+			int delay = getProperty(pos, parent, PROP_DELAY);
 			int newDelay = 0;
 			switch (delay) {
 				case 255:
@@ -69,28 +73,40 @@ public class PartRepeater extends PartDelayedAction {
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
-		boolean b = invertProperty(pos, parent, PROP_OUT);
-		if (b != getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
+		if (getProperty(pos, parent, PROP_BUSY)) {
+			invertProperty(pos, parent, PROP_OUT);
+			setProperty(pos, parent, PROP_BUSY, false);
 			setDelay(pos, parent, true);
-		super.onDelay(pos, parent);
+			notifyNeighbours(pos, parent);
+		} else if (getProperty(pos, parent, PROP_OUT) !=
+				getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+			setProperty(pos, parent, PROP_BUSY, true);
+			setDelay(pos, parent, true);
+		}
 	}
 
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
-		if (toInternal(pos, parent, side) != ForgeDirection.SOUTH)
-			return;
+		if (toInternal(pos, parent, side) == ForgeDirection.SOUTH)
+			togglePostponedInputChange(pos, parent, side);
+	}
+
+	@Override
+	public void onPostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		if (getCurrentDelay(pos, parent) == 0) {
 			boolean in = getInputFromSide(pos, parent, side);
-			if (getProperty(pos, parent, PROP_OUT) != in)
+			if (getProperty(pos, parent, PROP_OUT) != in) {
+				setProperty(pos, parent, PROP_BUSY, true);
 				setDelay(pos, parent, true);
+			}
 		}
 	}
 
 	@Override
 	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) {
 		ArrayList<String> list = super.getInformation(pos, parent, edit, ctrlDown);
-		list.add("Delay: " + getDelay(pos, parent));
+		list.add("Delay: " + getProperty(pos, parent, PROP_DELAY));
 		return list;
 	}
 }
