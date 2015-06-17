@@ -13,6 +13,20 @@ public class PartTransparentLatch extends PartCPGate {
 	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
 
 	@Override
+	public void onPlaced(Vec2 pos, ICircuit parent) {
+		setProperty(pos, parent, PROP_OUT, false);
+		updateInput(pos, parent);
+		onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
+		notifyNeighbours(pos, parent);
+	}
+
+	@Override
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
+		notifyNeighbours(pos, parent);
+	}
+
+	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
 		ForgeDirection s2 = toInternal(pos, parent, side);

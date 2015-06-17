@@ -288,9 +288,9 @@ public abstract class CircuitPart {
 					part.scheduleInputChange(pos2, parent, fd2, false);
 					part.markForUpdate(pos2, parent);
 				}
-				markForUpdate(pos, parent);
 			}
 		}
+		markForUpdate(pos, parent);
 	}
 
 	public final CircuitPart getNeighbourOnSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
