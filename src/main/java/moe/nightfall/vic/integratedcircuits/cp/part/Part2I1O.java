@@ -15,6 +15,7 @@ public abstract class Part2I1O extends PartSimpleGate {
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		if (button == 0 && ctrl) {
 			cycleProperty(pos, parent, PROP_CONNECTORS);
+			updateInput(pos, parent);
 			calcOutput(pos, parent);
 			notifyNeighbours(pos, parent);
 		}

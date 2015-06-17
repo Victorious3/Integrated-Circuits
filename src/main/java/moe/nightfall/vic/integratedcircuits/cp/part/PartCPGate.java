@@ -36,6 +36,7 @@ public abstract class PartCPGate extends CircuitPart {
 	}
 
 	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		updateInput(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 

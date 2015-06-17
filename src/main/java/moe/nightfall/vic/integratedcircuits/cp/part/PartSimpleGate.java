@@ -56,6 +56,7 @@ public abstract class PartSimpleGate extends PartCPGate {
 
 	@Override
 	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		updateInput(pos, parent);
 		calcOutput(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
