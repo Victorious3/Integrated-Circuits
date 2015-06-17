@@ -21,6 +21,13 @@ public class PartRSLatch extends PartCPGate {
 	public void onPlaced(Vec2 pos, ICircuit parent) {
 		setProperty(pos, parent, PROP_STATE, 0);
 		setProperty(pos, parent, PROP_MODE, 0);
+		updateInput(pos, parent);
+		onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
+	}
+
+	@Override
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
 	}
 
 	@Override
@@ -28,7 +35,7 @@ public class PartRSLatch extends PartCPGate {
 		super.onClick(pos, parent, button, ctrl);
 		if (button == 0 && ctrl) {
 			cycleProperty(pos, parent, PROP_MODE);
-			notifyNeighbours(pos, parent);
+			onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
 		}
 	}
 
@@ -62,6 +69,7 @@ public class PartRSLatch extends PartCPGate {
 		ForgeDirection s2 = toExternal(pos, parent, ForgeDirection.NORTH);
 		boolean in1 = getInputFromSide(pos, parent, s2);
 		boolean in2 = getInputFromSide(pos, parent, s2.getOpposite());
+		System.out.println("Here");
 		if (in1 != in2)
 			setProperty(pos, parent, PROP_STATE, in1 ? 1 : 2);
 		else if (in1 && in2)

@@ -48,7 +48,7 @@ public abstract class PartCPGate extends CircuitPart {
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		if (button == 0 && !ctrl) {
 			cycleProperty(pos, parent, PROP_ROTATION);
-			notifyNeighbours(pos, parent);
+			onAfterRotation(pos, parent);
 		}
 	}
 
