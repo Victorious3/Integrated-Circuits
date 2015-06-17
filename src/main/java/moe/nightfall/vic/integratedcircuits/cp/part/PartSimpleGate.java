@@ -55,6 +55,12 @@ public abstract class PartSimpleGate extends PartCPGate {
 	}
 
 	@Override
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		calcOutput(pos, parent);
+		notifyNeighbours(pos, parent);
+	}
+
+	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		super.onClick(pos, parent, button, ctrl);
 		onPlaced(pos, parent);
