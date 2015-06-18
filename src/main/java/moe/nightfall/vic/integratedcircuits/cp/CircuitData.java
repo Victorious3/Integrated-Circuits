@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
@@ -485,6 +486,19 @@ public class CircuitData implements Cloneable {
 	public void upgradeFormat() {
 		if (formatVersion < Constants.CURRENT_FORMAT_VERSION) {
 			int version = formatVersion;
+			
+			if (version < 1) {
+				// IO modes were reordered
+				for (int i = 0; i < 4; i++) {
+					EnumConnectionType mode = prop.getModeAtSide(i);
+					if (mode == EnumConnectionType.BUNDLED)
+						prop.setCon(prop.setModeAtSide(i, EnumConnectionType.ANALOG));
+					else if (mode == EnumConnectionType.ANALOG)
+						prop.setCon(prop.setModeAtSide(i, EnumConnectionType.BUNDLED));
+				}
+				
+				version = 1;
+			}
 			
 			// Upgrade all gates in circuit
 			for (int x = 0; x < size; x++) {
