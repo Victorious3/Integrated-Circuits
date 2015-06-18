@@ -28,6 +28,15 @@ public class PartRepeater extends PartDelayedAction {
 		setProperty(pos, parent, PROP_DELAY, 2);
 		setProperty(pos, parent, PROP_OUT, false);
 		setProperty(pos, parent, PROP_BUSY, false);
+		updateInput(pos, parent);
+		onDelay(pos, parent);
+		notifyNeighbours(pos, parent);
+	}
+
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		updateInput(pos, parent);
+		onPostponedInputChange(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH));
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override
@@ -48,6 +57,7 @@ public class PartRepeater extends PartDelayedAction {
 					break;
 			}
 			setProperty(pos, parent, PROP_DELAY, delay);
+			markForUpdate(pos, parent);
 		}
 	}
 

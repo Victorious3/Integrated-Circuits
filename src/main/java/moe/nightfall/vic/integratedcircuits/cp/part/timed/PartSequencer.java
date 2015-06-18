@@ -36,9 +36,11 @@ public class PartSequencer extends PartDelayedAction implements IConfigurableDel
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
+		updateInput(pos, parent);
 		setProperty(pos, parent, PROP_OUTPUT_SIDE, 0);
 		setConfigurableDelay(pos, parent, 10);
 		setDelay(pos, parent, true);
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override

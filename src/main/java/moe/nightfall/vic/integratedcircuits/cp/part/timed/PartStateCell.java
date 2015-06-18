@@ -68,7 +68,26 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
+		updateInput(pos, parent);
 		setConfigurableDelay(pos, parent, 20);
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
+			setProperty(pos, parent, PROP_OUT_WEST, true);
+		notifyNeighbours(pos, parent);
+	}
+
+	@Override
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		updateInput(pos, parent);
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+			setProperty(pos, parent, PROP_OUT_WEST, true);
+			setProperty(pos, parent, PROP_OUT_NORTH, false);
+			setDelay(pos, parent, false);
+		} else if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST))) {
+			setDelay(pos, parent, false);
+		} else if (getCurrentDelay(pos, parent) == 0) {
+			setDelay(pos, parent, true);
+		}
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override

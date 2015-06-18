@@ -24,7 +24,14 @@ public class PartRandomizer extends PartDelayedAction {
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
-		setDelay(pos, parent, true);
+		updateInput(pos, parent);
+		setDelay(pos, parent, getInputFromSide(pos, parent,
+				toExternal(pos, parent, ForgeDirection.SOUTH)));
+		notifyNeighbours(pos, parent);
+	}
+
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		onPlaced(pos, parent);
 	}
 
 	@Override

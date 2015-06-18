@@ -38,7 +38,7 @@ public abstract class PartDelayedAction extends PartCPGate {
 	}
 
 	protected void setDelay(Vec2 pos, ICircuit parent, boolean delay) {
-		setProperty(pos, parent, PROP_CURRENT_DELAY, getDelay(pos, parent));
+		setProperty(pos, parent, PROP_CURRENT_DELAY, delay ? getDelay(pos, parent) : 0);
 		setProperty(pos, parent, PROP_ACTIVE, delay);
 		if (delay)
 			scheduleTick(pos, parent);

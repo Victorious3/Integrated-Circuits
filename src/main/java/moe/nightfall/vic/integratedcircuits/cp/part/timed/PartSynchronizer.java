@@ -19,6 +19,20 @@ public class PartSynchronizer extends PartDelayedAction {
 	}
 
 	@Override
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		updateInput(pos, parent);
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+			setProperty(pos, parent, PROP_IN_EAST, false);
+			setProperty(pos, parent, PROP_IN_WEST, false);
+			if (getProperty(pos, parent, PROP_OUT)) {
+				setProperty(pos, parent, PROP_OUT, false);
+				setDelay(pos, parent, false);
+			}
+		}
+		notifyNeighbours(pos, parent);
+	}
+
+	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
 		if (side != toExternal(pos, parent, ForgeDirection.NORTH))
