@@ -6,21 +6,36 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PartRSLatch extends PartLatch {
+public class PartRSLatch extends PartCPGate {
+	public final IntProperty PROP_STATE = new IntProperty("STATE", stitcher, 2);
 	public final IntProperty PROP_MODE = new IntProperty("MODE", stitcher, 3);
+
+	@Override
+	public void onPlaced(Vec2 pos, ICircuit parent) {
+		setProperty(pos, parent, PROP_STATE, 0);
+		setProperty(pos, parent, PROP_MODE, 0);
+		updateInput(pos, parent);
+		onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
+	}
+
+	@Override
+	public void onAfterRotation(Vec2 pos, ICircuit parent) {
+		onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
+	}
 
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		super.onClick(pos, parent, button, ctrl);
 		if (button == 0 && ctrl) {
 			cycleProperty(pos, parent, PROP_MODE);
-			notifyNeighbours(pos, parent);
+			onPostponedInputChange(pos, parent, ForgeDirection.UNKNOWN);
 		}
 	}
 
@@ -36,26 +51,64 @@ public class PartRSLatch extends PartLatch {
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		updateInput(pos, parent);
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.EAST || s2 == ForgeDirection.WEST)
-			return;
-		setProperty(pos, parent, PROP_OUT, s2 == ForgeDirection.NORTH);
-		scheduleTick(pos, parent);
-		markForUpdate(pos, parent);
+		if (s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH) {
+			togglePostponedInputChange(pos, parent, side);
+			// A bit of wire-like behavior, for the second mode
+			if (getInputFromSide(pos, parent, side)
+					&& !getInputFromSide(pos, parent, side.getOpposite())
+					&& getOutputToSide(pos, parent, side.getOpposite())) {
+				// Break up temporarily, to check the other input.
+				setProperty(pos, parent, PROP_STATE, 0);
+			}
+			notifyNeighbours(pos, parent);
+		}
+	}
+
+	@Override
+	public void onPostponedInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		ForgeDirection s2 = toExternal(pos, parent, ForgeDirection.NORTH);
+		boolean in1 = getInputFromSide(pos, parent, s2);
+		boolean in2 = getInputFromSide(pos, parent, s2.getOpposite());
+		System.out.println("Here");
+		if (in1 != in2)
+			setProperty(pos, parent, PROP_STATE, in1 ? 1 : 2);
+		else if (in1 && in2)
+			setProperty(pos, parent, PROP_STATE, 0);
+		else if (getProperty(pos, parent, PROP_STATE) == 0)
+			// Both inputs off, still in broken state
+			// Vanilla and P:R RS latches work this way
+			setProperty(pos, parent, PROP_STATE, 1); 
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+		int state = getProperty(pos, parent, PROP_STATE);
+		if (state == 0)
+			return false;
 		ForgeDirection s2 = toInternal(pos, parent, side);
-		ForgeDirection s3 = toExternal(pos, parent, ForgeDirection.NORTH);
-		boolean b1 = !(getInputFromSide(pos, parent, s3) && getInputFromSide(pos, parent, s3.getOpposite()));
-		if (((s2 == ForgeDirection.EAST && !isMirrored(pos, parent) || s2 == ForgeDirection.WEST
-				&& isMirrored(pos, parent)) || (s2 == ForgeDirection.NORTH && isSpecial(pos, parent) && !getInputFromSide(
-				pos, parent, s3.getOpposite()))) && b1 && getProperty(pos, parent, PROP_TMP))
-			return true;
-		if (((s2 == ForgeDirection.WEST && !isMirrored(pos, parent) || s2 == ForgeDirection.EAST
-				&& isMirrored(pos, parent)) || (s2 == ForgeDirection.SOUTH && isSpecial(pos, parent) && !getInputFromSide(
-				pos, parent, s3))) && b1 && !getProperty(pos, parent, PROP_TMP))
-			return true;
+		boolean special = isSpecial(pos, parent);
+		boolean mirrored = isMirrored(pos, parent);
+		if (s2 == ForgeDirection.NORTH) {
+			if (special && state == 1)
+				// A bit of wire-like behavior:
+				// Only output if we are not powered from the same side
+				return !getInputFromSide(pos, parent, side);
+			return false;
+		}
+		if (s2 == ForgeDirection.SOUTH) {
+			if (special && state == 2)
+				// A bit of wire-like behavior:
+				// Only output if we are not powered from the same side
+				return !getInputFromSide(pos, parent, side);
+			return false;
+		}
+		if (s2 == ForgeDirection.EAST) {
+			return (state == 1) != mirrored;
+		}
+		if (s2 == ForgeDirection.WEST) {
+			return (state == 1) == mirrored;
+		}
 		return false;
 	}
 
@@ -74,5 +127,10 @@ public class PartRSLatch extends PartLatch {
 		if (edit && ctrlDown)
 			text.add(I18n.format("gui.integratedcircuits.cad.mode"));
 		return text;
+	}
+
+	@Override
+	public Category getCategory() {
+		return Category.LATCH;
 	}
 }

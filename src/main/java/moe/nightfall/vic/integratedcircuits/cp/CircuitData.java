@@ -35,6 +35,7 @@ public class CircuitData implements Cloneable {
 	private HashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
 	private HashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
 	private HashMap<Vec2, Integer> inputQueue = new LinkedHashMap<Vec2, Integer>();
+	private HashMap<Vec2, Integer> postponedInputChanges = new LinkedHashMap<Vec2, Integer>();
 
 	private boolean hasChanged;
 
@@ -271,10 +272,29 @@ public class CircuitData implements Cloneable {
 	public void scheduleTick(Vec2 pos) {
 		tickSchedule.add(pos);
 	}
+	
+	public void scheduleInputChange(Vec2 pos, ForgeDirection side, boolean differs) {
+		boolean contains = inputQueue.containsKey(pos);
+		if (contains || differs) {
+			int oldVal = contains ? inputQueue.get(pos) : 0;
+			int newVal = oldVal;
+			int bit = 1 << side.ordinal();
+			if (differs)
+				newVal |= bit;
+			else
+				newVal &= ~bit;
+			if (oldVal != newVal) {
+				if (newVal != 0)
+					inputQueue.put(pos, newVal);
+				else
+					inputQueue.remove(pos);
+			}
+		}
+	}
 
-	public void scheduleInputChange(Vec2 pos, ForgeDirection side) {
-		int val = inputQueue.containsKey(pos) ? inputQueue.get(pos) : 0;
-		inputQueue.put(pos, val |= 1 << side.ordinal());
+	public void togglePostponedInputChange(Vec2 pos, ForgeDirection side) {
+		int val = postponedInputChanges.containsKey(pos) ? postponedInputChanges.get(pos) : 0;
+		postponedInputChanges.put(pos, val ^= 1 << side.ordinal());
 	}
 
 	public void markForUpdate(Vec2 pos) {
@@ -284,33 +304,41 @@ public class CircuitData implements Cloneable {
 	}
 
 	public synchronized void updateMatrix() {
+		// Single update round:
+		//  1. Process scheduled ticks (from previous tick)
+		//  2. Process synchronous input changes (postponed from previous tick)
+		//  3. Propagate signals "instantaneously"
+		//     (so that inputQueue is empty between ticks)
+		
+		// Stage 1
 		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
 		tickSchedule.clear();
-
-		// first iteration
 		for (Vec2 v : tmp) {
 			getPart(v).onScheduledTick(v, parent);
 		}
-
-		// second iteration
+		
+		// Stage 2
+		for (Vec2 vec : postponedInputChanges.keySet()) {
+			int val = postponedInputChanges.get(vec);
+			for (ForgeDirection fd : ForgeDirection.values()) {
+				if (((val >> fd.ordinal()) & 1) != 0) {
+					getPart(vec).onPostponedInputChange(vec, parent, fd);
+				}
+			}
+		}
+		postponedInputChanges.clear();
+		
+		// Stage 3
 		while (inputQueue.size() > 0) {
 			HashMap<Vec2, Integer> tmp2 = (HashMap<Vec2, Integer>) inputQueue.clone();
 			inputQueue.clear();
 			for (Vec2 vec : tmp2.keySet()) {
 				int val = tmp2.get(vec);
 				for (ForgeDirection fd : ForgeDirection.values()) {
-					if (val >> fd.ordinal() != 0) {
+					if (((val >> fd.ordinal()) & 1) != 0) {
 						getPart(vec).onInputChange(vec, parent, fd);
 					}
 				}
-			}
-		}
-
-		// third iteration
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				Vec2 pos = new Vec2(x, y);
-				getPart(pos).onTick(pos, parent);
 			}
 		}
 	}
