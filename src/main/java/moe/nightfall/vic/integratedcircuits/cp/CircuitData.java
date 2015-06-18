@@ -13,6 +13,7 @@ import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import moe.nightfall.vic.integratedcircuits.Constants;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
@@ -27,6 +28,9 @@ import com.google.common.primitives.Ints;
  * internal arrays if you use them outside of the tick loop.
  */
 public class CircuitData implements Cloneable {
+	// To overcome breaking changes to format.
+	// 0 is unspecified old format, presumed to be 0.8r34-compatible.
+	private int formatVersion = Constants.CURRENT_FORMAT_VERSION;
 
 	private int size;
 	private int[][] meta;
@@ -54,7 +58,8 @@ public class CircuitData implements Cloneable {
 		this.size = size;
 	}
 
-	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule, CircuitProperties prop) {
+	private CircuitData(int formatVersion, int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule, CircuitProperties prop) {
+		this.formatVersion = formatVersion;
 		this.parent = parent;
 		this.prop = prop;
 		this.size = size;
@@ -62,6 +67,7 @@ public class CircuitData implements Cloneable {
 		this.meta = meta;
 		this.tickSchedule = tickSchedule;
 		this.hasChanged = !isEmpty();
+		this.upgradeFormat();
 	}
 
 	@Override
@@ -69,6 +75,7 @@ public class CircuitData implements Cloneable {
 	protected CircuitData clone() {
 		CircuitData clone = new CircuitData();
 
+		clone.formatVersion = formatVersion;
 		clone.size = size;
 		clone.id = new int[size][size];
 		clone.meta = new int[size][size];
@@ -320,6 +327,9 @@ public class CircuitData implements Cloneable {
 	}
 
 	public static CircuitData readFromNBT(NBTTagCompound compound, ICircuit parent) {
+		int formatVersion = compound.hasKey("format")
+			? compound.getInteger("format") : 0;
+
 		NBTTagList idlist = compound.getTagList("id", NBT.TAG_INT_ARRAY);
 		int[][] id = new int[idlist.tagCount()][];
 		for (int i = 0; i < idlist.tagCount(); i++) {
@@ -335,14 +345,14 @@ public class CircuitData implements Cloneable {
 		CircuitProperties prop = CircuitProperties.readFromNBT(compound.getCompoundTag("properties"));
 
 		int size = compound.getInteger("size");
-		LinkedHashSet<Vec2> scheduledTicks = new LinkedHashSet<Vec2>();
 
+		LinkedHashSet<Vec2> scheduledTicks = new LinkedHashSet<Vec2>();
 		int[] scheduledList = compound.getIntArray("scheduled");
 		for (int i = 0; i < scheduledList.length; i += 2) {
 			scheduledTicks.add(new Vec2(scheduledList[i], scheduledList[i + 1]));
 		}
-
-		return new CircuitData(size, parent, id, meta, scheduledTicks, prop);
+		
+		return new CircuitData(formatVersion, size, parent, id, meta, scheduledTicks, prop);
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -359,6 +369,7 @@ public class CircuitData implements Cloneable {
 			metalist.appendTag(new NBTTagIntArray(meta[i].clone()));
 		}
 
+		compound.setInteger("format", formatVersion);
 		compound.setInteger("size", size);
 		compound.setTag("id", idlist);
 		compound.setTag("meta", metalist);
@@ -464,5 +475,27 @@ public class CircuitData implements Cloneable {
 			}
 		}
 		return true;
+	}
+
+	public int getFormatVersion() {
+		return formatVersion;
+	}
+
+	// Upgrade circuit from an older format
+	public void upgradeFormat() {
+		if (formatVersion < Constants.CURRENT_FORMAT_VERSION) {
+			int version = formatVersion;
+			
+			// Upgrade all gates in circuit
+			for (int x = 0; x < size; x++) {
+				for (int y = 0; y < size; y++) {
+					Vec2 pos = new Vec2(x, y);
+					getPart(pos).onFormatUpgrade(pos, parent);
+				}
+			}
+			
+			// Done
+			formatVersion = Constants.CURRENT_FORMAT_VERSION;
+		}
 	}
 }

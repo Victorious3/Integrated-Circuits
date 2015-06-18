@@ -315,4 +315,10 @@ public abstract class CircuitPart {
 	public Collection<Integer> getSubtypes() {
 		return Collections.emptyList();
 	}
+
+	// Backwards compatibility stuff below this line
+
+	public void onFormatUpgrade(Vec2 pos, ICircuit parent) {
+		System.out.println("Upgrade " + pos);
+	}
 }
