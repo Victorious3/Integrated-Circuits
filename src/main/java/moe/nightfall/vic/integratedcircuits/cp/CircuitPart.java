@@ -319,6 +319,5 @@ public abstract class CircuitPart {
 	// Backwards compatibility stuff below this line
 
 	public void onFormatUpgrade(Vec2 pos, ICircuit parent) {
-		System.out.println("Upgrade " + pos);
 	}
 }
