@@ -26,12 +26,17 @@ import com.google.common.collect.Lists;
 public abstract class PartCPGate extends CircuitPart {
 	public final IntProperty PROP_ROTATION = new IntProperty("ROTATION", stitcher, 3);
 
+	@Deprecated // Just to let things build. Remove as soon as possible
+	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	}
+
 	public final int getRotation(Vec2 pos, ICircuit parent) {
 		return getProperty(pos, parent, PROP_ROTATION);
 	}
 
 	public final void setRotation(Vec2 pos, ICircuit parent, int rotation) {
 		setProperty(pos, parent, PROP_ROTATION, rotation);
+		scheduleTick(pos, parent); // To update gate state
 		notifyNeighbours(pos, parent);
 	}
 
@@ -42,9 +47,11 @@ public abstract class PartCPGate extends CircuitPart {
 
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
-		if (button == 0 && !ctrl)
+		if (button == 0 && !ctrl) {
 			cycleProperty(pos, parent, PROP_ROTATION);
-		notifyNeighbours(pos, parent);
+			scheduleTick(pos, parent); // To update gate state
+			notifyNeighbours(pos, parent);
+		}
 	}
 
 	public ForgeDirection toInternal(Vec2 pos, ICircuit parent, ForgeDirection dir) {
@@ -63,11 +70,6 @@ public abstract class PartCPGate extends CircuitPart {
 		if (edit && !ctrlDown)
 			text.add(I18n.format("gui.integratedcircuits.cad.rotate"));
 		return text;
-	}
-
-	@Override
-	public void onScheduledTick(Vec2 pos, ICircuit parent) {
-		notifyNeighbours(pos, parent);
 	}
 
 	@Override

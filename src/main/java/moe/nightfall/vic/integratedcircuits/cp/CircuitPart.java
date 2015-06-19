@@ -170,6 +170,7 @@ public abstract class CircuitPart {
 
 	public void onPlaced(Vec2 pos, ICircuit parent) {
 		updateInput(pos, parent);
+		scheduleTick(pos, parent); // To initialize most simple gates
 		notifyNeighbours(pos, parent);
 	}
 
@@ -229,10 +230,6 @@ public abstract class CircuitPart {
 			return false;
 		boolean in = (getProperty(pos, parent, PROP_INPUT) << (side.ordinal() - 2) & 8) != 0;
 		return in;
-	}
-
-	@Deprecated // Just to let things build. Remove as soon as possible
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 	}
 
 	/** Handles input changes. Should only implement wire-like behavior. Don't call it directly!*/
