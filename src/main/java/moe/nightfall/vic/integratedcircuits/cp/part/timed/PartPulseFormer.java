@@ -10,17 +10,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class PartPulseFormer extends PartDelayedAction {
 	public BooleanProperty PROP_OUTPUT = new BooleanProperty("OUTPUT", stitcher);
+	public BooleanProperty PROP_OLD_IN = new BooleanProperty("OLD_IN", stitcher);
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
-		if ((toInternal(pos, parent, side) != ForgeDirection.SOUTH))
-			return;
-		if (getInputFromSide(pos, parent, side)) {
-			setProperty(pos, parent, PROP_OUTPUT, true);
-			notifyNeighbours(pos, parent);
-			setDelay(pos, parent, true);
-		}
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+		scheduleTick(pos, parent);
 	}
 
 	@Override
@@ -44,6 +38,19 @@ public class PartPulseFormer extends PartDelayedAction {
 	}
 
 	@Override
+	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		super.onScheduledTick(pos, parent);
+		boolean newIn = getInputFromSide(pos, parent,
+				toExternal(pos, parent, ForgeDirection.SOUTH));
+		if (!getProperty(pos, parent, PROP_OLD_IN) && newIn) {
+			setProperty(pos, parent, PROP_OUTPUT, true);
+			setDelay(pos, parent, true);
+			notifyNeighbours(pos, parent);
+		}
+		setProperty(pos, parent, PROP_OLD_IN, newIn);
+	}
+
+	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) {
 		return 2;
 	}
@@ -51,6 +58,6 @@ public class PartPulseFormer extends PartDelayedAction {
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
 		setProperty(pos, parent, PROP_OUTPUT, false);
-		super.onDelay(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 }
