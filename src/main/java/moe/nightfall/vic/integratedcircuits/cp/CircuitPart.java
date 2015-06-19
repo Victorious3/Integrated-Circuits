@@ -173,12 +173,6 @@ public abstract class CircuitPart {
 		notifyNeighbours(pos, parent);
 	}
 
-	// TODO Isn't really used anywhere. Leaving the iteration in doesn't make
-	// much sense, but maybe the repeater could make use of it.
-	@Deprecated
-	public void onTick(Vec2 pos, ICircuit parent) {
-	}
-
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
 	}
 
@@ -230,23 +224,22 @@ public abstract class CircuitPart {
 			&& neighbour.canConnectToSide(pos.offset(side), parent, side.getOpposite());
 	}
 
-	public final boolean getCachedInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		if (side == ForgeDirection.UNKNOWN)
 			return false;
 		boolean in = (getProperty(pos, parent, PROP_INPUT) << (side.ordinal() - 2) & 8) != 0;
 		return in;
 	}
 
-	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		return hasConnectionOnSide(pos, parent, side) && getCachedInputFromSide(pos, parent, side);
-	}
-
+	@Deprecated // Just to let things build. Remove as soon as possible
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
 	}
 
-	public void scheduleInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		parent.getCircuitData().scheduleInputChange(pos, side);
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+	}
+
+	public void scheduleInputChange(Vec2 pos, ICircuit parent) {
+		parent.getCircuitData().scheduleInputChange(pos);
 	}
 
 	/** Check every side to update the internal buffer **/
@@ -273,15 +266,14 @@ public abstract class CircuitPart {
 			if (part != null) {
 				ForgeDirection fd2 = fd.getOpposite();
 				Vec2 pos2 = pos.offset(fd);
-				boolean b = (hasConnectionOnSide(pos, parent, fd) && getOutputToSide(pos, parent, fd))
-						!= part.getCachedInputFromSide(pos2, parent, fd2);
-				if (b) {
-					part.scheduleInputChange(pos2, parent, fd2);
+				if ((hasConnectionOnSide(pos, parent, fd) && getOutputToSide(pos, parent, fd))
+						!= part.getInputFromSide(pos2, parent, fd2)) {
+					part.scheduleInputChange(pos2, parent);
 					part.markForUpdate(pos2, parent);
 				}
-				markForUpdate(pos, parent);
 			}
 		}
+		markForUpdate(pos, parent);
 	}
 
 	public final CircuitPart getNeighbourOnSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
