@@ -80,7 +80,7 @@ public class PartRepeater extends PartDelayedAction {
 		updateInput(pos, parent);
 		if (toInternal(pos, parent, side) != ForgeDirection.SOUTH)
 			return;
-		if (getCurrentDelay(pos, parent) == 0) {
+		if (!isDelayActive(pos, parent)) {
 			boolean in = getInputFromSide(pos, parent, side);
 			if (getProperty(pos, parent, PROP_OUT) != in)
 				setDelay(pos, parent, true);
