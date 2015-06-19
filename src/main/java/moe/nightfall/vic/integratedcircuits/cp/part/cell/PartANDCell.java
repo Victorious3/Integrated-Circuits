@@ -17,8 +17,8 @@ public class PartANDCell extends PartSimpleGate {
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		super.onInputChange(pos, parent, side);
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+		super.onInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 

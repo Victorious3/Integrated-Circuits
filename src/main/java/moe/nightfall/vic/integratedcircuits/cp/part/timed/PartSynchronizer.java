@@ -1,4 +1,4 @@
-package moe.nightfall.vic.integratedcircuits.cp.part;
+package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -9,10 +9,15 @@ import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanPropert
 import net.minecraftforge.common.util.ForgeDirection;
 
 //TODO Is currently giving a one tick pulse, might cause problems with other gates.
-public class PartSynchronizer extends PartCPGate {
+public class PartSynchronizer extends PartDelayedAction {
 	public final BooleanProperty PROP_IN_EAST = new BooleanProperty("IN_EAST", stitcher);
 	public final BooleanProperty PROP_IN_WEST = new BooleanProperty("IN_WEST", stitcher);
 	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
+
+	@Override
+	public int getDelay(Vec2 pos, ICircuit parent) {
+		return 2;
+	}
 
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {

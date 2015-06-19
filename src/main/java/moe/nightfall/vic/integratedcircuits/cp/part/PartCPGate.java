@@ -26,10 +26,6 @@ import com.google.common.collect.Lists;
 public abstract class PartCPGate extends CircuitPart {
 	public final IntProperty PROP_ROTATION = new IntProperty("ROTATION", stitcher, 3);
 
-	@Deprecated // Just to let things build. Remove as soon as possible
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-	}
-
 	public final int getRotation(Vec2 pos, ICircuit parent) {
 		return getProperty(pos, parent, PROP_ROTATION);
 	}
