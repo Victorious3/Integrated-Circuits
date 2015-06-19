@@ -282,24 +282,29 @@ public class CircuitData implements Cloneable {
 		updateQueue.add(pos);
 	}
 
-	public synchronized void updateMatrix() {
-		// Ticking all circuit parts that need to be ticked
-		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
-		tickSchedule.clear();
-		for (Vec2 v : tmp) {
-			getPart(v).onScheduledTick(v, parent);
-		}
-
-		// "Instantaneously" propagating signals through wires and e.g. null cell
+	/** "Instantaneously" propagate signals through wires and e.g. null cell */
+	private void propagateSignals() {
 		while (inputQueue.size() > 0) {
-			HashSet<Vec2> tmp2 = (HashSet<Vec2>) inputQueue.clone();
+			HashSet<Vec2> tmp = (HashSet<Vec2>) inputQueue.clone();
 			inputQueue.clear();
-			for (Vec2 vec : tmp2) {
-				CircuitPart part = getPart(vec);
-				part.updateInput(vec, parent);
-				part.onInputChange(vec, parent);
+			for (Vec2 pos : tmp) {
+				CircuitPart part = getPart(pos);
+				part.updateInput(pos, parent);
+				part.onInputChange(pos, parent);
 			}
 		}
+	}
+
+	public synchronized void updateMatrix() {
+		propagateSignals(); // This pass is mostly for CAD
+		
+		// Tick all circuit parts that need to be ticked
+		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
+		tickSchedule.clear();
+		for (Vec2 pos : tmp)
+			getPart(pos).onScheduledTick(pos, parent);
+		
+		propagateSignals();
 	}
 
 	public static CircuitData readFromNBT(NBTTagCompound compound) {

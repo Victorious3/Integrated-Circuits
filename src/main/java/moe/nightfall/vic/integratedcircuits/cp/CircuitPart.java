@@ -169,8 +169,7 @@ public abstract class CircuitPart {
 	}
 
 	public void onPlaced(Vec2 pos, ICircuit parent) {
-		updateInput(pos, parent);
-		scheduleTick(pos, parent); // To initialize most simple gates
+		scheduleInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 
@@ -241,6 +240,7 @@ public abstract class CircuitPart {
 	/** Puts a gate into queue to call its onInputChange() later. */
 	public void scheduleInputChange(Vec2 pos, ICircuit parent) {
 		parent.getCircuitData().scheduleInputChange(pos);
+		markForUpdate(pos, parent);
 	}
 
 	/** Check every side to update the internal buffer **/
@@ -268,10 +268,8 @@ public abstract class CircuitPart {
 				ForgeDirection fd2 = fd.getOpposite();
 				Vec2 pos2 = pos.offset(fd);
 				if ((hasConnectionOnSide(pos, parent, fd) && getOutputToSide(pos, parent, fd))
-						!= part.getInputFromSide(pos2, parent, fd2)) {
+						!= part.getInputFromSide(pos2, parent, fd2))
 					part.scheduleInputChange(pos2, parent);
-					part.markForUpdate(pos2, parent);
-				}
 			}
 		}
 		markForUpdate(pos, parent);
@@ -293,7 +291,7 @@ public abstract class CircuitPart {
 
 	/** Gets called on a client update */
 	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {
-		updateInput(pos, parent);
+		scheduleInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 

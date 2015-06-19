@@ -13,8 +13,10 @@ public abstract class Part2I1O extends PartSimpleGate {
 
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
-		if (button == 0 && ctrl)
+		if (button == 0 && ctrl) {
 			cycleProperty(pos, parent, PROP_CONNECTORS);
+			scheduleInputChange(pos, parent);
+		}
 		super.onClick(pos, parent, button, ctrl);
 	}
 

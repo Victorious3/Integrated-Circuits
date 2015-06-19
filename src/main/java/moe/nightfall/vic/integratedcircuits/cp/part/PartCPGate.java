@@ -36,7 +36,7 @@ public abstract class PartCPGate extends CircuitPart {
 
 	public final void setRotation(Vec2 pos, ICircuit parent, int rotation) {
 		setProperty(pos, parent, PROP_ROTATION, rotation);
-		scheduleTick(pos, parent); // To update gate state
+		scheduleInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 
@@ -49,7 +49,7 @@ public abstract class PartCPGate extends CircuitPart {
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		if (button == 0 && !ctrl) {
 			cycleProperty(pos, parent, PROP_ROTATION);
-			scheduleTick(pos, parent); // To update gate state
+			scheduleInputChange(pos, parent);
 			notifyNeighbours(pos, parent);
 		}
 	}
