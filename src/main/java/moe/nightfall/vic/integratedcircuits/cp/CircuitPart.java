@@ -232,7 +232,9 @@ public abstract class CircuitPart {
 		return in;
 	}
 
-	/** Handles input changes. Should only implement wire-like behavior. Don't call it directly!*/
+	/** Handles input changes. Should only implement wire-like behavior.
+	 *  Don't call it directly! Use scheduleInputChange() instead!
+	 */
 	public void onInputChange(Vec2 pos, ICircuit parent) {
 	}
 
