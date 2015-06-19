@@ -235,9 +235,11 @@ public abstract class CircuitPart {
 	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
 	}
 
+	/** Handles input changes. Should only implement wire-like behavior. Don't call it directly!*/
 	public void onInputChange(Vec2 pos, ICircuit parent) {
 	}
 
+	/** Puts a gate into queue to call its onInputChange() later. */
 	public void scheduleInputChange(Vec2 pos, ICircuit parent) {
 		parent.getCircuitData().scheduleInputChange(pos);
 	}
