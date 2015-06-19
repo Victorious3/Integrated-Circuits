@@ -16,6 +16,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class PartRandomizer extends PartDelayedAction {
 	public final IntProperty PROP_RANDOM = new IntProperty("RANDOM", stitcher, 7);
+	private Random random = new Random();
 
 	@Override
 	protected int getDelay(Vec2 pos, ICircuit parent) {
@@ -23,21 +24,14 @@ public class PartRandomizer extends PartDelayedAction {
 	}
 
 	@Override
-	public void onPlaced(Vec2 pos, ICircuit parent) {
-		setDelay(pos, parent, true);
-	}
-
-	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
-		setProperty(pos, parent, PROP_RANDOM, new Random().nextInt(7));
-		notifyNeighbours(pos, parent);
+		setProperty(pos, parent, PROP_RANDOM, random.nextInt(8)); // 0..7
 		setDelay(pos, parent, true);
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
-			return false;
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if (s2 == ForgeDirection.SOUTH)
 			return false;
@@ -58,14 +52,16 @@ public class PartRandomizer extends PartDelayedAction {
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		super.onInputChange(pos, parent, side);
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 != ForgeDirection.SOUTH)
-			return;
-		if (!getInputFromSide(pos, parent, side))
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+		scheduleTick(pos, parent);
+	}
+
+	@Override
+	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		super.onScheduledTick(pos, parent);
+		if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
 			setDelay(pos, parent, false);
-		else
+		} else if (!isDelayActive(pos, parent))
 			setDelay(pos, parent, true);
 	}
 
