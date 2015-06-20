@@ -6,38 +6,52 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PartToggleLatch extends PartLatch {
+public class PartToggleLatch extends PartCPGate {
+	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
+	public final BooleanProperty PROP_OLD_NORTH = new BooleanProperty("OLD_NORTH", stitcher);
+	public final BooleanProperty PROP_OLD_SOUTH = new BooleanProperty("OLD_SOUTH", stitcher);
+
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		super.onClick(pos, parent, button, ctrl);
 		if (button == 0 && ctrl) {
-			invertProperty(pos, parent, PROP_TMP);
+			invertProperty(pos, parent, PROP_OUT);
 			notifyNeighbours(pos, parent);
 		}
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		super.onInputChange(pos, parent, side);
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if ((s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH)) {
-			if (getInputFromSide(pos, parent, side))
-				invertProperty(pos, parent, PROP_OUT);
-			scheduleTick(pos, parent);
-		}
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+		scheduleTick(pos, parent);
+	}
+
+	@Override
+	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		ForgeDirection north = toExternal(pos, parent, ForgeDirection.NORTH);
+		boolean northIn = getInputFromSide(pos, parent, north);
+		boolean southIn = getInputFromSide(pos, parent, north.getOpposite());
+		if (northIn && !getProperty(pos, parent, PROP_OLD_NORTH))
+			invertProperty(pos, parent, PROP_OUT);
+		if (southIn && !getProperty(pos, parent, PROP_OLD_SOUTH))
+			invertProperty(pos, parent, PROP_OUT);
+		notifyNeighbours(pos, parent);
+		setProperty(pos, parent, PROP_OLD_NORTH, northIn);
+		setProperty(pos, parent, PROP_OLD_SOUTH, southIn);
 	}
 
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		if (s2 == ForgeDirection.EAST)
-			return getProperty(pos, parent, PROP_TMP);
+			return getProperty(pos, parent, PROP_OUT);
 		if (s2 == ForgeDirection.WEST)
-			return !getProperty(pos, parent, PROP_TMP);
+			return !getProperty(pos, parent, PROP_OUT);
 		return false;
 	}
 
@@ -53,5 +67,10 @@ public class PartToggleLatch extends PartLatch {
 		if (edit && ctrlDown)
 			text.add(I18n.format("gui.integratedcircuits.cad.toggle"));
 		return text;
+	}
+
+	@Override
+	public Category getCategory() {
+		return Category.LATCH;
 	}
 }
