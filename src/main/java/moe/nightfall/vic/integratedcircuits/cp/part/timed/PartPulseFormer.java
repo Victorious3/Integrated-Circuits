@@ -9,7 +9,6 @@ import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanPropert
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class PartPulseFormer extends PartDelayedAction {
-	public BooleanProperty PROP_OUTPUT = new BooleanProperty("OUTPUT", stitcher);
 	public BooleanProperty PROP_OLD_IN = new BooleanProperty("OLD_IN", stitcher);
 
 	@Override
@@ -22,7 +21,7 @@ public class PartPulseFormer extends PartDelayedAction {
 		ForgeDirection f2 = toInternal(pos, parent, side);
 		if (f2 != ForgeDirection.NORTH)
 			return false;
-		return getProperty(pos, parent, PROP_OUTPUT);
+		return isDelayActive(pos, parent);
 	}
 
 	@Override
@@ -42,8 +41,7 @@ public class PartPulseFormer extends PartDelayedAction {
 		super.onScheduledTick(pos, parent);
 		boolean newIn = getInputFromSide(pos, parent,
 				toExternal(pos, parent, ForgeDirection.SOUTH));
-		if (!getProperty(pos, parent, PROP_OLD_IN) && newIn) {
-			setProperty(pos, parent, PROP_OUTPUT, true);
+		if (newIn && !getProperty(pos, parent, PROP_OLD_IN)) {
 			setDelay(pos, parent, true);
 			notifyNeighbours(pos, parent);
 		}
@@ -57,7 +55,6 @@ public class PartPulseFormer extends PartDelayedAction {
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
-		setProperty(pos, parent, PROP_OUTPUT, false);
 		notifyNeighbours(pos, parent);
 	}
 }

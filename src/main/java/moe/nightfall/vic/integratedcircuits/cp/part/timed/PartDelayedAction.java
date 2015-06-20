@@ -5,16 +5,11 @@ import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
-import net.minecraftforge.common.util.ForgeDirection; // Remove me!
 
 /** Uses 8 bits for the delay. 255 ticks = 12.75 seconds */
 public abstract class PartDelayedAction extends PartCPGate {
 	public final BooleanProperty PROP_ACTIVE = new BooleanProperty("ACTIVE", stitcher);
 	public final IntProperty PROP_CURRENT_DELAY = new IntProperty("CURRENT_DELAY", stitcher, 255);
-
-	@Deprecated // Just to let things build. Remove as soon as possible
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-	}
 
 	protected abstract int getDelay(Vec2 pos, ICircuit parent);
 
