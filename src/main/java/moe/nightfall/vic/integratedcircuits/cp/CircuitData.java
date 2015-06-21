@@ -7,8 +7,10 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.cp.legacy.LegacyLoader;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
@@ -27,6 +29,9 @@ import com.google.common.primitives.Ints;
  * internal arrays if you use them outside of the tick loop.
  */
 public class CircuitData implements Cloneable {
+
+	// cdata version
+	public static final int version = 1;
 
 	private int size;
 	private int[][] meta;
@@ -320,6 +325,16 @@ public class CircuitData implements Cloneable {
 	}
 
 	public static CircuitData readFromNBT(NBTTagCompound compound, ICircuit parent) {
+		int version = compound.getInteger("version");
+
+		List<LegacyLoader> legacyLoaders = null;
+		if (version < CircuitData.version) {
+			legacyLoaders = LegacyLoader.getLegacyLoaders(version);
+			for (LegacyLoader loader : legacyLoaders) {
+				loader.transformNBT(compound);
+			}
+		}
+
 		NBTTagList idlist = compound.getTagList("id", NBT.TAG_INT_ARRAY);
 		int[][] id = new int[idlist.tagCount()][];
 		for (int i = 0; i < idlist.tagCount(); i++) {
@@ -333,8 +348,14 @@ public class CircuitData implements Cloneable {
 		}
 
 		CircuitProperties prop = CircuitProperties.readFromNBT(compound.getCompoundTag("properties"));
-
 		int size = compound.getInteger("size");
+
+		if (version < CircuitData.version) {
+			for (LegacyLoader loader : legacyLoaders) {
+				loader.transform(size, id, meta);
+			}
+		}
+
 		LinkedHashSet<Vec2> scheduledTicks = new LinkedHashSet<Vec2>();
 
 		int[] scheduledList = compound.getIntArray("scheduled");
@@ -370,6 +391,8 @@ public class CircuitData implements Cloneable {
 			tmp.add(v.y);
 		}
 		compound.setIntArray("scheduled", Ints.toArray(tmp));
+
+		compound.setInteger("version", version);
 
 		return compound;
 	}
