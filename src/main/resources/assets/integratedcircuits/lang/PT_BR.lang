@@ -1,0 +1,156 @@
+# items
+item.integratedcircuits.floppy.name=Disco de diagrama de circuito
+item.integratedcircuits.laser.name=Laser
+item.integratedcircuits.pcb.name=Placa de circuito crua
+item.integratedcircuits.pcb.printed.name=Placa de circuito impressa
+item.integratedcircuits.pcb_chip.name=Circuito impresso
+item.integratedcircuits.silicon.name=Silicone
+item.integratedcircuits.silicon_drop.name=Gota de Silicone
+item.integratedcircuits.coalcompound.name=Composto arenoso de carvão
+item.integratedcircuits.screwdriver.name=Chave de fenda
+item.integratedcircuits.soldering_iron.name=Ferro de solda
+
+item.integratedcircuits.socket.name=Soquete vazio
+item.integratedcircuits.socket_fmp.name=Soquete FMP vazio
+
+item.integratedcircuits.7segment.name=Segmento
+item.integratedcircuits.circuit.name=Circuito Integrado (%s)
+
+# blocks
+tile.integratedcircuits.pcblayoutcad.name=Esquema PCI CAD
+tile.integratedcircuits.assembler.name=Montadora
+
+# parts
+part.integratedcircuits.iobit.name=IOBit
+part.integratedcircuits.torch.name=Tocha
+part.integratedcircuits.tunnel.name=Tunel
+part.integratedcircuits.wire.0.name=Fio
+part.integratedcircuits.wire.1.name=Fio vermelho
+part.integratedcircuits.wire.2.name=Fio laranja
+
+part.integratedcircuits.nullcell.name=Celula nula
+part.integratedcircuits.buffercell.name=Celula Buffer
+part.integratedcircuits.invertcell.name=Celula de inversão
+part.integratedcircuits.andcell.name=Celula E
+
+part.integratedcircuits.andgate.name=Porta E
+part.integratedcircuits.orgate.name=Porta OU
+part.integratedcircuits.xorgate.name=Porta OU exclusivo
+part.integratedcircuits.buffergate.name=Porta Buffer
+part.integratedcircuits.nandgate.name=Porta NÃO E
+part.integratedcircuits.norgate.name=Porta NÃO OU
+part.integratedcircuits.xnorgate.name=Porta NÃO OU exclusivo
+part.integratedcircuits.notgate.name=Porta NÃO
+
+part.integratedcircuits.togglelatch.name=Flip-flop T
+part.integratedcircuits.rslatch.name=Flip-flop S-R
+part.integratedcircuits.rslatch.mode=Modo
+part.integratedcircuits.rslatch.mirrored=Espelhado
+part.integratedcircuits.transparentlatch.name=Flip-flop Transparente  //those names are based on the behaviour as you can see there https://pt.wikipedia.org/wiki/Flip-flop
+
+part.integratedcircuits.timer.name=Temporizador
+part.integratedcircuits.sequencer.name=Sequenciador
+part.integratedcircuits.synchronizer.name=Sincronizador
+part.integratedcircuits.statecell.name=Celula de estado
+part.integratedcircuits.pulseformer.name=Formador de Pulso
+part.integratedcircuits.randomizer.name=Randomizador
+part.integratedcircuits.repeater.name=Repetidor
+part.integratedcircuits.multiplexer.name=Multiplexador
+
+# GUI
+gui.integratedcircuits.callback.ok=OK
+gui.integratedcircuits.callback.cancel=Cancelar
+gui.integratedcircuits.callback.yes=Sim
+gui.integratedcircuits.callback.no=Não
+
+gui.integratedcircuits.cad.name=Esquema PCI CAD
+gui.integratedcircuits.cad.edit=Editar
+gui.integratedcircuits.cad.erase=Apagar
+
+gui.integratedcircuits.cad.rotate=-Girar-
+gui.integratedcircuits.cad.toggle=-Trocar-
+gui.integratedcircuits.cad.delay=-Atraso-
+gui.integratedcircuits.cad.mode=-Modo-
+
+gui.integratedcircuits.cad.mode.simple=simples
+gui.integratedcircuits.cad.mode.bundled=Agrupado
+gui.integratedcircuits.cad.mode.analog=analogico
+gui.integratedcircuits.cad.mode.low=BAIXO
+gui.integratedcircuits.cad.mode.high=ALTO
+
+gui.integratedcircuits.cad.callback.show=Mostrar esta mensagem?
+gui.integratedcircuits.cad.callback.confirm=Você esta certo disto?
+gui.integratedcircuits.cad.callback.continue=Continuar Mesmo assim?
+gui.integratedcircuits.cad.callback.message=Isto ira reverter todo o%nseu progresso e%napagar o circuito atual.
+gui.integratedcitcuits.cad.callback.delay=Atraso atual: %s ticks
+
+gui.integratedcircuits.assembler.statuscode.2=Sem materiais!
+gui.integratedcircuits.assembler.statuscode.3=sem PCIs!
+
+gui.integratedcircuits.assembler.nocircuit=-Sem circuito-
+gui.integratedcircuits.assembler.redstone.enabled=Redstone Ativo
+gui.integratedcircuits.assembler.redstone.inverted=Redstone invertido
+gui.integratedcircuits.assembler.redstone.disabled=Redstone desativado
+gui.integratedcircuits.assembler.pull.single=Uma vez
+gui.integratedcircuits.assembler.pull.auto=Automatico
+gui.integratedcircuits.assembler.run=Rodar
+
+gui.integratedcircuits.7segment.name=Display de sete segmentos
+gui.integratedcircuits.7segment.master=Mestre
+gui.integratedcircuits.7segment.slave=Escravo
+gui.integratedcircuits.7segment.mode=Modo:
+
+gui.integratedcircuits.7segment.mode.simple=Simples
+gui.integratedcircuits.7segment.mode.analog=Analogico
+gui.integratedcircuits.7segment.mode.short.signed=Signed Short
+gui.integratedcircuits.7segment.mode.short.unsigned=Unsigned Short
+gui.integratedcircuits.7segment.mode.float=Signed Float
+gui.integratedcircuits.7segment.mode.binary=Binary String
+gui.integratedcircuits.7segment.mode.manual=Manual						//as these names are used in programming, and anyone ppl that will use this mod will need to have a basic on this, i prefer let this as it is
+
+gui.integratedcircuits.7segment.mode.simple.tooltip=Um sinal digital de redstone:%n§8§oVerdadeiro ou Falso.
+gui.integratedcircuits.7segment.mode.analog.tooltip=Um sinal analogico de redstone:%n§8§ode 0 a F.
+gui.integratedcircuits.7segment.mode.short.signed.tooltip=Analisa um sinal agrupado como%n16 bit signed short:%n§8§ode -32768 a 32768.
+gui.integratedcircuits.7segment.mode.short.unsigned.tooltip=Analisa um sinal agrupado como%n16 bit unsigned Short:%n§8§ode 0 a 65535. 
+gui.integratedcircuits.7segment.mode.float.tooltip=Analisa um sinal agrupado como%n16 bit floating-point (binary16):%n§8§ode -122880 a 122880.
+gui.integratedcircuits.7segment.mode.binary.tooltip=emite um sinal agrupado%npelos seus digitos binarios.
+gui.integratedcircuits.7segment.mode.manual.tooltip=Permite modificar os segmentos %nindivudalmente de um sinal agrupado.
+
+gui.integratedcircuits.config.titleline2=Configure os circuitos integrados aqui
+
+#config
+config.integratedcircuits.category.parts=Partes de Circuitos
+config.integratedcircuits.category.parts.tooltip=Ativa / Desativa partes de circuitos %nCaso desative QUALQUER PARTE, TODOS os circuitos com esta parte vão QUEBRAR! %nCircuitos quebrados desta maneira nao voltaram a funcionar quando esta parte for reativada. %nTa unica maneira de "arrumar" os circuitos sera editando o diagrama no CAD para recolocar esta parte de novo, %ne depois refazer e recolocar o circuito.
+config.integratedcircuits.general.showConfirmMessage=Mostrar mensagem de configuração
+config.integratedcircuits.general.showConfirmMessage.tooltip=Mostrar a tela de confirmação dos CAD's.
+config.integratedcircuits.general.showStartupMessage=Mostrar a mensagem de inicialização.
+config.integratedcircuits.general.showStartupMessage.tooltip=Mostra uma mensagem na inicialização avisando os jogadores dos riscos que estao sujeitos ao utilizar este Mod.
+config.integratedcircuits.general.enablePropertyEdit=Ativar a edição de propriedades
+config.integratedcircuits.general.enablePropertyEdit.tooltip=Ativa a edição de propriedades de circuitos periferais. Nao darei nenhum suporte a erros que possam ocorrer por conta destas alteraçoes.
+config.integratedcircuits.general.circuitCacheSize=Tamanho do cache do circuito
+config.integratedcircuits.general.circuitCacheSize.tooltip=O numero maximo de desfazer no CAD
+config.integratedcircuits.general.enableTooltips=Ligar dicas
+config.integratedcircuits.general.enableTooltips.tooltip=ligar dicas de ajuda. Recomendado deixar ligado a nao ser que voce ja esteja familiarizado com o mod.
+config.integratedcircuits.general.enableTracker=ligar o tracker
+config.integratedcircuits.general.enableTracker.tooltip=Esca configuração fara o jogo acessar esta URL na inicialização: https://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat %ne conexao e feita pelo bit.ly para estatisticas. os dados coletados sao viseveis publicamente nesta URL https://bitly.com/1GIaUA6+. Bit.ly ira rastrear  %nseu pais de origem através de seu endereço de IP, nenhuma outra informação é coletada.eu gosto de estatisticas, e gostaria que voce mantivesse esta configuração ativada, %nassim eu tenho uma melhor visualização de quando meu mod é utilizado.
+config.integratedcircuits.general.sevenSegmentMaxDigits=Dígitos máximos de exibição do dysplay de sete segmentos
+config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=o numero maximo de digitos que um display de 7 segmentos pode ter
+config.integratedcircuits.parts.redirect=part.integratedcircuits.%s.name
+
+# misc
+itemGroup.integratedcircuits.ctab=Circuitos Integrados
+tooltip.integratedcircuits.socket=Você tem que levar um ferro de solda%npara soldar para um soquete
+
+# Item tooltips
+item.integratedcircuits.floppy.tooltip.name=Nome: %s
+item.integratedcircuits.floppy.tooltip.size=Tamanho: %s
+item.integratedcircuits.floppy.tooltip.author=Autor: %s
+item.integratedcircuits.floppy.tooltip.info=Clique com o botao direito no drive(A barra preta)%nna parte de baixo do montador CAD...
+
+# Forge Direction
+fdirection.north.name=NORTE
+fdirection.east.name=LESTE
+fdirection.south.name=SUL
+fdirection.west.name=OESTE
+fdirection.up.name=CIMA
+fdirection.down.name=BAIXO
