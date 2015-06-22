@@ -7,6 +7,7 @@ import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -67,7 +68,7 @@ public class GuiStateLabel extends GuiButtonExt implements IHoverable {
 	@Override
 	public List<String> getHoverInformation() {
 		if (desc != null && state < desc.length)
-			return Arrays.asList(desc[state].split("\n"));
+			return Arrays.asList(MiscUtils.stringNewlineSplit(desc[state]));
 		return null;
 	}
 
