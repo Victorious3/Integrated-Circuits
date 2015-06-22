@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 
@@ -32,7 +33,7 @@ public class GuiLabel extends Gui {
 	public void drawLabel(Minecraft mc, int x, int y) {
 		float scale = size / 6F;
 		GL11.glScalef(scale, scale, 1);
-		String[] list = text.split("\r\n");
+		String[] list = MiscUtils.stringNewlineSplit(text);
 		for (int i = 0; i < list.length; i++) {
 			int width = mc.fontRenderer.getStringWidth(list[i]);
 			int xOff = centered ? width / 2 : 0;

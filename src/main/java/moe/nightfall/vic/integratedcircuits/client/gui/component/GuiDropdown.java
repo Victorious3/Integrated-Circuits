@@ -8,6 +8,7 @@ import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -22,6 +23,7 @@ public class GuiDropdown extends GuiButton implements IHoverable {
 	private ImmutableList<String> elements;
 	private ImmutableList<String> tooltips;
 	private int selected;
+	private int hovered;
 	private String hover;
 	private boolean toggle;
 	private IHoverableHandler parent;
@@ -105,11 +107,13 @@ public class GuiDropdown extends GuiButton implements IHoverable {
 
 			if (x >= xPosition && y >= yPosition + height && x < xPosition + width
 					&& y < yPosition + height + elements.size() * height) {
-				int y2 = (y - yPosition - height) / height;
-				if (y2 != selected)
-					drawRect(xPosition + 1, yPosition + height * (y2 + 1), xPosition + width - 1, yPosition + height
-							* (y2 + 2) - 1, 0xFF5C648E);
-			}
+				hovered = (y - yPosition - height) / height;
+				if (hovered != selected)
+					drawRect(xPosition + 1, yPosition + height * (hovered + 1),
+							xPosition + width - 1, yPosition + height * (hovered + 2) - 1, 0xFF5C648E);
+				parent.setCurrentItem(this);
+			} else
+				hovered = -1;
 
 			for (int i = 0; i < elements.size(); i++) {
 				if (i == selected)
@@ -154,9 +158,10 @@ public class GuiDropdown extends GuiButton implements IHoverable {
 	@Override
 	public List<String> getHoverInformation() {
 		List<String> list;
-		if (tooltips.get(selected) != null) {
-			String tooltip = tooltips.get(selected);
-			list = Arrays.asList(tooltip.split("\r\n"));
+		int active = isOpen() ? hovered : selected;
+		String tooltip;
+		if (active >= 0 && (tooltip = tooltips.get(active)) != null) {
+			list = Arrays.asList(MiscUtils.stringNewlineSplit(tooltip));
 		} else
 			list = Lists.newArrayList();
 		return list;
