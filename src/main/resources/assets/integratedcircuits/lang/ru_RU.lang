@@ -1,8 +1,8 @@
 # items
-item.integratedcircuits.floppy.name=Дискета для чертежей
+item.integratedcircuits.floppy.name=Дискета для чертежей микросхем
 item.integratedcircuits.laser.name=Лазер
-item.integratedcircuits.pcb.name=Заготовка схемы
-item.integratedcircuits.pcb.printed.name=Настроенная микросхема
+item.integratedcircuits.pcb.name=Заготовка микросхемы
+item.integratedcircuits.pcb.printed.name=Микросхема без корпуса
 item.integratedcircuits.pcb_chip.name=Микросхема
 item.integratedcircuits.silicon.name=Кремний
 item.integratedcircuits.silicon_drop.name=Кусочек кремния
@@ -10,50 +10,50 @@ item.integratedcircuits.coalcompound.name=Пескоугольная смесь
 item.integratedcircuits.screwdriver.name=Отвёртка
 item.integratedcircuits.soldering_iron.name=Паяльник
 
-item.integratedcircuits.socket.name=Пустая ячейка
-item.integratedcircuits.socket_fmp.name=Пустая ячейка FMP
+item.integratedcircuits.socket.name=Слот под микросхему
+item.integratedcircuits.socket_fmp.name=FMP слот под микросхему
 
 item.integratedcircuits.7segment.name=Сегмент
-item.integratedcircuits.circuit.name=Встроенных схем (%s)
+item.integratedcircuits.circuit.name=Микросхема (%s)
 
 # blocks
-tile.integratedcircuits.pcblayoutcad.name=САПР ИС
-tile.integratedcircuits.assembler.name=Сборщик
+tile.integratedcircuits.pcblayoutcad.name=САПР микросхем
+tile.integratedcircuits.assembler.name=Сборщик микросхем
 
 # parts
-part.integratedcircuits.iobit.name=IO ножка
+part.integratedcircuits.iobit.name=Внешний вывод
 part.integratedcircuits.torch.name=Факел
-part.integratedcircuits.tunnel.name=Туннель
+part.integratedcircuits.tunnel.name=Перемычка
 part.integratedcircuits.wire.0.name=Провод
 part.integratedcircuits.wire.1.name=Красный провод
 part.integratedcircuits.wire.2.name=Оранжевый провод
 
-part.integratedcircuits.nullcell.name=Мост
-part.integratedcircuits.buffercell.name=Буфер
-part.integratedcircuits.invertcell.name=Инвертор
-part.integratedcircuits.andcell.name=Ячейка AND
+part.integratedcircuits.nullcell.name=Пересечение
+part.integratedcircuits.buffercell.name=Пересечение с буфером
+part.integratedcircuits.invertcell.name=Пересечение с инвертором
+part.integratedcircuits.andcell.name=Пересечение с элементом И
 
-part.integratedcircuits.andgate.name=Гейт AND
-part.integratedcircuits.orgate.name=Гейт OR
-part.integratedcircuits.xorgate.name=Гейт XOR
-part.integratedcircuits.buffergate.name=Буфер-гейт
-part.integratedcircuits.nandgate.name=Гейт NAND
-part.integratedcircuits.norgate.name=Гейт NOR
-part.integratedcircuits.xnorgate.name=Гейт XNOR
-part.integratedcircuits.notgate.name=Гейт NOT
+part.integratedcircuits.andgate.name=Элемент И
+part.integratedcircuits.orgate.name=Элемент ИЛИ
+part.integratedcircuits.xorgate.name=Исключающее ИЛИ
+part.integratedcircuits.buffergate.name=Буфер
+part.integratedcircuits.nandgate.name=Элемент И-НЕ
+part.integratedcircuits.norgate.name=Элемент ИЛИ-НЕ
+part.integratedcircuits.xnorgate.name=Исключающее ИЛИ-НЕ
+part.integratedcircuits.notgate.name=Инвертор
 
 part.integratedcircuits.togglelatch.name=Переключатель
-part.integratedcircuits.rslatch.name=RS переключатель
+part.integratedcircuits.rslatch.name=RS триггер
 part.integratedcircuits.rslatch.mode=Режим
-part.integratedcircuits.rslatch.mirrored=Отзеркален
-part.integratedcircuits.transparentlatch.name=Прозрачный переключатель
+part.integratedcircuits.rslatch.mirrored=Перевёрнут
+part.integratedcircuits.transparentlatch.name=Ячейка памяти
 
 part.integratedcircuits.timer.name=Таймер
-part.integratedcircuits.sequencer.name=Секвенсор
-part.integratedcircuits.synchronizer.name=Синхронизатор
-part.integratedcircuits.statecell.name=Приёмопередатчик шины
+part.integratedcircuits.sequencer.name=Часы
+part.integratedcircuits.synchronizer.name=Синхронизатор импульсов
+part.integratedcircuits.statecell.name=Память с задержкой
 part.integratedcircuits.pulseformer.name=Генератор импульсов
-part.integratedcircuits.randomizer.name=Рандомайзер
+part.integratedcircuits.randomizer.name=Случайный генератор
 part.integratedcircuits.repeater.name=Повторитель
 part.integratedcircuits.multiplexer.name=Мультиплексор
 
@@ -63,18 +63,18 @@ gui.integratedcircuits.callback.cancel=Отмена
 gui.integratedcircuits.callback.yes=Да
 gui.integratedcircuits.callback.no=Нет
 
-gui.integratedcircuits.cad.name=САПР ИС
+gui.integratedcircuits.cad.name=САПР микросхем
 gui.integratedcircuits.cad.edit=Правка
 gui.integratedcircuits.cad.erase=Удаление
 
-gui.integratedcircuits.cad.rotate=-Поворот-
-gui.integratedcircuits.cad.toggle=-Смена-
+gui.integratedcircuits.cad.rotate=-Повернуть-
+gui.integratedcircuits.cad.toggle=-Переключить-
 gui.integratedcircuits.cad.delay=-Задержка-
 gui.integratedcircuits.cad.mode=-Режим-
 
-gui.integratedcircuits.cad.mode.simple=простой
-gui.integratedcircuits.cad.mode.bundled=связки
-gui.integratedcircuits.cad.mode.analog=аналог
+gui.integratedcircuits.cad.mode.simple=Простой
+gui.integratedcircuits.cad.mode.bundled=Кабель
+gui.integratedcircuits.cad.mode.analog=Аналоговый
 gui.integratedcircuits.cad.mode.low=НИЗК
 gui.integratedcircuits.cad.mode.high=ВЫС
 
@@ -82,70 +82,70 @@ gui.integratedcircuits.cad.callback.show=Показывать это сообщ�
 gui.integratedcircuits.cad.callback.confirm=Вы уверены?
 gui.integratedcircuits.cad.callback.continue=Всё равно продолжить?
 gui.integratedcircuits.cad.callback.message=Это действие удалит весь%nпрогресс и очистит%nвыбранную схему.
-gui.integratedcitcuits.cad.callback.delay=Задержка: %s тиков
+gui.integratedcitcuits.cad.callback.delay=Задержка: %s тактов
 
 gui.integratedcircuits.assembler.statuscode.2=Не хватает материалов!
-gui.integratedcircuits.assembler.statuscode.3=Не хватает микросхем!
+gui.integratedcircuits.assembler.statuscode.3=Не хватает заготовок!
 
 gui.integratedcircuits.assembler.nocircuit=-Схема не выбрана-
-gui.integratedcircuits.assembler.redstone.enabled=Красный камень вкл.
-gui.integratedcircuits.assembler.redstone.inverted=Красный камень инверт.
-gui.integratedcircuits.assembler.redstone.disabled=Красный камень откл.
-gui.integratedcircuits.assembler.pull.single=Одиночн. сборка
+gui.integratedcircuits.assembler.redstone.enabled=Пуск при включении красного камня.
+gui.integratedcircuits.assembler.redstone.inverted=Пуск при отключении красного камня.
+gui.integratedcircuits.assembler.redstone.disabled=Игнорировать сигнал красного камня.
+gui.integratedcircuits.assembler.pull.single=Одиночная сборка
 gui.integratedcircuits.assembler.pull.auto=Автосборка
-gui.integratedcircuits.assembler.run=Начать
+gui.integratedcircuits.assembler.run=Пуск
 
 gui.integratedcircuits.7segment.name=Семисегментный индикатор
-gui.integratedcircuits.7segment.master=Домин
-gui.integratedcircuits.7segment.slave=Рецесс
+gui.integratedcircuits.7segment.master=Главный
+gui.integratedcircuits.7segment.slave=Управляемый
 gui.integratedcircuits.7segment.mode=Режим:
 
 gui.integratedcircuits.7segment.mode.simple=Простой
-gui.integratedcircuits.7segment.mode.analog=Аналог
-gui.integratedcircuits.7segment.mode.short.signed=Знак. коротк.
-gui.integratedcircuits.7segment.mode.short.unsigned=Беззнак. коротк.
-gui.integratedcircuits.7segment.mode.float=Знак. плав. зпт.
-gui.integratedcircuits.7segment.mode.binary=Двоичн. строк.
+gui.integratedcircuits.7segment.mode.analog=Аналоговый
+gui.integratedcircuits.7segment.mode.short.signed=Знаковое целое
+gui.integratedcircuits.7segment.mode.short.unsigned=Беззнаковое целое
+gui.integratedcircuits.7segment.mode.float=С плавающей точкой
+gui.integratedcircuits.7segment.mode.binary=Двоичный
 gui.integratedcircuits.7segment.mode.manual=Ручной
 
-gui.integratedcircuits.7segment.mode.simple.tooltip=Цифровой сигнал КК:%n§8§oTrue или False.
-gui.integratedcircuits.7segment.mode.analog.tooltip=Аналоговый сигнал КК:%n§8§oОт 0 до F.
-gui.integratedcircuits.7segment.mode.short.signed.tooltip=Выводит сигнал связки как%nзнаков. 16-битн. коротк.:%n§8§oОт -32768 до 32768.
-gui.integratedcircuits.7segment.mode.short.unsigned.tooltip=Выводит сигнал связки как%nбеззнак. 16-битн. коротк.:%n§8§oОт 0 до 65535. 
-gui.integratedcircuits.7segment.mode.float.tooltip=Выводит сигнал связки как%n16-битн плавающ. зпт (двоичн16):%n§8§oОт -122880 до 122880.
-gui.integratedcircuits.7segment.mode.binary.tooltip=Выводит символ через%nего двоичный код.
-gui.integratedcircuits.7segment.mode.manual.tooltip=Позволяет изменять каждый%nсегмент своим сигналом связки.
+gui.integratedcircuits.7segment.mode.simple.tooltip=Цифровой сигнал красного камня:%n§8§oTrue или False.%n§8§o0 или 1, если менее 5 сегментов.
+gui.integratedcircuits.7segment.mode.analog.tooltip=Аналоговый сигнал красного камня:%n§8§oОт 0 до F.
+gui.integratedcircuits.7segment.mode.short.signed.tooltip=Выводит сигнал с кабеля как%nзнаковое 16-битное целое:%n§8§oОт -32768 до 32767.
+gui.integratedcircuits.7segment.mode.short.unsigned.tooltip=Выводит сигнал с кабеля как%nбеззнаковое 16-битное целое:%n§8§oОт 0 до 65535. 
+gui.integratedcircuits.7segment.mode.float.tooltip=Выводит сигнал с кабеля как%n16-битное число с плавающей запятой:%n§8§oОт 0,000061 до 65504,%n§8§oпри точности 3,3 десятичных цифры.
+gui.integratedcircuits.7segment.mode.binary.tooltip=Выводит сигнал с кабеля побитово.
+gui.integratedcircuits.7segment.mode.manual.tooltip=Каждый сегмент управляется%nсвоим сигналом с кабеля.
 
-gui.integratedcircuits.config.titleline2=Configure IntegratedCircuits here
+gui.integratedcircuits.config.titleline2=Настройки мода IntegratedCircuits
 
 #config
-config.integratedcircuits.category.parts=Circuit Parts
-config.integratedcircuits.category.parts.tooltip=Enables / Disables circuit parts %nIf you disable ANYTHING, ALL circuits with that part will BREAK! %nCircuits broken in this way will not be fixed when the part is re-enabled. %nThe only way to "fix" the circuits is to edit the blueprint in the CAD to put the part back, %nand then remake and replace the circuits.
-config.integratedcircuits.general.showConfirmMessage=Show confirmation message
-config.integratedcircuits.general.showConfirmMessage.tooltip=Show the CAD's confirm prompt.
-config.integratedcircuits.general.showStartupMessage=Show startup message
-config.integratedcircuits.general.showStartupMessage.tooltip=Show a message on startup warning your players from the risk they are undertaking by playing with this mod.
-config.integratedcircuits.general.enablePropertyEdit=Enable editing Properties
-config.integratedcircuits.general.enablePropertyEdit.tooltip=Enable property editing for the circuit peripheral. I don't take any warranty for crashes that might arise because of this.
-config.integratedcircuits.general.circuitCacheSize=Circuit cache size
-config.integratedcircuits.general.circuitCacheSize.tooltip=The maximum number of undos that can be used in the CAD
-config.integratedcircuits.general.enableTooltips=Enable tooltips
-config.integratedcircuits.general.enableTooltips.tooltip=Enable help tooltips. Recommended to be enabled unless you are familiar with the mod.
-config.integratedcircuits.general.enableTracker=Enable tracker
-config.integratedcircuits.general.enableTracker.tooltip=This setting will make the game visit this URL on startup: https://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat %nThe connection is established over bit.ly for statistics. The data collected is publicly visible on https://bitly.com/1GIaUA6+. Bit.ly will track %nyour country via your IP address, no other, or personal, information is gathered. I like statistics, and I would like you to keep this setting enabled, %nso that I get a better overview of how often my mod is used. Thanks.
-config.integratedcircuits.general.sevenSegmentMaxDigits=Maximal digits seven segment display
-config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=The maximum number of digits a seven segment display can have
+config.integratedcircuits.category.parts=Компоненты микросхем
+config.integratedcircuits.category.parts.tooltip=Включение / Отключение типов компонентов микросхем%nОтключение ЛЮБОГО компонента УДАЛИТ его из КАЖДОЙ микросхемы при её загрузке, НАВСЕГДА!
+config.integratedcircuits.general.showConfirmMessage=Запрашивать подтверждение
+config.integratedcircuits.general.showConfirmMessage.tooltip=Запрашивать подтверждение очистки микросхемы в САПР.
+config.integratedcircuits.general.showStartupMessage=Показывать сообщение при запуске.
+config.integratedcircuits.general.showStartupMessage.tooltip=Показывать при запуске сообщение, предкпреждающее пользователей о том,%nчто мод находится на ранней стадии разработки и о связанных с этим рисках.
+config.integratedcircuits.general.enablePropertyEdit=Разрешить редактирование свойств на ходу
+config.integratedcircuits.general.enablePropertyEdit.tooltip=Разрешить редактирование свойств компонентов внутри микросхем%nпри помощи подключенного компьютера. Официально НЕ ПОДДЕРЖИВАЕТСЯ.
+config.integratedcircuits.general.circuitCacheSize=Размер буфера отмены.
+config.integratedcircuits.general.circuitCacheSize.tooltip=Максимальное количество отмен, которое можно совершить в САПР.
+config.integratedcircuits.general.enableTooltips=Включить подсказки
+config.integratedcircuits.general.enableTooltips.tooltip=Включить всплывающие подсказки. Рекомендуется для ознакомления с модом и вообще.
+config.integratedcircuits.general.enableTracker=Проверять обновления
+config.integratedcircuits.general.enableTracker.tooltip=Если эта настройка включена, при каждом запуске будет проверяться файл по адресу:%nhttps://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat%nПодключение осуществляется через bit.ly для сбора статистики.%nСтатистика доступна всем на https://bitly.com/1GIaUA6+.%nBit.ly отслеживает ТОЛЬКО страну и IP адрес.%nПо возможности не отключайте эту настройку. Это позволяет видеть, как используется этот мод.%nСпасибо!
+config.integratedcircuits.general.sevenSegmentMaxDigits=Максимум цифр для индикаторов.
+config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=Максимальное количество семисегментных индикаторов, из которого может состоять дисплей.
 config.integratedcircuits.parts.redirect=part.integratedcircuits.%s.name
 
 # misc
 itemGroup.integratedcircuits.ctab=Integrated Circuits
-tooltip.integratedcircuits.socket=Вам нужен паяльник, чтобы%nраспаивать ячейку
+tooltip.integratedcircuits.socket=Для установки микросхемы%nнужен паяльник
 
 # Item tooltips
 item.integratedcircuits.floppy.tooltip.name=Название: %s
 item.integratedcircuits.floppy.tooltip.size=Размер: %s
 item.integratedcircuits.floppy.tooltip.author=Автор: %s
-item.integratedcircuits.floppy.tooltip.info=ПКМ на флопповоде (чёрная полоска)%nв низу сборщика или САПРа...
+item.integratedcircuits.floppy.tooltip.info=ПКМ на флопповоде (чёрная полоска)%nвнизу сборщика или САПРа...
 
 # Forge Direction
 fdirection.north.name=СЕВЕР
