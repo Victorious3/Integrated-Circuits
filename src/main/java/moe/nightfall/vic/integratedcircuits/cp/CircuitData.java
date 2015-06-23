@@ -317,6 +317,8 @@ public class CircuitData implements Cloneable {
 
 		List<LegacyLoader> legacyLoaders = null;
 		if (version < CircuitData.version) {
+			// TODO This can't work for multiple versions as those steps have to
+			// be executed in sequence.
 			legacyLoaders = LegacyLoader.getLegacyLoaders(version);
 			for (LegacyLoader loader : legacyLoaders) {
 				loader.transformNBT(compound);
