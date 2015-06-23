@@ -66,36 +66,68 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 	public abstract static class PartTransformer {
 
 		protected int id;
-		protected int meta;
+		private int meta;
 
 		protected AllocationMap old, transformed;
+		private BitSet oldMeta, transformedMeta;
 
 		protected PartTransformer() {
 			old = new AllocationMap(32);
 			transformed = new AllocationMap(32);
 		}
 
-		public void transform() {
-			BitSet data = BitSet.valueOf(new long[] { meta });
-			old.copyTo(transformed, data);
-			meta = (int) data.toLongArray()[0];
+		public final void transform() {
+			oldMeta = BitSet.valueOf(new long[] { meta });
+			transformedMeta = (BitSet) oldMeta.clone();
+			old.copyTo(transformed, transformedMeta);
+			transformImpl();
+			meta = (int) transformedMeta.toLongArray()[0];
+		}
+
+		protected final int getInt(int id) {
+			return (int) old.get(id, oldMeta).toLongArray()[0];
+		}
+
+		protected final boolean getBit(int id) {
+			return old.get(id, oldMeta).get(0);
+		}
+
+		protected final void setInt(int id, int value) {
+			transformed.set(id, BitSet.valueOf(new long[] { value }), transformedMeta);
+		}
+
+		protected final void setBit(int id, boolean value) {
+			BitSet data = new BitSet(1);
+			data.set(0, value);
+			transformed.set(id, data, transformedMeta);
+		}
+
+		protected void transformImpl() {
 		}
 	}
 
 	// TODO Create test cases
-	/*@Test
+	/*
+	@Test
 	public void test() {
 		PartTransformer transformer = new PartTransformer() {{
-			old.skip(4);
-			old.allocate(0, 5);
-
-			transformed.allocate(0, 5);
-		}};
+				old.skip(4);
+				old.allocate(0, 5);
+	
+				transformed.allocate(0, 5);
+				transformed.allocate(1, 2);
+			}
+	
+			@Override
+			protected void transformImpl() {
+				setInt(1, 3);
+			}	
+		};
 
 		transformer.meta = 0x1F0;
 		transformer.transform();
 
-		assertEquals(0x1F, transformer.meta);
+		assertEquals(0x7F, transformer.meta);
 	}*/
 
 	public static class AllocationMap {
