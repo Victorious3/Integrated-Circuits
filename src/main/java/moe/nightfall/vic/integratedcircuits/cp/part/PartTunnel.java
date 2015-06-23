@@ -51,6 +51,7 @@ public class PartTunnel extends CircuitPart {
 				setProperty(pos, parent, PROP_POS_X, 255);
 				setProperty(pos, parent, PROP_POS_Y, 255);
 				setProperty(pos, parent, PROP_IN, false);
+				markForUpdate(pos, parent);
 			}
 		}
 		return null;
@@ -85,21 +86,12 @@ public class PartTunnel extends CircuitPart {
 		setProperty(pos, parent, PROP_POS_X, 255);
 		setProperty(pos, parent, PROP_POS_Y, 255);
 		setProperty(pos, parent, PROP_IN, false);
-		super.onPlaced(pos, parent);
+		scheduleInputChange(pos, parent);
 	}
 
-	@Override
-	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {
-		// updateInput analog for paired tunnel part
-		Vec2 pos2 = getConnectedPos(pos, parent);
-		PartTunnel part = getConnectedPart(pos, parent);
-		boolean oldI = getProperty(pos, parent, PROP_IN);
-		boolean newI = part == null ? false : part.getOutputToSide(pos2, parent, ForgeDirection.UNKNOWN);
-		setProperty(pos, parent, PROP_IN, newI);
-		
-		// Update previously connected tunnel, if required
-		Vec2 oldPos2 = new Vec2(PROP_POS_X.get(oldMeta), PROP_POS_Y.get(oldMeta));
-		if (!pos2.equals(oldPos2) && isConnected(oldPos2)) {
+	// Used to update previously connected tunnel when required
+	private void dropConnected(Vec2 pos, ICircuit parent, Vec2 oldPos2) {
+		if (isConnected(oldPos2)) {
 			CircuitPart cp = parent.getCircuitData().getPart(oldPos2);
 			if (cp instanceof PartTunnel) {
 				PartTunnel oldPart = (PartTunnel) cp;
@@ -113,31 +105,23 @@ public class PartTunnel extends CircuitPart {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {
+		// Update previously connected tunnel, if required
+		Vec2 pos2 = getConnectedPos(pos, parent);
+		Vec2 oldPos2 = new Vec2(PROP_POS_X.get(oldMeta), PROP_POS_Y.get(oldMeta));
+		if (!pos2.equals(oldPos2))
+			dropConnected(pos, parent, oldPos2);
 		
-		if (oldI != newI) {
-			markForUpdate(pos, parent);
-			notifyNeighbours(pos, parent);
-			// notifyNeighbors analog for paired tunnel
-			if (part != null && getOutputToSide(pos, parent, ForgeDirection.UNKNOWN) != part.getProperty(pos2, parent, PROP_IN)) {
-				part.scheduleInputChange(pos2, parent);
-				part.markForUpdate(pos2, parent);
-			}
-		}
+		scheduleInputChange(pos, parent);
 	}
 
 	@Override
 	public void onRemoved(Vec2 pos, ICircuit parent) {
 		// Update connected tunnel, if required
-		PartTunnel part = getConnectedPart(pos, parent);
-		if (part != null) {
-			Vec2 pos2 = getConnectedPos(pos, parent);
-			part.setProperty(pos2, parent, PROP_POS_X, 255);
-			part.setProperty(pos2, parent, PROP_POS_Y, 255);
-			// Like notifyNeighbours after disconnect from neighbour
-			if (part.getProperty(pos2, parent, PROP_IN))
-				part.scheduleInputChange(pos2, parent);
-			part.markForUpdate(pos2, parent);
-		}
+		dropConnected(pos, parent, getConnectedPos(pos, parent));
 	}
 
 	@Override

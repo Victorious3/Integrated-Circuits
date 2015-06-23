@@ -86,6 +86,8 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart> {
 					cdata.markForUpdate(pos);
 				}
 			}
+			// Wires must update immediately, even if circuit is not ticked
+			cdata.propagateSignals();
 
 			if (button == -1 && flag)
 				te.cache.capture(player.getGameProfile().getId());

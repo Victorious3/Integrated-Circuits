@@ -54,8 +54,8 @@ public class PartRSLatch extends PartCPGate {
 				// Turn off currently outputting input side,
 				// to check if we must switch to other state or break.
 				setProperty(pos, parent, PROP_CHECK, true);
-				notifyNeighbours(pos, parent);
 			}
+			notifyNeighbours(pos, parent);
 		}
 	}
 

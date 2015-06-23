@@ -171,6 +171,7 @@ public class CircuitData implements Cloneable {
 			io3.notifyNeighbours(pos3, parent);
 			io4.notifyNeighbours(pos4, parent);
 		}
+		propagateSignals();
 	}
 
 	/** Syncs the circuit's IO bits with the suspected output **/
@@ -283,7 +284,7 @@ public class CircuitData implements Cloneable {
 	}
 
 	/** "Instantaneously" propagate signals through wires and e.g. null cell */
-	private void propagateSignals() {
+	public synchronized void propagateSignals() {
 		while (inputQueue.size() > 0) {
 			HashSet<Vec2> tmp = (HashSet<Vec2>) inputQueue.clone();
 			inputQueue.clear();
@@ -296,8 +297,6 @@ public class CircuitData implements Cloneable {
 	}
 
 	public synchronized void updateMatrix() {
-		propagateSignals(); // This pass is mostly for CAD
-		
 		// Tick all circuit parts that need to be ticked
 		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
 		tickSchedule.clear();
