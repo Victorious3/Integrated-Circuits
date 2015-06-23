@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class LegacyLoader implements Comparable<LegacyLoader> {
@@ -49,7 +51,7 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 			for (int y = 0; y < size; y++) {
 				int pid = id[x][y];
 				if (partTransformers.containsKey(pid)) {
-					PartTransformer transformer = partTransformers.get(id);
+					PartTransformer transformer = partTransformers.get(pid);
 
 					transformer.id = pid;
 					transformer.meta = meta[x][y];
@@ -58,6 +60,23 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 
 					id[x][y] = transformer.id;
 					meta[x][y] = transformer.meta;
+				}
+			}
+		}
+	}
+
+	public void postTransform(CircuitData cdata) {
+		for (int x = 0; x < cdata.getSize(); x++) {
+			for (int y = 0; y < cdata.getSize(); y++) {
+				Vec2 pos = new Vec2(x, y);
+				int pid = cdata.getID(pos);
+				if (partTransformers.containsKey(pid)) {
+					PartTransformer transformer = partTransformers.get(pid);
+
+					transformer.id = pid;
+					transformer.meta = cdata.getMeta(pos);
+
+					transformer.postTransform(pos, cdata);
 				}
 			}
 		}
@@ -103,6 +122,9 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 		}
 
 		protected void transformImpl() {
+		}
+
+		public void postTransform(Vec2 crd, CircuitData cdata) {
 		}
 	}
 

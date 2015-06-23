@@ -2,9 +2,7 @@ package moe.nightfall.vic.integratedcircuits.cp;
 
 import io.netty.buffer.ByteBuf;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +17,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.primitives.Ints;
 
@@ -354,7 +351,15 @@ public class CircuitData implements Cloneable {
 			scheduledTicks.add(new Vec2(scheduledList[i], scheduledList[i + 1]));
 		}
 
-		return new CircuitData(size, parent, id, meta, scheduledTicks, prop);
+		CircuitData cdata = new CircuitData(size, parent, id, meta, scheduledTicks, prop);
+
+		if (version < CircuitData.version) {
+			for (LegacyLoader loader : legacyLoaders) {
+				loader.postTransform(cdata);
+			}
+		}
+
+		return cdata;
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
