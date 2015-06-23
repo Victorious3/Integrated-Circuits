@@ -58,36 +58,38 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 	public void onDelay(Vec2 pos, ICircuit parent) {
 		if (getProperty(pos, parent, PROP_OUT_NORTH))
 			setProperty(pos, parent, PROP_OUT_NORTH, false);
-		else if (getProperty(pos, parent, PROP_OUT_WEST)) {
+		else {
 			setProperty(pos, parent, PROP_OUT_WEST, false);
 			setProperty(pos, parent, PROP_OUT_NORTH, true);
 			setDelay(pos, parent, true);
 		}
-		super.onDelay(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
 		setProperty(pos, parent, PROP_DELAY, 20);
+		super.onPlaced(pos, parent);
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.SOUTH) {
-			if (getInputFromSide(pos, parent, side)) {
-				setProperty(pos, parent, PROP_OUT_WEST, true);
-				setProperty(pos, parent, PROP_OUT_NORTH, false);
-				notifyNeighbours(pos, parent);
-			} else if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)))
-				setDelay(pos, parent, true);
-		} else if (s2 == ForgeDirection.EAST && getProperty(pos, parent, PROP_OUT_WEST)) {
-			if (getInputFromSide(pos, parent, side))
-				setDelay(pos, parent, false);
-			else if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
-				setDelay(pos, parent, true);
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+		scheduleTick(pos, parent);
+	}
+
+	@Override
+	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		super.onScheduledTick(pos, parent);
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+			setProperty(pos, parent, PROP_OUT_WEST, true);
+			setProperty(pos, parent, PROP_OUT_NORTH, false);
+			setDelay(pos, parent, false);
 			notifyNeighbours(pos, parent);
+		} else if (getProperty(pos, parent, PROP_OUT_WEST)) {
+			if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)))
+				setDelay(pos, parent, false);
+			else if (!isDelayActive(pos, parent))
+				setDelay(pos, parent, true);
 		}
 	}
 

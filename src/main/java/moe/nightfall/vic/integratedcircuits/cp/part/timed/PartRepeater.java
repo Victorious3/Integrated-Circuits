@@ -22,28 +22,20 @@ public class PartRepeater extends PartDelayedAction {
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
-		setProperty(pos, parent, PROP_DELAY, 2);
-		setProperty(pos, parent, PROP_OUT, false);
+		setProperty(pos, parent, PROP_DELAY, 1);
+		super.onPlaced(pos, parent);
 	}
 
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
 		super.onClick(pos, parent, button, ctrl);
 		if (button == 0 && ctrl) {
-			int delay = getDelay(pos, parent);
-			int newDelay = 0;
-			switch (delay) {
-				case 255:
-					delay = 2;
-					break;
-				case 128:
-					delay = 255;
-					break;
-				default:
-					delay <<= 1;
-					break;
-			}
+			int delay = getProperty(pos, parent, PROP_DELAY);
+			delay = delay * 2 + 1;
+			if (delay > 255)
+				delay = 1;
 			setProperty(pos, parent, PROP_DELAY, delay);
+			markForUpdate(pos, parent);
 		}
 	}
 
@@ -69,28 +61,30 @@ public class PartRepeater extends PartDelayedAction {
 
 	@Override
 	public void onDelay(Vec2 pos, ICircuit parent) {
-		boolean b = invertProperty(pos, parent, PROP_OUT);
-		if (b != getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
-			setDelay(pos, parent, true);
-		super.onDelay(pos, parent);
+		invertProperty(pos, parent, PROP_OUT);
+		notifyNeighbours(pos, parent);
+		scheduleTick(pos, parent);
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
-		if (toInternal(pos, parent, side) != ForgeDirection.SOUTH)
-			return;
-		if (getCurrentDelay(pos, parent) == 0) {
-			boolean in = getInputFromSide(pos, parent, side);
-			if (getProperty(pos, parent, PROP_OUT) != in)
-				setDelay(pos, parent, true);
-		}
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+		scheduleTick(pos, parent);
+	}
+
+	@Override
+	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		boolean checkInput = !isDelayActive(pos, parent);
+		super.onScheduledTick(pos, parent);
+		if (checkInput && getProperty(pos, parent, PROP_OUT) !=
+				getInputFromSide(pos, parent,
+					toExternal(pos, parent, ForgeDirection.SOUTH)))
+			setDelay(pos, parent, true);
 	}
 
 	@Override
 	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) {
 		ArrayList<String> list = super.getInformation(pos, parent, edit, ctrlDown);
-		list.add("Delay: " + getDelay(pos, parent));
+		list.add("Delay: " + (getProperty(pos, parent, PROP_DELAY) + 1));
 		return list;
 	}
 }

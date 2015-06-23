@@ -13,16 +13,17 @@ public abstract class PartDelayedAction extends PartCPGate {
 
 	protected abstract int getDelay(Vec2 pos, ICircuit parent);
 
-	public int getCurrentDelay(Vec2 pos, ICircuit parent) {
-		return getProperty(pos, parent, PROP_CURRENT_DELAY);
+	public boolean isDelayActive(Vec2 pos, ICircuit parent) {
+		return getProperty(pos, parent, PROP_ACTIVE);
 	}
 
+	/** Don't forget to call super BEFORE your own code */
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
 		if (getProperty(pos, parent, PROP_ACTIVE)) {
-			int counter = getCurrentDelay(pos, parent);
-			counter--;
-			if (counter == 0) {
+			int counter = getProperty(pos, parent, PROP_CURRENT_DELAY);
+			counter++;
+			if (counter >= getDelay(pos, parent)) {
 				setProperty(pos, parent, PROP_ACTIVE, false);
 				setProperty(pos, parent, PROP_CURRENT_DELAY, 0);
 				onDelay(pos, parent);
@@ -34,11 +35,10 @@ public abstract class PartDelayedAction extends PartCPGate {
 	}
 
 	public void onDelay(Vec2 pos, ICircuit parent) {
-		notifyNeighbours(pos, parent);
 	}
 
 	protected void setDelay(Vec2 pos, ICircuit parent, boolean delay) {
-		setProperty(pos, parent, PROP_CURRENT_DELAY, getDelay(pos, parent));
+		setProperty(pos, parent, PROP_CURRENT_DELAY, 0);
 		setProperty(pos, parent, PROP_ACTIVE, delay);
 		if (delay)
 			scheduleTick(pos, parent);

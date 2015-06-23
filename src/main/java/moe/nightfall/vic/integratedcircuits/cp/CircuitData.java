@@ -39,7 +39,7 @@ public class CircuitData implements Cloneable {
 
 	private HashSet<Vec2> tickSchedule = new LinkedHashSet<Vec2>();
 	private HashSet<Vec2> updateQueue = new LinkedHashSet<Vec2>();
-	private HashMap<Vec2, Integer> inputQueue = new LinkedHashMap<Vec2, Integer>();
+	private HashSet<Vec2> inputQueue = new LinkedHashSet<Vec2>();
 
 	private boolean hasChanged;
 
@@ -176,6 +176,7 @@ public class CircuitData implements Cloneable {
 			io3.notifyNeighbours(pos3, parent);
 			io4.notifyNeighbours(pos4, parent);
 		}
+		propagateSignals();
 	}
 
 	/** Syncs the circuit's IO bits with the suspected output **/
@@ -193,10 +194,10 @@ public class CircuitData implements Cloneable {
 			PartIOBit io3 = (PartIOBit) getPart(pos3);
 			PartIOBit io4 = (PartIOBit) getPart(pos4);
 
-			io1.onInputChange(pos1, parent, ForgeDirection.SOUTH);
-			io2.onInputChange(pos2, parent, ForgeDirection.WEST);
-			io3.onInputChange(pos3, parent, ForgeDirection.NORTH);
-			io4.onInputChange(pos4, parent, ForgeDirection.EAST);
+			io1.onInputChange(pos1, parent);
+			io2.onInputChange(pos2, parent);
+			io3.onInputChange(pos3, parent);
+			io4.onInputChange(pos4, parent);
 		}
 	}
 
@@ -277,9 +278,8 @@ public class CircuitData implements Cloneable {
 		tickSchedule.add(pos);
 	}
 
-	public void scheduleInputChange(Vec2 pos, ForgeDirection side) {
-		int val = inputQueue.containsKey(pos) ? inputQueue.get(pos) : 0;
-		inputQueue.put(pos, val |= 1 << side.ordinal());
+	public void scheduleInputChange(Vec2 pos) {
+		inputQueue.add(pos);
 	}
 
 	public void markForUpdate(Vec2 pos) {
@@ -288,36 +288,27 @@ public class CircuitData implements Cloneable {
 		updateQueue.add(pos);
 	}
 
+	/** "Instantaneously" propagate signals through wires and e.g. null cell */
+	public synchronized void propagateSignals() {
+		while (inputQueue.size() > 0) {
+			HashSet<Vec2> tmp = (HashSet<Vec2>) inputQueue.clone();
+			inputQueue.clear();
+			for (Vec2 pos : tmp) {
+				CircuitPart part = getPart(pos);
+				part.updateInput(pos, parent);
+				part.onInputChange(pos, parent);
+			}
+		}
+	}
+
 	public synchronized void updateMatrix() {
+		// Tick all circuit parts that need to be ticked
 		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
 		tickSchedule.clear();
-
-		// first iteration
-		for (Vec2 v : tmp) {
-			getPart(v).onScheduledTick(v, parent);
-		}
-
-		// second iteration
-		while (inputQueue.size() > 0) {
-			HashMap<Vec2, Integer> tmp2 = (HashMap<Vec2, Integer>) inputQueue.clone();
-			inputQueue.clear();
-			for (Vec2 vec : tmp2.keySet()) {
-				int val = tmp2.get(vec);
-				for (ForgeDirection fd : ForgeDirection.values()) {
-					if (val >> fd.ordinal() != 0) {
-						getPart(vec).onInputChange(vec, parent, fd);
-					}
-				}
-			}
-		}
-
-		// third iteration
-		for (int x = 0; x < size; x++) {
-			for (int y = 0; y < size; y++) {
-				Vec2 pos = new Vec2(x, y);
-				getPart(pos).onTick(pos, parent);
-			}
-		}
+		for (Vec2 pos : tmp)
+			getPart(pos).onScheduledTick(pos, parent);
+		
+		propagateSignals();
 	}
 
 	public static CircuitData readFromNBT(NBTTagCompound compound) {

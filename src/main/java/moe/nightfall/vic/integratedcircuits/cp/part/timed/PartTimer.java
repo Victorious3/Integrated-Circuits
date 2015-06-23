@@ -41,22 +41,23 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 
 	@Override
 	public void onPlaced(Vec2 pos, ICircuit parent) {
-		setState(pos, parent, 10 << 16);
-		updateInput(pos, parent);
-		if (!getInputFromSide(pos, parent, ForgeDirection.SOUTH))
-			setDelay(pos, parent, true);
+		setConfigurableDelay(pos, parent, 10);
+		super.onPlaced(pos, parent);
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
-		if (toInternal(pos, parent, side) != ForgeDirection.SOUTH)
-			return;
-		setProperty(pos, parent, PROP_OUT, false);
-		if (getInputFromSide(pos, parent, side)) {
+	public void onInputChange(Vec2 pos, ICircuit parent) {
+		scheduleTick(pos, parent);
+	}
+
+	@Override
+	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		super.onScheduledTick(pos, parent);
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+			setProperty(pos, parent, PROP_OUT, false);
 			setDelay(pos, parent, false);
 			notifyNeighbours(pos, parent);
-		} else
+		} else if (!isDelayActive(pos, parent))
 			setDelay(pos, parent, true);
 	}
 
@@ -64,7 +65,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 	public void onDelay(Vec2 pos, ICircuit parent) {
 		invertProperty(pos, parent, PROP_OUT);
 		setDelay(pos, parent, true);
-		super.onDelay(pos, parent);
+		notifyNeighbours(pos, parent);
 	}
 
 	@Override

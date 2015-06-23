@@ -32,6 +32,7 @@ public abstract class PartCPGate extends CircuitPart {
 
 	public final void setRotation(Vec2 pos, ICircuit parent, int rotation) {
 		setProperty(pos, parent, PROP_ROTATION, rotation);
+		scheduleInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 
@@ -42,9 +43,11 @@ public abstract class PartCPGate extends CircuitPart {
 
 	@Override
 	public void onClick(Vec2 pos, ICircuit parent, int button, boolean ctrl) {
-		if (button == 0 && !ctrl)
+		if (button == 0 && !ctrl) {
 			cycleProperty(pos, parent, PROP_ROTATION);
-		notifyNeighbours(pos, parent);
+			scheduleInputChange(pos, parent);
+			notifyNeighbours(pos, parent);
+		}
 	}
 
 	public ForgeDirection toInternal(Vec2 pos, ICircuit parent, ForgeDirection dir) {
@@ -63,11 +66,6 @@ public abstract class PartCPGate extends CircuitPart {
 		if (edit && !ctrlDown)
 			text.add(I18n.format("gui.integratedcircuits.cad.rotate"));
 		return text;
-	}
-
-	@Override
-	public void onScheduledTick(Vec2 pos, ICircuit parent) {
-		notifyNeighbours(pos, parent);
 	}
 
 	@Override

@@ -28,8 +28,7 @@ public class PartNullCell extends CircuitPart {
 	}
 
 	@Override
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
+	public void onInputChange(Vec2 pos, ICircuit parent) {
 		notifyNeighbours(pos, parent);
 	}
 }

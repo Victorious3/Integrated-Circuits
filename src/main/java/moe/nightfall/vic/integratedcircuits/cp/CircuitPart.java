@@ -11,7 +11,6 @@ import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartMultiplexer;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
-import moe.nightfall.vic.integratedcircuits.cp.part.PartSynchronizer;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartTorch;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartTunnel;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
@@ -35,6 +34,7 @@ import moe.nightfall.vic.integratedcircuits.cp.part.timed.PartRandomizer;
 import moe.nightfall.vic.integratedcircuits.cp.part.timed.PartRepeater;
 import moe.nightfall.vic.integratedcircuits.cp.part.timed.PartSequencer;
 import moe.nightfall.vic.integratedcircuits.cp.part.timed.PartStateCell;
+import moe.nightfall.vic.integratedcircuits.cp.part.timed.PartSynchronizer;
 import moe.nightfall.vic.integratedcircuits.cp.part.timed.PartTimer;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher;
@@ -169,14 +169,8 @@ public abstract class CircuitPart {
 	}
 
 	public void onPlaced(Vec2 pos, ICircuit parent) {
-		updateInput(pos, parent);
+		scheduleInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
-	}
-
-	// TODO Isn't really used anywhere. Leaving the iteration in doesn't make
-	// much sense, but maybe the repeater could make use of it.
-	@Deprecated
-	public void onTick(Vec2 pos, ICircuit parent) {
 	}
 
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
@@ -230,23 +224,23 @@ public abstract class CircuitPart {
 			&& neighbour.canConnectToSide(pos.offset(side), parent, side.getOpposite());
 	}
 
-	public final boolean getCachedInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		if (side == ForgeDirection.UNKNOWN)
 			return false;
 		boolean in = (getProperty(pos, parent, PROP_INPUT) << (side.ordinal() - 2) & 8) != 0;
 		return in;
 	}
 
-	public final boolean getInputFromSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		return hasConnectionOnSide(pos, parent, side) && getCachedInputFromSide(pos, parent, side);
+	/** Handles input changes. Should only implement wire-like behavior.
+	 *  Don't call it directly! Use scheduleInputChange() instead!
+	 */
+	public void onInputChange(Vec2 pos, ICircuit parent) {
 	}
 
-	public void onInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		updateInput(pos, parent);
-	}
-
-	public void scheduleInputChange(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		parent.getCircuitData().scheduleInputChange(pos, side);
+	/** Puts a gate into queue to call its onInputChange() later. */
+	public void scheduleInputChange(Vec2 pos, ICircuit parent) {
+		parent.getCircuitData().scheduleInputChange(pos);
+		markForUpdate(pos, parent);
 	}
 
 	/** Check every side to update the internal buffer **/
@@ -273,15 +267,12 @@ public abstract class CircuitPart {
 			if (part != null) {
 				ForgeDirection fd2 = fd.getOpposite();
 				Vec2 pos2 = pos.offset(fd);
-				boolean b = (hasConnectionOnSide(pos, parent, fd) && getOutputToSide(pos, parent, fd))
-						!= part.getCachedInputFromSide(pos2, parent, fd2);
-				if (b) {
-					part.scheduleInputChange(pos2, parent, fd2);
-					part.markForUpdate(pos2, parent);
-				}
-				markForUpdate(pos, parent);
+				if ((hasConnectionOnSide(pos, parent, fd) && getOutputToSide(pos, parent, fd))
+						!= part.getInputFromSide(pos2, parent, fd2))
+					part.scheduleInputChange(pos2, parent);
 			}
 		}
+		markForUpdate(pos, parent);
 	}
 
 	public final CircuitPart getNeighbourOnSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
@@ -300,7 +291,7 @@ public abstract class CircuitPart {
 
 	/** Gets called on a client update */
 	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {
-		updateInput(pos, parent);
+		scheduleInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
 
