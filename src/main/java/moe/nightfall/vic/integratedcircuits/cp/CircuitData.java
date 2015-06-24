@@ -356,6 +356,7 @@ public class CircuitData implements Cloneable {
 		CircuitData cdata = new CircuitData(size, parent, id, meta, scheduledTicks, prop);
 
 		if (version < CircuitData.version) {
+			// TODO Not future-proof. Will break if e.g. inputQueue is removed.
 			for (LegacyLoader loader : legacyLoaders) {
 				loader.postTransform(cdata);
 			}

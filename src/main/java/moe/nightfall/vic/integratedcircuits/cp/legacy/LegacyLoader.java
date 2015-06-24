@@ -11,30 +11,31 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class LegacyLoader implements Comparable<LegacyLoader> {
+public abstract class LegacyLoader implements Comparable<LegacyLoader> {
 
 	private static final List<LegacyLoader> legacyLoaders = new ArrayList<LegacyLoader>();
-
-	public final int version;
-	private Map<Integer, PartTransformer> partTransformers = new HashMap<Integer, PartTransformer>();
-
-	public LegacyLoader(int version) {
-		this.version = version;
-	}
-
-	public static void addLegacyLoader(LegacyLoader loader) {
-		legacyLoaders.add(loader);
+	static {
+		legacyLoaders.add(new LegacyLoader_0_8());
 		Collections.sort(legacyLoaders);
 	}
 
+	private Map<Integer, PartTransformer> partTransformers = new HashMap<Integer, PartTransformer>();
+
+	/** Returns version FROM which it converts.
+	 *  Should always convert to the next version.
+	 **/
+	public abstract int getVersion();
+
 	public static List<LegacyLoader> getLegacyLoaders(int version) {
-		for (int i = 0; i < legacyLoaders.size(); i++) {
+		int i = 0;
+		while (i < legacyLoaders.size()) {
 			LegacyLoader loader = legacyLoaders.get(i);
-			if (loader.version == version) {
-				return legacyLoaders.subList(0, i);
+			if (loader.getVersion() >= version) {
+				break;
 			}
+			i++;
 		}
-		return new ArrayList<LegacyLoader>();
+		return new ArrayList<LegacyLoader>(legacyLoaders.subList(i, legacyLoaders.size()));
 	}
 
 	public final LegacyLoader addTransformer(PartTransformer transformer, int id) {
@@ -43,7 +44,6 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 	}
 
 	public void transformNBT(NBTTagCompound data) {
-
 	}
 
 	public void transform(int size, int[][] id, int[][] meta) {
@@ -227,6 +227,6 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 
 	@Override
 	public int compareTo(LegacyLoader other) {
-		return Integer.compare(version, other.version);
+		return Integer.compare(getVersion(), other.getVersion());
 	}
 }
