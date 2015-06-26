@@ -296,7 +296,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		return SCALE * tileentity.scale;
 	}
 	
-	protected int getBoardSize() {
+	public int getBoardSize() {
 		return tileentity.getCircuitData().getSize();
 	}
 	
@@ -328,7 +328,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		return boardRel2AbsY(getBoardSize());
 	}
 
-	protected CircuitData getCircuitData() {
+	public CircuitData getCircuitData() {
 		return tileentity.getCircuitData();
 	}
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import net.minecraft.client.Minecraft;
@@ -52,7 +51,7 @@ public class GuiIOMode extends GuiButton implements IHoverable {
 	}
 
 	public void refresh() {
-		mode = parent.tileentity.getCircuitData().getProperties().getModeAtSide(side);
+		mode = parent.getCircuitData().getProperties().getModeAtSide(side);
 	}
 
 	@Override
