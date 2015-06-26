@@ -116,7 +116,7 @@ public class PlaceHandler extends CADHandler {
 		} else {
 			int newID = CircuitPart.getId(selectedPart.getPart());
 			Vec2 pos = new Vec2(gridX, gridY);
-			if (newID != parent.tileentity.getCircuitData().getID(pos)) {
+			if (newID != parent.getCircuitData().getID(pos)) {
 				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(
 						!(selectedPart.getPart() instanceof PartNull),
 						parent.tileentity.xCoord,
@@ -161,7 +161,7 @@ public class PlaceHandler extends CADHandler {
 		if (selectedPart.getPart() instanceof PartNull) {
 			int boardX = (int) parent.boardAbs2RelX(mx);
 			int boardY = (int) parent.boardAbs2RelY(my);
-			int w = parent.tileentity.getCircuitData().getSize();
+			int w = parent.getBoardSize();
 			boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
 
 			if (boardX > 0 && boardY > 0 && boardX < w - 1 && boardY < w - 1 && !shiftDown) {

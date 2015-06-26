@@ -160,7 +160,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		// Circuit Name text box
 		nameField = new GuiTextField(fontRendererObj, guiRight - 95, guiTop + 11, 50, 10);
-		nameField.setText(tileentity.getCircuitData().getProperties().getName());
+		nameField.setText(getCircuitData().getProperties().getName());
 		nameField.setMaxStringLength(7);
 		nameField.setCanLoseFocus(true);
 		nameField.setFocused(false);
@@ -296,7 +296,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		return SCALE * tileentity.scale;
 	}
 	
-	private int getBoardSize() {
+	protected int getBoardSize() {
 		return tileentity.getCircuitData().getSize();
 	}
 	
@@ -305,11 +305,11 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	}
 	
 	private double getAbsBoardOffsetX() {
-		return editorLeft + xSizeEditor/2.0 + tileentity.offX;
+		return editorLeft + xSizeEditor / 2D + tileentity.offX;
 	}
 	
 	private double getAbsBoardOffsetY() {
-		return editorTop + ySizeEditor/2.0 + tileentity.offY;
+		return editorTop + ySizeEditor / 2D + tileentity.offY;
 	}
 	
 	private double getBoardLeft() {
@@ -326,6 +326,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	
 	private double getBoardBottom() {
 		return boardRel2AbsY(getBoardSize());
+	}
+
+	protected CircuitData getCircuitData() {
+		return tileentity.getCircuitData();
 	}
 
 	private void calculateSizes() {
@@ -359,7 +363,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	}
 
 	public void refreshUI() {
-		int w = tileentity.getCircuitData().getSize();
+		int w = getBoardSize();
 		buttonSize.displayString = w + "x" + w;
 		refreshIO();
 		nameField.setText(tileentity.getCircuitData().getProperties().getName());
@@ -397,7 +401,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		GL11.glColor3f(1, 1, 1);
-		CircuitData data = tileentity.getCircuitData();
+		CircuitData data = getCircuitData();
 
 		int gridX = (int) boardAbs2RelX(mouseX);
 		int gridY = (int) boardAbs2RelY(mouseY);
@@ -479,7 +483,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	}
 	
 	private void renderCircuitBoard(double mouseX, double mouseY, int guiScale) {
-		CircuitData data = tileentity.getCircuitData();
+		CircuitData data = getCircuitData();
 		
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
 		GL11.glScissor(editorLeft * guiScale, this.mc.displayHeight - editorBottom * guiScale,
@@ -525,7 +529,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 	private void drawTunnelConnection(int firstX, int firstY) {
 		Vec2 pos = new Vec2(firstX, firstY);
-		CircuitPart part = tileentity.getCircuitData().getPart(pos);
+		CircuitPart part = getCircuitData().getPart(pos);
 		if (!(part instanceof PartTunnel))
 			return;
 
@@ -585,10 +589,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			return;
 		}
 
-		CircuitData data = tileentity.getCircuitData();
-
 		boolean ctrlDown = isCtrlKeyDown();
-		int w = data.getSize();
+		int w = getBoardSize();
 		int gridX = (int) boardAbs2RelX(mouseX);
 		int gridY = (int) boardAbs2RelY(mouseY);
 
@@ -671,7 +673,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 	@Override
 	public void onCallback(GuiCallback gui, Action result, int id) {
-		int w = tileentity.getCircuitData().getSize();
+		int w = getBoardSize();
 		if (result == Action.OK && gui == callbackDelete) {
 			if (callback == 1)
 				CommonProxy.networkWrapper.sendToServer(new PacketPCBClear((byte) w, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));

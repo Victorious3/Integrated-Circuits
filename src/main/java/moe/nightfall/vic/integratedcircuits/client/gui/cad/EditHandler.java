@@ -40,7 +40,7 @@ public class EditHandler extends CADHandler {
 		int gridY = (int) parent.boardAbs2RelY(my);
 
 		Vec2 pos = new Vec2(gridX, gridY);
-		CircuitPart cp = parent.tileentity.getCircuitData().getPart(pos);
+		CircuitPart cp = parent.getCircuitData().getPart(pos);
 		if (cp instanceof IConfigurableDelay && parent.isCtrlKeyDown()) {
 			parent.timedPart = new CircuitRenderWrapper(parent.tileentity.getCircuitData(), cp, pos);
 			parent.labelTimed.setText(String.format("Current delay: %s ticks",
@@ -59,7 +59,7 @@ public class EditHandler extends CADHandler {
 	@Override
 	public void onMouseUp(GuiCAD parent, int mx, int my, int button) {
 		if (parent.drag) {
-			int w = parent.tileentity.getCircuitData().getSize();
+			int w = parent.getCircuitData().getSize();
 
 			if (parent.endX > 0 && parent.endY > 0 && parent.endX < w - 1 && parent.endY < w - 1) {
 				PartTunnel pt = CircuitPart.getPart(PartTunnel.class);
@@ -67,22 +67,22 @@ public class EditHandler extends CADHandler {
 				Vec2 first = new Vec2(parent.startX, parent.startY);
 				Vec2 second = new Vec2(parent.endX, parent.endY);
 
-				if (parent.tileentity.getCircuitData().getPart(second) instanceof PartTunnel && !first.equals(second)) {
+				if (parent.getCircuitData().getPart(second) instanceof PartTunnel && !first.equals(second)) {
 
 					PacketPCBChangePart packet = new PacketPCBChangePart(true, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord);
 					
 					if (pt.isConnected(pt.getConnectedPos(first, parent.tileentity))) {	
 						Vec2 part = pt.getConnectedPos(first, parent.tileentity);
-						packet.add(part, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
+						packet.add(part, CircuitPart.getId(pt), pt.setConnectedPos(parent.getCircuitData().getMeta(part), new Vec2(255, 255)));
 					}
 
 					if (pt.isConnected(pt.getConnectedPos(second, parent.tileentity))) {
 						Vec2 part = pt.getConnectedPos(second, parent.tileentity);
-						packet.add(part, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
+						packet.add(part, CircuitPart.getId(pt), pt.setConnectedPos(parent.getCircuitData().getMeta(part), new Vec2(255, 255)));
 					}
 
-					packet.add(first, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(first), second));
-					packet.add(second, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(second), first));
+					packet.add(first, CircuitPart.getId(pt), pt.setConnectedPos(parent.getCircuitData().getMeta(first), second));
+					packet.add(second, CircuitPart.getId(pt), pt.setConnectedPos(parent.getCircuitData().getMeta(second), first));
 
 					CommonProxy.networkWrapper.sendToServer(packet);
 				}
