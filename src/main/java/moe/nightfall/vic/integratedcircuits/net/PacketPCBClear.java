@@ -3,9 +3,9 @@ package moe.nightfall.vic.integratedcircuits.net;
 import java.io.IOException;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -37,7 +37,7 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear> {
 
 	@Override
 	public void process(EntityPlayer player, Side side) {
-		TileEntityPCBLayout te = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		TileEntityCAD te = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if (te != null) {
 			if (side == side.SERVER)
 				te.cache.create(player.getGameProfile().getId());
@@ -59,8 +59,8 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear> {
 
 				CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().getWorldInfo()
 					.getVanillaDimension(), xCoord, yCoord, zCoord, 8));
-			} else if (Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
-				((GuiPCBLayout) Minecraft.getMinecraft().currentScreen).refreshUI();
+			} else if (Minecraft.getMinecraft().currentScreen instanceof GuiCAD)
+				((GuiCAD) Minecraft.getMinecraft().currentScreen).refreshUI();
 		}
 	}
 }

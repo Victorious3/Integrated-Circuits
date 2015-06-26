@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,7 +37,7 @@ public class PacketPCBIO extends PacketTileEntity<PacketPCBIO> {
 
 	@Override
 	public void process(EntityPlayer player, Side side) {
-		TileEntityPCBLayout te = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		TileEntityCAD te = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if (te != null) {
 			if (write) {
 				ItemStack floppy = te.getStackInSlot(0);

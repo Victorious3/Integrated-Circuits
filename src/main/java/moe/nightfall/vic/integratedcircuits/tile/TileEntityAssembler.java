@@ -5,7 +5,7 @@ import moe.nightfall.vic.integratedcircuits.LaserHelper;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiAssembler;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingSupply;
 import moe.nightfall.vic.integratedcircuits.misc.IOptionsProvider;
@@ -350,7 +350,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 			CommonProxy.networkWrapper.sendToDimension(new PacketFloppyDisk(xCoord, yCoord, zCoord, stack),
 					worldObj.provider.dimensionId);
 		loadMatrixFromDisk();
-		if (worldObj.isRemote && Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout) {
+		if (worldObj.isRemote && Minecraft.getMinecraft().currentScreen instanceof GuiCAD) {
 			cdata.calculateCost();
 			((GuiAssembler) Minecraft.getMinecraft().currentScreen).refreshUI();
 		}

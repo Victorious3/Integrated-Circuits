@@ -2,9 +2,9 @@ package moe.nightfall.vic.integratedcircuits.net;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,12 +37,12 @@ public class PacketPCBLoad extends PacketTileEntity<PacketPCBLoad> {
 
 	@Override
 	public void process(EntityPlayer player, Side side) {
-		TileEntityPCBLayout layout = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		TileEntityCAD layout = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if (layout != null) {
 			data.setParent(layout);
 			layout.setCircuitData(data);
 		}
-		if (Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout)
-			((GuiPCBLayout) Minecraft.getMinecraft().currentScreen).refreshUI();
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiCAD)
+			((GuiCAD) Minecraft.getMinecraft().currentScreen).refreshUI();
 	}
 }

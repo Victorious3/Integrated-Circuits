@@ -1,0 +1,183 @@
+package moe.nightfall.vic.integratedcircuits.client.gui.cad;
+
+import java.util.ArrayList;
+
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import moe.nightfall.vic.integratedcircuits.net.PacketPCBCache;
+import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangePart;
+import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
+import net.minecraft.client.renderer.Tessellator;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
+public class PlaceHandler extends CADHandler {
+
+	public CircuitRenderWrapper selectedPart;
+
+	@Override
+	public void renderCADCursor(GuiCAD parent, double mouseX, double mouseY, int gridX, int gridY, CircuitData cdata) {
+		if (!parent.drag) {
+			if (selectedPart.getPart() instanceof PartNull) {
+				GL11.glColor3f(0F, 0.4F, 0F);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				Tessellator.instance.startDrawingQuads();
+				CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1);
+				Tessellator.instance.draw();
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+			}
+
+			final int PART_SIZE = CircuitPartRenderer.PART_SIZE;
+			GL11.glPushMatrix();
+			GL11.glScaled(1F / PART_SIZE, 1F / PART_SIZE, 1);
+			CircuitPartRenderer.renderPart(selectedPart, gridX * PART_SIZE, gridY * PART_SIZE);
+			GL11.glPopMatrix();
+		} else if (selectedPart.getPart() instanceof PartWire) {
+			PartWire wire = (PartWire) selectedPart.getPart();
+			switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
+				case 1:
+					GL11.glColor3f(0.4F, 0F, 0F);
+					break;
+				case 2:
+					GL11.glColor3f(0.4F, 0.2F, 0F);
+					break;
+				default:
+					GL11.glColor3f(0F, 0.4F, 0F);
+					break;
+			}
+			renderDraggedWire(parent);
+			GL11.glColor3f(1, 1, 1);
+		}
+	}
+
+	private void renderDraggedWire(GuiCAD parent) {
+		int x = parent.startX;
+		int y = parent.startY;
+
+		Tessellator.instance.startDrawingQuads();
+		CircuitPartRenderer.addQuad(x, y, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+		if (parent.endY > parent.startY)
+			CircuitPartRenderer.addQuad(x, y, 4, 0, 1, 1, 1, 1, 16, 16, 0);
+		else if (parent.endY < parent.startY)
+			CircuitPartRenderer.addQuad(x, y, 2, 0, 1, 1, 1, 1, 16, 16, 0);
+		else if (parent.endX > parent.startX)
+			CircuitPartRenderer.addQuad(x, y, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+		else if (parent.endX < parent.startX)
+			CircuitPartRenderer.addQuad(x, y, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+
+		while (x != parent.endX || y != parent.endY) {
+			if (y < parent.endY)
+				y++;
+			else if (y > parent.endY)
+				y--;
+			else if (x < parent.endX)
+				x++;
+			else if (x > parent.endX)
+				x--;
+
+			if (y != parent.endY)
+				CircuitPartRenderer.addQuad(x, y, 6, 0, 1, 1, 1, 1, 16, 16, 0);
+			else if (y == parent.endY && x == parent.startX) {
+				CircuitPartRenderer.addQuad(x, y, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+				if (parent.endY > parent.startY)
+					CircuitPartRenderer.addQuad(x, y, 2, 0, 1, 1, 1, 1, 16, 16, 0);
+				else if (parent.endY < parent.startY)
+					CircuitPartRenderer.addQuad(x, y, 4, 0, 1, 1, 1, 1, 16, 16, 0);
+				if (parent.endX > parent.startX)
+					CircuitPartRenderer.addQuad(x, y, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+				else if (parent.endX < parent.startX)
+					CircuitPartRenderer.addQuad(x, y, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+			} else if (x != parent.endX)
+				CircuitPartRenderer.addQuad(x, y, 5, 0, 1, 1, 1, 1, 16, 16, 0);
+			else if (x == parent.endX) {
+				CircuitPartRenderer.addQuad(x, y, 0, 0, 1, 1, 1, 1, 16, 16, 0);
+				if (parent.endX > parent.startX)
+					CircuitPartRenderer.addQuad(x, y, 1, 0, 1, 1, 1, 1, 16, 16, 0);
+				else if (parent.endX < parent.startX)
+					CircuitPartRenderer.addQuad(x, y, 3, 0, 1, 1, 1, 1, 16, 16, 0);
+			}
+		}
+		Tessellator.instance.draw();
+	}
+
+	@Override
+	public void onMouseDown(GuiCAD parent, int mx, int my, int button) {
+		int gridX = (int) parent.boardAbs2RelX(mx);
+		int gridY = (int) parent.boardAbs2RelY(my);
+
+		if (selectedPart.getPart() instanceof PartWire) {
+			parent.startX = gridX;
+			parent.startY = gridY;
+			parent.drag = true;
+		} else {
+			int newID = CircuitPart.getId(selectedPart.getPart());
+			if (newID != parent.tileentity.getCircuitData().getID(new Vec2(gridX, gridY))) {
+				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { gridX, gridY,
+						newID, selectedPart.getState() },
+						!(selectedPart.getPart() instanceof PartNull), parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+			}
+		}
+	}
+
+
+	@Override
+	public void onMouseUp(GuiCAD parent, int mx, int my, int button) {
+		if (selectedPart.getPart() instanceof PartNull) {
+			// Send cache update for erasing
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.SNAPSHOT, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+		} else if (parent.drag) {
+			if (selectedPart.getPart() instanceof PartWire) {
+				int id = CircuitPart.getId(selectedPart.getPart());
+				int state = selectedPart.getState();
+
+				ArrayList<Vec2> list = new ArrayList<Vec2>();
+				list.add(new Vec2(parent.startX, parent.startY));
+				while (parent.startX != parent.endX || parent.startY != parent.endY) {
+					if (parent.startY < parent.endY)
+						parent.startY++;
+					else if (parent.startY > parent.endY)
+						parent.startY--;
+					else if (parent.startX < parent.endX)
+						parent.startX++;
+					else if (parent.startX > parent.endX)
+						parent.startX--;
+					list.add(new Vec2(parent.startX, parent.startY));
+				}
+				int[] data = new int[list.size() * 4];
+				for (int i = 0; i < list.size(); i++) {
+					Vec2 pt = list.get(i);
+					int index = i * 4;
+					data[index] = pt.x;
+					data[index + 1] = pt.y;
+					data[index + 2] = id;
+					data[index + 3] = state;
+				}
+				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(data, true, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+			}
+		}
+	}
+
+	@Override
+	public void onMouseDragged(GuiCAD parent, int mx, int my) {
+		if (selectedPart.getPart() instanceof PartNull) {
+			int boardX = (int) parent.boardAbs2RelX(mx);
+			int boardY = (int) parent.boardAbs2RelY(my);
+			int w = parent.tileentity.getCircuitData().getSize();
+			boolean shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
+
+			if (boardX > 0 && boardY > 0 && boardX < w - 1 && boardY < w - 1 && !shiftDown) {
+				Vec2 pos = new Vec2(boardX, boardY);
+				if (!(parent.tileentity.getCircuitData().getPart(pos) instanceof PartNull)) {
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { boardX, boardY, 0, 0 }, false,
+							parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+				}
+			}
+		}
+	}
+}

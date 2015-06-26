@@ -64,7 +64,7 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 			}
 		}
 	}
-
+	
 	public void postTransform(CircuitData cdata) {
 		for (int x = 0; x < cdata.getSize(); x++) {
 			for (int y = 0; y < cdata.getSize(); y++) {
@@ -123,7 +123,7 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 
 		protected void transformImpl() {
 		}
-
+		
 		public void postTransform(Vec2 crd, CircuitData cdata) {
 		}
 	}

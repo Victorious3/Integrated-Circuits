@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.relauncher.Side;
@@ -57,7 +57,7 @@ public class PacketPCBChangePart extends PacketTileEntity<PacketPCBChangePart> {
 
 	@Override
 	public void process(EntityPlayer player, Side side) {
-		TileEntityPCBLayout te = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		TileEntityCAD te = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if (te != null) {
 			CircuitData cdata = te.getCircuitData();
 

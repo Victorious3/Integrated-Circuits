@@ -14,7 +14,7 @@ import moe.nightfall.vic.integratedcircuits.DiskDrive;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.LaserHelper.Laser;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiHandler;
+import moe.nightfall.vic.integratedcircuits.client.gui.IntegratedCircuitsGuiHandler;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RayTracer;
 import moe.nightfall.vic.integratedcircuits.net.AbstractPacket;
@@ -77,7 +77,7 @@ public class CommonProxy {
 	private static HashMap<World, HashMap<SidedBlockCoord, MCDataOutputImpl>> out = Maps.newHashMap();
 
 	public void initialize() {
-		NetworkRegistry.INSTANCE.registerGuiHandler(IntegratedCircuits.instance, new GuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(IntegratedCircuits.instance, new IntegratedCircuitsGuiHandler());
 	}
 
 	public void preInitialize() {

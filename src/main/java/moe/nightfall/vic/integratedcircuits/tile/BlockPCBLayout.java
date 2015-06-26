@@ -32,7 +32,7 @@ public class BlockPCBLayout extends BlockContainer {
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7,
 			float par8, float par9) {
 		if (!world.isRemote) {
-			TileEntityPCBLayout te = (TileEntityPCBLayout) world.getTileEntity(x, y, z);
+			TileEntityCAD te = (TileEntityCAD) world.getTileEntity(x, y, z);
 			int rotation = te.rotation;
 			boolean canInteract = rotation == 3 && par6 == 4 || rotation == 0 && par6 == 2 || rotation == 1
 					&& par6 == 5 || rotation == 2 && par6 == 3;
@@ -46,7 +46,7 @@ public class BlockPCBLayout extends BlockContainer {
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
 		int rotation = MathHelper.floor_double((double) (entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-		TileEntityPCBLayout te = (TileEntityPCBLayout) world.getTileEntity(x, y, z);
+		TileEntityCAD te = (TileEntityCAD) world.getTileEntity(x, y, z);
 		if (te != null)
 			te.rotation = rotation;
 	}
@@ -65,11 +65,11 @@ public class BlockPCBLayout extends BlockContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int s) {
-		return getIcon((TileEntityPCBLayout) world.getTileEntity(x, y, z), s);
+		return getIcon((TileEntityCAD) world.getTileEntity(x, y, z), s);
 	}
 
 	@SideOnly(Side.CLIENT)
-	private IIcon getIcon(TileEntityPCBLayout te, int s) {
+	private IIcon getIcon(TileEntityCAD te, int s) {
 		boolean on = false;
 		int rotation = 2;
 		if (te != null && te.playersUsing > 0)
@@ -87,7 +87,7 @@ public class BlockPCBLayout extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World world, int meta) {
-		TileEntityPCBLayout te = new TileEntityPCBLayout();
+		TileEntityCAD te = new TileEntityCAD();
 		te.setup(32);
 		return te;
 	}
@@ -103,6 +103,6 @@ public class BlockPCBLayout extends BlockContainer {
 
 	@Override
 	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
-		return ((TileEntityPCBLayout) world.getTileEntity(x, y, z)).rotate();
+		return ((TileEntityCAD) world.getTileEntity(x, y, z)).rotate();
 	}
 }

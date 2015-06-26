@@ -5,9 +5,8 @@ import java.util.Collection;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.client.Resources;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
@@ -21,21 +20,21 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 	public int mode;
 	private boolean active = false;
 	private boolean showList = false;
-	private GuiPCBLayout parent;
+	private GuiCAD parent;
 	private GuiPartChooser chooserParent;
 
-	public GuiPartChooser(int id, int x, int y, int mode, GuiPCBLayout parent) {
+	public GuiPartChooser(int id, int x, int y, int mode, GuiCAD parent) {
 		super(id, x, y, 20, 20, "");
 		this.mode = mode;
 		this.parent = parent;
 	}
 
-	public GuiPartChooser(int id, int x, int y, CircuitRenderWrapper current, GuiPCBLayout parent) {
+	public GuiPartChooser(int id, int x, int y, CircuitRenderWrapper current, GuiCAD parent) {
 		this(id, x, y, current, null, parent);
 	}
 
 	public GuiPartChooser(int id, int x, int y, CircuitRenderWrapper current, List<CircuitRenderWrapper> list2,
-			GuiPCBLayout parent) {
+			GuiCAD parent) {
 		super(id, x, y, 20, 20, "");
 		this.current = current;
 		if (list2 != null) {
@@ -53,7 +52,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		this.parent = parent;
 	}
 
-	public GuiPartChooser(int id, int x, int y, List<CircuitRenderWrapper> list2, GuiPCBLayout parent) {
+	public GuiPartChooser(int id, int x, int y, List<CircuitRenderWrapper> list2, GuiCAD parent) {
 		super(id, x, y, 20, 20, "");
 		if (list2.size() > 0) {
 			current = list2.get(0);
@@ -70,7 +69,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		this.parent = parent;
 	}
 
-	public GuiPartChooser(int id, int x, int y, CircuitPart.Category category, GuiPCBLayout parent) {
+	public GuiPartChooser(int id, int x, int y, CircuitPart.Category category, GuiCAD parent) {
 		this(id, x, y, getRenderWrapperParts(category), parent);
 	}
 
@@ -152,11 +151,14 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 			}
 
 			if (mode == 1)
-				parent.selectedPart = null;
-			else if (mode == 2)
-				parent.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
-			else
-				parent.selectedPart = current;
+				parent.currentHandler = parent.editHandler;
+			else {
+				parent.currentHandler = parent.placeHandler;
+				if (mode == 2)
+					parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
+				else
+					parent.placeHandler.selectedPart = current;
+			}
 		}
 		if (list != null && list.size() > 1) {
 			showList = !showList;

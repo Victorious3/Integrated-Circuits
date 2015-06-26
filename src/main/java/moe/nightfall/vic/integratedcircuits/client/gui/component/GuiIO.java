@@ -6,11 +6,11 @@ import java.util.List;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -22,11 +22,11 @@ import org.lwjgl.opengl.GL11;
 public class GuiIO extends GuiButton implements IHoverable {
 	public int side;
 	public int color;
-	private GuiPCBLayout parent;
-	private TileEntityPCBLayout te;
+	private GuiCAD parent;
+	private TileEntityCAD te;
 	private boolean isActive;
 
-	public GuiIO(int id, int x, int y, int color, int side, GuiPCBLayout parent, TileEntityPCBLayout te) {
+	public GuiIO(int id, int x, int y, int color, int side, GuiCAD parent, TileEntityCAD te) {
 		super(id, x, y, 9, 9, "");
 		this.color = color;
 		this.side = side;

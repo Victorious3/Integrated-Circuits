@@ -3,7 +3,7 @@ package moe.nightfall.vic.integratedcircuits.net;
 import java.io.IOException;
 
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ChatComponentText;
@@ -39,7 +39,7 @@ public class PacketPCBCache extends PacketTileEntity<PacketPCBCache> {
 
 	@Override
 	public void process(EntityPlayer player, Side side) {
-		TileEntityPCBLayout te = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		TileEntityCAD te = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if (te != null) {
 			switch (mode) {
 				case SNAPSHOT:

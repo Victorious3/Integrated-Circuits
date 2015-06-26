@@ -18,7 +18,7 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityPCBLayout extends TileEntityContainer implements ICircuit, IDiskDrive {
+public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDiskDrive {
 	private ItemStack floppyStack;
 	private CircuitData circuitData;
 	public CircuitCache cache = new CircuitCache(this);

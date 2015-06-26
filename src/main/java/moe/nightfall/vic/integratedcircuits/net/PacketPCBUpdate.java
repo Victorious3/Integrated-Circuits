@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -38,7 +38,7 @@ public class PacketPCBUpdate extends PacketTileEntity<PacketPCBUpdate> {
 
 	@Override
 	public void process(EntityPlayer player, Side side) {
-		TileEntityPCBLayout layout = (TileEntityPCBLayout) Minecraft.getMinecraft().theWorld.getTileEntity(xCoord,
+		TileEntityCAD layout = (TileEntityCAD) Minecraft.getMinecraft().theWorld.getTileEntity(xCoord,
 				yCoord, zCoord);
 		if (layout != null) {
 			data = layout.getCircuitData();

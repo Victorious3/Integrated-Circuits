@@ -5,8 +5,8 @@ import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
@@ -16,11 +16,11 @@ import com.mojang.realmsclient.gui.ChatFormatting;
 import cpw.mods.fml.client.config.GuiUtils;
 
 public class GuiIOMode extends GuiButton implements IHoverable {
-	private GuiPCBLayout parent;
+	private GuiCAD parent;
 	private int side;
 	private EnumConnectionType mode;
 
-	public GuiIOMode(int id, int xPos, int yPos, GuiPCBLayout parent, int side) {
+	public GuiIOMode(int id, int xPos, int yPos, GuiCAD parent, int side) {
 		super(id, xPos, yPos, 11, 11, "");
 		this.parent = parent;
 		this.side = side;

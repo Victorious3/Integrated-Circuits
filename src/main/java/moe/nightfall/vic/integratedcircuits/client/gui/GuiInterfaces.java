@@ -4,6 +4,7 @@ import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCallback;
 import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCallback.Action;
+import net.minecraft.client.gui.Gui;
 
 public abstract class GuiInterfaces {
 	public interface IHoverable {
@@ -16,5 +17,19 @@ public abstract class GuiInterfaces {
 
 	public interface IGuiCallback {
 		public void onCallback(GuiCallback gui, Action result, int id);
+	}
+
+	public interface IUIHandler<T extends Gui> {
+		public void onMouseDown(T parent, int mx, int my, int button);
+
+		public void onMouseUp(T parent, int mx, int my, int button);
+
+		public void onMouseDragged(T parent, int mx, int my);
+
+		public void render(T parent, int mx, int my);
+
+		public void apply();
+
+		public void remove();
 	}
 }

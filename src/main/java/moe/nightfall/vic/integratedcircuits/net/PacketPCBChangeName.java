@@ -3,10 +3,10 @@ package moe.nightfall.vic.integratedcircuits.net;
 import java.io.IOException;
 import java.util.UUID;
 
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiPCBLayout;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
@@ -45,15 +45,15 @@ public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName> {
 
 	@Override
 	public void process(EntityPlayer player, Side side) {
-		TileEntityPCBLayout te = (TileEntityPCBLayout) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
+		TileEntityCAD te = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if (te != null) {
 			te.getCircuitData().getProperties().setName(this.name);
 			if (side == Side.SERVER) {
 				CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().provider.dimensionId,
 						xCoord, yCoord, zCoord, 8));
-			} else if (Minecraft.getMinecraft().currentScreen instanceof GuiPCBLayout
+			} else if (Minecraft.getMinecraft().currentScreen instanceof GuiCAD
 					&& !MiscUtils.thePlayer().getPersistentID().equals(uuid))
-				((GuiPCBLayout) Minecraft.getMinecraft().currentScreen).refreshUI();
+				((GuiCAD) Minecraft.getMinecraft().currentScreen).refreshUI();
 		}
 	}
 }

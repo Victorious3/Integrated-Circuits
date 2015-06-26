@@ -1,15 +1,15 @@
 package moe.nightfall.vic.integratedcircuits;
 
-import moe.nightfall.vic.integratedcircuits.tile.TileEntityPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
 public class ContainerPCBLayout extends Container {
-	public TileEntityPCBLayout tileentity;
+	public TileEntityCAD tileentity;
 
-	public ContainerPCBLayout(TileEntityPCBLayout tileentity) {
+	public ContainerPCBLayout(TileEntityCAD tileentity) {
 		this.tileentity = tileentity;
 		this.tileentity.openInventory();
 
