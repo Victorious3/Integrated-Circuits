@@ -1,7 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.cad;
 
-import java.util.ArrayList;
-
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
@@ -117,10 +115,14 @@ public class PlaceHandler extends CADHandler {
 			parent.drag = true;
 		} else {
 			int newID = CircuitPart.getId(selectedPart.getPart());
-			if (newID != parent.tileentity.getCircuitData().getID(new Vec2(gridX, gridY))) {
-				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { gridX, gridY,
-						newID, selectedPart.getState() },
-						!(selectedPart.getPart() instanceof PartNull), parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+			Vec2 pos = new Vec2(gridX, gridY);
+			if (newID != parent.tileentity.getCircuitData().getID(pos)) {
+				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(
+						!(selectedPart.getPart() instanceof PartNull),
+						parent.tileentity.xCoord,
+						parent.tileentity.yCoord,
+						parent.tileentity.zCoord)
+					.add(pos, newID, selectedPart.getState()));
 			}
 		}
 	}
@@ -136,8 +138,8 @@ public class PlaceHandler extends CADHandler {
 				int id = CircuitPart.getId(selectedPart.getPart());
 				int state = selectedPart.getState();
 
-				ArrayList<Vec2> list = new ArrayList<Vec2>();
-				list.add(new Vec2(parent.startX, parent.startY));
+				PacketPCBChangePart packet = new PacketPCBChangePart(true, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord);
+				packet.add(new Vec2(parent.startX, parent.startY), id, state);
 				while (parent.startX != parent.endX || parent.startY != parent.endY) {
 					if (parent.startY < parent.endY)
 						parent.startY++;
@@ -147,18 +149,9 @@ public class PlaceHandler extends CADHandler {
 						parent.startX++;
 					else if (parent.startX > parent.endX)
 						parent.startX--;
-					list.add(new Vec2(parent.startX, parent.startY));
+					packet.add(new Vec2(parent.startX, parent.startY), id, state);
 				}
-				int[] data = new int[list.size() * 4];
-				for (int i = 0; i < list.size(); i++) {
-					Vec2 pt = list.get(i);
-					int index = i * 4;
-					data[index] = pt.x;
-					data[index + 1] = pt.y;
-					data[index + 2] = id;
-					data[index + 3] = state;
-				}
-				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(data, true, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+				CommonProxy.networkWrapper.sendToServer(packet);
 			}
 		}
 	}
@@ -174,8 +167,9 @@ public class PlaceHandler extends CADHandler {
 			if (boardX > 0 && boardY > 0 && boardX < w - 1 && boardY < w - 1 && !shiftDown) {
 				Vec2 pos = new Vec2(boardX, boardY);
 				if (!(parent.tileentity.getCircuitData().getPart(pos) instanceof PartNull)) {
-					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { boardX, boardY, 0, 0 }, false,
-							parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(false,
+							parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord)
+						.add(pos, 0, 0));
 				}
 			}
 		}

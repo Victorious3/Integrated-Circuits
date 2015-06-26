@@ -700,9 +700,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			conf.setConfigurableDelay(timedPart.getPos(), timedPart, delay);
 			labelTimed.setText(I18n.format("gui.integratedcitcuits.cad.callback.delay",
 					conf.getConfigurableDelay(timedPart.getPos(), timedPart)));
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(new int[] { timedPart.getPos().x,
-					timedPart.getPos().y, CircuitPart.getId(timedPart.getPart()), timedPart.getState() }, false,
-					tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(false, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord)
+				.add(timedPart.getPos(), CircuitPart.getId(timedPart.getPart()), timedPart.getState()));
 		}
 	}
 	

@@ -1,7 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.cad;
 
-import java.util.List;
-
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
@@ -14,9 +12,6 @@ import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.renderer.Tessellator;
 
 import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
-import com.google.common.primitives.Ints;
 
 public class EditHandler extends CADHandler {
 
@@ -74,35 +69,22 @@ public class EditHandler extends CADHandler {
 
 				if (parent.tileentity.getCircuitData().getPart(second) instanceof PartTunnel && !first.equals(second)) {
 
-					List<Integer> data = Lists.newArrayList();
-
-					if (pt.isConnected(pt.getConnectedPos(first, parent.tileentity))) {
+					PacketPCBChangePart packet = new PacketPCBChangePart(true, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord);
+					
+					if (pt.isConnected(pt.getConnectedPos(first, parent.tileentity))) {	
 						Vec2 part = pt.getConnectedPos(first, parent.tileentity);
-						data.add(part.x);
-						data.add(part.y);
-						data.add(CircuitPart.getId(pt));
-						data.add(pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
+						packet.add(part, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
 					}
 
 					if (pt.isConnected(pt.getConnectedPos(second, parent.tileentity))) {
 						Vec2 part = pt.getConnectedPos(second, parent.tileentity);
-						data.add(part.x);
-						data.add(part.y);
-						data.add(CircuitPart.getId(pt));
-						data.add(pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
+						packet.add(part, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(part), new Vec2(255, 255)));
 					}
 
-					data.add(first.x);
-					data.add(first.y);
-					data.add(CircuitPart.getId(pt));
-					data.add(pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(first), second));
+					packet.add(first, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(first), second));
+					packet.add(second, CircuitPart.getId(pt), pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(second), first));
 
-					data.add(second.x);
-					data.add(second.y);
-					data.add(CircuitPart.getId(pt));
-					data.add(pt.setConnectedPos(parent.tileentity.getCircuitData().getMeta(second), first));
-
-					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(Ints.toArray(data), true, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
+					CommonProxy.networkWrapper.sendToServer(packet);
 				}
 			}
 		}
