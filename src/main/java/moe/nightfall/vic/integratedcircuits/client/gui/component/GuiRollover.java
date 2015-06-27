@@ -131,7 +131,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 			List<GuiButton> buttons = buttonMap.get(categoryList.get(selected));
 
 			double interpolate2 = interpolate;
-			int height2 = moving == -1 ? currentHeight : nextHeight;
+			int height2 = (moving == -1 ? currentHeight : nextHeight) - (buttons.size() - selected) * boxHeight;
 			if (moving == -1) {
 				interpolate2 = 1 - interpolate;
 			}
@@ -170,17 +170,24 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	}
 
 	@Override
-	protected void mouseDragged(Minecraft mc, int mx, int my) {
-
-	}
-
-	@Override
 	public void mouseReleased(int mx, int my) {
-
+		if (selected != -1) {
+			for (GuiButton button : buttonMap.get(categoryList.get(selected))) {
+				button.mouseReleased(mx, my);
+			}
+		}
 	}
 
 	@Override
 	public boolean mousePressed(Minecraft mc, int mx, int my) {
+
+		if (selected != -1) {
+			for (GuiButton button : buttonMap.get(categoryList.get(selected))) {
+				if (button.mousePressed(mc, mx, my))
+					return true;
+			}
+		}
+
 		if (!field_146123_n)
 			return false;
 
@@ -191,7 +198,6 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 			fy += selected;
 			if (fy < selected)
 				return false;
-			System.out.println(fy);
 		}
 
 		if (fy - Math.floor(fy) > (16F / boxHeight))
