@@ -43,7 +43,7 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	@Override
 	public void save(NBTTagCompound tag) {
 		super.save(tag);
-		tag.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
+		tag.setTag("circuit", circuitData.writeToNBTRaw(new NBTTagCompound()));
 	}
 
 	@Override
@@ -54,14 +54,14 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 
 	@Override
 	public void writeDesc(NBTTagCompound compound) {
-		compound.setTag("circuit_data", circuitData.writeToNBT(new NBTTagCompound()));
+		compound.setTag("circuit_data", circuitData.writeToNBTRaw(new NBTTagCompound()));
 	}
 
 	@Override
 	public ItemStack getItemStack() {
 		ItemStack stack = new ItemStack(Content.itemCircuit);
 		NBTTagCompound comp = new NBTTagCompound();
-		comp.setTag("circuit", getCircuitData().writeToNBT(new NBTTagCompound()));
+		comp.setTag("circuit", getCircuitData().writeToNBTRaw(new NBTTagCompound()));
 		stack.stackTagCompound = comp;
 		return stack;
 	}

@@ -364,7 +364,19 @@ public class CircuitData implements Cloneable {
 		return cdata;
 	}
 
+	/**
+	 * Excludes additional data like comments that aren't needed for the final
+	 * circuit
+	 */
+	public NBTTagCompound writeToNBTRaw(NBTTagCompound compound) {
+		return writeToNBT(compound, true);
+	}
+
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		return writeToNBT(compound, false);
+	}
+
+	public NBTTagCompound writeToNBT(NBTTagCompound compound, boolean pcb) {
 		NBTTagList idlist = new NBTTagList();
 		for (int i = 0; i < size; i++) {
 			int[] id = new int[size];
@@ -381,7 +393,7 @@ public class CircuitData implements Cloneable {
 		compound.setInteger("size", size);
 		compound.setTag("id", idlist);
 		compound.setTag("meta", metalist);
-		compound.setTag("properties", prop.writeToNBT(new NBTTagCompound()));
+		compound.setTag("properties", prop.writeToNBT(new NBTTagCompound(), pcb));
 
 		LinkedList<Integer> tmp = new LinkedList<Integer>();
 		for (Vec2 v : tickSchedule) {

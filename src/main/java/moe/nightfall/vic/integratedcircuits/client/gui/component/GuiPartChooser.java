@@ -151,9 +151,9 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 			}
 
 			if (mode == 1)
-				parent.currentHandler = parent.editHandler;
+				parent.setHandler(parent.editHandler);
 			else {
-				parent.currentHandler = parent.placeHandler;
+				parent.setHandler(parent.placeHandler);
 				if (mode == 2)
 					parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
 				else

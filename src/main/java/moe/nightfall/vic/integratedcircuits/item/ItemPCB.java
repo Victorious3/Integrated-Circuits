@@ -21,7 +21,7 @@ public class ItemPCB extends ItemBase {
 		NBTTagCompound comp = stack.getTagCompound();
 		if (comp != null && comp.hasKey("circuit")) {
 			comp = comp.getCompoundTag("circuit");
-			Integer size = comp.getInteger("size");
+			int size = comp.getInteger("size");
 			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE
 					+ comp.getCompoundTag("properties").getString("name"));
 			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);

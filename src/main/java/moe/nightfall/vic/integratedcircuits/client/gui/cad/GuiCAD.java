@@ -66,7 +66,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	public EditHandler editHandler = new EditHandler();
 	public PlaceHandler placeHandler = new PlaceHandler();
 	
-	public CADHandler currentHandler = editHandler;
+	private CADHandler currentHandler;
+	private List<CADHandler> handlers = new ArrayList<CADHandler>();
 
 	// Because of private.
 	public GuiPartChooser selectedChooser;
@@ -97,6 +98,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	private GuiIOMode checkW;
 
 	// Used by the wires
+	// TODO This should be moved elsewhere
 	protected int startX, startY, endX, endY;
 	protected boolean drag;
 	
@@ -118,6 +120,11 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 	public GuiCAD(ContainerPCBLayout container) {
 		super(container);
+
+		handlers.add(editHandler);
+		handlers.add(placeHandler);
+		setHandler(editHandler);
+
 		this.tileentity = container.tileentity;
 
 		callbackDelete = new GuiCallback<GuiCAD>(this, 150, 100, Action.OK, Action.CANCEL);
@@ -369,6 +376,14 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		nameField.setText(tileentity.getCircuitData().getProperties().getName());
 	}
 	
+	public void setHandler(CADHandler handler) {
+		if (currentHandler != null)
+			currentHandler.remove();
+		currentHandler = handler;
+		if (currentHandler != null)
+			currentHandler.apply();
+	}
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTick, int x, int y) {
 		hoveredElement = null;
@@ -390,7 +405,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		// Draw the name of the CAD
 		fontRendererObj.drawString(I18n.format("gui.integratedcircuits.cad.name"), guiLeft + 45, guiTop + 12, 0xFFFFFF);
 
-		renderCircuitBoard(relX, relY, guiScale);
+		renderCircuitBoard(x, y, relX, relY, guiScale);
+
 		//Draw inner gradient
 		drawGradients(editorLeft, editorTop, editorRight, editorBottom, 4);
 
@@ -482,7 +498,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 	
-	private void renderCircuitBoard(double mouseX, double mouseY, int guiScale) {
+	private void renderCircuitBoard(int mouseX, int mouseY, double relX, double relY, int guiScale) {
 		CircuitData data = getCircuitData();
 		
 		GL11.glEnable(GL11.GL_SCISSOR_TEST);
@@ -493,7 +509,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		//Scale and translate to the center of the screen
 		GL11.glTranslated(getAbsBoardOffsetX(), getAbsBoardOffsetY(), 0);
 		GL11.glScalef(getScaleFactor(), getScaleFactor(), 1F);
-		GL11.glTranslated(-getBoardSize()/2.0, -getBoardSize()/2.0, 0);
+		GL11.glTranslated(-getBoardSize() / 2D, -getBoardSize() / 2D, 0);
 
 		//Render the circuit board
 		CircuitPartRenderer.renderPerfboard(data);
@@ -503,10 +519,15 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		if(!isShiftKeyDown())
 			renderTunnelConnections(data, isCtrlKeyDown());
-		renderCadCursor(mouseX, mouseY, data, data.getSize());
+		renderCadCursor(relX, relY, data, data.getSize());
 		GL11.glDisable(GL11.GL_BLEND);
 
 		GL11.glPopMatrix();
+
+		for (CADHandler handler : handlers) {
+			handler.render(this, mouseX, mouseY);
+		}
+
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 	}
 	

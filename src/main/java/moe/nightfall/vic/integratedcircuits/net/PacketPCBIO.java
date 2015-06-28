@@ -46,7 +46,6 @@ public class PacketPCBIO extends PacketTileEntity<PacketPCBIO> {
 					if (comp == null)
 						comp = new NBTTagCompound();
 					te.getCircuitData().getProperties().setAuthor(player.getCommandSenderName());
-					comp.setInteger("size", te.getCircuitData().getSize());
 					comp.setTag("circuit", te.getCircuitData().writeToNBT(new NBTTagCompound()));
 					floppy.setTagCompound(comp);
 					te.setInventorySlotContents(0, floppy);

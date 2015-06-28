@@ -1,8 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
 import moe.nightfall.vic.integratedcircuits.Content;
-import moe.nightfall.vic.integratedcircuits.LaserHelper;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
+import moe.nightfall.vic.integratedcircuits.LaserHelper;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiAssembler;
 import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
@@ -227,8 +227,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 		if (getStackInSlot(1) == null) {
 			contents[1] = new ItemStack(Content.itemPCB, 1, 1);
 			NBTTagCompound comp = new NBTTagCompound();
-			comp.setTag("circuit", cdata.writeToNBT(new NBTTagCompound()));
-			comp.setInteger("size", size);
+			comp.setTag("circuit", cdata.writeToNBTRaw(new NBTTagCompound()));
 			contents[1].setTagCompound(comp);
 			worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 2, ++position);
 			// Give off a redstone pulse
@@ -437,7 +436,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	private void saveMatrix(NBTTagCompound compound) {
 		if (refMatrix != null) {
 			NBTTagCompound circuit = new NBTTagCompound();
-			cdata.writeToNBT(circuit);
+			cdata.writeToNBTRaw(circuit);
 			craftingSupply.writeToNBT(compound);
 			compound.setTag("circuit", circuit);
 		}

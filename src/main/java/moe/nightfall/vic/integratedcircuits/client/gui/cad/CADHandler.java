@@ -5,6 +5,8 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 
 public abstract class CADHandler implements IUIHandler<GuiCAD> {
 
+	private boolean active;
+
 	public void renderCADCursor(GuiCAD parent, double mouseX, double mouseY, int gridX, int gridY, CircuitData cdata) {
 
 	}
@@ -29,13 +31,17 @@ public abstract class CADHandler implements IUIHandler<GuiCAD> {
 
 	}
 
+	protected boolean isActive() {
+		return active;
+	}
+
 	@Override
 	public void apply() {
-
+		active = true;
 	}
 
 	@Override
 	public void remove() {
-
+		active = false;
 	}
 }
