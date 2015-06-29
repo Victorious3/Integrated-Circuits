@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,7 @@ import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
@@ -18,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import cpw.mods.fml.client.config.GuiUtils;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public final class GuiRollover extends GuiButton implements IHoverable {
 
@@ -87,6 +90,14 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		startTime = System.currentTimeMillis();
 		currentHeight = nextHeight;
 		nextHeight = 0;
+	}
+
+	public List<GuiButton> getButtons(String category) {
+		return buttonMap.get(category);
+	}
+
+	public List<String> getCategories() {
+		return categoryList;
 	}
 
 	@Override
@@ -183,8 +194,15 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 
 		if (selected != -1) {
 			for (GuiButton button : buttonMap.get(categoryList.get(selected))) {
-				if (button.mousePressed(mc, mx, my))
+				if (button.mousePressed(mc, mx, my)) {
+					Method m = ReflectionHelper.findMethod(GuiScreen.class, mc.currentScreen, new String[] { "actionPerformed", "func_146284_a" }, GuiButton.class);
+					try {
+						m.invoke(mc.currentScreen, button);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
 					return true;
+				}
 			}
 		}
 

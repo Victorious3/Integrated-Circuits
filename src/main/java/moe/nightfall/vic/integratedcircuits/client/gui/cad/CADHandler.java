@@ -36,12 +36,12 @@ public abstract class CADHandler implements IUIHandler<GuiCAD> {
 	}
 
 	@Override
-	public void apply() {
+	public void apply(GuiCAD parent) {
 		active = true;
 	}
 
 	@Override
-	public void remove() {
+	public void remove(GuiCAD parent) {
 		active = false;
 	}
 }

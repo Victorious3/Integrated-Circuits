@@ -63,8 +63,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 	public TileEntityCAD tileentity;
 
+	// Handlers
 	public EditHandler editHandler = new EditHandler();
 	public PlaceHandler placeHandler = new PlaceHandler();
+	public CommentHandler commentHandler = new CommentHandler();
 	
 	private CADHandler currentHandler;
 	private List<CADHandler> handlers = new ArrayList<CADHandler>();
@@ -97,6 +99,11 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	private GuiIOMode checkS;
 	private GuiIOMode checkW;
 
+	public GuiRollover rollover;
+	public GuiIconButton buttonAddComment;
+	public GuiIconButton buttonEditComment;
+	public GuiIconButton buttonRemoveComment;
+
 	// Used by the wires
 	// TODO This should be moved elsewhere
 	protected int startX, startY, endX, endY;
@@ -123,6 +130,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		handlers.add(editHandler);
 		handlers.add(placeHandler);
+		handlers.add(commentHandler);
 		setHandler(editHandler);
 
 		this.tileentity = container.tileentity;
@@ -233,18 +241,17 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		// The edit and erase buttons
 		currentPosition = (guiBottom - 47);
-		GuiPartChooser c1 = new GuiPartChooser(0, toolsXPosition, currentPosition, 1, this);
-		c1.setActive(true);
+		GuiPartChooser c1 = new GuiPartChooser(0, toolsXPosition, currentPosition, 1, this).setActive(true);
 		this.buttonList.add(c1);
 		currentPosition += 21;
 		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, currentPosition, 2, this));
 
 		// GUI rollover on the left
-		GuiRollover rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
+		rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
 			.addCategory("Label", 0, 0,
-					new GuiIconButton(90, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0),
-					new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0),
-					new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 0)
+					buttonAddComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true),
+					buttonEditComment = new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0).setToggleable(true, true),
+					buttonRemoveComment = new GuiIconButton(93, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 0).setToggleable(true, true)
 			)
 			.addCategory("Area", 0, 16)
 			.addCategory("Simulation", 0, 32);
@@ -256,6 +263,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	
 	@Override
 	protected void actionPerformed(GuiButton button) {
+		// TODO FFS. Get rid of this, move it to handlers, whatever. Its ugly.
 		if (button.id == 8)
 			scale(tileentity.offX, tileentity.offY, 1);
 		else if (button.id == 9)
@@ -280,6 +288,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 85)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+		else if (button.id >= 91 && button.id <= 93) {
+			CommentHandler.unselect(this, button);
+			setHandler(commentHandler);
+		}
 	}
 
 	//Functions to convert between screen coordinates and circuit board coordinates
@@ -377,11 +389,12 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	}
 	
 	public void setHandler(CADHandler handler) {
-		if (currentHandler != null)
-			currentHandler.remove();
+		if (currentHandler != null && currentHandler != handler)
+			currentHandler.remove(this);
 		currentHandler = handler;
 		if (currentHandler != null)
-			currentHandler.apply();
+			currentHandler.apply(this);
+		System.out.println("Changing to " + handler);
 	}
 
 	@Override

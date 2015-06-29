@@ -16,7 +16,7 @@ import net.minecraft.client.resources.I18n;
 
 public class GuiPartChooser extends GuiButton implements IHoverable {
 	public CircuitRenderWrapper current;
-	private ArrayList<GuiPartChooser> list;
+	private ArrayList<GuiPartChooser> children;
 	public int mode;
 	private boolean active = false;
 	private boolean showList = false;
@@ -40,12 +40,12 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		if (list2 != null) {
 			ArrayList<CircuitRenderWrapper> list3 = new ArrayList<CircuitRenderWrapper>(list2);
 			list3.add(0, current);
-			this.list = new ArrayList<GuiPartChooser>();
+			this.children = new ArrayList<GuiPartChooser>();
 			for (int i = 0; i < list3.size(); i++) {
 				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + i * 21, list3.get(i), parent);
 				child.chooserParent = this;
 				child.visible = false;
-				this.list.add(child);
+				this.children.add(child);
 			}
 		}
 		mode = 0;
@@ -57,12 +57,12 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		if (list2.size() > 0) {
 			current = list2.get(0);
 			ArrayList<CircuitRenderWrapper> list3 = new ArrayList<CircuitRenderWrapper>(list2);
-			this.list = new ArrayList<GuiPartChooser>();
+			this.children = new ArrayList<GuiPartChooser>();
 			for (int i = 0; i < list3.size(); i++) {
 				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + i * 21, list3.get(i), parent);
 				child.chooserParent = this;
 				child.visible = false;
-				this.list.add(child);
+				this.children.add(child);
 			}
 		}
 		mode = 0;
@@ -97,10 +97,10 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		else
 			drawTexturedModalRect(this.xPosition + 2, this.yPosition + 1, (4 + mode) * 16, 15 * 16, 16, 16);
 
-		if (showList && list != null) {
+		if (showList && children != null) {
 			drawRect(xPosition, yPosition - 1, xPosition + width + 1, yPosition + height + 1, 180 << 24);
-			drawRect(xPosition - 22, yPosition - 1, xPosition, yPosition + list.size() * 21, 180 << 24);
-			for (GuiPartChooser child : list) {
+			drawRect(xPosition - 22, yPosition - 1, xPosition, yPosition + children.size() * 21, 180 << 24);
+			for (GuiPartChooser child : children) {
 				child.drawButton(mc, x, y);
 			}
 		}
@@ -110,22 +110,23 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		}
 	}
 
-	public void setActive(boolean active) {
+	public GuiPartChooser setActive(boolean active) {
 		this.active = active;
+		return this;
 	}
 
 	@Override
 	public boolean mousePressed(Minecraft mc, int x, int y) {
 		boolean bool = super.mousePressed(mc, x, y);
-		if (showList && list != null) {
-			for (GuiPartChooser child : list) {
+		if (showList && children != null) {
+			for (GuiPartChooser child : children) {
 				if (child.mousePressed(mc, x, y)) {
 					child.func_146113_a(mc.getSoundHandler());
 					parent.selectedChooser = child;
 				}
 			}
 		}
-		if (!bool && list != null) {
+		if (!bool && children != null) {
 			showList = false;
 			parent.blockMouseInput = false;
 		}
@@ -136,19 +137,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 	public void mouseReleased(int x, int y) {
 		if (!active) {
 			if (chooserParent == null)
-				for (Object obj : parent.getButtonList())
-					if (obj instanceof GuiPartChooser)
-						((GuiPartChooser) obj).setActive(false);
-
-			active = true;
-
-			if (chooserParent != null) {
-				for (GuiPartChooser child : chooserParent.list) {
-					child.setActive(false);
-				}
-				setActive(true);
-				chooserParent.current = this.current;
-			}
+				unselect(parent);
 
 			if (mode == 1)
 				parent.setHandler(parent.editHandler);
@@ -159,11 +148,21 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 				else
 					parent.placeHandler.selectedPart = current;
 			}
+
+			setActive(true);
+
+			if (chooserParent != null) {
+				for (GuiPartChooser child : chooserParent.children) {
+					child.setActive(false);
+				}
+
+				chooserParent.current = this.current;
+			}
 		}
-		if (list != null && list.size() > 1) {
+		if (children != null && children.size() > 1) {
 			showList = !showList;
 			parent.blockMouseInput = showList;
-			for (GuiPartChooser child : list) {
+			for (GuiPartChooser child : children) {
 				child.visible = showList;
 			}
 		}
@@ -184,5 +183,11 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		else if (mode == 2)
 			text.add(I18n.format("gui.integratedcircuits.cad.erase"));
 		return text;
+	}
+
+	public static void unselect(GuiCAD parent) {
+		for (Object obj : parent.getButtonList())
+			if (obj instanceof GuiPartChooser)
+				((GuiPartChooser) obj).setActive(false);
 	}
 }

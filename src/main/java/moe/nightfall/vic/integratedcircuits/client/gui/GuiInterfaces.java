@@ -28,8 +28,8 @@ public abstract class GuiInterfaces {
 
 		public void render(T parent, int mx, int my);
 
-		public void apply();
+		public void apply(T parent);
 
-		public void remove();
+		public void remove(T parent);
 	}
 }
