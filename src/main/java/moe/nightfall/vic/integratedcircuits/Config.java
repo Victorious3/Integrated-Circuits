@@ -100,7 +100,7 @@ public class Config {
 	private static void loadComments() {
 		Set<String> categories = Config.config.getCategoryNames();
 		for (String category : categories) {
-			String categoryComment = MiscUtils.translateFormattedOrNUll("config.integratedcircuits.category."
+			String categoryComment = MiscUtils.translateFormatted("config.integratedcircuits.category."
 					+ category + ".tooltip");
 			if (categoryComment != null && !categoryComment.isEmpty())
 				config.addCustomCategoryComment(category, categoryComment.replace("\\n", "\n").replaceAll("\r", ""));
@@ -109,7 +109,7 @@ public class Config {
 				String langKey = p.getLanguageKey();
 				if (langKey.equals(p.getName()))
 					langKey = "config.integratedcircuits." + category + "." + p.getName().toLowerCase();
-				String comment = MiscUtils.translateFormattedOrNUll(langKey + ".tooltip");
+				String comment = MiscUtils.translateFormatted(langKey + ".tooltip");
 				if (comment != null && !comment.isEmpty())
 					p.comment = comment.replace("\\n", "\n").replaceAll("\r", "") + " [default: " + p.getDefault()
 							+ "]";

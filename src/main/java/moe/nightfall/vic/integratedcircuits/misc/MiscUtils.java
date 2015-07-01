@@ -205,7 +205,7 @@ public class MiscUtils {
 		return list;
 	}
 
-	public static String translateOrNUll(String unlocalizedName) {
+	public static String translate(String unlocalizedName) {
 		String localizedName = StatCollector.translateToLocal(unlocalizedName);
 		if (localizedName.equals(unlocalizedName)) {
 			localizedName = StatCollector.translateToFallback(unlocalizedName);
@@ -215,7 +215,7 @@ public class MiscUtils {
 		return localizedName;
 	}
 
-	public static String translateFormattedOrNUll(String unlocalizedName, Object... toInsert) {
+	public static String translateFormatted(String unlocalizedName, Object... toInsert) {
 		String localizedName = StatCollector.translateToLocalFormatted(unlocalizedName, toInsert);
 		if (localizedName.equals(unlocalizedName)) {
 			localizedName = StatCollector.translateToFallback(unlocalizedName);

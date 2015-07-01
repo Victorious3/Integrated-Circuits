@@ -37,6 +37,12 @@ public class CircuitProperties implements Cloneable {
 		return con;
 	}
 
+	public void removeComment(Comment comment) {
+		if (comment == null)
+			return;
+		comments.remove(comment);
+	}
+
 	public void addComment(Comment comment) {
 		comments.add(comment);
 	}
@@ -96,6 +102,11 @@ public class CircuitProperties implements Cloneable {
 			this.yPos = yPos;
 		}
 		
+		public Comment setText(String text) {
+			this.text = text;
+			return this;
+		}
+
 		public static Comment readFromNBT(NBTTagCompound comp) {
 			Comment comment = new Comment(comp.getDouble("xPos"), comp.getDouble("yPos"));
 			comment.text = comp.getString("text");

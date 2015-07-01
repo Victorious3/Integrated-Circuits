@@ -31,6 +31,11 @@ public abstract class CADHandler implements IUIHandler<GuiCAD> {
 
 	}
 
+	@Override
+	public void onKeyTyped(GuiCAD parent, int keycode, char ch) {
+
+	}
+
 	protected boolean isActive() {
 		return active;
 	}

@@ -11,6 +11,7 @@ import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBCache;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 
 import org.lwjgl.input.Keyboard;
@@ -109,21 +110,24 @@ public class PlaceHandler extends CADHandler {
 	public void onMouseDown(GuiCAD parent, int mx, int my, int button) {
 		int gridX = (int) parent.boardAbs2RelX(mx);
 		int gridY = (int) parent.boardAbs2RelY(my);
+		int w = parent.getBoardSize();
 
-		if (selectedPart.getPart() instanceof PartWire) {
-			parent.startX = gridX;
-			parent.startY = gridY;
-			parent.drag = true;
-		} else {
-			int newID = CircuitPart.getId(selectedPart.getPart());
-			Vec2 pos = new Vec2(gridX, gridY);
-			if (newID != parent.getCircuitData().getID(pos)) {
-				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(
-						!(selectedPart.getPart() instanceof PartNull),
-						parent.tileentity.xCoord,
-						parent.tileentity.yCoord,
-						parent.tileentity.zCoord)
-					.add(pos, newID, selectedPart.getState()));
+		if (gridX > 0 && gridY > 0 && gridX < w - 1 && gridY < w - 1 && !GuiScreen.isShiftKeyDown()) {
+			if (selectedPart.getPart() instanceof PartWire) {
+				parent.startX = gridX;
+				parent.startY = gridY;
+				parent.drag = true;
+			} else {
+				int newID = CircuitPart.getId(selectedPart.getPart());
+				Vec2 pos = new Vec2(gridX, gridY);
+				if (newID != parent.getCircuitData().getID(pos)) {
+					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(
+							!(selectedPart.getPart() instanceof PartNull),
+							parent.tileentity.xCoord,
+							parent.tileentity.yCoord,
+							parent.tileentity.zCoord)
+						.add(pos, newID, selectedPart.getState()));
+				}
 			}
 		}
 	}

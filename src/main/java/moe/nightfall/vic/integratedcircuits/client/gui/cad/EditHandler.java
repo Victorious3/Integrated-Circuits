@@ -10,6 +10,7 @@ import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 
 import org.lwjgl.opengl.GL11;
@@ -39,21 +40,24 @@ public class EditHandler extends CADHandler {
 	public void onMouseDown(GuiCAD parent, int mx, int my, int button) {
 		int gridX = (int) parent.boardAbs2RelX(mx);
 		int gridY = (int) parent.boardAbs2RelY(my);
+		int w = parent.getBoardSize();
 
-		Vec2 pos = new Vec2(gridX, gridY);
-		CircuitPart cp = parent.getCircuitData().getPart(pos);
-		if (cp instanceof IConfigurableDelay && parent.isCtrlKeyDown()) {
-			parent.timedPart = new CircuitRenderWrapper(parent.tileentity.getCircuitData(), cp, pos);
-			parent.labelTimed.setText(String.format("Current delay: %s ticks",
-					((IConfigurableDelay) cp).getConfigurableDelay(pos, parent.tileentity)));
-			parent.callbackTimed.display();
-		} else if (cp instanceof PartTunnel) {
-			parent.startX = gridX;
-			parent.startY = gridY;
-			parent.drag = true;
-		} else {
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(gridX, gridY, button, parent.isCtrlKeyDown(), parent.tileentity.xCoord,
-					parent.tileentity.yCoord, parent.tileentity.zCoord));
+		if (gridX > 0 && gridY > 0 && gridX < w - 1 && gridY < w - 1 && !GuiScreen.isShiftKeyDown()) {
+			Vec2 pos = new Vec2(gridX, gridY);
+			CircuitPart cp = parent.getCircuitData().getPart(pos);
+			if (cp instanceof IConfigurableDelay && parent.isCtrlKeyDown()) {
+				parent.timedPart = new CircuitRenderWrapper(parent.tileentity.getCircuitData(), cp, pos);
+				parent.labelTimed.setText(String.format("Current delay: %s ticks",
+						((IConfigurableDelay) cp).getConfigurableDelay(pos, parent.tileentity)));
+				parent.callbackTimed.display();
+			} else if (cp instanceof PartTunnel) {
+				parent.startX = gridX;
+				parent.startY = gridY;
+				parent.drag = true;
+			} else {
+				CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(gridX, gridY, button, parent.isCtrlKeyDown(), parent.tileentity.xCoord,
+						parent.tileentity.yCoord, parent.tileentity.zCoord));
+			}
 		}
 	}
 

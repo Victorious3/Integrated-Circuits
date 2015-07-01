@@ -6,6 +6,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 /** An int value pair **/
 public class Vec2 {
+
+	public static final Vec2 zero = new Vec2(0, 0);
+
 	public final int x, y;
 
 	public Vec2(int a, int b) {

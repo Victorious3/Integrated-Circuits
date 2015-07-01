@@ -88,7 +88,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	protected int editorLeft;
 	protected int editorRight;
 
-	private int lastX, lastY;
+	protected int lastX, lastY;
 	
 	private GuiTextField nameField;
 	private GuiButtonExt buttonPlus;
@@ -289,6 +289,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		else if (button.id == 85)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id >= 91 && button.id <= 93) {
+			commentHandler.mode = button.id == 91 ? CommentHandler.Mode.EDIT : button.id == 92 ? CommentHandler.Mode.MOVE : CommentHandler.Mode.DELETE;
 			CommentHandler.unselect(this, button);
 			setHandler(commentHandler);
 		}
@@ -296,22 +297,22 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 	//Functions to convert between screen coordinates and circuit board coordinates
 	protected double boardAbs2RelX(double absX) {
-		return (absX - getAbsBoardOffsetX()) / getScaleFactor() + getBoardSize()/2.0;
+		return (absX - getAbsBoardOffsetX()) / getScaleFactor() + getBoardSize() / 2D;
 	}
 	
 	protected double boardAbs2RelY(double absY) {
-		return (absY - getAbsBoardOffsetY()) / getScaleFactor() + getBoardSize()/2.0;
+		return (absY - getAbsBoardOffsetY()) / getScaleFactor() + getBoardSize() / 2D;
 	}
 	
 	protected double boardRel2AbsX(double relX) {
-		return (relX - getBoardSize()/2.0) * getScaleFactor() + getAbsBoardOffsetX();
+		return (relX - getBoardSize() / 2D) * getScaleFactor() + getAbsBoardOffsetX();
 	}
 	
 	protected double boardRel2AbsY(double relY) {
-		return (relY - getBoardSize()/2.0) * getScaleFactor() + getAbsBoardOffsetY();
+		return (relY - getBoardSize() / 2D) * getScaleFactor() + getAbsBoardOffsetY();
 	}
 	
-	private float getScaleFactor() {
+	protected float getScaleFactor() {
 		return SCALE * tileentity.scale;
 	}
 	
@@ -394,7 +395,6 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		currentHandler = handler;
 		if (currentHandler != null)
 			currentHandler.apply(this);
-		System.out.println("Changing to " + handler);
 	}
 
 	@Override
@@ -407,8 +407,6 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		endX = (int) relX;
 		endY = (int) relY;
 
-		mouseDrag(x, y, editorLeft, editorTop, editorRight, editorBottom);
-		
 		ScaledResolution scaledresolution = new ScaledResolution(this.mc, this.mc.displayWidth, this.mc.displayHeight);
 		int guiScale = scaledresolution.getScaleFactor();
 		
@@ -535,12 +533,11 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		renderCadCursor(relX, relY, data, data.getSize());
 		GL11.glDisable(GL11.GL_BLEND);
 
-		GL11.glPopMatrix();
-
 		for (CADHandler handler : handlers) {
 			handler.render(this, mouseX, mouseY);
 		}
 
+		GL11.glPopMatrix();
 		GL11.glDisable(GL11.GL_SCISSOR_TEST);
 	}
 	
@@ -623,15 +620,11 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			return;
 		}
 
-		boolean ctrlDown = isCtrlKeyDown();
-		int w = getBoardSize();
-		int gridX = (int) boardAbs2RelX(mouseX);
-		int gridY = (int) boardAbs2RelY(mouseY);
-
 		drag = false;
-		if (gridX > 0 && gridY > 0 && gridX < w - 1 && gridY < w - 1 && !isShiftKeyDown()) {
-			currentHandler.onMouseDown(this, mouseX, mouseY, flag);
-		}
+		currentHandler.onMouseDown(this, mouseX, mouseY, flag);
+
+		lastX = mouseX;
+		lastY = mouseY;
 
 		super.mouseClicked(mouseX, mouseY, flag);
 	}
@@ -639,7 +632,21 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	@Override
 	protected void mouseClickMove(int mouseX, int mouseY, int button, long timeSinceClick) {
 		super.mouseClickMove(mouseX, mouseY, button, timeSinceClick);
-		currentHandler.onMouseDragged(this, mouseX, mouseY);
+
+		if ((mouseX - lastX != 0 || mouseY - lastY != 0)) {
+			if (!(mouseX < editorLeft || mouseY < editorTop || mouseX > editorRight || mouseY > editorBottom)) {
+				if (isShiftKeyDown()) {
+					tileentity.offX += (mouseX - lastX);
+					tileentity.offY += (mouseY - lastY);
+					clipOffsets();
+				} else {
+					currentHandler.onMouseDragged(this, mouseX, mouseY);
+				}
+			}
+		}
+
+		lastX = mouseX;
+		lastY = mouseY;
 	}
 
 	@Override
@@ -654,19 +661,6 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			currentHandler.onMouseUp(this, mx, my, button);
 		}
 		drag = false;
-	}
-	
-	private void mouseDrag(int x, int y, int left, int top, int right, int bottom) {
-		if (Mouse.isButtonDown(0) && (x - lastX != 0 || y - lastY != 0) && isShiftKeyDown()) {
-			if (!(x < left || y < top || x > right || y > bottom)) {
-				tileentity.offX += (x - lastX);
-				tileentity.offY += (y - lastY);
-				clipOffsets();
-			}
-		}
-		
-		lastX = x;
-		lastY = y;
 	}
 	
 	private void scale(double centerX, double centerY, int i) {
