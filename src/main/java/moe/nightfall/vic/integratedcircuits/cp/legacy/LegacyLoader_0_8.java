@@ -57,7 +57,7 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		addTransformer(new PartRepeaterTransformer(), 10);
 		addTransformer(new PartTimerTransformer(), 11);
 		addTransformer(new PartSequencerTransformer(), 12);
-		//addTransformer(new PartStateCellTransformer(), 13);
+		addTransformer(new PartStateCellTransformer(), 13);
 		addTransformer(new PartRandomizerTransformer(), 14);
 		addTransformer(new PartPulseFormerTransformer(), 15);
 		//addTransformer(new PartRSLatchTransformer(), 16);
@@ -282,7 +282,35 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		}
 	}
 
-	// PartStateCell
+	private static class PartStateCellTransformer extends PartDelayedActionTransformer {
+		protected final int oldDelay = old.allocate(8);
+		protected final int oldOutWest = old.allocate();
+		protected final int oldOutNorth = old.allocate();
+		protected final int newDelay = transformed.allocate(8);
+		protected final int newOutWest = transformed.allocate();
+		protected final int newOutNorth = transformed.allocate();
+
+		@Override
+		public void transformImpl() {
+			super.transformImpl();
+			setInt(newDelay, getInt(oldDelay));
+			if (getRotatedInput(ForgeDirection.SOUTH)) {
+				// Fix possibly invalid state
+				setBit(newOutWest, true);
+				setBit(newOutNorth, false);
+				setBit(newActive, false);
+				setInt(newCurrentDelay, 0);
+			} else {
+				setBit(newOutWest, getBit(oldOutWest));
+				setBit(newOutNorth, getBit(oldOutNorth));
+			}
+		}
+
+		@Override
+		public int getDelay() {
+			return getBit(oldOutNorth) ? 2 : getInt(oldDelay);
+		}
+	}
 
 	private static class PartTimerTransformer extends PartDelayedActionTransformer {
 		protected final int oldOut = old.allocate();
