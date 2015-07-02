@@ -65,7 +65,7 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		//addTransformer(new PartTransparentLatchTransformer(), 18);
 		addTransformer(new PartXORGateTransformer(), 19); // PartXORGate
 		addTransformer(new PartXORGateTransformer(), 20); // PartXNORGate
-		//addTransformer(new PartSynchronizerTransformer(), 21);
+		addTransformer(new PartSynchronizerTransformer(), 21);
 		addTransformer(new CircuitPartTransformer(), 22); // PartNullCell
 		addTransformer(new PartIOBitTransformer(), 23);
 		addTransformer(new PartSimpleGateTransformer(), 24); // PartInvertCell
@@ -189,6 +189,33 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 	// PartSynchronizer was derived from PartCPGate in 0.8
 	// It is derived from PartDelayedAction in 0.9
+	private static class PartSynchronizerTransformer extends PartCPGateTransformer {
+		protected final int oldEast = old.allocate();
+		protected final int oldWest = old.allocate();
+		protected final int oldOut = old.allocate();
+
+		protected final int newActive = transformed.allocate();
+		protected final int newCurrentDelay = transformed.allocate(8);
+		protected final int newEast = transformed.allocate();
+		protected final int newWest = transformed.allocate();
+		protected final int newOldEast = transformed.allocate();
+		protected final int newOldWest = transformed.allocate();
+
+		@Override
+		public void transformImpl() {
+			super.transformImpl();
+			setBit(newEast, getBit(oldEast));
+			setBit(newWest, getBit(oldWest));
+			
+			// Start new delay if output is high
+			setBit(newActive, getBit(oldOut));
+			setInt(newCurrentDelay, 0);
+			
+			// Store current input as "old" (used for edge detection).
+			setBit(newOldEast, getRotatedInput(ForgeDirection.EAST));
+			setBit(newOldWest, getRotatedInput(ForgeDirection.WEST));
+		}
+	}
 
 	// PartToggleLatch
 
