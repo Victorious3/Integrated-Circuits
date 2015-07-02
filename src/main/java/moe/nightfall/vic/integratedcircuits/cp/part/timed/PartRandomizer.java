@@ -58,11 +58,19 @@ public class PartRandomizer extends PartDelayedAction {
 
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
-		super.onScheduledTick(pos, parent);
 		if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+			// Do not call super() if input is low,
+			//  to prevent output change on the same tick when it goes low.
 			setDelay(pos, parent, false);
-		} else if (!isDelayActive(pos, parent))
-			setDelay(pos, parent, true);
+		} else {
+			super.onScheduledTick(pos, parent); // Handle delay countdown
+			if (!isDelayActive(pos, parent))
+				// Input went high on this tick.
+				// Change random output right now to respect 1-tick input pulses.
+				// Output still changes at most once in 2 ticks.
+				// This also schedules the next delay.
+				onDelay(pos, parent);
+		}
 	}
 
 	@Override

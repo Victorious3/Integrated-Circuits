@@ -73,7 +73,10 @@ public class PartRepeater extends PartDelayedAction {
 
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		// Check if onDelay is still to be triggered (even on *current* tick),
+		//  to avoid sampling input before output takes any effect.
 		boolean checkInput = !isDelayActive(pos, parent);
+		
 		super.onScheduledTick(pos, parent);
 		if (checkInput && getProperty(pos, parent, PROP_OUT) !=
 				getInputFromSide(pos, parent,

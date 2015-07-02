@@ -54,11 +54,11 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		addTransformer(new Part1I3OTransformer(), 7); // PartBufferGate
 		addTransformer(new Part1I3OTransformer(), 8); // PartNOTGate
 		addTransformer(new PartSimpleGateTransformer(), 9); // PartMultiplexer
-		//addTransformer(new PartRepeaterTransformer(), 10);
+		addTransformer(new PartRepeaterTransformer(), 10);
 		addTransformer(new PartTimerTransformer(), 11);
 		//addTransformer(new PartSequencerTransformer(), 12);
 		//addTransformer(new PartStateCellTransformer(), 13);
-		//addTransformer(new PartRandomizerTransformer(), 14);
+		addTransformer(new PartRandomizerTransformer(), 14);
 		addTransformer(new PartPulseFormerTransformer(), 15);
 		//addTransformer(new PartRSLatchTransformer(), 16);
 		//addTransformer(new PartToggleLatchTransformer(), 17);
@@ -209,9 +209,43 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		}
 	}
 
-	// PartRandomizer
+	private static class PartRandomizerTransformer extends PartDelayedActionTransformer {
+		protected final int oldRandom = old.allocate(3);
+		protected final int newRandom = transformed.allocate(3);
 
-	// PartRepeater
+		@Override
+		public void transformImpl() {
+			setBit(newRandom, getBit(oldRandom));
+			super.transformImpl();
+		}
+
+		@Override
+		public int getDelay() {
+			return 2;
+		}
+	}
+
+	private static class PartRepeaterTransformer extends PartDelayedActionTransformer {
+		protected final int oldDelay = old.allocate(8);
+		protected final int oldOut = old.allocate();
+		protected final int newDelay = transformed.allocate(8);
+		protected final int newOut = transformed.allocate();
+
+		@Override
+		public void transformImpl() {
+			int delay = getInt(oldDelay);
+			if (delay != 255)
+				delay -= 1;
+			setBit(newOut, getBit(oldOut));
+			setInt(newDelay, delay);
+			super.transformImpl();
+		}
+
+		@Override
+		public int getDelay() {
+			return getBit(oldOut) ? 2 : getInt(oldDelay);
+		}
+	}
 
 	// PartSequencer
 
