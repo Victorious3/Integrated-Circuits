@@ -56,7 +56,7 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		addTransformer(new PartSimpleGateTransformer(), 9); // PartMultiplexer
 		addTransformer(new PartRepeaterTransformer(), 10);
 		addTransformer(new PartTimerTransformer(), 11);
-		//addTransformer(new PartSequencerTransformer(), 12);
+		addTransformer(new PartSequencerTransformer(), 12);
 		//addTransformer(new PartStateCellTransformer(), 13);
 		addTransformer(new PartRandomizerTransformer(), 14);
 		addTransformer(new PartPulseFormerTransformer(), 15);
@@ -247,7 +247,43 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		}
 	}
 
-	// PartSequencer
+	private static class PartSequencerTransformer extends PartCPGateTransformer {
+		// It was derived from timer in 0.8 and might be in an invalid state,
+		//  because in 0.9 it works exactly as P:R counterpart.
+
+		// PartDelayedAction properties
+		protected final int oldActive = old.allocate();
+		protected final int oldCurrentDelay = old.allocate(8);
+		protected final int newActive = transformed.allocate();
+		protected final int newCurrentDelay = transformed.allocate(8);
+
+		// Old PartTimer and PartSequencer properties
+		protected final int oldOut = old.allocate();
+		protected final int oldDelay = old.allocate(8);
+		protected final int oldOutSide = old.allocate(2);
+
+		// New PartSequencer properties
+		protected final int newOutSide = transformed.allocate(2);
+		protected final int newDelay = transformed.allocate(8);
+
+		@Override
+		public void transformImpl() {
+			int delay = getInt(oldDelay);
+			
+			// Transform ongonig delay or start new one.
+			// This is normally handled by PartDelayedActionTransformer.
+			// Next tick is scheduled by CircuitPartTransformer for all gates.
+			int currentDelay = 0;
+			if (getBit(oldActive))
+				currentDelay = delay - getInt(oldCurrentDelay);
+			setBit(newActive, true);
+			setInt(newCurrentDelay, currentDelay);
+			
+			setInt(newDelay, delay);
+			setInt(newOutSide, getInt(oldOutSide));
+			super.transformImpl();
+		}
+	}
 
 	// PartStateCell
 
