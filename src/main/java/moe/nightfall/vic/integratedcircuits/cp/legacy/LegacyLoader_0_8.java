@@ -60,9 +60,9 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		addTransformer(new PartStateCellTransformer(), 13);
 		addTransformer(new PartRandomizerTransformer(), 14);
 		addTransformer(new PartPulseFormerTransformer(), 15);
-		//addTransformer(new PartRSLatchTransformer(), 16);
-		//addTransformer(new PartToggleLatchTransformer(), 17);
-		//addTransformer(new PartTransparentLatchTransformer(), 18);
+		addTransformer(new PartRSLatchTransformer(), 16);
+		addTransformer(new PartToggleLatchTransformer(), 17);
+		addTransformer(new PartTransparentLatchTransformer(), 18);
 		addTransformer(new PartXORGateTransformer(), 19); // PartXORGate
 		addTransformer(new PartXORGateTransformer(), 20); // PartXNORGate
 		addTransformer(new PartSynchronizerTransformer(), 21);
@@ -173,7 +173,23 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		protected abstract int getDelay();
 	}
 
-	// PartRSLatch
+	private static class PartRSLatchTransformer extends PartCPGateTransformer {
+		protected final int oldOut = old.allocate();
+		protected final int oldTmp = old.allocate();
+		protected final int oldMode = old.allocate(2);
+		
+		protected final int newState = transformed.allocate(2);
+		protected final int newCheck = transformed.allocate();
+		protected final int newMode = transformed.allocate(2);
+
+		@Override
+		public void transformImpl() {
+			super.transformImpl();
+			setInt(newMode, getInt(oldMode));
+			setBit(newCheck, false);
+			setInt(newState, getBit(oldOut) ? 1 : 2);
+		}
+	}
 
 	private static class PartSimpleGateTransformer extends PartCPGateTransformer {
 		protected final int oldOut = old.allocate();
@@ -217,9 +233,37 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		}
 	}
 
-	// PartToggleLatch
+	private static class PartToggleLatchTransformer extends PartCPGateTransformer {
+		protected final int oldOut = old.allocate();
+		protected final int oldTmp = old.allocate();
+		
+		protected final int newOut = transformed.allocate();
+		protected final int newOldNorth = transformed.allocate();
+		protected final int newOldSouth = transformed.allocate();
 
-	// PartTransparentLatch
+		@Override
+		public void transformImpl() {
+			super.transformImpl();
+			setBit(newOut, getBit(oldOut));
+			
+			// Store current input as "old" (used for edge detection).
+			setBit(newOldNorth, getRotatedInput(ForgeDirection.NORTH));
+			setBit(newOldSouth, getRotatedInput(ForgeDirection.SOUTH));
+		}
+	}
+
+	private static class PartTransparentLatchTransformer extends PartCPGateTransformer {
+		protected final int oldOut = old.allocate();
+		protected final int oldTmp = old.allocate();
+		
+		protected final int newOut = transformed.allocate();
+
+		@Override
+		public void transformImpl() {
+			super.transformImpl();
+			setBit(newOut, getBit(oldOut));
+		}
+	}
 
 	// PartDelayedAction descendants:
 
