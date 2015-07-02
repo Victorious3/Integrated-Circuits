@@ -116,8 +116,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setInt(newRotation, getInt(oldRotation));
 			super.transformImpl();
+			setInt(newRotation, getInt(oldRotation));
 		}
 
 		protected final boolean getRotatedInput(ForgeDirection side) {
@@ -132,8 +132,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setInt(newRotFreq, getInt(oldRotFreq));
 			super.transformImpl();
+			setInt(newRotFreq, getInt(oldRotFreq));
 		}
 	}
 
@@ -143,8 +143,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setInt(newColor, getInt(oldColor));
 			super.transformImpl();
+			setInt(newColor, getInt(oldColor));
 		}
 	}
 
@@ -158,14 +158,16 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
+			super.transformImpl();
 			boolean active = getBit(oldActive);
 			int currentDelay = 0;
 			if (active) {
 				currentDelay = getDelay() - getInt(oldCurrentDelay);
+				if (currentDelay < 0)
+					currentDelay = 0;
 			}
 			setBit(newActive, active);
 			setInt(newCurrentDelay, currentDelay);
-			super.transformImpl();
 		}
 
 		protected abstract int getDelay();
@@ -180,8 +182,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setInt(newOut, getInt(oldTmp));
 			super.transformImpl();
+			setInt(newOut, getInt(oldTmp));
 		}
 	}
 
@@ -199,8 +201,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setBit(newOldIn, getRotatedInput(ForgeDirection.SOUTH));
 			super.transformImpl();
+			setBit(newOldIn, getRotatedInput(ForgeDirection.SOUTH));
 		}
 
 		@Override
@@ -215,8 +217,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setBit(newRandom, getBit(oldRandom));
 			super.transformImpl();
+			setBit(newRandom, getBit(oldRandom));
 		}
 
 		@Override
@@ -233,29 +235,23 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
+			super.transformImpl();
 			int delay = getInt(oldDelay);
 			if (delay != 255)
 				delay -= 1;
 			setBit(newOut, getBit(oldOut));
 			setInt(newDelay, delay);
-			super.transformImpl();
 		}
 
 		@Override
 		public int getDelay() {
-			return getBit(oldOut) ? 2 : getInt(oldDelay);
+			return getInt(oldDelay);
 		}
 	}
 
-	private static class PartSequencerTransformer extends PartCPGateTransformer {
+	private static class PartSequencerTransformer extends PartDelayedActionTransformer {
 		// It was derived from timer in 0.8 and might be in an invalid state,
 		//  because in 0.9 it works exactly as P:R counterpart.
-
-		// PartDelayedAction properties
-		protected final int oldActive = old.allocate();
-		protected final int oldCurrentDelay = old.allocate(8);
-		protected final int newActive = transformed.allocate();
-		protected final int newCurrentDelay = transformed.allocate(8);
 
 		// Old PartTimer and PartSequencer properties
 		protected final int oldOut = old.allocate();
@@ -268,20 +264,21 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			int delay = getInt(oldDelay);
-			
-			// Transform ongonig delay or start new one.
-			// This is normally handled by PartDelayedActionTransformer.
-			// Next tick is scheduled by CircuitPartTransformer for all gates.
-			int currentDelay = 0;
-			if (getBit(oldActive))
-				currentDelay = delay - getInt(oldCurrentDelay);
-			setBit(newActive, true);
-			setInt(newCurrentDelay, currentDelay);
-			
-			setInt(newDelay, delay);
-			setInt(newOutSide, getInt(oldOutSide));
 			super.transformImpl();
+			setInt(newDelay, getInt(oldDelay));
+			setInt(newOutSide, getInt(oldOutSide));
+			
+			// Start new delay if sequencer was stopped.
+			// Next tick is scheduled by CircuitPartTransformer for all gates.
+			if (!getBit(oldActive)) {
+				setBit(newActive, true);
+				setInt(newCurrentDelay, 0);
+			}
+		}
+
+		@Override
+		public int getDelay() {
+			return getInt(oldDelay);
 		}
 	}
 
@@ -295,9 +292,9 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
+			super.transformImpl();
 			setBit(newOut, getBit(oldOut));
 			setInt(newDelay, getInt(oldDelay));
-			super.transformImpl();
 		}
 
 		@Override
@@ -317,8 +314,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setInt(newConnectors, getInt(oldConnectors));
 			super.transformImpl();
+			setInt(newConnectors, getInt(oldConnectors));
 		}
 	}
 
@@ -329,8 +326,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setInt(newConnectors, getInt(oldConnectors));
 			super.transformImpl();
+			setInt(newConnectors, getInt(oldConnectors));
 		}
 	}
 
@@ -340,8 +337,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void transformImpl() {
-			setInt(newConnectors, 0);
 			super.transformImpl();
+			setInt(newConnectors, 0);
 		}
 	}
 

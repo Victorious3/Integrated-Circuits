@@ -173,10 +173,10 @@ public abstract class LegacyLoader implements Comparable<LegacyLoader> {
 
 			@Override
 			protected void transformImpl() {
+				super.transformImpl();
 				setBit(newC, getBit(oldC));
 				setBit(newD, getBit(oldD));
 				setInt(newE, getInt(oldE) + 1);
-				super.transformImpl();
 			}
 		}
 
