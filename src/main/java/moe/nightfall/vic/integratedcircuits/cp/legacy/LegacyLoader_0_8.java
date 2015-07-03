@@ -35,16 +35,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		props.setInteger("con", swapBundledAnalog(props.getInteger("con")));
 	}
 
-	/* TODO: This will not work without a valid ICircuit. Not entirely necessary.
-	@Override
-	public void postTransform(CircuitData cdata) {
-		super.postTransform(cdata);
-		cdata.propagateSignals();
-	}
-	*/
-
 	{
-		addTransformer(new CircuitPartTransformer(), 0); // PartNull
+		// PartNull does not require any meaningful transformation
 		addTransformer(new PartWireTransformer(), 1);
 		addTransformer(new CircuitPartTransformer(), 2); // PartTorch
 		addTransformer(new Part3I1OTransformer(), 3); // PartANDGate
@@ -86,13 +78,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 
 		@Override
 		public void postTransform(Vec2 pos, CircuitData cdata) {
-			/* TODO: If CircuitData is stored to NBT *before it is ticked* at
-			 *  least once, these scheduled input updates will be dropped, and
-			 *  circuit will just remain glitched if it already was.
-			 * This legacy loader should not introduce any new glitches.
-			 */
 			// Schedule input updates for the whole circuit, to eliminate glitches.
-			// TODO: Uncomment after testing: cdata.scheduleInputChange(pos);
+			cdata.scheduleInputChange(pos);
 
 			// Tick the whole circuit once, because many gates might need it.
 			cdata.scheduleTick(pos);
@@ -106,9 +93,9 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 	// CircuitPart descendants:
 
 	// PartTunnel was not present in 0.8
+	// PartNull does not require any meaningful transformation
 
-	// PartNull, PartNullCell and PartTorch
-	// add nothing to CircuitPartTransformer
+	// PartNullCell and PartTorch add nothing to CircuitPartTransformer
 
 	private static abstract class PartCPGateTransformer extends CircuitPartTransformer {
 		protected final int oldRotation = old.allocate(2);
