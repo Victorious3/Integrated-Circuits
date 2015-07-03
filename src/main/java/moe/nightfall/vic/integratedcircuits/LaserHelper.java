@@ -349,7 +349,7 @@ public class LaserHelper {
 				lastModified = CommonProxy.serverTicks;
 
 			reload();
-			if (te.getWorldObj() != null)
+			if (te.getWorldObj() != null && !MiscUtils.isClient())
 				CommonProxy.networkWrapper.sendToDimension(new PacketAssemblerUpdate(isRunning, x, y, id, te.xCoord,
 						te.yCoord, te.zCoord), te.getWorldObj().provider.dimensionId);
 		}
