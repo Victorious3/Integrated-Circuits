@@ -386,14 +386,18 @@ public class CircuitData implements Cloneable {
 	}
 
 	public void readFromStream(ByteBuf buf) {
-		int length = buf.readInt();
-		for (int i = 0; i < length; i++) {
-			int x = buf.readByte();
-			int y = buf.readByte();
-			int cid = buf.readByte();
-			int data = buf.readInt();
-			setID(new Vec2(x, y), cid);
-			meta[x][y] = data;
+		try {
+			int length = buf.readInt();
+			for (int i = 0; i < length; i++) {
+				int x = buf.readByte();
+				int y = buf.readByte();
+				int cid = buf.readByte();
+				int data = buf.readInt();
+				setID(new Vec2(x, y), cid);
+				meta[x][y] = data;
+			}
+		} catch(Exception e) {
+			// HOTFIXES! Create an issue for this ASAP.
 		}
 	}
 
