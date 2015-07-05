@@ -1,0 +1,160 @@
+// TODO: Translate all this to french. 
+
+
+
+# items
+item.integratedcircuits.floppy.name=Circuit Blueprint Disk
+item.integratedcircuits.laser.name=Laser
+item.integratedcircuits.pcb.name=Raw Circuit Board
+item.integratedcircuits.pcb.printed.name=Printed Circuit Board
+item.integratedcircuits.pcb_chip.name=Circuit Board
+item.integratedcircuits.silicon.name=Silicon
+item.integratedcircuits.silicon_drop.name=Silicon Drop
+item.integratedcircuits.coalcompound.name=Sandy Coal Compound
+item.integratedcircuits.screwdriver.name=Screwdriver
+item.integratedcircuits.soldering_iron.name=Soldering Iron
+
+item.integratedcircuits.socket.name=Empty Socket
+item.integratedcircuits.socket_fmp.name=Empty FMP Socket
+
+item.integratedcircuits.7segment.name=Segment
+item.integratedcircuits.circuit.name=Integrated Circuit (%s)
+
+# blocks
+tile.integratedcircuits.pcblayoutcad.name=PCB Layout CAD
+tile.integratedcircuits.assembler.name=Assembler
+
+# parts
+part.integratedcircuits.iobit.name=IOBit
+part.integratedcircuits.torch.name=Torch
+part.integratedcircuits.tunnel.name=Tunnel
+part.integratedcircuits.wire.0.name=Wire
+part.integratedcircuits.wire.1.name=Red Wire
+part.integratedcircuits.wire.2.name=Orange Wire
+
+part.integratedcircuits.nullcell.name=Null Cell
+part.integratedcircuits.buffercell.name=Buffer Cell
+part.integratedcircuits.invertcell.name=Invert Cell
+part.integratedcircuits.andcell.name=AND Cell
+
+part.integratedcircuits.andgate.name=AND Gate
+part.integratedcircuits.orgate.name=OR Gate
+part.integratedcircuits.xorgate.name=XOR Gate
+part.integratedcircuits.buffergate.name=Buffer Gate
+part.integratedcircuits.nandgate.name=NAND Gate
+part.integratedcircuits.norgate.name=NOR Gate
+part.integratedcircuits.xnorgate.name=XNOR Gate
+part.integratedcircuits.notgate.name=NOT Gate
+
+part.integratedcircuits.togglelatch.name=Toggle Latch
+part.integratedcircuits.rslatch.name=RS Latch
+part.integratedcircuits.rslatch.mode=Mode
+part.integratedcircuits.rslatch.mirrored=Mirrored
+part.integratedcircuits.transparentlatch.name=Transparent Latch
+
+part.integratedcircuits.timer.name=Timer
+part.integratedcircuits.sequencer.name=Sequencer
+part.integratedcircuits.synchronizer.name=Synchronizer
+part.integratedcircuits.statecell.name=State Cell
+part.integratedcircuits.pulseformer.name=Pulse Former
+part.integratedcircuits.randomizer.name=Randomizer
+part.integratedcircuits.repeater.name=Repeater
+part.integratedcircuits.multiplexer.name=Multiplexer
+
+# GUI
+gui.integratedcircuits.callback.ok=OK
+gui.integratedcircuits.callback.cancel=Cancel
+gui.integratedcircuits.callback.yes=Yes
+gui.integratedcircuits.callback.no=No
+
+gui.integratedcircuits.cad.name=PCB Layout CAD
+gui.integratedcircuits.cad.edit=Edit
+gui.integratedcircuits.cad.erase=Erase
+
+gui.integratedcircuits.cad.rotate=-Rotate-
+gui.integratedcircuits.cad.toggle=-Toggle-
+gui.integratedcircuits.cad.delay=-Delay-
+gui.integratedcircuits.cad.mode=-Mode-
+
+gui.integratedcircuits.cad.mode.simple=simple
+gui.integratedcircuits.cad.mode.bundled=bundled
+gui.integratedcircuits.cad.mode.analog=analog
+gui.integratedcircuits.cad.mode.low=LOW
+gui.integratedcircuits.cad.mode.high=HIGH
+
+gui.integratedcircuits.cad.callback.show=Show this message?
+gui.integratedcircuits.cad.callback.confirm=Are you sure?
+gui.integratedcircuits.cad.callback.continue=Continue anyways?
+gui.integratedcircuits.cad.callback.message=This will revert all of%nyour progress and%nclear the current circuit.
+gui.integratedcitcuits.cad.callback.delay=Current delay: %s ticks
+
+gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
+gui.integratedcircuits.assembler.statuscode.3=Out of PCBs!
+
+gui.integratedcircuits.assembler.nocircuit=-No circuit-
+gui.integratedcircuits.assembler.redstone.enabled=Redstone enabled
+gui.integratedcircuits.assembler.redstone.inverted=Redstone inverted
+gui.integratedcircuits.assembler.redstone.disabled=Redstone disabled
+gui.integratedcircuits.assembler.pull.single=Single Pull
+gui.integratedcircuits.assembler.pull.auto=Automatic Pull
+gui.integratedcircuits.assembler.run=Run
+
+gui.integratedcircuits.7segment.name=Seven Segment Display
+gui.integratedcircuits.7segment.master=Master
+gui.integratedcircuits.7segment.slave=Slave
+gui.integratedcircuits.7segment.mode=Mode:
+
+gui.integratedcircuits.7segment.mode.simple=Simple
+gui.integratedcircuits.7segment.mode.analog=Analog
+gui.integratedcircuits.7segment.mode.short.signed=Signed Short
+gui.integratedcircuits.7segment.mode.short.unsigned=Unsigned Short
+gui.integratedcircuits.7segment.mode.float=Signed Float
+gui.integratedcircuits.7segment.mode.binary=Binary String
+gui.integratedcircuits.7segment.mode.manual=Manual
+
+gui.integratedcircuits.7segment.mode.simple.tooltip=A digital redstone signal:%n§8§oEither true or false.
+gui.integratedcircuits.7segment.mode.analog.tooltip=An analog redstone signal:%n§8§oFrom 0 to F.
+gui.integratedcircuits.7segment.mode.short.signed.tooltip=Parses a bundled signal as%nsigned 16 bit short:%n§8§oFrom -32768 to 32768.
+gui.integratedcircuits.7segment.mode.short.unsigned.tooltip=Parses a bundled signal as%nunsigned 16 bit short:%n§8§oFrom 0 to 65535. 
+gui.integratedcircuits.7segment.mode.float.tooltip=Parses a bundled signal as%n16 bit floating-point (binary16):%n§8§oFrom -122880 to 122880.
+gui.integratedcircuits.7segment.mode.binary.tooltip=Outputs a bundled signal%nby its binary digits.
+gui.integratedcircuits.7segment.mode.manual.tooltip=Allows to modify the individual%nsegments with a bundled signal.
+
+gui.integratedcircuits.config.titleline2=Configure IntegratedCircuits here
+
+#config
+config.integratedcircuits.category.parts=Circuit Parts
+config.integratedcircuits.category.parts.tooltip=Enables / Disables circuit parts %nIf you disable ANYTHING, ALL circuits with that part will BREAK! %nCircuits broken in this way will not be fixed when the part is re-enabled. %nThe only way to "fix" the circuits is to edit the blueprint in the CAD to put the part back, %nand then remake and replace the circuits.
+config.integratedcircuits.general.showConfirmMessage=Show confirmation message
+config.integratedcircuits.general.showConfirmMessage.tooltip=Show the CAD's confirm prompt.
+config.integratedcircuits.general.showStartupMessage=Show startup message
+config.integratedcircuits.general.showStartupMessage.tooltip=Show a message on startup warning your players from the risk they are undertaking by playing with this mod.
+config.integratedcircuits.general.enablePropertyEdit=Enable editing Properties
+config.integratedcircuits.general.enablePropertyEdit.tooltip=Enable property editing for the circuit peripheral. I don't take any warranty for crashes that might arise because of this.
+config.integratedcircuits.general.circuitCacheSize=Circuit cache size
+config.integratedcircuits.general.circuitCacheSize.tooltip=The maximum number of undos that can be used in the CAD
+config.integratedcircuits.general.enableTooltips=Enable tooltips
+config.integratedcircuits.general.enableTooltips.tooltip=Enable help tooltips. Recommended to be enabled unless you are familiar with the mod.
+config.integratedcircuits.general.enableTracker=Enable tracker
+config.integratedcircuits.general.enableTracker.tooltip=This setting will make the game visit this URL on startup: https://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat %nThe connection is established over bit.ly for statistics. The data collected is publicly visible on https://bitly.com/1GIaUA6+. Bit.ly will track %nyour country via your IP address, no other, or personal, information is gathered. I like statistics, and I would like you to keep this setting enabled, %nso that I get a better overview of how often my mod is used. Thanks.
+config.integratedcircuits.general.sevenSegmentMaxDigits=Maximal digits seven segment display
+config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=The maximum number of digits a seven segment display can have
+config.integratedcircuits.parts.redirect=part.integratedcircuits.%s.name
+
+# misc
+itemGroup.integratedcircuits.ctab=Integrated Circuits
+tooltip.integratedcircuits.socket=You have to carry a soldering iron%nto solder onto a socket
+
+# Item tooltips
+item.integratedcircuits.floppy.tooltip.name=Name: %s
+item.integratedcircuits.floppy.tooltip.size=Size: %s
+item.integratedcircuits.floppy.tooltip.author=Author: %s
+item.integratedcircuits.floppy.tooltip.info=Right click on the drive (the black bar)%non the bottom of the assembler or CAD...
+
+# Forge Direction
+fdirection.north.name=NORTH
+fdirection.east.name=EAST
+fdirection.south.name=SOUTH
+fdirection.west.name=WEST
+fdirection.up.name=UP
+fdirection.down.name=DOWN
