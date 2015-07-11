@@ -42,25 +42,18 @@ public class IntegratedCircuitsGuiHandler implements IGuiHandler {
 		return null;
 	}
 
-	// Bunch of test code
 	/*private static class TestGUI extends GuiScreen {
 
 		private GuiTextArea textArea = new GuiTextArea(10, 10)
 			.setText("AAAAAAAA\nBBBBBBBB\nCCCCCCCC\nDDDDDDDD\nEEEEEEEE")
 			.setBackgroundColor(0xFFFFFFFF)
 			.setBorderColor(0xFF000000)
-			.setTextColor(0xFF000000);
+			.setTextColor(0xFF000000)
+			.setCursorColor(0xFF000000);
 
 		@Override
 		protected void mouseClicked(int p_73864_1_, int p_73864_2_, int p_73864_3_) {
 			textArea.onMouseDown(p_73864_1_, p_73864_2_, p_73864_3_);
-		}
-
-		@Override
-		protected void mouseMovedOrUp(int p_146286_1_, int p_146286_2_, int p_146286_3_) {
-			if (p_146286_3_ == 0) {
-				textArea.onMouseUp(p_146286_1_, p_146286_2_, 0);
-			}
 		}
 
 		@Override

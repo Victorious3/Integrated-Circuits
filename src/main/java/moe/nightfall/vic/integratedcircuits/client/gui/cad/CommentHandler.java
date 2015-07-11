@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiIconButton;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiTextArea;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitProperties.Comment;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
@@ -23,6 +24,7 @@ public class CommentHandler extends CADHandler {
 	private Comment selectedComment;
 	private Map<Comment, Vec2> sizeCache = new HashMap<Comment, Vec2>();
 	public Mode mode = Mode.EDIT;
+	private GuiTextArea textArea = new GuiTextArea(0, 0).setVisible(false);
 
 	public static enum Mode {
 		EDIT, MOVE, DELETE
@@ -35,7 +37,7 @@ public class CommentHandler extends CADHandler {
 		GL11.glScalef(1 / 32F, 1 / 32F, 1 / 32F);
 		for (Comment comment : parent.getCircuitData().getProperties().getComments()) {
 			if (mode == Mode.EDIT && selectedComment == comment) {
-				renderEditComment(comment);
+				// renderEditComment(comment);
 			} else {
 				renderComment(comment, hovered == comment);
 			}
@@ -96,6 +98,13 @@ public class CommentHandler extends CADHandler {
 			return;
 		double gridX = parent.boardAbs2RelX(mx);
 		double gridY = parent.boardAbs2RelY(my);
+
+		// Prevent unselect when editing a comment
+		if (selectedComment != null && mode == Mode.EDIT && textArea.isActive()) {
+			textArea.onMouseDown(mx, my, button);
+			return;
+		}
+
 		selectedComment = getIntersecting(parent, gridX, gridY);
 
 		// Re-add for topmost
@@ -110,11 +119,14 @@ public class CommentHandler extends CADHandler {
 				dragRelY = gridY - selectedComment.yPos;
 			} else if (mode == Mode.DELETE) {
 				parent.getCircuitData().getProperties().removeComment(selectedComment);
+			} else if (mode == Mode.EDIT) {
+				textArea.setText(selectedComment.text);
 			}
 		} else {
 			if (mode == Mode.EDIT) {
 				System.out.println(gridX + " " + gridY);
 				selectedComment = new Comment(gridX, gridY);
+				textArea.setText("");
 				parent.getCircuitData().getProperties().addComment(selectedComment);
 			}
 		}
@@ -174,18 +186,20 @@ public class CommentHandler extends CADHandler {
 		int x = (int) (comment.xPos * 32D);
 		int y = (int) (comment.yPos * 32D);
 
-		String[] text = MiscUtils.stringNewlineSplit(comment.text);
 		Vec2 size = getSize(comment);
+		fr.drawSplitString(comment.text, x + 5, y + 5, Integer.MAX_VALUE, 0xFF000000);
 		Gui.drawRect(x, y, x + size.x, y + size.y, hovered || !isActive() || comment == selectedComment ? 0xFFFFFFFF : 0xAAFFFFFF);
-		for (int i = 0; i < text.length; i++) {
-			fr.drawString(text[i], x + 5, y + 5 + i * fr.FONT_HEIGHT, 0);
-		}
 
 		drawBorder(x, y, size.x, size.y);
 	}
 
-	public void renderEditComment(Comment comment) {
-		renderComment(comment, true);
+	public void renderEditComment(Comment comment, int mx, int my) {
+		textArea.setVisible(true);
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, 0, 0);
+		textArea.render(mx, my);
+		GL11.glPushMatrix();
+		// renderComment(comment, true);
 	}
 
 	private void drawBorder(int x, int y, int width, int height) {

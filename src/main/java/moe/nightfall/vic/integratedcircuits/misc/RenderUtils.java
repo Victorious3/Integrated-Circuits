@@ -1,5 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.misc;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -28,9 +31,28 @@ public class RenderUtils {
 		GL11.glTranslated(-x, -y, 0);
 	}
 
+	private static final Field f_posX = ReflectionHelper.findField(FontRenderer.class, "posX", "field_78295_j");
+	private static final Field f_posY = ReflectionHelper.findField(FontRenderer.class, "posY", "field_78296_k");
+	private static final Method m_renderStringAtPos = ReflectionHelper.findMethod(FontRenderer.class, null, new String[] { "renderStringAtPos", "func_78255_a" }, String.class, boolean.class);
+
+	public static void resetColors(FontRenderer fontRenderer, int color) {
+		// No reflection call needed, drawing empty String
+		fontRenderer.drawString("", 0, 0, color);
+	}
+
+	public static void drawStringNoReset(FontRenderer fontRenderer, String s, int x, int y, boolean shadow) {
+		try {
+			f_posX.set(fontRenderer, x);
+			f_posY.set(fontRenderer, y);
+			m_renderStringAtPos.invoke(fontRenderer, s, shadow);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * Version of {@link Gui#drawRect(int, int, int, int, int)} that doesn't
-	 * toch the blend mode
+	 * touch the blend mode
 	 */
 	public static void drawRect(int x1, int y1, int x2, int y2, int color) {
 

@@ -49,7 +49,9 @@ public class GuiTextArea extends Gui {
 
 	public void render(int mx, int my) {
 
-		if (!isActive())
+		if (!isVisible())
+			return;
+
 		if (backgroundColor != 0) {
 			drawRect(xCoord, yCoord, xCoord + width, yCoord + textBuffer.size() * fontRenderer.FONT_HEIGHT, backgroundColor);
 		}
@@ -58,8 +60,10 @@ public class GuiTextArea extends Gui {
 			renderSelection(0xFFDFB578);
 		}
 
+		// Called to reset the styles
+		RenderUtils.resetColors(fontRenderer, isActive() ? textColor : 0xFF888888);
 		for (int i = 0; i < textBuffer.size(); i++) {
-			fontRenderer.drawString(textBuffer.get(i).toString(), xCoord, yCoord + i * fontRenderer.FONT_HEIGHT, isActive() ? textColor : 0xFF888888);
+			RenderUtils.drawStringNoReset(fontRenderer, textBuffer.get(i).toString(), xCoord, yCoord + i * fontRenderer.FONT_HEIGHT, false);
 		}
 
 		// Selection
@@ -105,10 +109,8 @@ public class GuiTextArea extends Gui {
 	private static final int CLICK_TIME = 200;
 
 	public void onMouseDown(int mx, int my, int button) {
-		if (!isVisible() || !isActive())
-			return;
 
-		if (button != 0)
+		if (!isVisible() || button != 0)
 			return;
 
 		Vec2 intersection = intersect(mx, my);
