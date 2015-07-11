@@ -28,6 +28,40 @@ public class RenderUtils {
 		GL11.glTranslated(-x, -y, 0);
 	}
 
+	/**
+	 * Version of {@link Gui#drawRect(int, int, int, int, int)} that doesn't
+	 * toch the blend mode
+	 */
+	public static void drawRect(int x1, int y1, int x2, int y2, int color) {
+
+		if (x1 > x2) {
+			int t = x1;
+			x1 = x2;
+			x2 = t;
+		}
+		if (y1 > y2) {
+			int t = y1;
+			y1 = y2;
+			y2 = t;
+		}
+
+		applyColorIRGBA(color);
+
+		Tessellator tes = Tessellator.instance;
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+
+		tes.startDrawingQuads();
+		tes.addVertex(x1, y2, 0);
+		tes.addVertex(x2, y2, 0);
+		tes.addVertex(x2, y1, 0);
+		tes.addVertex(x1, y1, 0);
+		tes.draw();
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_BLEND);
+	}
+
 	public static void addLine(double x, double y, double x2, double y2, double linewidth) {
 		Tessellator tes = Tessellator.instance;
 		if (x > x2) {
