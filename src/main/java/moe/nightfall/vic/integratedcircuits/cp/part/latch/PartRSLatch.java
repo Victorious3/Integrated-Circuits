@@ -45,12 +45,10 @@ public class PartRSLatch extends PartCPGate {
 			if (getProperty(pos, parent, PROP_CHECK))
 				return;
 			int st = getProperty(pos, parent, PROP_STATE);
-			if (st == 0)
-				return;
 			ForgeDirection s1 = toExternal(pos, parent, ForgeDirection.NORTH);
 			boolean in1 = getInputFromSide(pos, parent, s1);
 			boolean in2 = getInputFromSide(pos, parent, s1.getOpposite());
-			if ((st == 1 && !in1 && in2) || (st == 2 && !in2 && in1)) {
+			if ((st != 2 && !in1 && in2) || (st == 2 && !in2 && in1)) {
 				// Turn off currently outputting input side,
 				// to check if we must switch to other state or break.
 				setProperty(pos, parent, PROP_CHECK, true);
@@ -66,9 +64,11 @@ public class PartRSLatch extends PartCPGate {
 		boolean in2 = getInputFromSide(pos, parent, s1.getOpposite());
 		if (in1 != in2)
 			setProperty(pos, parent, PROP_STATE, in1 ? 1 : 2);
-		else if (in1 && in2)
+		else if (in1 || getProperty(pos, parent, PROP_CHECK)) {
 			setProperty(pos, parent, PROP_STATE, 0);
-		else if (getProperty(pos, parent, PROP_STATE) == 0)
+			if (!in1) // Inputs shorted. Wait until player fixes it.
+				scheduleTick(pos, parent);
+		} else if (getProperty(pos, parent, PROP_STATE) == 0)
 			// Both inputs off, still in broken state.
 			// Vanilla and P:R RS latches work the same way.
 			setProperty(pos, parent, PROP_STATE, 1);
@@ -79,13 +79,11 @@ public class PartRSLatch extends PartCPGate {
 	@Override
 	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		int state = getProperty(pos, parent, PROP_STATE);
-		if (state == 0)
-			return false;
 		ForgeDirection s2 = toInternal(pos, parent, side);
 		boolean special = isSpecial(pos, parent);
 		boolean mirrored = isMirrored(pos, parent);
 		if (s2 == ForgeDirection.NORTH) {
-			if (special && state == 1)
+			if (special && state != 2)
 				// A bit of wire-like behavior:
 				// Only output if we are not powered from the same side
 				//  and are not checking it.
@@ -93,6 +91,8 @@ public class PartRSLatch extends PartCPGate {
 						&& !getInputFromSide(pos, parent, side);
 			return false;
 		}
+		if (state == 0)
+			return false;
 		if (s2 == ForgeDirection.SOUTH) {
 			if (special && state == 2)
 				return !getProperty(pos, parent, PROP_CHECK)
