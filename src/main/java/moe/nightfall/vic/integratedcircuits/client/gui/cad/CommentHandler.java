@@ -10,7 +10,8 @@ import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiTextArea;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitProperties.Comment;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBComment;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBComment;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBDeleteComment;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -123,6 +124,8 @@ public class CommentHandler extends CADHandler {
 				dragRelY = gridY - selectedComment.yPos;
 			} else if (mode == Mode.DELETE) {
 				parent.getCircuitData().getProperties().removeComment(selectedComment);
+				CommonProxy.networkWrapper.sendToServer(new PacketPCBDeleteComment(parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord, selectedComment));
+				selectedComment = null;
 			} else if (mode == Mode.EDIT) {
 				if (selectedComment != unselectedComment)
 					textArea.setText(selectedComment.text);
@@ -135,6 +138,7 @@ public class CommentHandler extends CADHandler {
 					textArea.selectAll();
 					textArea.setActive(true);
 					parent.getCircuitData().getProperties().addComment(selectedComment);
+					return;
 				} else {
 					saveText(unselectedComment, parent);
 				}
@@ -159,6 +163,9 @@ public class CommentHandler extends CADHandler {
 	@Override
 	public void onMouseUp(GuiCAD parent, int mx, int my, int button) {
 		if (mode == Mode.MOVE) {
+			if (selectedComment != null) {
+				CommonProxy.networkWrapper.sendToServer(new PacketPCBComment(parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord, selectedComment));
+			}
 			selectedComment = null;
 		}
 	}

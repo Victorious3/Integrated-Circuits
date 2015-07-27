@@ -42,7 +42,11 @@ public class CircuitProperties implements Cloneable {
 	public void removeComment(Comment comment) {
 		if (comment == null)
 			return;
-		comments.remove(comment);
+		comments.remove(comment.uuid);
+	}
+
+	public void removeComment(UUID uuid) {
+		comments.remove(uuid);
 	}
 
 	public void addComment(Comment comment) {

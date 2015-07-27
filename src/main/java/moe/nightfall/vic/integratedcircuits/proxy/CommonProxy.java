@@ -29,15 +29,16 @@ import moe.nightfall.vic.integratedcircuits.net.PacketAssemblerUpdateInsufficien
 import moe.nightfall.vic.integratedcircuits.net.PacketChangeSetting;
 import moe.nightfall.vic.integratedcircuits.net.PacketDataStream;
 import moe.nightfall.vic.integratedcircuits.net.PacketFloppyDisk;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBCache;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangeInput;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangeName;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangePart;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBClear;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBComment;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBIO;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBLoad;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBUpdate;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBCache;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangeInput;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangeName;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBClear;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBComment;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBDeleteComment;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBIO;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBLoad;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBUpdate;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -97,6 +98,7 @@ public class CommonProxy {
 		AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
 		AbstractPacket.registerPacket(PacketPCBCache.class, Side.SERVER, 7);
 		AbstractPacket.registerPacket(PacketPCBComment.class, null, 18);
+		AbstractPacket.registerPacket(PacketPCBDeleteComment.class, null, 19);
 
 		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 8);
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);

@@ -8,8 +8,8 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRender
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBCache;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangePart;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBCache;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;

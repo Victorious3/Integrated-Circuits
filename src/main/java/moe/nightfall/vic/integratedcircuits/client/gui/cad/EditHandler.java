@@ -8,7 +8,7 @@ import moe.nightfall.vic.integratedcircuits.cp.part.PartTunnel;
 import moe.nightfall.vic.integratedcircuits.cp.part.timed.IConfigurableDelay;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangePart;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
