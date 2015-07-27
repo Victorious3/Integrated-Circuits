@@ -34,6 +34,7 @@ import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangeInput;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangeName;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBClear;
+import moe.nightfall.vic.integratedcircuits.net.PacketPCBComment;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBIO;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBLoad;
 import moe.nightfall.vic.integratedcircuits.net.PacketPCBUpdate;
@@ -95,6 +96,7 @@ public class CommonProxy {
 		AbstractPacket.registerPacket(PacketPCBChangeInput.class, null, 5);
 		AbstractPacket.registerPacket(PacketPCBLoad.class, Side.CLIENT, 6);
 		AbstractPacket.registerPacket(PacketPCBCache.class, Side.SERVER, 7);
+		AbstractPacket.registerPacket(PacketPCBComment.class, null, 18);
 
 		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 8);
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);

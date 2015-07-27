@@ -190,6 +190,10 @@ public class MiscUtils {
 		return toSplit.split("\\r\\n|\\n\\r|\\r|\\n");
 	}
 
+	public static String stringNormalizeLinefeed(String normalize) {
+		return normalize.replaceAll("\\r\\n", "\n");
+	}
+
 	public static String[] stringSplitFormat(String toFormat, Object... toInsert) {
 		return stringNewlineSplit(String.format(toFormat, toInsert));
 	}

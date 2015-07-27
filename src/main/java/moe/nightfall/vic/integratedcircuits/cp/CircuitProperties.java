@@ -1,7 +1,9 @@
 package moe.nightfall.vic.integratedcircuits.cp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,7 +13,7 @@ import net.minecraftforge.common.util.Constants.NBT;
 public class CircuitProperties implements Cloneable {
 	private String name = "NO_NAME", author = "unknown";
 	private int con;
-	private List<Comment> comments = new ArrayList<Comment>();
+	private Map<UUID, Comment> comments = new LinkedHashMap<UUID, Comment>();
 
 	public void setName(String name) {
 		this.name = name;
@@ -44,11 +46,11 @@ public class CircuitProperties implements Cloneable {
 	}
 
 	public void addComment(Comment comment) {
-		comments.add(comment);
+		comments.put(comment.uuid, comment);
 	}
 
-	public List<Comment> getComments() {
-		return comments;
+	public Collection<Comment> getComments() {
+		return comments.values();
 	}
 
 	public EnumConnectionType getModeAtSide(int side) {
@@ -85,7 +87,7 @@ public class CircuitProperties implements Cloneable {
 		comp.setInteger("con", con);
 		if (!pcb) {
 			NBTTagList commentList = new NBTTagList();
-			for (Comment comment : comments) {
+			for (Comment comment : comments.values()) {
 				commentList.appendTag(comment.writeToNBT(new NBTTagCompound()));
 			}
 			comp.setTag("comments", commentList);
@@ -96,12 +98,19 @@ public class CircuitProperties implements Cloneable {
 	public static class Comment implements Cloneable {
 		public String text = "";
 		public double xPos, yPos;
+		public int id;
+		public UUID uuid;
 		
 		public Comment(double xPos, double yPos) {
+			this(xPos, yPos, UUID.randomUUID());
+		}
+
+		public Comment(double xPos, double yPos, UUID uuid) {
 			this.xPos = xPos;
 			this.yPos = yPos;
+			this.uuid = uuid;
 		}
-		
+
 		public Comment setText(String text) {
 			this.text = text;
 			return this;
@@ -110,6 +119,7 @@ public class CircuitProperties implements Cloneable {
 		public static Comment readFromNBT(NBTTagCompound comp) {
 			Comment comment = new Comment(comp.getDouble("xPos"), comp.getDouble("yPos"));
 			comment.text = comp.getString("text");
+			comment.uuid = UUID.fromString(comp.getString("uuid"));
 			return comment;
 		}
 
@@ -117,6 +127,7 @@ public class CircuitProperties implements Cloneable {
 			compound.setDouble("xPos", xPos);
 			compound.setDouble("yPos", yPos);
 			compound.setString("text", text);
+			compound.setString("uuid", uuid.toString());
 			return compound;
 		}
 	}

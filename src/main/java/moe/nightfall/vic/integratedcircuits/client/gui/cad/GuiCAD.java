@@ -154,6 +154,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 	@Override
 	public void initGui() {
+
+		Keyboard.enableRepeatEvents(true);
 		NEIAddon.hideGUI(true);
 
 		this.mc.thePlayer.openContainer = this.inventorySlots;
@@ -746,8 +748,11 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		else if (par2 == Keyboard.KEY_Y && isCtrlKeyDown())
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord,
 					tileentity.zCoord));
-		else
-			super.keyTyped(par1, par2);
+		else {
+			if (!currentHandler.onKeyTyped(this, par2, par1)) {
+				super.keyTyped(par1, par2);
+			}
+		}
 
 		if (!oname.equals(nameField.getText()))
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeName(MiscUtils.thePlayer(), nameField.getText(),
@@ -766,6 +771,9 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
+
+		Keyboard.enableRepeatEvents(false);
+
 		Config.showConfirmMessage.set(checkboxDelete.isChecked());
 		Config.save();
 

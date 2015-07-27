@@ -25,8 +25,8 @@ public class GuiTextArea extends Gui {
 	private List<StringBuilder> textBuffer = new ArrayList<StringBuilder>();
 	private List<Integer> cachedWidth = new ArrayList<Integer>();
 
-	protected Vec2 cursorPosition;
-	protected Vec2 selectionStart;
+	protected Vec2 cursorPosition = Vec2.zero;
+	protected Vec2 selectionStart = Vec2.zero;
 	protected int xCoord, yCoord;
 	protected int width;
 
@@ -34,9 +34,9 @@ public class GuiTextArea extends Gui {
 	protected boolean visible = true;
 
 	protected int backgroundColor;
-	protected int borderColor;
 	protected int textColor = 0xFFFFFFFF;
 	protected int cursorColor = 0xFFFFFFFF;
+	protected int border = 5;
 
 	protected FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
 
@@ -47,13 +47,18 @@ public class GuiTextArea extends Gui {
 		this.yCoord = yCoord;
 	}
 
+	public Vec2 getSize() {
+		return new Vec2(width + border * 2, textBuffer.size() * fontRenderer.FONT_HEIGHT + border * 2);
+	}
+
 	public void render(int mx, int my) {
 
 		if (!isVisible())
 			return;
 
 		if (backgroundColor != 0) {
-			drawRect(xCoord, yCoord, xCoord + width, yCoord + textBuffer.size() * fontRenderer.FONT_HEIGHT, backgroundColor);
+			Vec2 size = getSize();
+			drawRect(xCoord, yCoord, xCoord + size.x, yCoord + size.y, backgroundColor);
 		}
 
 		if (isActive() && hasSelection()) {
@@ -63,7 +68,7 @@ public class GuiTextArea extends Gui {
 		// Called to reset the styles
 		RenderUtils.resetColors(fontRenderer, isActive() ? textColor : 0xFF888888);
 		for (int i = 0; i < textBuffer.size(); i++) {
-			RenderUtils.drawStringNoReset(fontRenderer, textBuffer.get(i).toString(), xCoord, yCoord + i * fontRenderer.FONT_HEIGHT, false);
+			RenderUtils.drawStringNoReset(fontRenderer, textBuffer.get(i).toString(), xCoord + border, yCoord + i * fontRenderer.FONT_HEIGHT + border, false);
 		}
 
 		// Selection
@@ -78,7 +83,7 @@ public class GuiTextArea extends Gui {
 			int cursorX = xCoord + fontRenderer.getStringWidth(getCurrentLine().substring(0, cursorPosition.x));
 			int cursorY = yCoord + cursorPosition.y * fontRenderer.FONT_HEIGHT;
 
-			drawVerticalLine(cursorX, cursorY - 2, cursorY + 10, cursorColor);
+			drawVerticalLine(cursorX + border, cursorY - 2 + border, cursorY + 10 + border, cursorColor);
 		}
 	}
 
@@ -86,6 +91,10 @@ public class GuiTextArea extends Gui {
 		Pair<Vec2, Vec2> selection = selection();
 		Vec2 first = selection.getLeft();
 		Vec2 last = selection.getRight();
+
+		int xCoord = this.xCoord + border;
+		int yCoord = this.yCoord + border;
+
 		if (first.y == last.y) {
 			int x1 = fontRenderer.getStringWidth(getLine(first.y).substring(0, first.x));
 			int x2 = fontRenderer.getStringWidth(getLine(first.y).substring(0, last.x));
@@ -197,8 +206,7 @@ public class GuiTextArea extends Gui {
 
 		switch (ch) {
 			case 1: // ^A
-				selectionStart = Vec2.zero;
-				cursorPosition = getLastPosition();
+				selectAll();
 				return;
 			case 3: // ^C
 				GuiScreen.setClipboardString(getSelectedText());
@@ -228,6 +236,11 @@ public class GuiTextArea extends Gui {
 				}
 				return;
 		}
+	}
+
+	public void selectAll() {
+		selectionStart = Vec2.zero;
+		cursorPosition = getLastPosition();
 	}
 
 	private void backspace() {
@@ -434,13 +447,16 @@ public class GuiTextArea extends Gui {
 	}
 
 	private Vec2 intersect(int mx, int my) {
+		mx -= border;
+		my -= border;
+
 		int y = (my - xCoord) / fontRenderer.FONT_HEIGHT;
 		if (y < 0 || y >= textBuffer.size())
 			return null;
 		int x = mx - xCoord;
-		if (x < 0)
+		if (x < -border)
 			return null;
-		if (x > width)
+		if (x > width + border * 2)
 			return null;
 		String s = fontRenderer.trimStringToWidth(textBuffer.get(y).toString(), mx - xCoord);
 		x = s.length();
@@ -529,11 +545,6 @@ public class GuiTextArea extends Gui {
 
 	public GuiTextArea setBackgroundColor(int color) {
 		this.backgroundColor = color;
-		return this;
-	}
-
-	public GuiTextArea setBorderColor(int color) {
-		this.borderColor = color;
 		return this;
 	}
 
