@@ -11,30 +11,31 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class LegacyLoader implements Comparable<LegacyLoader> {
+public abstract class LegacyLoader implements Comparable<LegacyLoader> {
 
 	private static final List<LegacyLoader> legacyLoaders = new ArrayList<LegacyLoader>();
-
-	public final int version;
-	private Map<Integer, PartTransformer> partTransformers = new HashMap<Integer, PartTransformer>();
-
-	public LegacyLoader(int version) {
-		this.version = version;
-	}
-
-	public static void addLegacyLoader(LegacyLoader loader) {
-		legacyLoaders.add(loader);
+	static {
+		legacyLoaders.add(new LegacyLoader_0_8());
 		Collections.sort(legacyLoaders);
 	}
 
+	private Map<Integer, PartTransformer> partTransformers = new HashMap<Integer, PartTransformer>();
+
+	/** Returns version FROM which it converts.
+	 *  Should always convert to the next version.
+	 **/
+	public abstract int getVersion();
+
 	public static List<LegacyLoader> getLegacyLoaders(int version) {
-		for (int i = 0; i < legacyLoaders.size(); i++) {
+		int i = 0;
+		while (i < legacyLoaders.size()) {
 			LegacyLoader loader = legacyLoaders.get(i);
-			if (loader.version == version) {
-				return legacyLoaders.subList(0, i);
+			if (loader.getVersion() >= version) {
+				break;
 			}
+			i++;
 		}
-		return new ArrayList<LegacyLoader>();
+		return new ArrayList<LegacyLoader>(legacyLoaders.subList(i, legacyLoaders.size()));
 	}
 
 	public final LegacyLoader addTransformer(PartTransformer transformer, int id) {
@@ -43,7 +44,6 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 	}
 
 	public void transformNBT(NBTTagCompound data) {
-
 	}
 
 	public void transform(int size, int[][] id, int[][] meta) {
@@ -64,7 +64,7 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 			}
 		}
 	}
-	
+
 	public void postTransform(CircuitData cdata) {
 		for (int x = 0; x < cdata.getSize(); x++) {
 			for (int y = 0; y < cdata.getSize(); y++) {
@@ -87,24 +87,22 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 		protected int id;
 		private int meta;
 
-		protected AllocationMap old, transformed;
+		protected AllocationMap old = new AllocationMap(32);
+		protected AllocationMap transformed = new AllocationMap(32);
 		private BitSet oldMeta, transformedMeta;
-
-		protected PartTransformer() {
-			old = new AllocationMap(32);
-			transformed = new AllocationMap(32);
-		}
 
 		public final void transform() {
 			oldMeta = BitSet.valueOf(new long[] { meta });
-			transformedMeta = (BitSet) oldMeta.clone();
-			old.copyTo(transformed, transformedMeta);
+			transformedMeta = new BitSet(32);
 			transformImpl();
-			meta = (int) transformedMeta.toLongArray()[0];
+			// toLongArray is zero length for all-0s bitset
+			meta = transformedMeta.length() == 0 ? 0 : (int) transformedMeta.toLongArray()[0];
 		}
 
 		protected final int getInt(int id) {
-			return (int) old.get(id, oldMeta).toLongArray()[0];
+			BitSet bs = old.get(id, oldMeta);
+			// toLongArray is zero length for all-0s bitset
+			return bs.length() == 0 ? 0 : (int) bs.toLongArray()[0];
 		}
 
 		protected final boolean getBit(int id) {
@@ -123,7 +121,7 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 
 		protected void transformImpl() {
 		}
-		
+
 		public void postTransform(Vec2 crd, CircuitData cdata) {
 		}
 	}
@@ -132,30 +130,69 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 	/*
 	@Test
 	public void test() {
-		PartTransformer transformer = new PartTransformer() {{
+		class BaseTransformer extends PartTransformer {
+			// Conversion: 0bAAAAAxxxx => 0bBBAAAAA
+
+			int oldA, newA, newB;
+			{
 				old.skip(4);
-				old.allocate(0, 5);
-	
-				transformed.allocate(0, 5);
-				transformed.allocate(1, 2);
+				oldA = old.allocate(5);
+
+				newA = transformed.allocate(5);
+				newB = transformed.allocate(2);
 			}
-	
+
 			@Override
 			protected void transformImpl() {
-				setInt(1, 3);
-			}	
+				setInt(newA, getInt(oldA));
+				setInt(newB, 3);
+			}
 		};
 
-		transformer.meta = 0x1F0;
+		PartTransformer transformer = new BaseTransformer();
+
+		transformer.meta = 0x1F0; // 0b111110000
 		transformer.transform();
 
-		assertEquals(0x7F, transformer.meta);
+		assertEquals(0x7F, transformer.meta); // 0b1111111
+
+
+		class DerivedTransformer extends BaseTransformer {
+			// Conversion: 0bEEDCAAAAAxxxx => 0bDEEECBBAAAAA (newE is oldE+1)
+
+			int oldC, oldD, oldE, newC, newD, newE;
+			{
+				oldC = old.allocate();
+				oldD = old.allocate();
+				oldE = old.allocate(2);
+
+				newC = transformed.allocate();
+				newE = transformed.allocate(3);
+				newD = transformed.allocate();
+			}
+
+			@Override
+			protected void transformImpl() {
+				super.transformImpl();
+				setBit(newC, getBit(oldC));
+				setBit(newD, getBit(oldD));
+				setInt(newE, getInt(oldE) + 1);
+			}
+		}
+
+		transformer = new DerivedTransformer();
+
+		transformer.meta = 0x1D55; // 0b1110101010101
+		transformer.transform();
+
+		assertEquals(0xC75, transformer.meta); // 0b110001110101
 	}*/
 
 	public static class AllocationMap {
 
 		protected int index;
 		protected int size;
+		protected int id = 0;
 
 		private Map<Integer, Allocation> allocationMap = new HashMap<Integer, Allocation>();
 
@@ -163,23 +200,20 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 			this.size = size;
 		}
 
-		public AllocationMap skip(int size) {
+		public void skip(int size) {
 			index += size;
 			if (index >= this.size)
 				throw new ArrayIndexOutOfBoundsException();
-			return this;
 		}
 
-		public AllocationMap allocate(int id, int size) {
+		public int allocate(int size) {
 			allocationMap.put(id, new Allocation(index, size));
 			skip(size);
-			return this;
+			return id++;
 		}
 
-		public AllocationMap allocate(int id) {
-			allocationMap.put(id, new Allocation(index, 1));
-			skip(1);
-			return this;
+		public int allocate() {
+			return allocate(1);
 		}
 
 		public void set(int id, BitSet value, BitSet data) {
@@ -194,7 +228,7 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 
 		public BitSet get(int id, BitSet data) {
 			if (!allocationMap.containsKey(id))
-				return new BitSet();
+				throw new ArrayIndexOutOfBoundsException();
 			Allocation allocation = allocationMap.get(id);
 
 			BitSet value = new BitSet(allocation.size);
@@ -202,15 +236,6 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 				value.set(i, data.get(i + allocation.index));
 			}
 			return value;
-		}
-
-		public void copyTo(AllocationMap other, BitSet data) {
-			BitSet data1 = (BitSet) data.clone();
-			data.clear();
-			for (int id : allocationMap.keySet()) {
-				Allocation allocation = allocationMap.get(id);
-				other.set(id, get(id, data1), data);
-			}
 		}
 
 		private static class Allocation {
@@ -227,6 +252,6 @@ public class LegacyLoader implements Comparable<LegacyLoader> {
 
 	@Override
 	public int compareTo(LegacyLoader other) {
-		return Integer.compare(version, other.version);
+		return Integer.compare(getVersion(), other.getVersion());
 	}
 }

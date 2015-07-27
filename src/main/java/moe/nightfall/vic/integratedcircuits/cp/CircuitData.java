@@ -57,12 +57,17 @@ public class CircuitData implements Cloneable {
 	}
 
 	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule, CircuitProperties prop) {
+		this(size, parent, id, meta, tickSchedule, new LinkedHashSet<Vec2>(), prop);
+	}
+
+	private CircuitData(int size, ICircuit parent, int[][] id, int[][] meta, LinkedHashSet<Vec2> tickSchedule, LinkedHashSet<Vec2> inputQueue, CircuitProperties prop) {
 		this.parent = parent;
 		this.prop = prop;
 		this.size = size;
 		this.id = id;
 		this.meta = meta;
 		this.tickSchedule = tickSchedule;
+		this.inputQueue = inputQueue;
 		this.hasChanged = !isEmpty();
 	}
 
@@ -299,6 +304,10 @@ public class CircuitData implements Cloneable {
 	}
 
 	public synchronized void updateMatrix() {
+		// InputQueue might not be empty between ticks in some rare cases.
+		if (!inputQueue.isEmpty())
+			propagateSignals();
+
 		// Tick all circuit parts that need to be ticked
 		HashSet<Vec2> tmp = (HashSet<Vec2>) tickSchedule.clone();
 		tickSchedule.clear();
@@ -353,9 +362,21 @@ public class CircuitData implements Cloneable {
 			scheduledTicks.add(new Vec2(scheduledList[i], scheduledList[i + 1]));
 		}
 
-		CircuitData cdata = new CircuitData(size, parent, id, meta, scheduledTicks, prop);
+		LinkedHashSet<Vec2> inputQueue = new LinkedHashSet<Vec2>();
+		if (compound.hasKey("inputQueue")) {
+			// Input update queue should be empty between ticks,
+			//  but it might not be in some rare cases.
+			//  (Mostly when circuit was converted from previous version.)
+			int[] inputList = compound.getIntArray("inputQueue");
+			for (int i = 0; i < inputList.length; i += 2) {
+				inputQueue.add(new Vec2(inputList[i], inputList[i + 1]));
+			}
+		}
+
+		CircuitData cdata = new CircuitData(size, parent, id, meta, scheduledTicks, inputQueue, prop);
 
 		if (version < CircuitData.version) {
+			// TODO Not future-proof. Will break if e.g. inputQueue is removed.
 			for (LegacyLoader loader : legacyLoaders) {
 				loader.postTransform(cdata);
 			}
@@ -401,6 +422,18 @@ public class CircuitData implements Cloneable {
 			tmp.add(v.y);
 		}
 		compound.setIntArray("scheduled", Ints.toArray(tmp));
+
+		if (!inputQueue.isEmpty()) {
+			// Input update queue should be empty between ticks,
+			//  but it might not be in some rare cases.
+			//  (Mostly when circuit was converted from previous version.)
+			tmp = new LinkedList<Integer>();
+			for (Vec2 v : inputQueue) {
+				tmp.add(v.x);
+				tmp.add(v.y);
+			}
+			compound.setIntArray("inputQueue", Ints.toArray(tmp));
+		}
 
 		compound.setInteger("version", version);
 
