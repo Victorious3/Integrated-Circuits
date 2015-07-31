@@ -323,7 +323,8 @@ public final class LegacyLoader_0_8 extends LegacyLoader {
 		@Override
 		public void transformImpl() {
 			super.transformImpl();
-			setInt(newDelay, getInt(oldDelay));
+			setInt(newDelay, getInt(Math.min(oldDelay + 2, 255)));
+			// +2 is to keep total period the same (if possible)
 			setInt(newOutSide, getInt(oldOutSide));
 			
 			// Start new delay if sequencer was stopped.
