@@ -10,6 +10,7 @@ import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -65,11 +66,18 @@ public class PartRSLatch extends PartCPGate {
 		if (in1 != in2)
 			setProperty(pos, parent, PROP_STATE, in1 ? 1 : 2);
 		else if (in1 || getProperty(pos, parent, PROP_CHECK)) {
-			setProperty(pos, parent, PROP_STATE, 0);
-			if (!in1) // Inputs shorted. Wait until player fixes it.
-				scheduleTick(pos, parent);
+			// Either both inputs are high
+			//  or they are shorted by unpowered wire in "special" mode.
+			setProperty(pos, parent, PROP_STATE, 0); // Switch to broken state
+			if (!in1 && !(parent instanceof TileEntityCAD)) {
+				// Inputs shorted and circuit is ticked outside CAD.
+				// It will never ever be edited again.
+				// So just keep this RS latch permanently broken.
+				notifyNeighbours(pos, parent);
+				return;
+			}
 		} else if (getProperty(pos, parent, PROP_STATE) == 0)
-			// Both inputs off, still in broken state.
+			// Both inputs off, still in broken state. Switch to "default".
 			// Vanilla and P:R RS latches work the same way.
 			setProperty(pos, parent, PROP_STATE, 1);
 		setProperty(pos, parent, PROP_CHECK, false); 
