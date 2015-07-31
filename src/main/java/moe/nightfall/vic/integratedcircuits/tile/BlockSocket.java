@@ -81,8 +81,16 @@ public class BlockSocket extends BlockContainer {
 		bounds.setBlockBounds(this);
 	}
 
+	public AxisAlignedBB getStatelessBoundingBox(World world, int x, int y, int z) {
+		return null;
+	}
+
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+		if (world.getBlock(x, y, z) != this) { // BUGFIX: mojang randomly calls this method for blocks not in the world!
+			return getStatelessBoundingBox(world, x, y, z); // see: net.minecraft.item.ItemBlock.func_150936_a (1.7.10 srg)
+		}
+
 		setBlockBoundsBasedOnState(world, x, y, z);
 		return super.getCollisionBoundingBoxFromPool(world, x, y, z);
 	}
