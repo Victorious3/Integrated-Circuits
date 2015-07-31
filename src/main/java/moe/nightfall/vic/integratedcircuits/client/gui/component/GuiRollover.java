@@ -92,6 +92,10 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		nextHeight = 0;
 	}
 
+	public int getSelected() {
+		return selected;
+	}
+
 	public List<GuiButton> getButtons(String category) {
 		return buttonMap.get(category);
 	}

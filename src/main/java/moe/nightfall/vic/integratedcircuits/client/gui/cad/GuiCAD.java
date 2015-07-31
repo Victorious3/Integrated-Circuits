@@ -251,7 +251,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		// GUI rollover on the left
 		rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
 			.addCategory("Label", 0, 0,
-					buttonAddComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true),
+					buttonAddComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true).setToggled(true),
 					buttonEditComment = new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0).setToggleable(true, true),
 					buttonRemoveComment = new GuiIconButton(93, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 0).setToggleable(true, true)
 			)
@@ -290,10 +290,14 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 85)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
-		else if (button.id >= 91 && button.id <= 93) {
+		else if (button.id == 90) {
+			if (rollover.getSelected() == 0) setHandler(commentHandler);
+			// else
+//				setHandler(handler);
+		} else if (button.id >= 91 && button.id <= 93) {
 			commentHandler.mode = button.id == 91 ? CommentHandler.Mode.EDIT : button.id == 92 ? CommentHandler.Mode.MOVE : CommentHandler.Mode.DELETE;
 			CommentHandler.unselect(this, button);
-			setHandler(commentHandler);
+			
 		}
 	}
 
