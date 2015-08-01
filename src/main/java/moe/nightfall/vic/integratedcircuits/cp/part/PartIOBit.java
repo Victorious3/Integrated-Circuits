@@ -56,6 +56,12 @@ public class PartIOBit extends CircuitPart {
 		setProperty(pos, parent, PROP_FREQUENCY, frequency);
 	}
 
+	public final void updateExternalOutput(Vec2 pos, ICircuit parent) {
+		ForgeDirection dir = MiscUtils.getDirection(getRotation(pos, parent));
+		parent.setOutputToSide(dir, getFrequency(pos, parent),
+				getInputFromSide(pos, parent, dir.getOpposite()));
+	}
+
 	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		ForgeDirection dir = MiscUtils.getDirection(getRotation(pos, parent));
 		return side == dir.getOpposite();
@@ -63,10 +69,14 @@ public class PartIOBit extends CircuitPart {
 
 	@Override
 	public void onInputChange(Vec2 pos, ICircuit parent) {
-		ForgeDirection dir = MiscUtils.getDirection(getRotation(pos, parent));
-		parent.setOutputToSide(dir, getFrequency(pos, parent),
-				getInputFromSide(pos, parent, dir.getOpposite()));
+		scheduleTick(pos, parent);
 		notifyNeighbours(pos, parent);
+	}
+
+	@Override
+	public void onScheduledTick(Vec2 pos, ICircuit parent) {
+		updateExternalOutput(pos, parent);
+		notifyNeighbours(pos, parent); // Implicit updateExternalInput
 	}
 
 	@Override

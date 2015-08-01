@@ -196,10 +196,10 @@ public class CircuitData implements Cloneable {
 			PartIOBit io3 = (PartIOBit) getPart(pos3);
 			PartIOBit io4 = (PartIOBit) getPart(pos4);
 
-			io1.onInputChange(pos1, parent);
-			io2.onInputChange(pos2, parent);
-			io3.onInputChange(pos3, parent);
-			io4.onInputChange(pos4, parent);
+			io1.updateExternalOutput(pos1, parent);
+			io2.updateExternalOutput(pos2, parent);
+			io3.updateExternalOutput(pos3, parent);
+			io4.updateExternalOutput(pos4, parent);
 		}
 	}
 
