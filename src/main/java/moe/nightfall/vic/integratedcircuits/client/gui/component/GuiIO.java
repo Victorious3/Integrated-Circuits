@@ -51,7 +51,7 @@ public class GuiIO extends GuiButton implements IHoverable {
 
 		ForgeDirection dir = MiscUtils.getDirection(side);
 		isActive = te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.SIMPLE || color == 0;
-		boolean isPowered = isActive && te.getInputFromSide(dir, color) || te.getOutputToSide(dir, color);
+		boolean isPowered = isActive && te.getExternalInputFromSide(dir, color) || te.getOutputToSide(dir, color);
 
 		if (isActive) {
 			if (isPowered)
@@ -85,7 +85,7 @@ public class GuiIO extends GuiButton implements IHoverable {
 		boolean b = super.mousePressed(mc, par1, par2) && !parent.blockMouseInput;
 		if (b) {
 			ForgeDirection dir = MiscUtils.getDirection(side);
-			te.setInputFromSide(dir, color, !te.getInputFromSide(dir, color));
+			te.setExternalInputFromSide(dir, color, !te.getExternalInputFromSide(dir, color));
 		}
 		return b;
 	}
@@ -101,7 +101,7 @@ public class GuiIO extends GuiButton implements IHoverable {
 		if (isActive) {
 			text.add("I: "
 					+ I18n.format("gui.integratedcircuits.cad.mode."
-							+ (te.getInputFromSide(dir, color) ? "high" : "low")));
+							+ (te.getExternalInputFromSide(dir, color) ? "high" : "low")));
 			text.add("O: "
 					+ I18n.format("gui.integratedcircuits.cad.mode."
 							+ (te.getOutputToSide(dir, color) ? "high" : "low")));
