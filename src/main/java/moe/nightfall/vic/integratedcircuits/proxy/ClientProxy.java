@@ -39,6 +39,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -135,6 +136,10 @@ public class ClientProxy extends CommonProxy {
 			MinecraftForgeClient.registerItemRenderer(Content.itemSocketFMP, socketRendererFMP);
 
 		MinecraftForgeClient.registerItemRenderer(Content.itemLaser, new ItemLaserRenderer());
+
+		// Unreachable code:
+		setupCurls();
+		// End of unreachable code.
 	}
 
 	@Override
@@ -252,17 +257,19 @@ public class ClientProxy extends CommonProxy {
 	// Don't even look at what's coming now. Not related at all
 
 	private enum Cosplay {
-		NONE, SHIRO, JIBRIL, STEPH, MAMI, NANO, CIRNO
+		NONE, SHIRO, JIBRIL, STEPH, MAMI, NANO, CIRNO, ANNA
 	}
 
 	private Cosplay getCosplay(UUID uuid, String skinID) {
 		String uuidStr = uuid.toString();
 		// Is this someone who has deserved it?
 		if (uuidStr.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
-		    uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
-		    uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
-		    uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
-		    uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758")) {
+		uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
+		uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
+		uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
+		uuidStr.equals("462b56b5-3047-4efd-901c-e1ecc062af30") || // ljfa
+		uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758")) {
+
 			// Work out what skin they have
 			if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro
 				return Cosplay.SHIRO;
@@ -276,6 +283,8 @@ public class ClientProxy extends CommonProxy {
 				return Cosplay.NANO;
 			else if (skinID.equals("skins/b87e257050b59622aa2e65aeba9ea195698b625225566dd2682a77bec68398")) // Cirno
 				return Cosplay.CIRNO;
+			else if (skinID.equals("skins/4797da64c116258ba4aa30eb2cedddac4c1867e7ed8bec4907b2148f2219a81")) // Anna
+				return Cosplay.ANNA;
 		}
 		return Cosplay.NONE;
 	}
@@ -284,10 +293,40 @@ public class ClientProxy extends CommonProxy {
 		return getCosplay(player.getUniqueID(), player.getLocationSkin().getResourcePath());
 	}
 
+	private int curlDisplayList;
+
+	private void setupCurls() {
+
+		curlDisplayList = GLAllocation.generateDisplayLists(1);
+		GL11.glNewList(curlDisplayList, GL11.GL_COMPILE);
+
+		Tessellator tes = Tessellator.instance;
+		tes.startDrawing(GL11.GL_QUAD_STRIP);
+		tes.setColorRGBA_I(0xF9DE85, 255);
+		float x = 0, y = 0, z = 0, angle;
+		float distance = 0.4F;
+
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+		for (angle = 0.5F; angle <= (Math.PI * 2.16F * 2); angle += distance) {
+			float pos = 1 - (float) (angle / (Math.PI * 2.16F * 2)) * 0.7F;
+			x = (float) Math.sin(angle) * 0.1F * pos;
+			z = (float) Math.cos(angle) * 0.1F * pos;
+			Vec3 normals = Vec3.createVectorHelper(x, 0, z).normalize();
+			tes.setNormal((float) normals.xCoord, (float) normals.yCoord, (float) normals.zCoord);
+			tes.addVertex(x - 0.025, y - 0.025, z - 0.025);
+			tes.addVertex(x + 0.025, y + 0.025, z + 0.025);
+			y += 0.01;
+		}
+		tes.draw();
+		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glEndList();
+	}
+
 	Framebuffer fbo;
 	Framebuffer fbo2;
 	private boolean shaders = OpenGlHelper.shadersSupported;
 
+	// TODO This is rendering off on the server, find out why.
 	public void renderPlayer(float partial, RenderGlobal context) {
 		// Cirno
 		try {
@@ -763,34 +802,15 @@ public class ClientProxy extends CommonProxy {
 		GL11.glPopMatrix();
 	}
 
-	public static void renderCurl() {
+	private void renderCurl() {
 		GL11.glPushMatrix();
 		GL11.glRotatef(40, 1, 0, 0);
 		GL11.glTranslatef(3 / 16F, 1.5F / 16F, 3.5F / 16F);
-
-		Tessellator tes = Tessellator.instance;
-		tes.startDrawing(GL11.GL_QUAD_STRIP);
-		tes.setColorRGBA_I(0xF9DE85, 255);
-		float x = 0, y = 0, z = 0, angle;
-		float distance = 0.4F;
-
-		GL11.glShadeModel(GL11.GL_SMOOTH);
-		for (angle = 0.5F; angle <= (Math.PI * 2.16F * 2); angle += distance) {
-			float pos = 1 - (float) (angle / (Math.PI * 2.16F * 2)) * 0.7F;
-			x = (float) Math.sin(angle) * 0.1F * pos;
-			z = (float) Math.cos(angle) * 0.1F * pos;
-			Vec3 normals = Vec3.createVectorHelper(x, 0, z).normalize();
-			tes.setNormal((float) normals.xCoord, (float) normals.yCoord, (float) normals.zCoord);
-			tes.addVertex(x - 0.025, y - 0.025, z - 0.025);
-			tes.addVertex(x + 0.025, y + 0.025, z + 0.025);
-			y += 0.01;
-		}
-		tes.draw();
-		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glCallList(curlDisplayList);
 		GL11.glPopMatrix();
 	}
 
-	public static void renderHat() {
+	private void renderHat() {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, -10 / 16F, 0);
 
