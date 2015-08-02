@@ -138,7 +138,7 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForgeClient.registerItemRenderer(Content.itemLaser, new ItemLaserRenderer());
 
 		// Unreachable code:
-		setupCurls();
+		curlMamisHair();
 		// End of unreachable code.
 	}
 
@@ -295,7 +295,7 @@ public class ClientProxy extends CommonProxy {
 
 	private int curlDisplayList;
 
-	private void setupCurls() {
+	private void curlMamisHair() {
 
 		curlDisplayList = GLAllocation.generateDisplayLists(1);
 		GL11.glNewList(curlDisplayList, GL11.GL_COMPILE);
