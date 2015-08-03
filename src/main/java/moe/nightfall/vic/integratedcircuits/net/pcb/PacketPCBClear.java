@@ -36,6 +36,9 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear> {
 		buffer.writeByte(size);
 	}
 
+	// TODO Might want to move some of this stuff around to make it more
+	// convenient, e.g All of this should be a method inside CDATA
+
 	@Override
 	public void process(EntityPlayer player, Side side) {
 		TileEntityCAD te = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
@@ -48,8 +51,13 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear> {
 			if (!te.getCircuitData().supportsBundled())
 				te.getCircuitData().getProperties().setCon(0);
 
+			// Clear out commments
+			te.getCircuitData().getProperties().clearComments();
+
+			// Reset IO
 			te.in = new int[4];
 			te.out = new int[4];
+
 			for (int i = 0; i < 4; i++)
 				if (te.getCircuitData().getProperties().getModeAtSide(i) == EnumConnectionType.ANALOG)
 					te.in[i] = 1;

@@ -796,6 +796,9 @@ public class ClientProxy extends CommonProxy {
 				GL11.glPopMatrix();
 				GL11.glEnable(GL11.GL_LIGHTING);
 				break;
+			case ANNA:
+
+				break;
 			default:
 				break;
 		}
@@ -926,6 +929,15 @@ public class ClientProxy extends CommonProxy {
 			ear.render(1 / 16F);
 			GL11.glPopMatrix();
 		}
+	}
+
+	private static class ModelHat extends ModelBase {
+		public static ModelHat instance = new ModelHat();
+
+		public ModelHat() {
+
+		}
+
 	}
 
 	private static class NanoProperties implements IExtendedEntityProperties {

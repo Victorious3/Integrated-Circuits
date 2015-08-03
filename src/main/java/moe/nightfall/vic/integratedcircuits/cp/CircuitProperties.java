@@ -39,6 +39,10 @@ public class CircuitProperties implements Cloneable {
 		return con;
 	}
 
+	public void clearComments() {
+		comments.clear();
+	}
+
 	public void removeComment(Comment comment) {
 		if (comment == null)
 			return;
