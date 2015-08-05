@@ -67,6 +67,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	public EditHandler editHandler = new EditHandler();
 	public PlaceHandler placeHandler = new PlaceHandler();
 	public CommentHandler commentHandler = new CommentHandler();
+	public SelectionHandler selectionHandler = new SelectionHandler();
+	public SimulationHandler simulationHandler = new SimulationHandler();
 	
 	private CADHandler currentHandler;
 	private List<CADHandler> handlers = new ArrayList<CADHandler>();
@@ -100,8 +102,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	private GuiIOMode checkW;
 
 	public GuiRollover rollover;
-	public GuiIconButton buttonAddComment;
 	public GuiIconButton buttonEditComment;
+	public GuiIconButton buttonMoveComment;
 	public GuiIconButton buttonRemoveComment;
 
 	// Used by the wires
@@ -131,6 +133,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		handlers.add(editHandler);
 		handlers.add(placeHandler);
 		handlers.add(commentHandler);
+		handlers.add(selectionHandler);
+
 		setHandler(editHandler);
 
 		this.tileentity = container.tileentity;
@@ -231,6 +235,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		int toolsXPosition = guiRight - 27;
 
+		// CP (id = 7)
 		int currentPosition = guiTop + 43;
 		for (CircuitPart.Category category : CircuitPart.Category.values()) {
 			List<CircuitPart> parts = CircuitPart.getParts(category);
@@ -243,19 +248,24 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		// The edit and erase buttons
 		currentPosition = (guiBottom - 47);
-		GuiPartChooser c1 = new GuiPartChooser(0, toolsXPosition, currentPosition, 1, this).setActive(true);
+		GuiPartChooser c1 = new GuiPartChooser(7, toolsXPosition, currentPosition, 1, this).setActive(true);
 		this.buttonList.add(c1);
 		currentPosition += 21;
-		this.buttonList.add(new GuiPartChooser(1, toolsXPosition, currentPosition, 2, this));
+		this.buttonList.add(new GuiPartChooser(7, toolsXPosition, currentPosition, 2, this));
 
 		// GUI rollover on the left
 		rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
-			.addCategory("Label", 0, 0,
-					buttonAddComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true).setToggled(true),
-					buttonEditComment = new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0).setToggleable(true, true),
+			.addCategory("Comment", 0, 0,
+					buttonEditComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true).setToggled(true),
+					buttonMoveComment = new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0).setToggleable(true, true),
 					buttonRemoveComment = new GuiIconButton(93, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 0).setToggleable(true, true)
 			)
-			.addCategory("Area", 0, 16)
+			.addCategory("Selection", 0, 16,
+					new GuiIconButton(94, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 16),
+					new GuiIconButton(95, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 16),
+					new GuiIconButton(96, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 16),
+					new GuiIconButton(97, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(64, 16)
+			)
 			.addCategory("Simulation", 0, 32);
 
 		this.buttonList.add(rollover);
@@ -265,6 +275,13 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	
 	@Override
 	protected void actionPerformed(GuiButton button) {
+
+		currentHandler.onActionPerformed(this, button);
+
+		// Close rollover
+		if (button.id == 7)
+			rollover.close();
+
 		// TODO FFS. Get rid of this, move it to handlers, whatever. Its ugly.
 		if (button.id == 8)
 			scale(tileentity.offX, tileentity.offY, 1);
@@ -290,14 +307,40 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 85)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.REDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+
 		else if (button.id == 90) {
-			if (rollover.getSelected() == 0) setHandler(commentHandler);
-			// else
-//				setHandler(handler);
+			switch (rollover.getSelected()) {
+				case 0:
+					setHandler(commentHandler);
+					break;
+				case 1:
+					setHandler(selectionHandler);
+					break;
+				case 2:
+					setHandler(simulationHandler);
+					break;
+				default:
+					setHandler(editHandler);
+					break;
+			}
+		// Unselect (May want to find an easier way to do this, like a component that can hold multiple toggle buttons)
 		} else if (button.id >= 91 && button.id <= 93) {
-			commentHandler.mode = button.id == 91 ? CommentHandler.Mode.EDIT : button.id == 92 ? CommentHandler.Mode.MOVE : CommentHandler.Mode.DELETE;
-			CommentHandler.unselect(this, button);
-			
+			switch (button.id) {
+				case 91:
+					commentHandler.mode = CommentHandler.Mode.EDIT;
+					buttonMoveComment.setToggled(false);
+					buttonRemoveComment.setToggled(false);
+					break;
+				case 92:
+					commentHandler.mode = CommentHandler.Mode.MOVE;
+					buttonEditComment.setToggled(false);
+					buttonRemoveComment.setToggled(false);
+					break;
+				case 93:
+					commentHandler.mode = CommentHandler.Mode.DELETE;
+					buttonEditComment.setToggled(false);
+					buttonMoveComment.setToggled(false);
+			}
 		}
 	}
 

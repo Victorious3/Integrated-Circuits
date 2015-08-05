@@ -136,8 +136,12 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 	@Override
 	public void mouseReleased(int x, int y) {
 		if (!active) {
-			if (chooserParent == null)
-				unselect(parent);
+
+			if (chooserParent == null) {
+				for (Object obj : parent.getButtonList())
+					if (obj instanceof GuiPartChooser)
+						((GuiPartChooser) obj).setActive(false);
+			}
 
 			if (mode == 1)
 				parent.setHandler(parent.editHandler);
@@ -183,11 +187,5 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		else if (mode == 2)
 			text.add(I18n.format("gui.integratedcircuits.cad.erase"));
 		return text;
-	}
-
-	public static void unselect(GuiCAD parent) {
-		for (Object obj : parent.getButtonList())
-			if (obj instanceof GuiPartChooser)
-				((GuiPartChooser) obj).setActive(false);
 	}
 }

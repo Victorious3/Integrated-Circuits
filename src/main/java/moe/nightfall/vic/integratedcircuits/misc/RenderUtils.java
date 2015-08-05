@@ -84,6 +84,23 @@ public class RenderUtils {
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 
+	public static void drawBorder(int x, int y, int width, int height) {
+		// Draw line loop
+		GL11.glEnable(GL11.GL_LINE_STIPPLE);
+		GL11.glColor3f(0, 0, 0);
+		GL11.glLineStipple(4, (short) 0xAAAA);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glBegin(GL11.GL_LINE_LOOP);
+		GL11.glVertex2f(x, y);
+		GL11.glVertex2f(x + width, y);
+		GL11.glVertex2f(x + width, y + height);
+		GL11.glVertex2f(x, y + height);
+		GL11.glEnd();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glColor3f(1, 1, 1);
+		GL11.glDisable(GL11.GL_LINE_STIPPLE);
+	}
+
 	public static void addLine(double x, double y, double x2, double y2, double linewidth) {
 		Tessellator tes = Tessellator.instance;
 		if (x > x2) {

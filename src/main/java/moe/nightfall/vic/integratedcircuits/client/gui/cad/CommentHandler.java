@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiIconButton;
 import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiTextArea;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitProperties.Comment;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBComment;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBDeleteComment;
@@ -16,7 +16,6 @@ import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
 
 import org.lwjgl.opengl.GL11;
 
@@ -30,6 +29,7 @@ public class CommentHandler extends CADHandler {
 	private Comment selectedComment;
 	private Map<Comment, Vec2> sizeCache = new WeakHashMap<Comment, Vec2>();
 	public Mode mode = Mode.EDIT;
+
 	private GuiTextArea textArea = new GuiTextArea(0, 0)
 		.setBackgroundColor(0xFFFFFFFF)
 		.setTextColor(0xFF000000)
@@ -231,7 +231,6 @@ public class CommentHandler extends CADHandler {
 	public void remove(GuiCAD parent) {
 		super.remove(parent);
 		saveText(selectedComment, parent);
-		unselect(parent, null);
 	}
 
 	public void renderComment(Comment comment, boolean hovered) {
@@ -242,7 +241,7 @@ public class CommentHandler extends CADHandler {
 		Vec2 size = getSize(comment);
 		Gui.drawRect(x, y, x + size.x, y + size.y, hovered || !isActive() || comment == selectedComment ? 0xFFFFFFFF : 0xAAFFFFFF);
 		fr.drawSplitString(MiscUtils.stringNormalizeLinefeed(comment.text), x + 5, y + 5, Integer.MAX_VALUE, 0xFF000000);
-		drawBorder(x, y, size.x, size.y);
+		RenderUtils.drawBorder(x, y, size.x, size.y);
 	}
 
 	public void renderEditComment(Comment comment, int mx, int my) {
@@ -255,34 +254,6 @@ public class CommentHandler extends CADHandler {
 		textArea.render(mx, my);
 		GL11.glPopMatrix();
 		Vec2 size = textArea.getSize();
-		drawBorder(x, y, size.x, size.y);
-	}
-
-	private void drawBorder(int x, int y, int width, int height) {
-		// Draw line loop
-		GL11.glEnable(GL11.GL_LINE_STIPPLE);
-		GL11.glColor3f(0, 0, 0);
-		GL11.glLineStipple(4, (short) 0xAAAA);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		GL11.glBegin(GL11.GL_LINE_LOOP);
-		GL11.glVertex2f(x, y);
-		GL11.glVertex2f(x + width, y);
-		GL11.glVertex2f(x + width, y + height);
-		GL11.glVertex2f(x, y + height);
-		GL11.glEnd();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glColor3f(1, 1, 1);
-		GL11.glDisable(GL11.GL_LINE_STIPPLE);
-	}
-
-	public static void unselect(GuiCAD parent, GuiButton selected) {
-		// TODO This is ugly
-		for (String category : parent.rollover.getCategories()) {
-			for (GuiButton button : parent.rollover.getButtons(category)) {
-				if (button instanceof GuiIconButton && button != selected) {
-					((GuiIconButton) button).setToggled(false);
-				}
-			}
-		}
+		RenderUtils.drawBorder(x, y, size.x, size.y);
 	}
 }

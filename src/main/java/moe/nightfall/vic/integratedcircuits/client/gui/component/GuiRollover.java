@@ -39,6 +39,9 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	private long startTime;
 	private int moving = 0;
 
+	// Public selected to avoid asynchronous sliding up
+	private int pSelected = -1;
+
 	public GuiRollover(int id, int x, int y, int height, ResourceLocation resource) {
 		super(id, x, y, "");
 		this.width = 16;
@@ -93,7 +96,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	}
 
 	public int getSelected() {
-		return selected;
+		return pSelected;
 	}
 
 	public List<GuiButton> getButtons(String category) {
@@ -193,6 +196,11 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		}
 	}
 
+	public void close() {
+		pSelected = -1;
+		moveUp();
+	}
+
 	@Override
 	public boolean mousePressed(Minecraft mc, int mx, int my) {
 
@@ -228,6 +236,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		int y = (int) fy;
 
 		if (y != selected && y < categoryMap.size()) {
+			pSelected = y;
 			if (selected != -1) {
 				next = y;
 				moveUp();
@@ -236,6 +245,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 			}
 		} else if (y == selected) {
 			moveUp();
+			pSelected = -1;
 		}
 
 		return true;

@@ -1,6 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.cad;
 
-import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiPartChooser;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
@@ -183,6 +182,5 @@ public class PlaceHandler extends CADHandler {
 	@Override
 	public void remove(GuiCAD parent) {
 		super.remove(parent);
-		GuiPartChooser.unselect(parent);
 	}
 }
