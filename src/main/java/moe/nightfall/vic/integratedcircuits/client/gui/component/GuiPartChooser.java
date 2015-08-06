@@ -115,6 +115,10 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		return this;
 	}
 
+	public boolean isActive() {
+		return active;
+	}
+
 	@Override
 	public boolean mousePressed(Minecraft mc, int x, int y) {
 		boolean bool = super.mousePressed(mc, x, y);
@@ -143,10 +147,12 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 						((GuiPartChooser) obj).setActive(false);
 			}
 
-			if (mode == 1)
-				parent.setHandler(parent.editHandler);
-			else {
-				parent.setHandler(parent.placeHandler);
+			if (mode == 1) {
+				if (parent.rollover.getSelected() == -1)
+					parent.setHandler(parent.editHandler);
+			} else {
+				if (parent.rollover.getSelected() == -1)
+					parent.setHandler(parent.placeHandler);
 				if (mode == 2)
 					parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
 				else

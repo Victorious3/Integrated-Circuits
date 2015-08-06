@@ -106,6 +106,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	public GuiIconButton buttonMoveComment;
 	public GuiIconButton buttonRemoveComment;
 
+	private GuiPartChooser chooserEdit;
+
 	// Used by the wires
 	// TODO This should be moved elsewhere
 	protected int startX, startY, endX, endY;
@@ -248,8 +250,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		// The edit and erase buttons
 		currentPosition = (guiBottom - 47);
-		GuiPartChooser c1 = new GuiPartChooser(7, toolsXPosition, currentPosition, 1, this).setActive(true);
-		this.buttonList.add(c1);
+		chooserEdit = new GuiPartChooser(7, toolsXPosition, currentPosition, 1, this).setActive(true);
+		this.buttonList.add(chooserEdit);
 		currentPosition += 21;
 		this.buttonList.add(new GuiPartChooser(7, toolsXPosition, currentPosition, 2, this));
 
@@ -277,10 +279,6 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	protected void actionPerformed(GuiButton button) {
 
 		currentHandler.onActionPerformed(this, button);
-
-		// Close rollover
-		if (button.id == 7)
-			rollover.close();
 
 		// TODO FFS. Get rid of this, move it to handlers, whatever. Its ugly.
 		if (button.id == 8)
@@ -320,7 +318,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 					setHandler(simulationHandler);
 					break;
 				default:
-					setHandler(editHandler);
+					if (chooserEdit.isActive())
+						setHandler(editHandler);
+					else
+						setHandler(placeHandler);
 					break;
 			}
 		// Unselect (May want to find an easier way to do this, like a component that can hold multiple toggle buttons)

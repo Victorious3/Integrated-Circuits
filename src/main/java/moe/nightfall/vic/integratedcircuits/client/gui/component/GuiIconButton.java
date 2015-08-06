@@ -68,7 +68,7 @@ public class GuiIconButton extends GuiButtonExt {
 	@Override
 	public boolean mousePressed(Minecraft mc, int mx, int my) {
 		boolean pressed = super.mousePressed(mc, mx, my);
-		if (pressed && enabled) {
+		if (pressed && enabled && isToggleable) {
 			if (isToggled && isUntoggleDisabled)
 				return false;
 			return isToggled = !isToggled;
