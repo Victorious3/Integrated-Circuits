@@ -357,8 +357,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			}
 		} else if (button.id == 98) {
 			tileentity.setPausing(!tileentity.isPausing());
+			tileentity.sendSimulationState();
 		} else if (button.id == 99) {
 			tileentity.step();
+			tileentity.sendSimulationState();
 		}
 	}
 
@@ -456,12 +458,12 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		nameField.setText(tileentity.getCircuitData().getProperties().getName());
 
 		if (tileentity.isPausing()) {
-			buttonSimulation.setIcon(32, 32);
-			buttonSimulation.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.pause"));
-			buttonSimulationStep.enabled = true;
-		} else {
 			buttonSimulation.setIcon(16, 32);
 			buttonSimulation.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.play"));
+			buttonSimulationStep.enabled = true;
+		} else {
+			buttonSimulation.setIcon(32, 32);
+			buttonSimulation.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.pause"));
 			buttonSimulationStep.enabled = false;
 		}
 	}

@@ -43,11 +43,11 @@ public class PacketPCBSimulation extends PacketTileEntity<PacketPCBSimulation> {
 	public void process(EntityPlayer player, Side side) {
 		TileEntityCAD te = (TileEntityCAD) player.worldObj.getTileEntity(xCoord, yCoord, zCoord);
 		if (te != null) {
-			if (step)
-				te.step();
 			te.setPausing(pausing);
 
 			if (side.isServer()) {
+				if (step)
+					te.step();
 				CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().provider.dimensionId,
 						xCoord, yCoord, zCoord, 8));
 			} else if (Minecraft.getMinecraft().currentScreen instanceof GuiCAD)

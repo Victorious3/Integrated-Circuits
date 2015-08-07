@@ -44,18 +44,14 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	public void setPausing(boolean pausing) {
 		this.pausing = pausing;
 		this.step = false;
-
-		if (MiscUtils.isClient()) {
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBSimulation(step, pausing, xCoord, yCoord, zCoord));
-		}
 	}
 
 	public void step() {
 		this.step = true;
+	}
 
-		if (MiscUtils.isClient()) {
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBSimulation(step, pausing, xCoord, yCoord, zCoord));
-		}
+	public void sendSimulationState() {
+		CommonProxy.networkWrapper.sendToServer(new PacketPCBSimulation(step, pausing, xCoord, yCoord, zCoord));
 	}
 
 	public void setup(int size) {
@@ -69,20 +65,21 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 		if (!worldObj.isRemote && playersUsing > 0) {
 			if (step || !pausing) {
 				getCircuitData().updateMatrix();
-				if (getCircuitData().checkUpdate()) {
-					CommonProxy.networkWrapper.sendToAllAround(
-							new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), new TargetPoint(
-									worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
-				}
-				if (updateIO) {
-					updateIO = false;
-					CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, out, circuitData
-						.getProperties().getCon(), xCoord, yCoord, zCoord), new TargetPoint(
-							worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
-				}
-				markDirty();
 				step = false;
 			}
+
+			if (getCircuitData().checkUpdate()) {
+				CommonProxy.networkWrapper.sendToAllAround(
+						new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), new TargetPoint(
+								worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
+			}
+			if (updateIO) {
+				updateIO = false;
+				CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, out, circuitData
+					.getProperties().getCon(), xCoord, yCoord, zCoord), new TargetPoint(
+						worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
+			}
+			markDirty();
 		}
 	}
 

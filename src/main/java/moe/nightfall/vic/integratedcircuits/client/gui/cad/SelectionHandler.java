@@ -96,6 +96,8 @@ public class SelectionHandler extends CADHandler {
 		for (int x = 0; x < data[0].length; x++) {
 			for (int y = 0; y < data[0][x].length; y++) {
 				Vec2 pos = new Vec2(x + slStart.x, y + slStart.y);
+				if (pos.x < 1 || pos.x >= cdata.getSize() - 1 || pos.y < 1 || pos.y >= cdata.getSize() - 1)
+					continue;
 				packet.add(pos, data[0][x][y], data[1][x][y]);
 			}
 		}
