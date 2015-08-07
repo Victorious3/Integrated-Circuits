@@ -1,11 +1,17 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
+import java.util.Arrays;
+import java.util.List;
+
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 import cpw.mods.fml.client.config.GuiButtonExt;
 
-public class GuiIconButton extends GuiButtonExt {
+public class GuiIconButton extends GuiButtonExt implements IHoverable {
 
 	private ResourceLocation resource;
 	private Vec2 size;
@@ -14,6 +20,8 @@ public class GuiIconButton extends GuiButtonExt {
 	private boolean isToggleable;
 	private boolean isUntoggleDisabled;
 	private boolean isToggled;
+
+	private String tooltip;
 
 	public GuiIconButton(int id, int xPos, int yPos, int width, int height, ResourceLocation resource) {
 		super(id, xPos, yPos, width, height, "");
@@ -47,6 +55,11 @@ public class GuiIconButton extends GuiButtonExt {
 		return this;
 	}
 
+	public GuiIconButton setTooltip(String tooltip) {
+		this.tooltip = tooltip;
+		return this;
+	}
+
 	public boolean isToggled() {
 		return isToggled;
 	}
@@ -61,6 +74,8 @@ public class GuiIconButton extends GuiButtonExt {
 	@Override
 	public void drawButton(Minecraft mc, int mouseX, int mouseY) {
 		super.drawButton(mc, mouseX, mouseY);
+		if (field_146123_n && mc.currentScreen instanceof IHoverableHandler)
+			((IHoverableHandler) mc.currentScreen).setCurrentItem(this);
 		mc.renderEngine.bindTexture(resource);
 		drawTexturedModalRect(xPosition, yPosition, pos.x, pos.y, size.x, size.y);
 	}
@@ -74,5 +89,12 @@ public class GuiIconButton extends GuiButtonExt {
 			return isToggled = !isToggled;
 		}
 		return pressed;
+	}
+
+	@Override
+	public List<String> getHoverInformation() {
+		if (tooltip != null)
+			return Arrays.asList(MiscUtils.stringNewlineSplit(tooltip));
+		return null;
 	}
 }

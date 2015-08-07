@@ -257,16 +257,23 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		// GUI rollover on the left
 		rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
-			.addCategory("Comment", 0, 0,
-					buttonEditComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true).setToggled(true),
-					buttonMoveComment = new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0).setToggleable(true, true),
+			.addCategory("Comment", I18n.format("gui.integratedcircuits.cad.comment"), 0, 0,
+					buttonEditComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true).setToggled(true)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.comment.edit")),
+					buttonMoveComment = new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0).setToggleable(true, true)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.comment.move")),
 					buttonRemoveComment = new GuiIconButton(93, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 0).setToggleable(true, true)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.comment.remove"))
 			)
-			.addCategory("Selection", 0, 16,
-					new GuiIconButton(94, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 16),
-					new GuiIconButton(95, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 16),
-					new GuiIconButton(96, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 16),
+			.addCategory("Selection", I18n.format("gui.integratedcircuits.cad.selection"), 0, 16,
+					new GuiIconButton(94, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 16)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.selection.cut")),
+					new GuiIconButton(95, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 16)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.selection.copy")),
+					new GuiIconButton(96, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 16)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.selection.paste")),
 					new GuiIconButton(97, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(64, 16)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.selection.fill"))
 			)
 			.addCategory("Simulation", 0, 32);
 

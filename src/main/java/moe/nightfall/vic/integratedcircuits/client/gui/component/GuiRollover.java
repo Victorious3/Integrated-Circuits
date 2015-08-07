@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -15,6 +17,8 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
+
+import scala.actors.threadpool.Arrays;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -30,6 +34,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	private ResourceLocation resource;
 	private Map<String, List<GuiButton>> buttonMap = Maps.newLinkedHashMap();
 	private Map<String, Vec2> categoryMap = Maps.newLinkedHashMap();
+	private Map<String, String> tooltipMap = Maps.newLinkedHashMap();
 	private List<String> categoryList = Lists.newArrayList();
 
 	private int currentHeight;
@@ -38,6 +43,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	private int next = -1;
 	private long startTime;
 	private int moving = 0;
+	private String hoveredCategory = null;
 
 	// Public selected to avoid asynchronous sliding up
 	private int pSelected = -1;
@@ -61,6 +67,11 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 			add(button, category);
 		}
 		return this;
+	}
+
+	public GuiRollover addCategory(String category, String tooltip, int u, int v, GuiButton... buttons) {
+		tooltipMap.put(category, tooltip);
+		return addCategory(category, u, v, buttons);
 	}
 
 	public GuiRollover add(GuiButton button, String category) {
@@ -122,19 +133,26 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		int height = (int) (interpolate * (nextHeight - currentHeight)) + currentHeight;
 
 		mc.renderEngine.bindTexture(buttonTextures);
-		for (int i = 0; i < categoryMap.size(); i++) {
+		int i = 0;
+		for (String category : categoryMap.keySet()) {
 			int ypos = yPosition + i * boxHeight;
 			if (i >= selected)
 				ypos += height;
 			int iconOffset = 66;
-			if (i == selected || (field_146123_n && my > ypos && my < ypos + boxHeight))
+			boolean hovered = (field_146123_n && my > ypos && my < ypos + boxHeight);
+			if (hovered && mc.currentScreen instanceof IHoverableHandler && tooltipMap.containsKey(category)) {
+				((IHoverableHandler) mc.currentScreen).setCurrentItem(this);
+				hoveredCategory = category;
+			}
+			if (i == selected || hovered)
 				iconOffset = 86;
 			GuiUtils.drawContinuousTexturedBox(xPosition, ypos, 0, iconOffset, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
+			i++;
 		}
 
 		mc.renderEngine.bindTexture(resource);
 		Iterator<Vec2> iterator = categoryMap.values().iterator();
-		for (int i = 0; i < categoryMap.size(); i++) {
+		for (i = 0; i < categoryMap.size(); i++) {
 			Vec2 value = iterator.next();
 			int ypos = yPosition + i * boxHeight;
 			if (i >= selected)
@@ -253,6 +271,8 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 
 	@Override
 	public List<String> getHoverInformation() {
-		return new ArrayList<String>();
+		if (hoveredCategory != null)
+			return Arrays.asList(MiscUtils.stringNewlineSplit(tooltipMap.get(hoveredCategory)));
+		else return null;
 	}
 }

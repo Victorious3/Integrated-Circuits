@@ -84,6 +84,19 @@ gui.integratedcircuits.cad.callback.continue=Continue anyways?
 gui.integratedcircuits.cad.callback.message=This will revert all of%nyour progress and%nclear the current circuit.
 gui.integratedcitcuits.cad.callback.delay=Current delay: %s ticks
 
+gui.integratedcircuits.cad.comment=Comment
+gui.integratedcircuits.cad.comment.edit=Edit Comment
+gui.integratedcircuits.cad.comment.remove=Remove Comment
+gui.integratedcircuits.cad.comment.move=Move Comment
+
+gui.integratedcircuits.cad.selection=Selection
+gui.integratedcircuits.cad.selection.copy=Copy Selection%n§8§oCTRL + C
+gui.integratedcircuits.cad.selection.cut=Cut Selection%n§8§oCTRL + X
+gui.integratedcircuits.cad.selection.paste=Paste to Selection%n§8§oCTRL + V
+gui.integratedcircuits.cad.selection.fill=Fill Selection%n§8§oCTRL + F
+
+gui.integratedcircuits.cad.simulation=Simulation
+
 gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
 gui.integratedcircuits.assembler.statuscode.3=Out of PCBs!
 
