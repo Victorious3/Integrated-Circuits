@@ -17,6 +17,7 @@ public class SelectionHandler extends CADHandler {
 	private boolean mouseDown = false;
 
 	// TODO Looks about as ugly as it is.
+	// TODO Perhaps use the clipboard?
 	private int[][][] data = new int[2][0][0];
 
 	private boolean hasSelection() {
@@ -45,8 +46,24 @@ public class SelectionHandler extends CADHandler {
 
 	@Override
 	public boolean onKeyTyped(GuiCAD parent, int keycode, char ch) {
-		// TODO Shortcuts
-		return false;
+
+		switch (ch) {
+			case 3:
+				copy(parent);
+				break; // CTRL + C
+			case 24:
+				cut(parent);
+				break; // CTRL + X
+			case 22:
+				paste(parent);
+				break; // CTRL + V
+			case 6:
+				fill(parent);
+				break; // CTRL + F
+			default:
+				return false;
+		}
+		return true;
 	}
 
 	private void copy(GuiCAD parent) {
