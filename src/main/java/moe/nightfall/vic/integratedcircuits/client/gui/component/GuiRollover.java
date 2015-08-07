@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.client.gui.component;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +18,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
-
-import scala.actors.threadpool.Arrays;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

@@ -3,11 +3,10 @@ package moe.nightfall.vic.integratedcircuits.client.gui.component;
 import java.util.Arrays;
 import java.util.List;
 
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
 
@@ -20,15 +19,12 @@ public class GuiStateLabel extends GuiButtonExt implements IHoverable {
 	private String[] desc;
 	private int state;
 	private ResourceLocation loc;
-	private IHoverableHandler parent;
 
-	public GuiStateLabel(IHoverableHandler parent, int id, int xPos, int yPos, int width, int height,
-			ResourceLocation loc) {
+	public GuiStateLabel(int id, int xPos, int yPos, int width, int height, ResourceLocation loc) {
 		super(id, xPos, yPos, "");
 		this.width = width;
 		this.height = height;
 		this.loc = loc;
-		this.parent = parent;
 	}
 
 	public GuiStateLabel addState(Vec2... states) {
@@ -56,7 +52,8 @@ public class GuiStateLabel extends GuiButtonExt implements IHoverable {
 		this.field_146123_n = mouseX >= this.xPosition && mouseY >= this.yPosition
 				&& mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
 		if (field_146123_n) {
-			parent.setCurrentItem(this);
+			if (mc.currentScreen instanceof IHoverableHandler)
+				((IHoverableHandler) mc.currentScreen).setCurrentItem(this);
 			GL11.glColor3f(0.8F, 0.9F, 1F);
 		} else
 			GL11.glColor3f(1F, 1F, 1F);

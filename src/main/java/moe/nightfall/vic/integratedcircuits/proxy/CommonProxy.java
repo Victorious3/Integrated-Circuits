@@ -38,6 +38,7 @@ import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBComment;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBDeleteComment;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBIO;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBLoad;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSimulation;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBUpdate;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import net.minecraft.block.Block;
@@ -99,6 +100,7 @@ public class CommonProxy {
 		AbstractPacket.registerPacket(PacketPCBCache.class, Side.SERVER, 7);
 		AbstractPacket.registerPacket(PacketPCBComment.class, null, 18);
 		AbstractPacket.registerPacket(PacketPCBDeleteComment.class, null, 19);
+		AbstractPacket.registerPacket(PacketPCBSimulation.class, null, 20);
 
 		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 8);
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);

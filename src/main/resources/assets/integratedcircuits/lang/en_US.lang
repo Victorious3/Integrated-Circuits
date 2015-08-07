@@ -96,6 +96,9 @@ gui.integratedcircuits.cad.selection.paste=Paste to Selection%n§8§oCTRL + V
 gui.integratedcircuits.cad.selection.fill=Fill Selection%n§8§oCTRL + F
 
 gui.integratedcircuits.cad.simulation=Simulation
+gui.integratedcircuits.cad.simulation.pause=Pause
+gui.integratedcircuits.cad.simulation.play=Play
+gui.integratedcircuits.cad.simulation.step=Step
 
 gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
 gui.integratedcircuits.assembler.statuscode.3=Out of PCBs!

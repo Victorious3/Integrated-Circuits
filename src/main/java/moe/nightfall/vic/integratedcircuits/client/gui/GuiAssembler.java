@@ -58,14 +58,14 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler {
 			.format("gui.integratedcircuits.assembler.run")));
 		this.buttonList.add(new GuiButtonExt(3, guiLeft + 122, guiTop + 93, 14, 14, "x"));
 
-		this.buttonList.add(labelAutomaticPull = new GuiStateLabel(this, 4, guiLeft + 9, guiTop + 47, 14, 14,
+		this.buttonList.add(labelAutomaticPull = new GuiStateLabel(4, guiLeft + 9, guiTop + 47, 14, 14,
 				Resources.RESOURCE_GUI_ASSEMBLER_BACKGROUND)
 			.addState(new Vec2(176, 0), new Vec2(176, 14))
 			.addDescription(I18n.format("gui.integratedcircuits.assembler.pull.single"),
 					I18n.format("gui.integratedcircuits.assembler.pull.auto"))
 			.setState(te.getOptionSet().getInt(te.SETTING_PULL)));
 
-		this.buttonList.add(labelRedstoneMode = new GuiStateLabel(this, 5, guiLeft + 9, guiTop + 29, 14, 14,
+		this.buttonList.add(labelRedstoneMode = new GuiStateLabel(5, guiLeft + 9, guiTop + 29, 14, 14,
 				Resources.RESOURCE_GUI_ASSEMBLER_BACKGROUND)
 			.addState(new Vec2(176, 28), new Vec2(176, 42), new Vec2(176, 56))
 			.addDescription(I18n.format("gui.integratedcircuits.assembler.redstone.enabled"),

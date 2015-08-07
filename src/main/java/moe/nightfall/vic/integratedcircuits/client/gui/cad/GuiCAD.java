@@ -107,13 +107,15 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	public GuiIconButton buttonRemoveComment;
 
 	private GuiPartChooser chooserEdit;
+	private GuiIconButton buttonSimulation;
+	private GuiIconButton buttonSimulationStep;
 
 	// Used by the wires
 	// TODO This should be moved elsewhere
 	protected int startX, startY, endX, endY;
 	protected boolean drag;
 	
-	private static final float SCALE = 16F; 
+	private static final float SCALE = 16F;
 
 	// Callbacks
 	protected GuiCallback<GuiCAD> callbackDelete;
@@ -275,7 +277,11 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 					new GuiIconButton(97, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(64, 16)
 						.setTooltip(I18n.format("gui.integratedcircuits.cad.selection.fill"))
 			)
-			.addCategory("Simulation", 0, 32);
+			.addCategory("Simulation", I18n.format("gui.integratedcircuits.cad.simulation"), 0, 32,
+					buttonSimulation = new GuiIconButton(98, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND),
+					buttonSimulationStep = new GuiIconButton(99, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 32)
+						.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.step"))
+			);
 
 		this.buttonList.add(rollover);
 
@@ -349,6 +355,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 					buttonEditComment.setToggled(false);
 					buttonMoveComment.setToggled(false);
 			}
+		} else if (button.id == 98) {
+			tileentity.setPausing(!tileentity.isPausing());
+		} else if (button.id == 99) {
+			tileentity.step();
 		}
 	}
 
@@ -444,6 +454,16 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		buttonSize.displayString = w + "x" + w;
 		refreshIO();
 		nameField.setText(tileentity.getCircuitData().getProperties().getName());
+
+		if (tileentity.isPausing()) {
+			buttonSimulation.setIcon(32, 32);
+			buttonSimulation.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.pause"));
+			buttonSimulationStep.enabled = true;
+		} else {
+			buttonSimulation.setIcon(16, 32);
+			buttonSimulation.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.play"));
+			buttonSimulationStep.enabled = false;
+		}
 	}
 	
 	public void setHandler(CADHandler handler) {

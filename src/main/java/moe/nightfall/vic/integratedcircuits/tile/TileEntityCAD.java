@@ -8,6 +8,7 @@ import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.net.PacketFloppyDisk;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangeInput;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSimulation;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBUpdate;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.item.ItemStack;
@@ -32,6 +33,31 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	public int[] out = new int[4];
 	private boolean updateIO;
 
+	// Simulation settings
+	private boolean pausing = false;
+	private boolean step = false;
+
+	public boolean isPausing() {
+		return pausing;
+	}
+
+	public void setPausing(boolean pausing) {
+		this.pausing = pausing;
+		this.step = false;
+
+		if (MiscUtils.isClient()) {
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBSimulation(step, pausing, xCoord, yCoord, zCoord));
+		}
+	}
+
+	public void step() {
+		this.step = true;
+
+		if (MiscUtils.isClient()) {
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBSimulation(step, pausing, xCoord, yCoord, zCoord));
+		}
+	}
+
 	public void setup(int size) {
 		circuitData = new CircuitData(size, this);
 		circuitData.clear(size);
@@ -40,21 +66,23 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	@Override
 	public void updateEntity() {
 		// Update the matrix in case there is at least one player watching.
-		super.updateEntity();
 		if (!worldObj.isRemote && playersUsing > 0) {
-			getCircuitData().updateMatrix();
-			if (getCircuitData().checkUpdate()) {
-				CommonProxy.networkWrapper.sendToAllAround(
-						new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), new TargetPoint(
-								worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
+			if (step || !pausing) {
+				getCircuitData().updateMatrix();
+				if (getCircuitData().checkUpdate()) {
+					CommonProxy.networkWrapper.sendToAllAround(
+							new PacketPCBUpdate(getCircuitData(), xCoord, yCoord, zCoord), new TargetPoint(
+									worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
+				}
+				if (updateIO) {
+					updateIO = false;
+					CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, out, circuitData
+						.getProperties().getCon(), xCoord, yCoord, zCoord), new TargetPoint(
+							worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
+				}
+				markDirty();
+				step = false;
 			}
-			if (updateIO) {
-				updateIO = false;
-				CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, out, circuitData
-					.getProperties().getCon(), xCoord, yCoord, zCoord), new TargetPoint(
-						worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
-			}
-			markDirty();
 		}
 	}
 
@@ -64,6 +92,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 		circuitData = CircuitData.readFromNBT(compound.getCompoundTag("circuit"), this);
 		in = compound.getIntArray("in");
 		out = compound.getIntArray("out");
+		pausing = compound.getBoolean("pausing");
 		NBTTagCompound stackCompound = compound.getCompoundTag("floppyStack");
 		floppyStack = ItemStack.loadItemStackFromNBT(stackCompound);
 	}
@@ -74,6 +103,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 		compound.setTag("circuit", circuitData.writeToNBT(new NBTTagCompound()));
 		compound.setIntArray("in", in);
 		compound.setIntArray("out", out);
+		compound.setBoolean("pausing", pausing);
 		NBTTagCompound stackCompound = new NBTTagCompound();
 		if (floppyStack != null)
 			floppyStack.writeToNBT(stackCompound);
