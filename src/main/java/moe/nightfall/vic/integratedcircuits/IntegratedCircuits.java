@@ -25,6 +25,7 @@ import moe.nightfall.vic.integratedcircuits.tile.PartFactory;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.tileentity.TileEntity;
@@ -123,10 +124,19 @@ public class IntegratedCircuits {
 		proxy.preInitialize();
 
 		creativeTab = new CreativeTabs(Constants.MOD_ID + ".ctab") {
+
+			private ItemStack iconStack;
+
+			@Override
+			public ItemStack getIconItemStack() {
+				if (iconStack == null)
+					iconStack = new ItemStack(Content.itemCircuit, 1, Integer.MAX_VALUE);
+				return iconStack;
+			}
+
 			@Override
 			public Item getTabIconItem() {
-				// TODO Render with socket
-				return Content.itemCircuit;
+				return null;
 			}
 		};
 

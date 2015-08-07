@@ -1,9 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
-import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.client.model.ModelChip;
-import moe.nightfall.vic.integratedcircuits.cp.CircuitProperties;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
+import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.ItemStack;
@@ -13,6 +12,7 @@ import org.lwjgl.opengl.GL11;
 
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.vec.Transformation;
+import codechicken.lib.vec.Translation;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -26,28 +26,12 @@ public class GateCircuitRenderer extends PartRenderer<GateCircuit> {
 	}
 
 	@Override
-	public void prepare(GateCircuit part) {
-		CircuitProperties prop = part.getCircuitData().getProperties();
-		int bundled = 0;
-		for (int i = 0; i < 4; i++)
-			bundled |= prop.getModeAtSide((i + 2) % 4) == EnumConnectionType.BUNDLED ? 1 << i : 0;
-		// prepareBundled(bundled);
-		// prepareRedstone(~bundled, part.io);
-	}
-
-	@Override
 	public void prepareInv(ItemStack stack) {
 		NBTTagCompound comp = stack.getTagCompound();
 		if (comp == null)
 			return;
 		NBTTagCompound comp2 = comp.getCompoundTag("circuit").getCompoundTag("properties");
 		byte con = comp2.getByte("con");
-
-		int bundled = 0;
-		for (int i = 0; i < 4; i++)
-			bundled |= (con >> ((i + 2) % 4) * 2 & 3) == EnumConnectionType.BUNDLED.ordinal() ? 1 << i : 0;
-		// prepareBundled(bundled);
-		// prepareRedstone(~bundled, 0);
 
 		name = comp2.getString("name");
 		tier = (byte) (Math.log(comp.getCompoundTag("circuit").getInteger("size")) / Math.log(2) - 3);
@@ -57,6 +41,25 @@ public class GateCircuitRenderer extends PartRenderer<GateCircuit> {
 	public void prepareDynamic(GateCircuit part, float partialTicks) {
 		tier = (byte) (Math.log(part.circuitData.getSize()) / Math.log(2) - 3);
 		name = part.circuitData.getProperties().getName();
+	}
+
+	@Override
+	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+		// Render tab icon
+		boolean isTabIcon = item.getItemDamage() == Integer.MAX_VALUE;
+		if (isTabIcon) {
+			SocketRenderer sr = ((SocketRenderer) ClientProxy.socketRendererFMP);
+			sr.renderPart(item, 0.0F, 0.2F, 0.0F, 1.0F);
+			CCRenderState.startDrawing();
+			sr.renderCreativeTabConnections(new Translation(0.0, 0.2, 0.0), GateCircuit.dimensions);
+			CCRenderState.draw();
+			GL11.glPushMatrix();
+			GL11.glTranslatef(0, 2 / 16F, 0);
+		}
+		super.renderItem(type, item, data);
+		if (isTabIcon) {
+			GL11.glPopMatrix();
+		}
 	}
 
 	@Override

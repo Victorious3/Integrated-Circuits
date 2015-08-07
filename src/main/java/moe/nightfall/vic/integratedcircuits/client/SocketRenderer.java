@@ -71,12 +71,20 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 			t = rotation.with(t);
 			renderConnections(t);
 		}
+
 		super.renderStatic(t);
 
 		t = new Translation(0, 2 / 16F, 0).with(t);
 		if (socket != null && socket.getGate() != null)
 			IntegratedCircuitsAPI.getGateRegistry().getRenderer(socket.getGate().getClass())
 				.renderStatic(t);
+	}
+
+	protected void renderCreativeTabConnections(Transformation t, Cuboid6 dimensions) {
+		for (int i = 0; i < 4; i++) {
+			double size = getInset(i, dimensions);
+			renderBundledConnection(t, i, size, 0, 0);
+		}
 	}
 
 	protected void renderConnections(Transformation t) {
@@ -88,35 +96,44 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 			double size = getInset(i);
 			EnumConnectionType type = socket.getConnectionTypeAtSide(i);
 			if (type.isRedstone()) {
-				IIcon icon = (socket.getRedstoneIO() & 1 << i) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
-				CCModel model = CCModel.quadModel(72);
-				model.generateBox(00, 7, 2, 0, 2, 0.32, size, 0, 0, 16, 16, 16);
-				model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
-				model.generateBox(48, 9, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
-				model.computeNormals();
-				model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
-				model.apply(t);
-				model.computeLighting(LightModel.standardLightModel);
-				model.render(new IconTransformation(icon));
+				renderRedstoneConnection(t, i, size);
 			} else if (type.isBundled()) {
-				CCModel model = CCModel.quadModel(24);
-				model.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, size / 16D);
-				model.computeNormals();
-				model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
-				model.apply(t);
-				model.computeLighting(LightModel.standardLightModel);
-				int abs = socket.getRotationAbs(i);
-				boolean flipped = abs == 3 || (abs == 2 && (face == 0 || face == 3 || face == 4))
-						 || (abs == 0 && (face == 1 || face == 2 || face == 5));
-				model.render(new IconTransformation(flipped ? Resources.ICON_IC_WIRE : Resources.ICON_IC_WIRE_FLIPPED));
+				renderBundledConnection(t, i, size, face, socket.getRotationAbs(i));
 			}
 		}
 	}
 
-	protected double getInset(int side) {
-		double inset;
-		Cuboid6 dimensions = socket.getGate().getDimension();
+	private void renderRedstoneConnection(Transformation t, int i, double size) {
+		IIcon icon = (socket.getRedstoneIO() & 1 << i) != 0 ? Resources.ICON_IC_RSWIRE_ON : Resources.ICON_IC_RSWIRE_OFF;
+		CCModel model = CCModel.quadModel(72);
+		model.generateBox(00, 7, 2, 0, 2, 0.32, size, 0, 0, 16, 16, 16);
+		model.generateBox(24, 6, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
+		model.generateBox(48, 9, 2, 0, 1, 0.16, size, 9, 0, 16, 16, 16);
+		model.computeNormals();
+		model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+		model.apply(t);
+		model.computeLighting(LightModel.standardLightModel);
+		model.render(new IconTransformation(icon));
+	}
 
+	private void renderBundledConnection(Transformation t, int i, double size, int face, int abs) {
+		CCModel model = CCModel.quadModel(24);
+		model.generateBlock(0, 5 / 16D, 0, 0, 11 / 16D, 4 / 16D, size / 16D);
+		model.computeNormals();
+		model.apply(new Rotation(-i * Math.PI / 2F, 0, 1, 0).at(Vector3.center));
+		model.apply(t);
+		model.computeLighting(LightModel.standardLightModel);
+		boolean flipped = abs == 3 || (abs == 2 && (face == 0 || face == 3 || face == 4))
+				|| (abs == 0 && (face == 1 || face == 2 || face == 5));
+		model.render(new IconTransformation(flipped ? Resources.ICON_IC_WIRE : Resources.ICON_IC_WIRE_FLIPPED));
+	}
+
+	protected double getInset(int side) {
+		return getInset(side, socket.getGate().getDimension());
+	}
+
+	protected double getInset(int side, Cuboid6 dimensions) {
+		double inset;
 		switch (side) {
 			case 0:
 				inset = dimensions.min.x;

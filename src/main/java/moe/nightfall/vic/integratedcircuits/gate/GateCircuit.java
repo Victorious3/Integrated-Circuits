@@ -16,7 +16,7 @@ import codechicken.lib.vec.Cuboid6;
 
 public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvider {
 
-	private static final Cuboid6 dimensions = new Cuboid6(2, 0, 2, 14, 2, 14);
+	public static final Cuboid6 dimensions = new Cuboid6(2, 0, 2, 14, 2, 14);
 
 	public CircuitData circuitData;
 
