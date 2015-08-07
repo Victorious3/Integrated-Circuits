@@ -140,9 +140,17 @@ public class SelectionHandler extends CADHandler {
 			int gridX = (int) Math.floor(parent.boardAbs2RelX(mx));
 			int gridY = (int) Math.floor(parent.boardAbs2RelY(my));
 
-			if (gridX >= 0 && gridX < parent.getCircuitData().getSize() && gridY > 0 && gridY < parent.getCircuitData().getSize()) {
-				selectionEnd = new Vec2(gridX, gridY);
-			}
+			int w = parent.getCircuitData().getSize() - 2;
+			if (gridX < 1)
+				gridX = 1;
+			else if (gridX > w)
+				gridX = w;
+			if (gridY < 1)
+				gridY = 1;
+			else if (gridY > w)
+				gridY = w;
+
+			selectionEnd = new Vec2(gridX, gridY);
 		}
 		
 		Vec2 slStart = selectionStart();
@@ -168,7 +176,8 @@ public class SelectionHandler extends CADHandler {
 		int gridY = (int) Math.floor(parent.boardAbs2RelY(my));
 
 		selectionStart = selectionEnd = Vec2.zero;
-		if (gridX > 0 && gridX < parent.getCircuitData().getSize() && gridY > 0 && gridY < parent.getCircuitData().getSize()) {
+		int w = parent.getCircuitData().getSize() - 1;
+		if (gridX > 0 && gridX < w && gridY > 0 && gridY < w) {
 			selectionStart = new Vec2(gridX, gridY);
 			mouseDown = true;
 		}
