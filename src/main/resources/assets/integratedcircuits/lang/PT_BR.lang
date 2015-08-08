@@ -42,11 +42,12 @@ part.integratedcircuits.norgate.name=Porta NÃO OU
 part.integratedcircuits.xnorgate.name=Porta NÃO OU exclusivo
 part.integratedcircuits.notgate.name=Porta NÃO
 
+#those names are based on the behaviour as you can see there https://pt.wikipedia.org/wiki/Flip-flop
 part.integratedcircuits.togglelatch.name=Flip-flop T
 part.integratedcircuits.rslatch.name=Flip-flop S-R
 part.integratedcircuits.rslatch.mode=Modo
 part.integratedcircuits.rslatch.mirrored=Espelhado
-part.integratedcircuits.transparentlatch.name=Flip-flop Transparente  //those names are based on the behaviour as you can see there https://pt.wikipedia.org/wiki/Flip-flop
+part.integratedcircuits.transparentlatch.name=Flip-flop Transparente 
 
 part.integratedcircuits.timer.name=Temporizador
 part.integratedcircuits.sequencer.name=Sequenciador
@@ -100,13 +101,14 @@ gui.integratedcircuits.7segment.master=Mestre
 gui.integratedcircuits.7segment.slave=Escravo
 gui.integratedcircuits.7segment.mode=Modo:
 
+#as these names are used in programming, and anyone ppl that will use this mod will need to have a basic on this, i prefer let this as it is
 gui.integratedcircuits.7segment.mode.simple=Simples
 gui.integratedcircuits.7segment.mode.analog=Analogico
 gui.integratedcircuits.7segment.mode.short.signed=Signed Short
 gui.integratedcircuits.7segment.mode.short.unsigned=Unsigned Short
 gui.integratedcircuits.7segment.mode.float=Signed Float
 gui.integratedcircuits.7segment.mode.binary=Binary String
-gui.integratedcircuits.7segment.mode.manual=Manual						//as these names are used in programming, and anyone ppl that will use this mod will need to have a basic on this, i prefer let this as it is
+gui.integratedcircuits.7segment.mode.manual=Manual
 
 gui.integratedcircuits.7segment.mode.simple.tooltip=Um sinal digital de redstone:%n§8§oVerdadeiro ou Falso.
 gui.integratedcircuits.7segment.mode.analog.tooltip=Um sinal analogico de redstone:%n§8§ode 0 a F.
