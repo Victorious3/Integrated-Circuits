@@ -26,11 +26,23 @@ public class Recipes {
 		if (!(IntegratedCircuits.isPRLoaded || IntegratedCircuits.isBPLoaded)) {
 			OreDictionary.registerOre("silicon", Content.itemSilicon);
 
-			GameRegistry.addRecipe(new ItemStack(Content.itemCoalCompound), "###", "#c#", "###", '#',
-					Blocks.sand, 'c', Items.coal);
+			GameRegistry.addRecipe(new ItemStack(Content.itemCoalCompound),
+					"###",
+					"#c#",
+					"###",
 
-			GameRegistry.addRecipe(new ItemStack(Content.item7Segment), "srs", "r#r", "sps", 'r',
-					Items.redstone, 's', Blocks.stone, '#', Blocks.glass_pane, 'p', Content.itemPCBChip);
+					'#', Blocks.sand,
+					'c', Items.coal);
+
+			GameRegistry.addRecipe(new ItemStack(Content.item7Segment),
+					"srs",
+					"r#r",
+					"sps",
+
+					'r', Items.redstone,
+					's', Blocks.stone,
+					'#', Blocks.glass_pane,
+					'p', Content.itemPCBChip);
 
 			GameRegistry.addSmelting(Content.itemCoalCompound, new ItemStack(Content.itemSilicon,
 					8), 0.5F);
@@ -48,39 +60,107 @@ public class Recipes {
 				OreDictionary.registerOre("stoneWire", new ItemStack(prCorePart, 1, 2));
 			}
 
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Content.item7Segment), "srs", "r#r",
-					"sps", 'r', "stoneWire", 's', "stoneWafer", '#', Blocks.glass_pane, 'p',
-					Content.itemPCBChip));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Content.item7Segment),
+					"srs",
+					"r#r",
+					"sps",
+
+					'r', "stoneWire",
+					's', "stoneWafer",
+					'#', Blocks.glass_pane,
+					'p', Content.itemPCBChip));
 		}
 
 		GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(Content.itemSiliconDrop, 8), "silicon"));
 
-		GameRegistry.addRecipe(new ItemStack(Content.itemPCBChip), "iri", "r#r", "iri", 'i',
-				Content.itemSiliconDrop, 'r', Items.redstone, '#', Content.itemPCB);
+		GameRegistry.addRecipe(new ItemStack(Content.itemPCBChip),
+				"iri",
+				"r#r",
+				"iri",
 
-		GameRegistry.addRecipe(new ItemStack(Content.itemPCBChip), "rir", "i#i", "rir", 'i',
-				Content.itemSiliconDrop, 'r', Items.redstone, '#', Content.itemPCB);
+				'i', Content.itemSiliconDrop,
+				'r', Items.redstone,
+				'#', Content.itemPCB);
 
-		GameRegistry.addRecipe(new ItemStack(Content.blockPCBLayout), "iii", "i#i", "sps", 'i',
-				Items.iron_ingot, '#', Blocks.glass_pane, 's', Blocks.stone, 'p', Content.itemPCBChip);
+		GameRegistry.addRecipe(new ItemStack(Content.itemPCBChip),
+				"rir",
+				"i#i",
+				"rir",
 
-		GameRegistry.addRecipe(new ItemStack(Content.blockAssembler), "###", "#d#", "sps", 'd',
-				Items.diamond, '#', Blocks.glass_pane, 's', Blocks.stone, 'p', Content.itemPCBChip);
+				'i', Content.itemSiliconDrop,
+				'r', Items.redstone,
+				'#', Content.itemPCB);
 
-		GameRegistry.addRecipe(new ItemStack(Content.itemFloppyDisk), "iii", "i#i", "iii", 'i',
-				Content.itemSiliconDrop, '#', Items.redstone);
+		GameRegistry.addRecipe(new ItemStack(Content.blockPCBLayout),
+				"iii",
+				"i#i",
+				"sps",
 
-		GameRegistry.addRecipe(new ItemStack(Content.itemPCB), "iii", "iii", "iii", 'i',
-				Content.itemSiliconDrop);
+				'i', Items.iron_ingot,
+				'#', Blocks.glass_pane,
+				's', Blocks.stone,
+				'p', Content.itemPCBChip);
 
-		GameRegistry.addRecipe(new ItemStack(Content.itemScrewdriver), "i  ", " id", " di", 'i',
-				Items.iron_ingot, 'd', Content.itemSiliconDrop);
+		GameRegistry.addRecipe(new ItemStack(Content.blockAssembler),
+				"###",
+				"#d#",
+				"sps",
 
-		GameRegistry.addRecipe(new ItemStack(Content.itemLaser), "oii", "p##", "oii", 'i', Items.redstone,
-				'#', Items.diamond, 'o', Blocks.obsidian, 'p', Content.itemPCBChip);
+				'd', Items.diamond,
+				'#', Blocks.glass_pane,
+				's', Blocks.stone,
+				'p', Content.itemPCBChip);
 
-		GameRegistry.addRecipe(new ItemStack(Content.itemLaser), "i#i", "i#i", "opo", 'i', Items.redstone,
-				'#', Items.diamond, 'o', Blocks.obsidian, 'p', Content.itemPCBChip);
+		GameRegistry.addRecipe(new ItemStack(Content.itemFloppyDisk),
+				"iii",
+				"i#i",
+				"iii",
+
+				'i', Content.itemSiliconDrop,
+				'#', Items.redstone);
+
+		GameRegistry.addRecipe(new ItemStack(Content.itemPCB),
+				"iii",
+				"iii",
+				"iii",
+
+				'i', Content.itemSiliconDrop);
+
+		GameRegistry.addRecipe(new ItemStack(Content.itemScrewdriver),
+				"i  ",
+				" id",
+				" di",
+
+				'i', Items.iron_ingot,
+				'd', Content.itemSiliconDrop);
+
+		GameRegistry.addRecipe(new ItemStack(Content.itemSolderingIron),
+				"i  ",
+				" ir",
+				" ri",
+
+				'i', Items.iron_ingot,
+				'r', Items.redstone);
+
+		GameRegistry.addRecipe(new ItemStack(Content.itemLaser),
+				"oii",
+				"p##",
+				"oii",
+
+				'i', Items.redstone,
+				'#', Items.diamond,
+				'o', Blocks.obsidian,
+				'p', Content.itemPCBChip);
+
+		GameRegistry.addRecipe(new ItemStack(Content.itemLaser),
+				"i#i",
+				"i#i",
+				"opo",
+
+				'i', Items.redstone,
+				'#', Items.diamond,
+				'o', Blocks.obsidian,
+				'p', Content.itemPCBChip);
 
 		// TODO NEI integration? Rewrite using multiple recipes?
 		GameRegistry.addRecipe(new RecipeDyeable());
