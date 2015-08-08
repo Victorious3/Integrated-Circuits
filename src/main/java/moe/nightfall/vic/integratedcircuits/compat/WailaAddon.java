@@ -26,7 +26,7 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider {
 
 		register.registerStackProvider(instance, BlockSocket.class);
 		register.registerBodyProvider(instance, BlockSocket.class);
-		register.registerBodyProvider(instance, Constants.MOD_ID + "_circuit");
+		register.registerBodyProvider(instance, Constants.MOD_ID + ".socket_fmp");
 	}
 
 	@Override
@@ -38,8 +38,6 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider {
 	}
 
 	private List<String> getCircuitInformation(ItemStack circuit, List<String> currenttip) {
-		if (circuit.getTagCompound() == null)
-			return currenttip;
 		NBTTagCompound circuitTag = circuit.getTagCompound().getCompoundTag("circuit");
 		NBTTagCompound properties = circuitTag.getCompoundTag("properties");
 		currenttip.add(EnumChatFormatting.GOLD + "Name: " + EnumChatFormatting.RESET + properties.getString("name"));
@@ -65,13 +63,13 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider {
 	}
 
 	@Override
-	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor,
-			IWailaConfigHandler config) {
+	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
 		TileEntitySocket te = (TileEntitySocket) accessor.getTileEntity();
 		if (te.getSocket().getGate() instanceof GateCircuit)
 			return getCircuitInformation(itemStack, currenttip);
-		else
+		else {
 			return currenttip;
+		}
 	}
 
 	@Override
@@ -95,7 +93,12 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider {
 	@Override
 	public List<String> getWailaBody(ItemStack itemStack, List<String> currenttip, IWailaFMPAccessor accessor,
 			IWailaConfigHandler config) {
-		return getCircuitInformation(itemStack, currenttip);
+
+		if (itemStack.getTagCompound() != null) {
+			return getCircuitInformation(itemStack, currenttip);
+		} else {
+			return currenttip;
+		}
 	}
 
 	@Override

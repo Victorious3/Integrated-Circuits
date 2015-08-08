@@ -155,7 +155,10 @@ public class FMPartSocket extends JCuboidPart implements JNormalOcclusion, TFace
 
 	@Override
 	public ItemStack pickItem(MovingObjectPosition hit) {
-		return socket.pickItem(hit);
+		ItemStack stack = socket.pickItem(hit);
+		if (stack == null)
+			stack = new ItemStack(Content.itemSocketFMP);
+		return stack;
 	}
 
 	@Override

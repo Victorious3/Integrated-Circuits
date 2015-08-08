@@ -27,7 +27,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -41,7 +40,6 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.ModAPIManager;
-import cpw.mods.fml.common.ModClassLoader;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLInterModComms;
@@ -86,10 +84,6 @@ public class IntegratedCircuits {
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) throws Exception {
 		developmentEnvironment = (Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
-
-		Field transformers = LaunchClassLoader.class.getDeclaredField("transformers");
-		transformers.setAccessible(true);
-		System.out.println(transformers.get(ModClassLoader.class.getClassLoader()));
 
 		// Initialize API
 		Field apiField = IntegratedCircuitsAPI.class.getDeclaredField("instance");
