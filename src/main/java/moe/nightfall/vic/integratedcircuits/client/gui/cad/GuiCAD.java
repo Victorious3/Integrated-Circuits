@@ -68,7 +68,6 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	public PlaceHandler placeHandler = new PlaceHandler();
 	public CommentHandler commentHandler = new CommentHandler();
 	public SelectionHandler selectionHandler = new SelectionHandler();
-	public SimulationHandler simulationHandler = new SimulationHandler();
 	
 	private CADHandler currentHandler;
 	private List<CADHandler> handlers = new ArrayList<CADHandler>();
@@ -326,9 +325,6 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 					break;
 				case 1:
 					setHandler(selectionHandler);
-					break;
-				case 2:
-					setHandler(simulationHandler);
 					break;
 				default:
 					if (chooserEdit.isActive())
