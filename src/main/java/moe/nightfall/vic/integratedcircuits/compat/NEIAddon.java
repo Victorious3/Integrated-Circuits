@@ -8,7 +8,7 @@ import codechicken.nei.api.API;
 
 public class NEIAddon {
 	public void initialize() {
-		API.hideItem(new ItemStack(Content.itemSocket));
+		API.hideItem(new ItemStack(Content.blockSocket));
 	}
 
 	public static void hideGUI(boolean hide) {
