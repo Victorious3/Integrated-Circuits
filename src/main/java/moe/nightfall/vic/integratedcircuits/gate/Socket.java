@@ -357,11 +357,15 @@ public class Socket implements ISocket {
 
 	@Override
 	public void setInput(byte[][] input) {
+		if (input == null)
+			throw new NullPointerException();
 		this.input = input;
 	}
 
 	@Override
 	public void setOutput(byte[][] output) {
+		if (output == null)
+			throw new NullPointerException();
 		this.output = output;
 	}
 
@@ -436,6 +440,19 @@ public class Socket implements ISocket {
 	}
 
 	@Override
+	public void setGate(ItemStack stack, EntityPlayer player) {
+		if (stack.getItem() instanceof IGateItem) {
+			String gateID = ((IGateItem) stack.getItem()).getGateID(stack, player, getPos());
+			gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
+			gate.setProvider(this);
+			gate.preparePlacement(player, stack);
+			gate.onAdded();
+			sendDescription();
+			notifyBlocksAndChanges();
+		}
+	}
+
+	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack) {
 		if (stack != null) {
 			if (!getWorld().isRemote) {
@@ -453,17 +470,9 @@ public class Socket implements ISocket {
 
 					int rotation = Rotation.getSidedRotation(player, getSide() ^ 1);
 					setRotation(rotation);
-
-					String gateID = ((IGateItem) stack.getItem()).getGateID(stack, player, getPos());
-					gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
-					gate.setProvider(this);
-					gate.preparePlacement(player, stack);
-					gate.onAdded();
+					setGate(stack, player);
 
 					MiscUtils.playPlaceSound(getWorld(), getPos());
-					sendDescription();
-					notifyBlocksAndChanges();
-
 					return true;
 				} else if (gate != null && stack.getItem() == Content.itemSolderingIron) {
 					stack.damageItem(1, player);

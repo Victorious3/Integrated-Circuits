@@ -1,6 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.api.gate;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
@@ -38,6 +40,8 @@ public interface ISocketBridge {
 	public static interface ISocketBase extends ISocketBridge {
 
 		public void setGate(IGate gate);
+
+		public void setGate(ItemStack stack, EntityPlayer player);
 
 		public IGate getGate();
 

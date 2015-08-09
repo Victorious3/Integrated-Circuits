@@ -13,6 +13,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
+import moe.nightfall.vic.integratedcircuits.compat.buildcraft.BCAddon;
 import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
@@ -64,6 +65,8 @@ public class IntegratedCircuits {
 	public static boolean isOCLoaded = false;
 	public static boolean isCCLoaded = false;
 	public static boolean isNEILoaded = false;
+	public static boolean isBCLoaded = false;
+
 	// TODO BETTER NAME?
 	public static boolean isBCToolsAPIThere = false;
 	public static boolean isBPAPIThere = false;
@@ -108,6 +111,7 @@ public class IntegratedCircuits {
 		logger.info("Open Computers: " + (isOCLoaded = Loader.isModLoaded("OpenComputers")));
 		logger.info("Computer Craft: " + (isCCLoaded = Loader.isModLoaded("ComputerCraft")));
 		logger.info("Not Enough Items: " + (isNEILoaded = Loader.isModLoaded("NotEnoughItems")));
+		logger.info("BuildCraft: " + (isBCLoaded = Loader.isModLoaded("BuildCraft|Core")));
 		logger.info("Searching for compatible APIs");
 		logger.info("BuildCraft Tools API: " + (isBCToolsAPIThere = ModAPIManager.INSTANCE.hasAPI("BuildCraftAPI|tools")));
 		logger.info("BluePower API: " + (isBPAPIThere = ModAPIManager.INSTANCE.hasAPI("bluepowerAPI")));
@@ -157,6 +161,8 @@ public class IntegratedCircuits {
 			});
 		}
 
+		if (isBCToolsAPIThere)
+
 		IntegratedCircuitsAPI.registerSocketProvider(new ISocketProvider() {
 			@Override
 			public ISocket getSocketAt(World world, BlockCoord pos, int side) {
@@ -169,6 +175,9 @@ public class IntegratedCircuits {
 				return null;
 			}
 		});
+
+		if (isBCLoaded)
+			BCAddon.preInit();
 
 		GateIO.initialize();
 	}
