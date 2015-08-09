@@ -6,14 +6,14 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
-public class ContainerPCBLayout extends Container {
+public class ContainerCAD extends Container {
 	public TileEntityCAD tileentity;
 
-	public ContainerPCBLayout(TileEntityCAD tileentity) {
+	public ContainerCAD(TileEntityCAD tileentity) {
 		this.tileentity = tileentity;
 		this.tileentity.openInventory();
 
-		this.addSlotToContainer(new Slot(tileentity, 0, 224, 8) {
+		this.addSlotToContainer(new Slot(tileentity, 0, 0, 0) {
 			@Override
 			public boolean isItemValid(ItemStack stack) {
 				return false;
