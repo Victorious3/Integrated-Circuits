@@ -210,12 +210,12 @@ public class GuiAssembler extends GuiContainer implements IHoverableHandler {
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer(int x, int y) {
+	public void drawScreen(int x, int y, float f) {
+		super.drawScreen(x, y, f);
 		if (hoverable != null)
-			drawHoveringText(hoverable.getHoverInformation(), x - guiLeft, y - guiTop, this.fontRendererObj);
+			drawHoveringText(hoverable.getHoverInformation(), x, y, this.fontRendererObj);
 		if (renderItemHover)
-			drawCreativeTabHoveringText(te.craftingSupply.getInsufficient().convertToItemStack().getDisplayName(), x
-					- guiLeft, y - guiTop);
+			drawCreativeTabHoveringText(te.craftingSupply.getInsufficient().convertToItemStack().getDisplayName(), x, y);
 		RenderHelper.enableGUIStandardItemLighting();
 	}
 

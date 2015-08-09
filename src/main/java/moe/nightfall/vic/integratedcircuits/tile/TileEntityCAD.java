@@ -107,9 +107,13 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 		compound.setTag("floppyStack", stackCompound);
 	}
 
+	public final boolean getExternalInputFromSide(ForgeDirection dir, int frequency) {
+		return (in[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
+	}
+
 	@Override
 	public boolean getInputFromSide(ForgeDirection dir, int frequency) {
-		return (in[MiscUtils.getSide(dir)] & 1 << frequency) != 0;
+		return getExternalInputFromSide(dir, frequency) && !getOutputToSide(dir, frequency);
 	}
 
 	public boolean getOutputToSide(ForgeDirection dir, int frequency) {
@@ -117,7 +121,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void setInputFromSide(ForgeDirection dir, int frequency, boolean output) {
+	public final void setExternalInputFromSide(ForgeDirection dir, int frequency, boolean output) {
 		EnumConnectionType mode = circuitData.getProperties().getModeAtSide(MiscUtils.getSide(dir));
 		if (mode != EnumConnectionType.SIMPLE || frequency == 0) {
 			int[] i = this.in.clone();
