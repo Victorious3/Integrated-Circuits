@@ -151,6 +151,8 @@ config.integratedcircuits.general.enableTracker=Enable tracker
 config.integratedcircuits.general.enableTracker.tooltip=This setting will make the game visit this URL on startup: https://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat %nThe connection is established over bit.ly for statistics. The data collected is publicly visible on https://bitly.com/1GIaUA6+. Bit.ly will track %nyour country via your IP address, no other, or personal, information is gathered. I like statistics, and I would like you to keep this setting enabled, %nso that I get a better overview of how often my mod is used. Thanks.
 config.integratedcircuits.general.sevenSegmentMaxDigits=Maximal digits seven segment display
 config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=The maximum number of digits a seven segment display can have
+config.integratedcircuits.general.enableLegacyLoader=Enable legacy loader
+config.integratedcircuits.general.enableLegacyLoader.tooltip=This setting will try and convert old versions of the circuit blueprints to the current version. This should be left ON unless you know what you are doing.
 config.integratedcircuits.parts.redirect=part.integratedcircuits.%s.name
 
 # misc

@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.cp.legacy.LegacyLoader;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
@@ -325,7 +326,8 @@ public class CircuitData implements Cloneable {
 		int version = compound.getInteger("version");
 
 		List<LegacyLoader> legacyLoaders = null;
-		if (version < CircuitData.version) {
+		boolean legacyLoad = version < CircuitData.version && Config.enableLegacyLoader;
+		if (legacyLoad) {
 			// TODO This can't work for multiple versions as those steps have to
 			// be executed in sequence.
 			legacyLoaders = LegacyLoader.getLegacyLoaders(version);
@@ -349,7 +351,7 @@ public class CircuitData implements Cloneable {
 		CircuitProperties prop = CircuitProperties.readFromNBT(compound.getCompoundTag("properties"));
 		int size = compound.getInteger("size");
 
-		if (version < CircuitData.version) {
+		if (legacyLoad) {
 			for (LegacyLoader loader : legacyLoaders) {
 				loader.transform(size, id, meta);
 			}
@@ -375,7 +377,7 @@ public class CircuitData implements Cloneable {
 
 		CircuitData cdata = new CircuitData(size, parent, id, meta, scheduledTicks, inputQueue, prop);
 
-		if (version < CircuitData.version) {
+		if (legacyLoad) {
 			// TODO Not future-proof. Will break if e.g. inputQueue is removed.
 			for (LegacyLoader loader : legacyLoaders) {
 				loader.postTransform(cdata);

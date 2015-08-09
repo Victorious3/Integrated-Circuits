@@ -25,6 +25,8 @@ public class Config {
 	public static boolean enableTooltips;
 	public static int sevenSegmentMaxDigits;
 
+	public static boolean enableLegacyLoader;
+
 	// TODO Generalize!
 	public static void preInitialize(File file) {
 		config = new Configuration(file);
@@ -44,6 +46,7 @@ public class Config {
 		enableTooltips = config.getBoolean("enableTooltips", "GENERAL", true, "");
 		enableTracker = config.getBoolean("enableTracker", "GENERAL", true, "");
 		sevenSegmentMaxDigits = config.getInt("sevenSegmentMaxDigits", "GENERAL", 16, 1, 16, "");
+		enableLegacyLoader = config.getBoolean("enableLegacyLoader", "GENERAL", true, "");
 
 		config.setCategoryRequiresMcRestart("PARTS", true);
 	}
