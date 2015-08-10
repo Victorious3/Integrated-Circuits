@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
+import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import net.minecraft.item.ItemStack;
@@ -18,6 +19,10 @@ import buildcraft.api.transport.pluggable.IPipePluggableRenderer;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Scale;
+import codechicken.lib.vec.Translation;
+import codechicken.lib.vec.Vector3;
 
 import com.google.common.collect.Lists;
 
@@ -31,13 +36,15 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 	private World world;
 	private ForgeDirection dir;
 	private int scheduledTick = -1;
+	private AxisAlignedBB boundingBox;
 
 	public GatePipePluggable() {
 	}
 
-	public GatePipePluggable(ItemStack stack, BlockCoord pos, World world) {
+	public GatePipePluggable(ItemStack stack, BlockCoord pos, World world, ForgeDirection dir) {
 		this.pos = pos;
 		this.world = world;
+		this.dir = dir;
 		socket.setGate(stack, null);
 	}
 
@@ -59,7 +66,7 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 	@Override
 	public void writeData(ByteBuf data) {
 		NBTTagCompound compound = new NBTTagCompound();
-		socket.writeToNBT(compound);
+		socket.writeDesc(compound);
 		ByteBufUtils.writeTag(data, compound);
 	}
 
@@ -80,6 +87,7 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 
 	@Override
 	public void onAttachedPipe(IPipeTile pipe, ForgeDirection direction) {
+		IGate gate = socket.getGate();
 		this.pipe = pipe;
 		this.dir = direction;
 		this.world = pipe.getWorld();
@@ -95,12 +103,18 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 
 	@Override
 	public boolean isBlocking(IPipeTile pipe, ForgeDirection direction) {
-		return false;
+		return true;
 	}
 
 	@Override
 	public AxisAlignedBB getBoundingBox(ForgeDirection side) {
-		return socket.getGate().getDimension().toAABB();
+		if (boundingBox == null) {
+			boundingBox = socket.getGate().getDimension().copy().apply(new Scale(1 / 16D)
+				.with(new Translation(0, 0.85, 0))
+				.with(new Scale(0.75).at(Vector3.center))
+				.with(Rotation.sideOrientation(side.getOpposite().ordinal(), 0).at(Vector3.center))).toAABB();
+		}
+		return boundingBox;
 	}
 
 	@Override

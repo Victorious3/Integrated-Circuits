@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
 
 public class Gate7Segment extends Gate {
 	
-	private final Cuboid6 dimensions = new Cuboid6(1, 0, 2, 15, 2, 14);
+	private final Cuboid6 dimensions = new Cuboid6(2, 0, 1, 14, 2, 15);
 	
 	public int digit = NUMBERS[0];
 	public int color;
