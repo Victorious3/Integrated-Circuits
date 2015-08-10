@@ -5,7 +5,6 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI;
-import moe.nightfall.vic.integratedcircuits.api.gate.IGate;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import net.minecraft.item.ItemStack;
@@ -39,6 +38,7 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 	private AxisAlignedBB boundingBox;
 
 	public GatePipePluggable() {
+		System.out.println("Creating new instance");
 	}
 
 	public GatePipePluggable(ItemStack stack, BlockCoord pos, World world, ForgeDirection dir) {
@@ -73,7 +73,10 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 	@Override
 	public void update(IPipeTile pipe, ForgeDirection direction) {
 		if (this.pipe == null) {
-			onAttachedPipe(pipe, direction);
+			this.pipe = pipe;
+			this.world = pipe.getWorld();
+			this.pos = new BlockCoord(pipe.x(), pipe.y(), pipe.z());
+			socket.setSide(direction.ordinal());
 		}
 		socket.update();
 		if (scheduledTick > -1) {
@@ -84,15 +87,6 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 			}
 		}
 		updateInput();
-	}
-
-	@Override
-	public void onAttachedPipe(IPipeTile pipe, ForgeDirection direction) {
-		IGate gate = socket.getGate();
-		this.pipe = pipe;
-		this.world = pipe.getWorld();
-		this.pos = new BlockCoord(pipe.x(), pipe.y(), pipe.z());
-		socket.onAdded();
 	}
 
 	@Override
