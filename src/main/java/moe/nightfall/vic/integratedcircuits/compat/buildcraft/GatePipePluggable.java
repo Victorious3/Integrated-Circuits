@@ -14,6 +14,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import buildcraft.api.transport.IPipeTile;
+import buildcraft.api.transport.PipeWire;
 import buildcraft.api.transport.pluggable.IPipePluggableDynamicRenderer;
 import buildcraft.api.transport.pluggable.IPipePluggableRenderer;
 import buildcraft.api.transport.pluggable.PipePluggable;
@@ -34,7 +35,6 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 	private IPipeTile pipe;
 	private BlockCoord pos;
 	private World world;
-	private ForgeDirection dir;
 	private int scheduledTick = -1;
 	private AxisAlignedBB boundingBox;
 
@@ -44,8 +44,8 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 	public GatePipePluggable(ItemStack stack, BlockCoord pos, World world, ForgeDirection dir) {
 		this.pos = pos;
 		this.world = world;
-		this.dir = dir;
 		socket.setGate(stack, null);
+		socket.setSide(dir.ordinal());
 	}
 
 	@Override
@@ -83,15 +83,16 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 				scheduledTick = -1;
 			}
 		}
+		updateInput();
 	}
 
 	@Override
 	public void onAttachedPipe(IPipeTile pipe, ForgeDirection direction) {
 		IGate gate = socket.getGate();
 		this.pipe = pipe;
-		this.dir = direction;
 		this.world = pipe.getWorld();
 		this.pos = new BlockCoord(pipe.x(), pipe.y(), pipe.z());
+		socket.onAdded();
 	}
 
 	@Override
@@ -112,7 +113,7 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 			boundingBox = socket.getGate().getDimension().copy().apply(new Scale(1 / 16D)
 				.with(new Translation(0, 0.85, 0))
 				.with(new Scale(0.75).at(Vector3.center))
-				.with(Rotation.sideOrientation(side.getOpposite().ordinal(), 0).at(Vector3.center))).toAABB();
+				.with(Rotation.sideOrientation(side.getOpposite().ordinal(), socket.getRotation()).at(Vector3.center))).toAABB();
 		}
 		return boundingBox;
 	}
@@ -136,7 +137,7 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 
 	@Override
 	public MCDataOutput getWriteStream(int disc) {
-		return IntegratedCircuitsAPI.getWriteStream(getWorld(), getPos(), dir.ordinal());
+		return IntegratedCircuitsAPI.getWriteStream(getWorld(), getPos(), socket.getSide());
 	}
 
 	@Override
@@ -146,14 +147,13 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 
 	@Override
 	public void notifyBlocksAndChanges() {
-		// TODO Auto-generated method stub
-
+		// Not implemented since we don't need to notify neighbor gates
 	}
 
 	@Override
 	public void notifyPartChange() {
-		// TODO Auto-generated method stub
-
+		// Called to update the output
+		byte[][] output = socket.getOutput();
 	}
 
 	@Override
@@ -168,31 +168,29 @@ public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 
 	@Override
 	public void updateInput() {
-		// TODO Auto-generated method stub
-
+		socket.updateInput();
 	}
 
 	@Override
 	public int updateRedstoneInput(int side) {
-		// TODO Auto-generated method stub
-		return 0;
+		return getInput(side, PipeWire.RED);
+	}
+
+	private int getInput(int side, PipeWire wire) {
+		if (pipe == null)
+			return 0;
+		return pipe.getPipe().isWireActive(wire) ? 15 : 0;
 	}
 
 	@Override
 	public byte[] updateBundledInput(int side) {
-		// TODO Auto-generated method stub
+		// TODO Not supported yet
 		return new byte[16];
 	}
 
 	@Override
 	public void scheduleTick(int delay) {
 		scheduledTick = delay;
-	}
-
-	@Override
-	public int strongPowerLevel(int side) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override

@@ -117,7 +117,7 @@ public class CommonProxy {
 		AbstractPacket.registerPacket(PacketDataStream.class, Side.CLIENT, 17);
 	}
 
-	public MCDataOutputImpl addStream(World world, BlockCoord crd, int side) {
+	public synchronized MCDataOutputImpl addStream(World world, BlockCoord crd, int side) {
 		if (world.isRemote)
 			throw new IllegalArgumentException("Cannot use getWriteStream on a client world");
 		SidedBlockCoord scrd = new SidedBlockCoord(crd.x, crd.y, crd.z, side);

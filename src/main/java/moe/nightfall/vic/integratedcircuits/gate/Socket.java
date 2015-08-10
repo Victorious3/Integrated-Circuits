@@ -162,11 +162,6 @@ public class Socket implements ISocket {
 		return gate;
 	}
 
-	@Override
-	public int strongPowerLevel(int side) {
-		return provider.strongPowerLevel(side);
-	}
-
 	// IO
 
 	@Override
@@ -391,6 +386,8 @@ public class Socket implements ISocket {
 
 	@Override
 	public void updateInput() {
+		if (getWorld().isRemote)
+			return;
 		updateInputPre();
 		for (int i = 0; i < 4; i++) {
 			EnumConnectionType type = getConnectionTypeAtSide(i);

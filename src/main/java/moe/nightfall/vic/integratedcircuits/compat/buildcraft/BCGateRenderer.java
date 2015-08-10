@@ -26,9 +26,9 @@ public class BCGateRenderer implements IPipePluggableRenderer, IPipePluggableDyn
 	private BCGateRenderer() {
 	}
 
-	private Transformation getTransformation(IGate gate, ForgeDirection side, double x, double y, double z) {
+	private Transformation getTransformation(IGate gate, double x, double y, double z) {
 		return new Translation(0, 0.85, 0).with(new Scale(0.75).at(Vector3.center))
-			.with(Rotation.sideOrientation(side.getOpposite().ordinal(), 0).at(Vector3.center))
+			.with(Rotation.sideOrientation(gate.getProvider().getSide(), gate.getProvider().getRotation()).at(Vector3.center))
 			.with(new Translation(x, y, z));
 	}
 
@@ -38,7 +38,7 @@ public class BCGateRenderer implements IPipePluggableRenderer, IPipePluggableDyn
 		IGate gate = gpp.getSocket().getGate();
 		IPartRenderer<IGate> renderer = IntegratedCircuitsAPI.getGateRegistry().getRenderer(gate.getClass());
 		renderer.prepareDynamic(gate, 0);
-		renderer.renderDynamic(getTransformation(gate, side, x, y, z));
+		renderer.renderDynamic(getTransformation(gate, x, y, z));
 	}
 
 	@Override
@@ -47,6 +47,6 @@ public class BCGateRenderer implements IPipePluggableRenderer, IPipePluggableDyn
 		IGate gate = gpp.getSocket().getGate();
 		IPartRenderer<IGate> renderer = IntegratedCircuitsAPI.getGateRegistry().getRenderer(gate.getClass());
 		renderer.prepare(gate);
-		renderer.renderStatic(getTransformation(gate, side, x, y, z));
+		renderer.renderStatic(getTransformation(gate, x, y, z));
 	}
 }

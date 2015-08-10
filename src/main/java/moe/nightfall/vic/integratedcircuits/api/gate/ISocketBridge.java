@@ -33,8 +33,6 @@ public interface ISocketBridge {
 
 	public void scheduleTick(int delay);
 
-	public int strongPowerLevel(int side);
-
 	public void sendDescription();
 
 	public static interface ISocketBase extends ISocketBridge {
