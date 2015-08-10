@@ -504,8 +504,9 @@ public class Socket implements ISocket {
 						|| item == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
 				        || toolRotate;
 			if (tool) {
+				System.out.println(item);
 				if (!getWorld().isRemote && gate != null) {
-					if (!player.isSneaking() && !toolRotate)
+					if (!player.isSneaking() /*&& !toolRotate*/)
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
