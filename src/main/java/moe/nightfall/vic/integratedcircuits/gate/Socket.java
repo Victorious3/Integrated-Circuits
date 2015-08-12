@@ -497,12 +497,10 @@ public class Socket implements ISocket {
 			// Does it rotate already?
 			boolean toolRotate = (IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
 							  || (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench);
-			boolean tool = (IntegratedCircuits.isPRLoaded && item instanceof mrtjp.projectred.api.IScrewdriver)
-						|| item == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
-				        || toolRotate;
-			if (tool) {
+
+			if (checkItemIsTool(item)) {
 				if (!getWorld().isRemote && gate != null) {
-					if (!player.isSneaking() /*&& !toolRotate*/)
+					if (!player.isSneaking())
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
@@ -516,6 +514,15 @@ public class Socket implements ISocket {
 		if (gate != null)
 			return gate.activate(player, hit, stack);
 		return false;
+	}
+
+	public static boolean checkItemIsTool(Item item) {
+		if (item != null) {
+			return (IntegratedCircuits.isPRLoaded && item instanceof mrtjp.projectred.api.IScrewdriver)
+			        || item == Content.itemScrewdriver || item.getUnlocalizedName().equals("item.redlogic.screwdriver")
+					|| (IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
+					|| (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench);
+		} else return false;
 	}
 
 	@Override
