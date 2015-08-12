@@ -7,3 +7,5 @@
 !/src/
 !/libs/
 
+!gradle/
+!gradlew*
