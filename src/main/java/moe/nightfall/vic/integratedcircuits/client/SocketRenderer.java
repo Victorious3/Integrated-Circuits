@@ -166,7 +166,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				BlockCoord pos = socket.getPos();
 				if (mop != null && mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == pos.x && mop.blockY == pos.y
 						&& mop.blockZ == pos.z && mop.sideHit == (socket.getSide() ^ 1)) {
-					if (!player.inventory.hasItem(Content.itemSolderingIron)) {
+					if (!player.inventory.hasItem(Content.itemSolderingIron) && !player.capabilities.isCreativeMode) {
 						if (Config.enableTooltips) {
 							ClientProxy.drawTooltip(I18n.format("tooltip.integratedcircuits.socket"));
 						}
