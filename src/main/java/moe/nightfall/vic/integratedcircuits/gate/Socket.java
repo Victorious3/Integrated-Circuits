@@ -454,16 +454,18 @@ public class Socket implements ISocket {
 		if (stack != null) {
 			if (!getWorld().isRemote) {
 				if (gate == null && stack.getItem() instanceof IGateItem) {
-					ItemStack solderingIron;
-					if ((solderingIron = InventoryUtils.getFirstItem(Content.itemSolderingIron,
-							player.inventory)) != null) {
-						solderingIron.damageItem(1, player);
-						if (solderingIron.getItemDamage() == solderingIron.getMaxDamage())
-							player.inventory.setInventorySlotContents(
-									InventoryUtils.getSlotIndex(solderingIron, player.inventory), null);
-						player.inventoryContainer.detectAndSendChanges();
-					} else
-						return false;
+					if (!player.capabilities.isCreativeMode) {
+						ItemStack solderingIron;
+						if ((solderingIron = InventoryUtils.getFirstItem(Content.itemSolderingIron,
+								player.inventory)) != null) {
+							solderingIron.damageItem(1, player);
+							if (solderingIron.getItemDamage() == solderingIron.getMaxDamage())
+								player.inventory.setInventorySlotContents(
+										InventoryUtils.getSlotIndex(solderingIron, player.inventory), null);
+							player.inventoryContainer.detectAndSendChanges();
+						} else
+							return false;
+					}
 
 					int rotation = Rotation.getSidedRotation(player, getSide() ^ 1);
 					setRotation(rotation);
@@ -491,12 +493,6 @@ public class Socket implements ISocket {
 
 			Item item = stack.getItem();
 			String name = item.getUnlocalizedName();
-
-			// FIXME: Some screwdrivers don't seem to work... they seem to be the fault of the other mods, though.
-			// Is it a tool?
-			// Does it rotate already?
-			boolean toolRotate = (IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
-							  || (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench);
 
 			if (checkItemIsTool(item)) {
 				if (!getWorld().isRemote && gate != null) {
