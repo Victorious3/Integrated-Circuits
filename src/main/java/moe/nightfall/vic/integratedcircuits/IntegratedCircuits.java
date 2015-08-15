@@ -161,8 +161,6 @@ public class IntegratedCircuits {
 			});
 		}
 
-		if (isBCToolsAPIThere)
-
 		IntegratedCircuitsAPI.registerSocketProvider(new ISocketProvider() {
 			@Override
 			public ISocket getSocketAt(World world, BlockCoord pos, int side) {

@@ -148,10 +148,10 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 			}
 
 			if (mode == 1) {
-				if (parent.rollover.getSelected() == -1)
+				if (parent.getHandler() == parent.placeHandler)
 					parent.setHandler(parent.editHandler);
 			} else {
-				if (parent.rollover.getSelected() == -1)
+				if (parent.getHandler() == parent.editHandler)
 					parent.setHandler(parent.placeHandler);
 				if (mode == 2)
 					parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));

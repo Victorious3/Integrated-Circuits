@@ -472,6 +472,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			currentHandler.apply(this);
 	}
 
+	public CADHandler getHandler() {
+		return currentHandler;
+	}
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTick, int x, int y) {
 		hoveredElement = null;
