@@ -12,7 +12,6 @@ import com.google.common.primitives.Primitives;
 
 import cpw.mods.fml.common.Optional;
 import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
@@ -36,40 +35,44 @@ public abstract class GatePeripheral implements IPeripheral {
 		return methodNames;
 	}
 
-	@Override
-	@Optional.Method(modid = "ComputerCraft")
-	public final Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException {
-		String name = (String) methods.keySet().toArray()[method];
-		return callMethod(name, arguments);
+	public static class LuaException extends RuntimeException {
+		public LuaException(String message) {
+			super(message);
+		}
 	}
 
-	public final Object[] callMethod(String name, Object[] arguments) throws LuaException, InterruptedException {
+	@Override
+	@Optional.Method(modid = "ComputerCraft")
+	public final Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws dan200.computercraft.api.lua.LuaException, InterruptedException {
+		String name = (String) methods.keySet().toArray()[method];
 		try {
-			Method m = methods.get(name);
-			if (m == null) {
-				return null;
-			}
-			Class<?>[] paramTypes = m.getParameterTypes();
-			if (arguments.length != paramTypes.length) {
-				throw new LuaException("Illegal amount of parameters!");
-			}
-			for (int i = 0; i < paramTypes.length; i++) {
-				paramTypes[i] = Primitives.wrap(paramTypes[i]);
-				if (!paramTypes[i].isAssignableFrom(arguments[i].getClass()))
-					throw new LuaException("Illegal parameter at index " + i + ". Expected '" + paramTypes[i] + "', got '" + arguments[i].getClass() + "'.");
-			}
-			Object o = m.invoke(this, arguments);
-			if (o == null) {
-				return null;
-			} else if (m.getReturnType().isArray()) {
-				return (Object[]) o;
-			} else {
-				return new Object[] { o };
-			}
-		} catch (LuaException e) {
-			throw e;
+			return callMethod(name, arguments);
 		} catch (Exception e) {
-			throw new LuaException(e.getMessage());
+			throw new dan200.computercraft.api.lua.LuaException(e.getMessage());
+		}
+	}
+
+	public final Object[] callMethod(String name, Object[] arguments) throws Exception {
+		Method m = methods.get(name);
+		if (m == null) {
+			return null;
+		}
+		Class<?>[] paramTypes = m.getParameterTypes();
+		if (arguments.length != paramTypes.length) {
+			throw new LuaException("Illegal amount of parameters!");
+		}
+		for (int i = 0; i < paramTypes.length; i++) {
+			paramTypes[i] = Primitives.wrap(paramTypes[i]);
+			if (!paramTypes[i].isAssignableFrom(arguments[i].getClass()))
+				throw new LuaException("Illegal parameter at index " + i + ". Expected '" + paramTypes[i] + "', got '" + arguments[i].getClass() + "'.");
+		}
+		Object o = m.invoke(this, arguments);
+		if (o == null) {
+			return null;
+		} else if (m.getReturnType().isArray()) {
+			return (Object[]) o;
+		} else {
+			return new Object[] { o };
 		}
 	}
 

@@ -14,7 +14,6 @@ import net.minecraftforge.common.util.ForgeDirection;
 import org.apache.commons.lang3.ArrayUtils;
 
 import cpw.mods.fml.common.Optional;
-import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 // TODO Test me! -- If it didn't work, it would probably be reported by now
