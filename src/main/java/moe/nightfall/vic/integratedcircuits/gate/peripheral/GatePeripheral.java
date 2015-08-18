@@ -10,11 +10,13 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 
+import cpw.mods.fml.common.Optional;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 
+@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 public abstract class GatePeripheral implements IPeripheral {
 
 	private final Map<String, Method> methods = Maps.newLinkedHashMap();
@@ -35,6 +37,7 @@ public abstract class GatePeripheral implements IPeripheral {
 	}
 
 	@Override
+	@Optional.Method(modid = "ComputerCraft")
 	public final Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException, InterruptedException {
 		String name = (String) methods.keySet().toArray()[method];
 		return callMethod(name, arguments);
@@ -71,14 +74,17 @@ public abstract class GatePeripheral implements IPeripheral {
 	}
 
 	@Override
+	@Optional.Method(modid = "ComputerCraft")
 	public void detach(IComputerAccess computer) {
 	}
 
 	@Override
+	@Optional.Method(modid = "ComputerCraft")
 	public void attach(IComputerAccess computer) {
 	}
 
 	@Override
+	@Optional.Method(modid = "ComputerCraft")
 	public boolean equals(IPeripheral other) {
 		return other.getType().equals(getType());
 	}

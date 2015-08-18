@@ -13,7 +13,6 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocketProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
 import moe.nightfall.vic.integratedcircuits.compat.BPRedstoneProvider;
 import moe.nightfall.vic.integratedcircuits.compat.NEIAddon;
-import moe.nightfall.vic.integratedcircuits.compat.buildcraft.BCAddon;
 import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
@@ -174,8 +173,9 @@ public class IntegratedCircuits {
 			}
 		});
 
-		if (isBCLoaded)
-			BCAddon.preInit();
+		// Need to wait for BC
+		// if (isBCLoaded)
+		// BCAddon.preInit();
 
 		GateIO.initialize();
 	}
