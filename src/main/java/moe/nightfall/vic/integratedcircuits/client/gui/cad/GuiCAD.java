@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.Config;
-import moe.nightfall.vic.integratedcircuits.ContainerPCBLayout;
+import moe.nightfall.vic.integratedcircuits.ContainerCAD;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IGuiCallback;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
@@ -130,7 +130,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	
 	private static final List<Float> scales = Arrays.asList(0.17F, 0.2F, 0.25F, 0.33F, 0.5F, 0.67F, 1F, 1.5F, 2F);
 
-	public GuiCAD(ContainerPCBLayout container) {
+	public GuiCAD(ContainerCAD container) {
 		super(container);
 
 		handlers.add(editHandler);
@@ -472,6 +472,10 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			currentHandler.apply(this);
 	}
 
+	public CADHandler getHandler() {
+		return currentHandler;
+	}
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float partialTick, int x, int y) {
 		hoveredElement = null;
@@ -497,6 +501,14 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		drawGradients(editorLeft, editorTop, editorRight, editorBottom, 4);
 
 		nameField.drawTextBox();
+
+		// Draw translucent floppy for the stack
+		mc.renderEngine.bindTexture(Resources.RESOURCE_GUI_FLOPPY);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glColor4f(1, 1, 1, 0.2F);
+		func_146110_a(width - 25, 8, 16, 16, 16, 16, 16, 16);
+		GL11.glDisable(GL11.GL_BLEND);
+
 		GL11.glColor3f(1, 1, 1);
 	}
 	

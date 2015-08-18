@@ -64,6 +64,8 @@ public class IntegratedCircuits {
 	public static boolean isOCLoaded = false;
 	public static boolean isCCLoaded = false;
 	public static boolean isNEILoaded = false;
+	public static boolean isBCLoaded = false;
+
 	// TODO BETTER NAME?
 	public static boolean isBCToolsAPIThere = false;
 	public static boolean isBPAPIThere = false;
@@ -108,6 +110,7 @@ public class IntegratedCircuits {
 		logger.info("Open Computers: " + (isOCLoaded = Loader.isModLoaded("OpenComputers")));
 		logger.info("Computer Craft: " + (isCCLoaded = Loader.isModLoaded("ComputerCraft")));
 		logger.info("Not Enough Items: " + (isNEILoaded = Loader.isModLoaded("NotEnoughItems")));
+		logger.info("BuildCraft: " + (isBCLoaded = Loader.isModLoaded("BuildCraft|Core")));
 		logger.info("Searching for compatible APIs");
 		logger.info("BuildCraft Tools API: " + (isBCToolsAPIThere = ModAPIManager.INSTANCE.hasAPI("BuildCraftAPI|tools")));
 		logger.info("BluePower API: " + (isBPAPIThere = ModAPIManager.INSTANCE.hasAPI("bluepowerAPI")));
@@ -169,6 +172,10 @@ public class IntegratedCircuits {
 				return null;
 			}
 		});
+
+		// Need to wait for BC
+		// if (isBCLoaded)
+		// BCAddon.preInit();
 
 		GateIO.initialize();
 	}

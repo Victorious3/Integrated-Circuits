@@ -13,10 +13,11 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import cpw.mods.fml.common.Optional;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-// TODO Test me!
+// TODO Test me! -- If it didn't work, it would probably be reported by now
 public class CircuitPeripheral extends GatePeripheral {
 
 	private GateCircuit circuit;
@@ -140,6 +141,7 @@ public class CircuitPeripheral extends GatePeripheral {
 	}
 
 	@Override
+	@Optional.Method(modid = "ComputerCraft")
 	public void attach(IComputerAccess computer) {
 		computer.mount("rom/programs/" + Constants.MOD_ID, new FileMount("lua"));
 	}

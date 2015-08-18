@@ -162,11 +162,6 @@ public class Socket implements ISocket {
 		return gate;
 	}
 
-	@Override
-	public int strongPowerLevel(int side) {
-		return provider.strongPowerLevel(side);
-	}
-
 	// IO
 
 	@Override
@@ -357,11 +352,15 @@ public class Socket implements ISocket {
 
 	@Override
 	public void setInput(byte[][] input) {
+		if (input == null)
+			throw new NullPointerException();
 		this.input = input;
 	}
 
 	@Override
 	public void setOutput(byte[][] output) {
+		if (output == null)
+			throw new NullPointerException();
 		this.output = output;
 	}
 
@@ -387,6 +386,8 @@ public class Socket implements ISocket {
 
 	@Override
 	public void updateInput() {
+		if (getWorld().isRemote)
+			return;
 		updateInputPre();
 		for (int i = 0; i < 4; i++) {
 			EnumConnectionType type = getConnectionTypeAtSide(i);
@@ -436,34 +437,41 @@ public class Socket implements ISocket {
 	}
 
 	@Override
+	public void setGate(ItemStack stack, EntityPlayer player) {
+		if (stack.getItem() instanceof IGateItem) {
+			String gateID = ((IGateItem) stack.getItem()).getGateID(stack, player, getPos());
+			gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
+			gate.setProvider(this);
+			gate.preparePlacement(player, stack);
+			gate.onAdded();
+			sendDescription();
+			notifyBlocksAndChanges();
+		}
+	}
+
+	@Override
 	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack) {
 		if (stack != null) {
 			if (!getWorld().isRemote) {
 				if (gate == null && stack.getItem() instanceof IGateItem) {
-					ItemStack solderingIron;
-					if ((solderingIron = InventoryUtils.getFirstItem(Content.itemSolderingIron,
-							player.inventory)) != null) {
-						solderingIron.damageItem(1, player);
-						if (solderingIron.getItemDamage() == solderingIron.getMaxDamage())
-							player.inventory.setInventorySlotContents(
-									InventoryUtils.getSlotIndex(solderingIron, player.inventory), null);
-						player.inventoryContainer.detectAndSendChanges();
-					} else
-						return false;
+					if (!player.capabilities.isCreativeMode) {
+						ItemStack solderingIron;
+						if ((solderingIron = InventoryUtils.getFirstItem(Content.itemSolderingIron,
+								player.inventory)) != null) {
+							solderingIron.damageItem(1, player);
+							if (solderingIron.getItemDamage() == solderingIron.getMaxDamage())
+								player.inventory.setInventorySlotContents(
+										InventoryUtils.getSlotIndex(solderingIron, player.inventory), null);
+							player.inventoryContainer.detectAndSendChanges();
+						} else
+							return false;
+					}
 
 					int rotation = Rotation.getSidedRotation(player, getSide() ^ 1);
 					setRotation(rotation);
-
-					String gateID = ((IGateItem) stack.getItem()).getGateID(stack, player, getPos());
-					gate = IntegratedCircuitsAPI.getGateRegistry().createGateInstace(gateID);
-					gate.setProvider(this);
-					gate.preparePlacement(player, stack);
-					gate.onAdded();
+					setGate(stack, player);
 
 					MiscUtils.playPlaceSound(getWorld(), getPos());
-					sendDescription();
-					notifyBlocksAndChanges();
-
 					return true;
 				} else if (gate != null && stack.getItem() == Content.itemSolderingIron) {
 					stack.damageItem(1, player);
@@ -486,17 +494,9 @@ public class Socket implements ISocket {
 			Item item = stack.getItem();
 			String name = item.getUnlocalizedName();
 
-			// FIXME: Some screwdrivers don't seem to work... they seem to be the fault of the other mods, though.
-			// Is it a tool?
-			// Does it rotate already?
-			boolean toolRotate = (IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
-							  || (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench);
-			boolean tool = (IntegratedCircuits.isPRLoaded && item instanceof mrtjp.projectred.api.IScrewdriver)
-						|| item == Content.itemScrewdriver || name.equals("item.redlogic.screwdriver")
-				        || toolRotate;
-			if (tool) {
+			if (checkItemIsTool(item)) {
 				if (!getWorld().isRemote && gate != null) {
-					if (!player.isSneaking() && !toolRotate)
+					if (!player.isSneaking())
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
@@ -510,6 +510,15 @@ public class Socket implements ISocket {
 		if (gate != null)
 			return gate.activate(player, hit, stack);
 		return false;
+	}
+
+	public static boolean checkItemIsTool(Item item) {
+		if (item != null) {
+			return (IntegratedCircuits.isPRLoaded && item instanceof mrtjp.projectred.api.IScrewdriver)
+			        || item == Content.itemScrewdriver || item.getUnlocalizedName().equals("item.redlogic.screwdriver")
+					|| (IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
+					|| (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench);
+		} else return false;
 	}
 
 	@Override

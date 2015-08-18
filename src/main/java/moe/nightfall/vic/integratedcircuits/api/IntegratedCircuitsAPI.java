@@ -17,7 +17,7 @@ public class IntegratedCircuitsAPI {
 
 	public static enum Type {
 		TILE("moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket"),
-		TILE_FMP("moe.nightfall.vic.integratedcircuits.tile.FMPartGate"),
+		TILE_FMP("moe.nightfall.vic.integratedcircuits.tile.FMPartSocket"),
 		BLOCK("moe.nightfall.vic.integratedcircuits.tile.BlockSocket");
 
 		public final String classname;

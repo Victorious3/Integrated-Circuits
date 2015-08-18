@@ -1,12 +1,11 @@
 package moe.nightfall.vic.integratedcircuits.item;
 
-import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.StatCollector;
 import codechicken.lib.vec.BlockCoord;
 
-public class ItemCircuit extends ItemBase implements IGateItem {
+public class ItemCircuit extends ItemGate {
 	public ItemCircuit() {
 		super("circuit");
 		setMaxStackSize(1);

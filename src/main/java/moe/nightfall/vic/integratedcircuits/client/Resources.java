@@ -54,6 +54,8 @@ public class Resources {
 			"textures/gui/cad.png");
 	public static final ResourceLocation RESOURCE_GUI_7SEGMENT_BACKGROUND = new ResourceLocation(Constants.MOD_ID,
 			"textures/gui/7segment.png");
+	public static final ResourceLocation RESOURCE_GUI_FLOPPY = new ResourceLocation(Constants.MOD_ID,
+			"textures/items/floppy.png");
 
 	public static final ResourceLocation RESOURCE_PCB = new ResourceLocation(Constants.MOD_ID,
 			"textures/gui/sublogicpart.png");

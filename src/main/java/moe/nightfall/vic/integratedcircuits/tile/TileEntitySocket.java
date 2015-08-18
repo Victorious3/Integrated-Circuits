@@ -106,11 +106,6 @@ public class TileEntitySocket extends TileEntity implements ISocketWrapper {
 	}
 
 	@Override
-	public int strongPowerLevel(int side) {
-		return 0;
-	}
-
-	@Override
 	public ISocket getSocket() {
 		return socket;
 	}

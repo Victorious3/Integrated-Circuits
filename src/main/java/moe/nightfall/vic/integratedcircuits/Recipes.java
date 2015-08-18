@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import codechicken.microblock.ItemMicroPart;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -161,6 +162,25 @@ public class Recipes {
 				'#', Items.diamond,
 				'o', Blocks.obsidian,
 				'p', Content.itemPCBChip);
+
+		GameRegistry.addRecipe(new ItemStack(Content.itemSocket),
+				"iri",
+				"###",
+
+				'i', Content.itemSiliconDrop,
+				'r', Items.redstone,
+				'#', Blocks.stone_slab);
+
+		if (IntegratedCircuits.isFMPLoaded) {
+
+			GameRegistry.addRecipe(new ItemStack(Content.itemSocketFMP),
+					"iri",
+					"###",
+
+					'i', Content.itemSiliconDrop,
+					'r', Items.redstone,
+					'#', ItemMicroPart.create(1, "tile.stone"));
+		}
 
 		// TODO NEI integration? Rewrite using multiple recipes?
 		GameRegistry.addRecipe(new RecipeDyeable());

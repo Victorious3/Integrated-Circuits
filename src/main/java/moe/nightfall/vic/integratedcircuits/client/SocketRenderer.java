@@ -136,16 +136,16 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 		double inset;
 		switch (side) {
 			case 0:
-				inset = dimensions.min.x;
+				inset = dimensions.min.z;
 				break;
 			case 1:
-				inset = 16 - dimensions.max.z;
-				break;
-			case 2:
 				inset = 16 - dimensions.max.x;
 				break;
+			case 2:
+				inset = 16 - dimensions.max.z;
+				break;
 			default:
-				inset = dimensions.min.z;
+				inset = dimensions.min.x;
 				break;
 		}
 		return inset;
@@ -166,7 +166,7 @@ public class SocketRenderer extends PartRenderer<ISocket> {
 				BlockCoord pos = socket.getPos();
 				if (mop != null && mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == pos.x && mop.blockY == pos.y
 						&& mop.blockZ == pos.z && mop.sideHit == (socket.getSide() ^ 1)) {
-					if (!player.inventory.hasItem(Content.itemSolderingIron)) {
+					if (!player.inventory.hasItem(Content.itemSolderingIron) && !player.capabilities.isCreativeMode) {
 						if (Config.enableTooltips) {
 							ClientProxy.drawTooltip(I18n.format("tooltip.integratedcircuits.socket"));
 						}

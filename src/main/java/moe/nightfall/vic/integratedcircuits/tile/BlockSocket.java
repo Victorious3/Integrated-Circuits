@@ -5,6 +5,7 @@ import java.util.Random;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.Content;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.compat.gateio.GateIO;
 import moe.nightfall.vic.integratedcircuits.gate.Socket;
@@ -112,9 +113,22 @@ public class BlockSocket extends BlockContainer {
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX,
 			float hitY, float hitZ) {
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
+
+		ItemStack heldStack = player.getHeldItem();
+		if (heldStack != null) {
+			Item item = heldStack.getItem();
+			if (Socket.checkItemIsTool(item) && !player.isSneaking()) {
+				// return before activate is called if the item right clicked causes a rotation anyway
+				if ((IntegratedCircuits.isBPAPIThere && item instanceof com.bluepowermod.api.misc.IScrewdriver)
+				        || (IntegratedCircuits.isBCToolsAPIThere && item instanceof buildcraft.api.tools.IToolWrench)) {
+					return false;
+				}
+			}
+		}
+
 		return te.getSocket().activate(player,
 				new MovingObjectPosition(x, y, z, side, Vec3.createVectorHelper(hitX, hitY, hitZ)),
-				player.getHeldItem());
+				heldStack);
 	}
 
 	@Override
