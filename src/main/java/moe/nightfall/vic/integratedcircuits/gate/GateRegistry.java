@@ -21,7 +21,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jcraft.jorbis.Block;
+
+import net.minecraft.block.Block;
 
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Optional.Interface;
