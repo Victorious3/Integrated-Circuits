@@ -32,6 +32,11 @@ public abstract class CADHandler implements IUIHandler<GuiCAD> {
 	}
 
 	@Override
+	public boolean onMouseWheel(int amount) {
+		return false;
+	}
+
+	@Override
 	public boolean onKeyTyped(GuiCAD parent, int keycode, char ch) {
 		return false;
 	}

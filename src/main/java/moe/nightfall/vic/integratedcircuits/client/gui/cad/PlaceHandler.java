@@ -1,9 +1,13 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.cad;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
@@ -13,16 +17,16 @@ import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 public class PlaceHandler extends CADHandler {
 
 	public CircuitRenderWrapper selectedPart;
+	public int currentRotation = 0;
+	private boolean mouseDown = false;
 
 	@Override
 	public void renderCADCursor(GuiCAD parent, double mouseX, double mouseY, int gridX, int gridY, CircuitData cdata) {
 		if (!parent.drag) {
+
 			if (selectedPart.getPart() instanceof PartNull) {
 				GL11.glColor3f(0F, 0.4F, 0F);
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -30,6 +34,13 @@ public class PlaceHandler extends CADHandler {
 				CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1);
 				Tessellator.instance.draw();
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
+			} else {
+				if (mouseDown) {
+					gridX = parent.startX;
+					gridY = parent.startY;
+
+					// TODO Render grayed out
+				}
 			}
 
 			final int PART_SIZE = CircuitPartRenderer.PART_SIZE;
@@ -37,6 +48,7 @@ public class PlaceHandler extends CADHandler {
 			GL11.glScaled(1F / PART_SIZE, 1F / PART_SIZE, 1);
 			CircuitPartRenderer.renderPart(selectedPart, gridX * PART_SIZE, gridY * PART_SIZE);
 			GL11.glPopMatrix();
+			GL11.glColor3f(1, 1, 1);
 		} else if (selectedPart.getPart() instanceof PartWire) {
 			PartWire wire = (PartWire) selectedPart.getPart();
 			switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
@@ -53,6 +65,18 @@ public class PlaceHandler extends CADHandler {
 			renderDraggedWire(parent);
 			GL11.glColor3f(1, 1, 1);
 		}
+	}
+
+	@Override
+	public boolean onMouseWheel(int amount) {
+		if (mouseDown && selectedPart.getPart() instanceof PartCPGate) {
+			currentRotation++;
+			if (currentRotation > 3)
+				currentRotation = 0;
+			((PartCPGate) selectedPart.getPart()).setRotation(selectedPart.getPos(), selectedPart, currentRotation);
+			return true;
+		}
+		return false;
 	}
 
 	private void renderDraggedWire(GuiCAD parent) {
@@ -107,26 +131,18 @@ public class PlaceHandler extends CADHandler {
 
 	@Override
 	public void onMouseDown(GuiCAD parent, int mx, int my, int button) {
+
+		mouseDown = true;
+
 		int gridX = (int) parent.boardAbs2RelX(mx);
 		int gridY = (int) parent.boardAbs2RelY(my);
 		int w = parent.getBoardSize();
 
 		if (gridX > 0 && gridY > 0 && gridX < w - 1 && gridY < w - 1 && !GuiScreen.isShiftKeyDown()) {
+			parent.startX = gridX;
+			parent.startY = gridY;
 			if (selectedPart.getPart() instanceof PartWire) {
-				parent.startX = gridX;
-				parent.startY = gridY;
 				parent.drag = true;
-			} else {
-				int newID = CircuitPart.getId(selectedPart.getPart());
-				Vec2 pos = new Vec2(gridX, gridY);
-				if (newID != parent.getCircuitData().getID(pos)) {
-					CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(
-							!(selectedPart.getPart() instanceof PartNull),
-							parent.tileentity.xCoord,
-							parent.tileentity.yCoord,
-							parent.tileentity.zCoord)
-						.add(pos, newID, selectedPart.getState()));
-				}
 			}
 		}
 	}
@@ -134,10 +150,14 @@ public class PlaceHandler extends CADHandler {
 
 	@Override
 	public void onMouseUp(GuiCAD parent, int mx, int my, int button) {
+		mouseDown = false;
+
 		if (selectedPart.getPart() instanceof PartNull) {
 			// Send cache update for erasing
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.SNAPSHOT, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord));
-		} else if (parent.drag) {
+		}
+
+		if (parent.drag) {
 			if (selectedPart.getPart() instanceof PartWire) {
 				int id = CircuitPart.getId(selectedPart.getPart());
 				int state = selectedPart.getState();
@@ -156,6 +176,22 @@ public class PlaceHandler extends CADHandler {
 					packet.add(new Vec2(parent.startX, parent.startY), id, state);
 				}
 				CommonProxy.networkWrapper.sendToServer(packet);
+			}
+		} else {
+			int gridX = (int) parent.boardAbs2RelX(mx);
+			int gridY = (int) parent.boardAbs2RelY(my);
+
+			int w = parent.getCircuitData().getSize();
+
+			if (parent.startX == gridX && parent.startY == gridY) {
+				if (parent.startX > 0 && parent.startY > 0 && parent.startX < w - 1 && parent.startY < w - 1 && !GuiScreen.isShiftKeyDown()) {
+					int newID = CircuitPart.getId(selectedPart.getPart());
+
+					Vec2 pos = new Vec2(parent.startX, parent.startY);
+					if (newID != parent.getCircuitData().getID(pos)) {
+						CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(!(selectedPart.getPart() instanceof PartNull), parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord).add(pos, newID, selectedPart.getState()));
+					}
+				}
 			}
 		}
 	}
@@ -180,7 +216,8 @@ public class PlaceHandler extends CADHandler {
 	}
 
 	@Override
-	public void remove(GuiCAD parent) {
-		super.remove(parent);
+	public void apply(GuiCAD parent) {
+		super.apply(parent);
+		currentRotation = 0;
 	}
 }

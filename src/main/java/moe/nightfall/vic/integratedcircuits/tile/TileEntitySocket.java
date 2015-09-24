@@ -68,13 +68,12 @@ public class TileEntitySocket extends TileEntity implements ISocketWrapper {
 	@Override
 	public void notifyBlocksAndChanges() {
 		markDirty();
-		notifyPartChange();
-		BlockCoord pos = getPos().copy().offset(socket.getSide());
-		worldObj.notifyBlocksOfNeighborChange(pos.x, pos.y, pos.z, getBlockType());
+		worldObj.notifyBlocksOfNeighborChange(xCoord, yCoord, zCoord, getBlockType());
 	}
 
 	@Override
 	public void notifyPartChange() {
+		markDirty();
 		worldObj.notifyBlockChange(xCoord, yCoord, zCoord, getBlockType());
 	}
 

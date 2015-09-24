@@ -1,5 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.client.gui.cad;
 
+import org.lwjgl.opengl.GL11;
+
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
@@ -11,8 +13,6 @@ import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
-
-import org.lwjgl.opengl.GL11;
 
 public class EditHandler extends CADHandler {
 
@@ -66,13 +66,13 @@ public class EditHandler extends CADHandler {
 			int w = parent.getCircuitData().getSize();
 
 			if (parent.endX > 0 && parent.endY > 0 && parent.endX < w - 1 && parent.endY < w - 1) {
-				PartTunnel pt = CircuitPart.getPart(PartTunnel.class);
 
 				Vec2 first = new Vec2(parent.startX, parent.startY);
 				Vec2 second = new Vec2(parent.endX, parent.endY);
 
 				if (parent.getCircuitData().getPart(second) instanceof PartTunnel && !first.equals(second)) {
 
+					PartTunnel pt = CircuitPart.getPart(PartTunnel.class);
 					PacketPCBChangePart packet = new PacketPCBChangePart(true, parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord);
 					
 					if (pt.isConnected(pt.getConnectedPos(first, parent.tileentity))) {	

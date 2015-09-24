@@ -30,6 +30,8 @@ public abstract class GuiInterfaces {
 
 		public void onMouseDragged(T parent, int mx, int my);
 
+		public boolean onMouseWheel(int amount);
+
 		public boolean onKeyTyped(T parent, int keycode, char ch);
 
 		public void render(T parent, int mx, int my);

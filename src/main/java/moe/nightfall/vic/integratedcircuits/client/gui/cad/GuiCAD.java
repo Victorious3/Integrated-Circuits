@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
+
+import codechicken.lib.math.MathHelper;
+import cpw.mods.fml.client.config.GuiButtonExt;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.ContainerCAD;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
@@ -48,16 +56,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.resources.I18n;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
-import codechicken.lib.math.MathHelper;
-
-import com.google.common.collect.Lists;
-
-import cpw.mods.fml.client.config.GuiButtonExt;
 
 public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHandler {
 
@@ -683,13 +681,14 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	public void handleMouseInput() {
 		int wheelD = Mouse.getEventDWheel();
 		if (wheelD != 0) {
-			int mouseX = Mouse.getEventX() * this.width/this.mc.displayWidth;
-			int mouseY = this.height - 1 - Mouse.getEventY() * this.height/this.mc.displayHeight;
-			if (mouseX >= getBoardLeft() && mouseX >= editorLeft && mouseX < getBoardRight() && mouseX < editorRight
-					&& mouseY >= getBoardTop() && mouseY >= editorTop && mouseY < getBoardBottom() && mouseY < editorBottom)
-				scale(mouseX - (editorLeft + xSizeEditor/2.0), mouseY - (editorTop + ySizeEditor/2.0), wheelD);
-			else
-				scale(tileentity.offX, tileentity.offY, wheelD);
+			if (!currentHandler.onMouseWheel(wheelD)) {
+				int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+				int mouseY = this.height - 1 - Mouse.getEventY() * this.height / this.mc.displayHeight;
+				if (mouseX >= getBoardLeft() && mouseX >= editorLeft && mouseX < getBoardRight() && mouseX < editorRight && mouseY >= getBoardTop() && mouseY >= editorTop && mouseY < getBoardBottom() && mouseY < editorBottom)
+					scale(mouseX - (editorLeft + xSizeEditor / 2.0), mouseY - (editorTop + ySizeEditor / 2.0), wheelD);
+				else
+					scale(tileentity.offX, tileentity.offY, wheelD);
+			}
 		}
 		super.handleMouseInput();
 	}

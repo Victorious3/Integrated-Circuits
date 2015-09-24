@@ -240,7 +240,6 @@ public class FMPartSocket extends JCuboidPart implements JNormalOcclusion, TFace
 	@Override
 	public void notifyBlocksAndChanges() {
 		tile().markDirty();
-		notifyPartChange();
 		tile().notifyNeighborChange(socket.getSide());
 	}
 

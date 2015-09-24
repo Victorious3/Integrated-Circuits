@@ -10,6 +10,7 @@ import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
@@ -153,10 +154,15 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 			} else {
 				if (parent.getHandler() == parent.editHandler)
 					parent.setHandler(parent.placeHandler);
-				if (mode == 2)
+				if (mode == 2) {
 					parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
-				else
-					parent.placeHandler.selectedPart = current;
+				} else {
+					CircuitRenderWrapper part = parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, current.getPart());
+					// Sync selected gate with handler
+					if (part.getPart() instanceof PartCPGate)
+						((PartCPGate) part.getPart()).setRotation(part.getPos(), part, parent.placeHandler.currentRotation);
+					parent.placeHandler.selectedPart = part;
+				}
 			}
 
 			setActive(true);
