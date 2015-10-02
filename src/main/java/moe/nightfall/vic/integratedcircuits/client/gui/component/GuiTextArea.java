@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
+
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
@@ -13,11 +18,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 /** Specific implementation, grows in size. No automatic line wrapping */
 public class GuiTextArea extends Gui {
@@ -286,35 +286,30 @@ public class GuiTextArea extends Gui {
 	}
 
 	private void carriageReturn() {
-		if (GuiScreen.isShiftKeyDown()) {
-			deleteSelected();
+		deleteSelected();
 
-			StringBuilder sb = new StringBuilder();
-			String currentLine = getCurrentLine().toString();
-			if (currentLine.length() > 0) {
-				// Add spaces in front for indent
-				int i = 0;
-				int size = currentLine.length();
-				while (currentLine.charAt(i) == ' ' && i < size) {
-					sb.insert(0, ' ');
-					i++;
-				}
+		StringBuilder sb = new StringBuilder();
+		String currentLine = getCurrentLine().toString();
+		if (currentLine.length() > 0) {
+			// Add spaces in front for indent
+			int i = 0;
+			int size = currentLine.length();
+			while (i < size && currentLine.charAt(i) == ' ') {
+				sb.insert(0, ' ');
+				i++;
 			}
-
-			addToCache(cursorPosition.y + 1, sb);
-			Vec2 newCursorPosition = new Vec2(getLineLength(cursorPosition.y + 1), cursorPosition.y + 1);
-			sb.append(currentLine.substring(cursorPosition.x, currentLine.length()));
-			getCurrentLine().delete(cursorPosition.x, currentLine.length());
-
-			refreshLine(cursorPosition.y);
-			refreshLine(cursorPosition.y + 1);
-			refreshWidth();
-
-			setCursorPositionInternal(newCursorPosition);
-		} else {
-			// un-select
-			setActive(false);
 		}
+
+		addToCache(cursorPosition.y + 1, sb);
+		Vec2 newCursorPosition = new Vec2(getLineLength(cursorPosition.y + 1), cursorPosition.y + 1);
+		sb.append(currentLine.substring(cursorPosition.x, currentLine.length()));
+		getCurrentLine().delete(cursorPosition.x, currentLine.length());
+
+		refreshLine(cursorPosition.y);
+		refreshLine(cursorPosition.y + 1);
+		refreshWidth();
+
+		setCursorPositionInternal(newCursorPosition);
 	}
 
 	private static final Pattern patternBlankSpace = Pattern.compile("^\\s*$");
