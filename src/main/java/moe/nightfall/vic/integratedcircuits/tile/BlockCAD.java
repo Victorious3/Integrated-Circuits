@@ -1,9 +1,11 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
-import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
+import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -16,12 +18,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class BlockPCBLayout extends BlockContainer {
-	public BlockPCBLayout() {
+public class BlockCAD extends BlockContainer {
+	public BlockCAD() {
 		super(Material.iron);
 		setBlockName(Constants.MOD_ID + ".pcblayoutcad");
 		setCreativeTab(IntegratedCircuits.creativeTab);
@@ -103,6 +103,6 @@ public class BlockPCBLayout extends BlockContainer {
 
 	@Override
 	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
-		return ((TileEntityCAD) world.getTileEntity(x, y, z)).rotate();
+		return ((TileEntityContainer) world.getTileEntity(x, y, z)).rotate();
 	}
 }

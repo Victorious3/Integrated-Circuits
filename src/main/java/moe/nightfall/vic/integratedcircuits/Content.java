@@ -1,20 +1,23 @@
 package moe.nightfall.vic.integratedcircuits;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import moe.nightfall.vic.integratedcircuits.item.Item7Segment;
 import moe.nightfall.vic.integratedcircuits.item.ItemBase;
 import moe.nightfall.vic.integratedcircuits.item.ItemCircuit;
 import moe.nightfall.vic.integratedcircuits.item.ItemFloppyDisk;
 import moe.nightfall.vic.integratedcircuits.item.ItemPCB;
+import moe.nightfall.vic.integratedcircuits.item.ItemPCBPrint;
 import moe.nightfall.vic.integratedcircuits.item.ItemScrewdriver;
 import moe.nightfall.vic.integratedcircuits.item.ItemSocket;
 import moe.nightfall.vic.integratedcircuits.item.ItemSocketFMP;
 import moe.nightfall.vic.integratedcircuits.tile.BlockAssembler;
-import moe.nightfall.vic.integratedcircuits.tile.BlockPCBLayout;
+import moe.nightfall.vic.integratedcircuits.tile.BlockCAD;
+import moe.nightfall.vic.integratedcircuits.tile.BlockPrinter;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityPrinter;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public final class Content {
 
@@ -24,6 +27,7 @@ public final class Content {
 	public static Item item7Segment;
 	public static Item itemFloppyDisk;
 	public static Item itemPCB;
+	public static Item itemPCBViewer;
 
 	public static Item itemLaser;
 	public static Item itemSolderingIron;
@@ -36,6 +40,7 @@ public final class Content {
 	public static Block blockSocket;
 	public static Block blockPCBLayout;
 	public static Block blockAssembler;
+	public static Block blockPrinter;
 
 	private Content() {
 	};
@@ -51,6 +56,7 @@ public final class Content {
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
 		itemPCBChip = new ItemBase("pcb_chip");
+		itemPCBViewer = new ItemPCBPrint();
 		itemLaser = new ItemBase("laser").setHasIcon(false);
 
 		itemSolderingIron = new ItemBase("soldering_iron").setMaxDamage(25).setMaxStackSize(1).setNoRepair();
@@ -63,13 +69,15 @@ public final class Content {
 			Content.itemCoalCompound = new ItemBase("coalcompound");
 		}
 
-		blockPCBLayout = new BlockPCBLayout();
+		blockPCBLayout = new BlockCAD();
 		blockAssembler = new BlockAssembler();
+		blockPrinter = new BlockPrinter();
 
 		GameRegistry.registerBlock(Content.blockPCBLayout, Constants.MOD_ID + ".pcblayout");
 		GameRegistry.registerBlock(Content.blockAssembler, Constants.MOD_ID + ".assembler");
 
 		GameRegistry.registerTileEntity(TileEntityCAD.class, Constants.MOD_ID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");
+		GameRegistry.registerTileEntity(TileEntityPrinter.class, Constants.MOD_ID + ".pcbprinter");
 	}
 }

@@ -1,19 +1,23 @@
 package moe.nightfall.vic.integratedcircuits.item;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class ItemBase extends Item {
 	private boolean hasIcon = true;
 
 	public ItemBase(String name) {
-		setCreativeTab(IntegratedCircuits.creativeTab);
-		setUnlocalizedName(Constants.MOD_ID + "." + name);
-		setTextureName(Constants.MOD_ID + ":" + name);
-		GameRegistry.registerItem(this, Constants.MOD_ID + "_" + name, Constants.MOD_ID);
+		register(this, name);
+	}
+
+	static void register(Item item, String name) {
+		item.setCreativeTab(IntegratedCircuits.creativeTab);
+		item.setUnlocalizedName(Constants.MOD_ID + "." + name);
+		item.setTextureName(Constants.MOD_ID + ":" + name);
+		GameRegistry.registerItem(item, Constants.MOD_ID + "_" + name, Constants.MOD_ID);
 	}
 
 	public ItemBase setHasIcon(boolean hasIcon) {

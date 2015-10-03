@@ -1,5 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
+import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitCache;
@@ -15,9 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDiskDrive {
 	private ItemStack floppyStack;
@@ -168,30 +168,10 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	}
 
 	@Override
-	public ItemStack decrStackSize(int id, int amount) {
-		return null;
-	}
-
-	@Override
-	public ItemStack getStackInSlotOnClosing(int id) {
-		return getStackInSlot(id);
-	}
-
-	@Override
 	public void setInventorySlotContents(int id, ItemStack stack) {
 		if (id == 0)
 			floppyStack = stack;
 		markDirty();
-	}
-
-	@Override
-	public String getInventoryName() {
-		return null;
-	}
-
-	@Override
-	public boolean hasCustomInventoryName() {
-		return false;
 	}
 
 	@Override
@@ -231,11 +211,5 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	@Override
 	public void setCircuitData(CircuitData data) {
 		this.circuitData = data;
-	}
-
-	public boolean rotate() {
-		this.rotation = rotation + 1 & 3;
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		return true;
 	}
 }

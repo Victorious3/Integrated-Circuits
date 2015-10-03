@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.tile;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -66,5 +67,43 @@ public abstract class TileEntityContainer extends TileEntity implements IInvento
 
 	public void onSlotChange(int id) {
 
+	}
+
+	// IInventory defaults
+
+	@Override
+	public ItemStack getStackInSlotOnClosing(int id) {
+		return getStackInSlot(id);
+	}
+
+	@Override
+	public ItemStack decrStackSize(int id, int size) {
+		return null;
+	}
+
+	@Override
+	public int getInventoryStackLimit() {
+		return 64;
+	}
+
+	@Override
+	public boolean isItemValidForSlot(int id, ItemStack stack) {
+		return true;
+	}
+
+	@Override
+	public String getInventoryName() {
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		return false;
+	}
+
+	public boolean rotate() {
+		this.rotation = rotation + 1 & 3;
+		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		return true;
 	}
 }

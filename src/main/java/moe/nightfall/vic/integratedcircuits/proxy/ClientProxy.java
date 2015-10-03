@@ -6,6 +6,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.relauncher.ReflectionHelper;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
@@ -17,6 +33,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.Gate7SegmentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.GateCircuitRenderer;
 import moe.nightfall.vic.integratedcircuits.client.ItemLaserRenderer;
+import moe.nightfall.vic.integratedcircuits.client.ItemPCBPrintRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.SemiTransparentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.ShaderHelper;
@@ -71,23 +88,6 @@ import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.event.world.WorldEvent;
 
-import org.lwjgl.opengl.ARBShaderObjects;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.relauncher.ReflectionHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
 	public static SemiTransparentRenderer stRenderer;
@@ -96,6 +96,7 @@ public class ClientProxy extends CommonProxy {
 	public static int clientTicks;
 	public static GateCircuitRenderer circuitRenderer;
 	public static Gate7SegmentRenderer segmentRenderer;
+	public static ItemPCBPrintRenderer pcbPrintRenderer;
 
 	public static IPartRenderer<ISocket> socketRenderer;
 	public static IPartRenderer<ISocket> socketRendererFMP;
@@ -121,6 +122,7 @@ public class ClientProxy extends CommonProxy {
 
 		circuitRenderer = new GateCircuitRenderer();
 		segmentRenderer = new Gate7SegmentRenderer();
+		pcbPrintRenderer = new ItemPCBPrintRenderer();
 
 		IntegratedCircuitsAPI.getGateRegistry().registerGateRenderer(GateCircuit.class, circuitRenderer);
 		IntegratedCircuitsAPI.getGateRegistry().registerGateRenderer(Gate7Segment.class, segmentRenderer);
@@ -130,6 +132,7 @@ public class ClientProxy extends CommonProxy {
 
 		MinecraftForgeClient.registerItemRenderer(Content.itemCircuit, circuitRenderer);
 		MinecraftForgeClient.registerItemRenderer(Content.item7Segment, segmentRenderer);
+		MinecraftForgeClient.registerItemRenderer(Content.itemPCBViewer, pcbPrintRenderer);
 
 		MinecraftForgeClient.registerItemRenderer(Content.itemSocket, socketRenderer);
 		if (IntegratedCircuits.isFMPLoaded)
