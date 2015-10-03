@@ -40,6 +40,7 @@ import moe.nightfall.vic.integratedcircuits.client.ShaderHelper;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityGateRenderer;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityPCBLayoutRenderer;
+import moe.nightfall.vic.integratedcircuits.client.TileEntityPrinterRenderer;
 import moe.nightfall.vic.integratedcircuits.client.gui.Gui7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
@@ -47,6 +48,7 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
+import moe.nightfall.vic.integratedcircuits.tile.TileEntityPrinter;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -112,13 +114,18 @@ public class ClientProxy extends CommonProxy {
 		ShaderHelper.loadShaders();
 
 		Constants.GATE_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
+		Constants.PRINTER_RENDER_ID = RenderingRegistry.getNextAvailableRenderId();
 
 		TileEntityGateRenderer gateRenderer = new TileEntityGateRenderer();
+		TileEntityPrinterRenderer printerRenderer = new TileEntityPrinterRenderer();
+
 		RenderingRegistry.registerBlockHandler(Constants.GATE_RENDER_ID, gateRenderer);
+		RenderingRegistry.registerBlockHandler(Constants.PRINTER_RENDER_ID, printerRenderer);
 
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCAD.class, new TileEntityPCBLayoutRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAssembler.class, new TileEntityAssemblerRenderer());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySocket.class, gateRenderer);
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityPrinter.class, printerRenderer);
 
 		circuitRenderer = new GateCircuitRenderer();
 		segmentRenderer = new Gate7SegmentRenderer();

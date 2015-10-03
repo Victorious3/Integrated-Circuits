@@ -75,6 +75,7 @@ public final class Content {
 
 		GameRegistry.registerBlock(Content.blockPCBLayout, Constants.MOD_ID + ".pcblayout");
 		GameRegistry.registerBlock(Content.blockAssembler, Constants.MOD_ID + ".assembler");
+		GameRegistry.registerBlock(Content.blockPrinter, Constants.MOD_ID + ".pcbprinter");
 
 		GameRegistry.registerTileEntity(TileEntityCAD.class, Constants.MOD_ID + ".pcblayoutcad");
 		GameRegistry.registerTileEntity(TileEntityAssembler.class, Constants.MOD_ID + ".assembler");

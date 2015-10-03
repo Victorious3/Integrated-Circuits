@@ -26,4 +26,14 @@ public class BlockPrinter extends Block {
 	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
 		return ((TileEntityContainer) world.getTileEntity(x, y, z)).rotate();
 	}
+
+	@Override
+	public int getRenderType() {
+		return Constants.PRINTER_RENDER_ID;
+	}
+
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
 }
