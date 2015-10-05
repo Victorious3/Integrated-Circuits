@@ -35,8 +35,8 @@ public class ItemScrewdriver extends ItemBase implements mrtjp.projectred.api.IS
 	}
 
 	@Override
-	public void damageScrewdriver(World world, EntityPlayer player) {
-		player.getHeldItem().damageItem(1, player);
+	public void damageScrewdriver(EntityPlayer player, ItemStack stack) {
+		stack.damageItem(1, player);
 	}
 
 	@Override
@@ -51,6 +51,11 @@ public class ItemScrewdriver extends ItemBase implements mrtjp.projectred.api.IS
 				return true;
 
 		if (!simulated) stack.damageItem(1, player);
+		return true;
+	}
+
+	@Override
+	public boolean canUse(EntityPlayer player, ItemStack stack) {
 		return true;
 	}
 }
