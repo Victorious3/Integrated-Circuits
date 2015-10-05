@@ -35,7 +35,7 @@ repositories {
     }
     maven {
         name "projectred"
-        url "http://projectredwiki.com/maven/"
+        url "http://files.projectredwiki.com/maven/"
     }
     
     ivy {
