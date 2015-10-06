@@ -33,6 +33,8 @@ public class Resources {
 	public static IIcon ICON_ASSEMBLER_SIDE;
 	public static IIcon ICON_ASSEMBLER_BOTTOM;
 	public static IIcon ICON_ASSEMBLER_TOP;
+	
+	public static IIcon ICON_PRINTER_TOP;
 
 	public static IIcon ICON_CAD_FRONT_OFF;
 	public static IIcon ICON_CAD_FRONT_ON;
@@ -103,6 +105,8 @@ public class Resources {
 				ICON_ASSEMBLER_BOTTOM = map.registerIcon(Constants.MOD_ID + ":assembler_bottom");
 				ICON_ASSEMBLER_TOP = map.registerIcon(Constants.MOD_ID + ":assembler_top");
 				ICON_ASSEMBLER_SIDE = map.registerIcon(Constants.MOD_ID + ":assembler_side");
+				
+				ICON_PRINTER_TOP = map.registerIcon(Constants.MOD_ID + ":printer_top");
 
 				ICON_CAD_FRONT_OFF = map.registerIcon(Constants.MOD_ID + ":cad_front_off");
 				ICON_CAD_FRONT_ON = map.registerIcon(Constants.MOD_ID + ":cad_front_on");
