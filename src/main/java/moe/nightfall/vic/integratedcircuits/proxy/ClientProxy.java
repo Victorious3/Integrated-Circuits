@@ -615,6 +615,7 @@ public class ClientProxy extends CommonProxy {
 
 	@SubscribeEvent
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event) {
+		
 		EntityPlayer player = event.entityPlayer;
 		Minecraft mc = Minecraft.getMinecraft();
 
@@ -650,6 +651,8 @@ public class ClientProxy extends CommonProxy {
 
 		if (hideThing)
 			return;
+		
+		GL11.glColor3f(1, 1, 1);
 
 		if (cosplay == Cosplay.NANO) // We do this here because there is code
 										// before the switch block that breaks
@@ -813,6 +816,8 @@ public class ClientProxy extends CommonProxy {
 				break;
 		}
 		GL11.glPopMatrix();
+		
+		GL11.glColor3f(1, 1, 1);
 	}
 
 	private void renderCurl() {
