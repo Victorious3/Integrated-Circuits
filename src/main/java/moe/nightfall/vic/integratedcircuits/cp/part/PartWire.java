@@ -3,6 +3,9 @@ package moe.nightfall.vic.integratedcircuits.cp.part;
 import java.util.Arrays;
 import java.util.Collection;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
@@ -10,12 +13,11 @@ import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class PartWire extends CircuitPart {
 	public final IntProperty PROP_COLOR = new IntProperty("COLOR", stitcher, 2);
@@ -41,25 +43,25 @@ public class PartWire extends CircuitPart {
 			switch (color) {
 				case 1:
 					if (this.getInput(pos, parent))
-						tes.setColorRGBA_F(1F, 0F, 0F, 1F);
+						RenderUtils.applyColorIRGBA(tes, Config.colorRed);
 					else
-						tes.setColorRGBA_F(0.4F, 0F, 0F, 1F);
+						RenderUtils.applyColorIRGBA(tes, Config.colorRed, 0.4F);
 					break;
 				case 2:
 					if (this.getInput(pos, parent))
-						tes.setColorRGBA_F(1F, 0.4F, 0F, 1F);
+						RenderUtils.applyColorIRGBA(tes, Config.colorOrange);
 					else
-						tes.setColorRGBA_F(0.4F, 0.2F, 0F, 1F);
+						RenderUtils.applyColorIRGBA(tes, Config.colorOrange, 0.4F);
 					break;
 				default:
 					if (this.getInput(pos, parent))
-						tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+						RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 					else
-						tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+						RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 					break;
 			}
 		} else
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 
 		int ty = type == CircuitPartRenderer.EnumRenderType.WORLD_16x ? 3 * 16 : 0;
 

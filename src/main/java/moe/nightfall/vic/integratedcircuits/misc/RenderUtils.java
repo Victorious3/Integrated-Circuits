@@ -3,13 +3,6 @@ package moe.nightfall.vic.integratedcircuits.misc;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import moe.nightfall.vic.integratedcircuits.client.Resources;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.Tessellator;
-
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.GL11;
@@ -19,6 +12,12 @@ import codechicken.lib.render.CCRenderState;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import moe.nightfall.vic.integratedcircuits.client.Resources;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 
 @SideOnly(Side.CLIENT)
 public class RenderUtils {
@@ -33,7 +32,8 @@ public class RenderUtils {
 
 	private static final Field f_posX = ReflectionHelper.findField(FontRenderer.class, "posX", "field_78295_j");
 	private static final Field f_posY = ReflectionHelper.findField(FontRenderer.class, "posY", "field_78296_k");
-	private static final Method m_renderStringAtPos = ReflectionHelper.findMethod(FontRenderer.class, null, new String[] { "renderStringAtPos", "func_78255_a" }, String.class, boolean.class);
+	private static final Method m_renderStringAtPos = ReflectionHelper.findMethod(FontRenderer.class, null,
+			new String[] { "renderStringAtPos", "func_78255_a" }, String.class, boolean.class);
 
 	public static void resetColors(FontRenderer fontRenderer, int color) {
 		// No reflection call needed, drawing empty String
@@ -191,12 +191,28 @@ public class RenderUtils {
 		GL11.glTranslatef(-xOffset, -yOffset, 0);
 	}
 
-	public static void applyColorIRGBA(int rbga) {
-		float red = (float) (rbga >> 16 & 255) / 255.0F;
-		float blue = (float) (rbga >> 8 & 255) / 255.0F;
-		float green = (float) (rbga & 255) / 255.0F;
-		float alpha = (float) (rbga >> 24 & 255) / 255.0F;
-		GL11.glColor4f(red, blue, green, alpha);
+	private static int[] componentsIRGBA(int arbg) {
+		int red = arbg >> 16 & 255;
+		int blue = arbg >> 8 & 255;
+		int green = arbg & 255;
+		int alpha = arbg >> 24 & 255;
+		return new int[] { red, blue, green, alpha };
+	}
+
+	public static void applyColorIRGBA(Tessellator tes, int arbg, float brightness) {
+		int[] rgba = componentsIRGBA(arbg);
+		tes.setColorRGBA((int) (rgba[0] * brightness), (int) (rgba[1] * brightness), (int) (rgba[2] * brightness), rgba[3]);
+	}
+
+	public static void applyColorIRGBA(Tessellator tes, int arbg) {
+		int[] rgba = componentsIRGBA(arbg);
+		tes.setColorRGBA(rgba[0], rgba[1], rgba[2], rgba[3]);
+
+	}
+
+	public static void applyColorIRGBA(int arbg) {
+		int[] rgba = componentsIRGBA(arbg);
+		GL11.glColor4f(rgba[0] / 255.0F, rgba[1] / 255.0F, rgba[2] / 255.0F, rgba[3] / 255.0F);
 	}
 
 	public static void applyColorIRGB(int rbg) {
@@ -230,12 +246,12 @@ public class RenderUtils {
 		if (OpenGlHelper.framebufferSupported) {
 			int fboType = ReflectionHelper.getPrivateValue(OpenGlHelper.class, null, "field_153212_w");
 			switch (fboType) {
-				case 0:
-					return GL30.glGetFramebufferAttachmentParameteri(target, attachment, pname);
-				case 1:
-					return ARBFramebufferObject.glGetFramebufferAttachmentParameteri(target, attachment, pname);
-				case 2:
-					return EXTFramebufferObject.glGetFramebufferAttachmentParameteriEXT(target, attachment, pname);
+			case 0:
+				return GL30.glGetFramebufferAttachmentParameteri(target, attachment, pname);
+			case 1:
+				return ARBFramebufferObject.glGetFramebufferAttachmentParameteri(target, attachment, pname);
+			case 2:
+				return EXTFramebufferObject.glGetFramebufferAttachmentParameteriEXT(target, attachment, pname);
 			}
 		}
 		return 0;

@@ -154,6 +154,9 @@ config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=The maximum numb
 config.integratedcircuits.general.enableLegacyLoader=Enable legacy loader
 config.integratedcircuits.general.enableLegacyLoader.tooltip=This setting will try and convert old versions of the circuit blueprints to the current version. This should be left ON unless you know what you are doing.
 config.integratedcircuits.parts.redirect=part.integratedcircuits.%s.name
+config.integratedcircuits.appearance.color1=Wire color 1 (Green)
+config.integratedcircuits.appearance.color2=Wire color 2 (Orange)
+config.integratedcircuits.appearance.color3=Wire color 3 (Red)
 
 # misc
 itemGroup.integratedcircuits.ctab=Integrated Circuits

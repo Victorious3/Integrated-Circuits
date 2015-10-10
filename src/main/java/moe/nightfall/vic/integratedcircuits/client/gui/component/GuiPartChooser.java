@@ -157,7 +157,8 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 				if (mode == 2) {
 					parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, CircuitPart.getPart(0));
 				} else {
-					CircuitRenderWrapper part = parent.placeHandler.selectedPart = new CircuitRenderWrapper(0, current.getPart());
+					CircuitRenderWrapper part = parent.placeHandler.selectedPart = new CircuitRenderWrapper(
+							current.getState(), current.getPart());
 					// Sync selected gate with handler
 					if (part.getPart() instanceof PartCPGate)
 						((PartCPGate) part.getPart()).setRotation(part.getPos(), part, parent.placeHandler.currentRotation);

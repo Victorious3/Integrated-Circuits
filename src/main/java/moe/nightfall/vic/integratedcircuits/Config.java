@@ -3,13 +3,13 @@ package moe.nightfall.vic.integratedcircuits;
 import java.io.File;
 import java.util.Set;
 
+import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class Config {
 	private Config() {
@@ -26,6 +26,11 @@ public class Config {
 	public static int sevenSegmentMaxDigits;
 
 	public static boolean enableLegacyLoader;
+	
+	// Those CAN change value, so these aren't always green/orange/red
+	public static int colorGreen;
+	public static int colorOrange;
+	public static int colorRed;
 
 	// TODO Generalize!
 	public static void preInitialize(File file) {
@@ -47,6 +52,17 @@ public class Config {
 		enableTracker = config.getBoolean("enableTracker", "GENERAL", true, "");
 		sevenSegmentMaxDigits = config.getInt("sevenSegmentMaxDigits", "GENERAL", 16, 1, 16, "");
 		enableLegacyLoader = config.getBoolean("enableLegacyLoader", "GENERAL", true, "");
+		
+		try {
+			colorGreen = Integer.parseInt(config.getString("color1", "APPEARANCE", "00FF00", ""), 16) | 0xFF << 24;
+			colorOrange = Integer.parseInt(config.getString("color2", "APPEARANCE", "FF6600", ""), 16) | 0xFF << 24;
+			colorRed = Integer.parseInt(config.getString("color3", "APPEARANCE", "FF0000", ""), 16) | 0xFF << 24;
+		} catch (NumberFormatException e) {
+			// Reset all the colors
+			colorGreen = 0xFF00FF00;
+			colorOrange = 0xFFFF6600;
+			colorRed = 0xFFFF0000;
+		}
 
 		config.setCategoryRequiresMcRestart("PARTS", true);
 	}

@@ -1,20 +1,21 @@
 package moe.nightfall.vic.integratedcircuits.cp;
 
+import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
-
-import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class CircuitPartRenderer {
@@ -172,9 +173,9 @@ public class CircuitPartRenderer {
 			if (type == EnumRenderType.GUI && (
 					gate.getOutputToSide(pos, parent, ForgeDirection.NORTH)
 					|| gate.getInputFromSide(pos, parent, ForgeDirection.NORTH)))
-				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
-				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			addQuad(x, y, 2 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
@@ -182,9 +183,9 @@ public class CircuitPartRenderer {
 			if (type == EnumRenderType.GUI && (
 					gate.getOutputToSide(pos, parent, ForgeDirection.SOUTH)
 					|| gate.getInputFromSide(pos, parent, ForgeDirection.SOUTH)))
-				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
-				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			addQuad(x, y, 4 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
@@ -192,9 +193,9 @@ public class CircuitPartRenderer {
 			if (type == EnumRenderType.GUI && (
 					gate.getOutputToSide(pos, parent, ForgeDirection.WEST)
 					|| gate.getInputFromSide(pos, parent, ForgeDirection.WEST)))
-				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
-				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			addQuad(x, y, 1 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
@@ -202,13 +203,13 @@ public class CircuitPartRenderer {
 			if (type == EnumRenderType.GUI && (
 					gate.getOutputToSide(pos, parent, ForgeDirection.EAST)
 					|| gate.getInputFromSide(pos, parent, ForgeDirection.EAST)))
-				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
-				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			addQuad(x, y, 3 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
-		tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -224,9 +225,9 @@ public class CircuitPartRenderer {
 				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.NORTH, rotation))
 				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation))
 				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation))))
-			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 		else
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 		addQuad(x, y, 0, 2 * 16, PART_SIZE, PART_SIZE, rotation);
 
 		if (type == EnumRenderType.GUI
@@ -234,9 +235,9 @@ public class CircuitPartRenderer {
 				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, rotation))
 				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation))
 				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation))))
-			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 		else
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 	}
 
 	public static class CircuitRenderWrapper implements ICircuit {

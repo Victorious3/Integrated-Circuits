@@ -2,9 +2,11 @@ package moe.nightfall.vic.integratedcircuits.cp.part;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -23,7 +25,7 @@ public class PartTorch extends CircuitPart {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
-		Tessellator.instance.setColorRGBA_F(0F, 1F, 0F, 1F);
+		RenderUtils.applyColorIRGBA(Tessellator.instance, Config.colorGreen);
 
 		int con = CircuitPartRenderer.checkConnections(pos, parent, this);
 		if ((con & 8) > 0)

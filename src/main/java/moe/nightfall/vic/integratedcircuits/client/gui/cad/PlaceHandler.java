@@ -3,6 +3,7 @@ package moe.nightfall.vic.integratedcircuits.client.gui.cad;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
@@ -10,6 +11,7 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRender
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBCache;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
@@ -28,7 +30,7 @@ public class PlaceHandler extends CADHandler {
 		if (!parent.drag) {
 
 			if (selectedPart.getPart() instanceof PartNull) {
-				GL11.glColor3f(0F, 0.4F, 0F);
+				RenderUtils.applyColorIRGB(Config.colorGreen, 0.4F);
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				Tessellator.instance.startDrawingQuads();
 				CircuitPartRenderer.addQuad(gridX, gridY, 0, 0, 1, 1);
@@ -53,13 +55,13 @@ public class PlaceHandler extends CADHandler {
 			PartWire wire = (PartWire) selectedPart.getPart();
 			switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
 				case 1:
-					GL11.glColor3f(0.4F, 0F, 0F);
+				RenderUtils.applyColorIRGBA(Config.colorRed);
 					break;
 				case 2:
-					GL11.glColor3f(0.4F, 0.2F, 0F);
+				RenderUtils.applyColorIRGBA(Config.colorOrange);
 					break;
 				default:
-					GL11.glColor3f(0F, 0.4F, 0F);
+				RenderUtils.applyColorIRGBA(Config.colorGreen);
 					break;
 			}
 			renderDraggedWire(parent);

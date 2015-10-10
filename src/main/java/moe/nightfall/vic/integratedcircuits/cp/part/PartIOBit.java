@@ -2,12 +2,14 @@ package moe.nightfall.vic.integratedcircuits.cp.part;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -29,9 +31,9 @@ public class PartIOBit extends CircuitPart {
 			tes.setColorRGBA_F(1F, 1F, 1F, 1F);
 			CircuitPartRenderer.addQuad(x, y, 2 * 16, 2 * 16, 16, 16, rot);
 			if (this.isPowered(pos, parent) && type == CircuitPartRenderer.EnumRenderType.GUI)
-				tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
-				tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			CircuitPartRenderer.addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
 			if (type == CircuitPartRenderer.EnumRenderType.GUI) {
 				tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);

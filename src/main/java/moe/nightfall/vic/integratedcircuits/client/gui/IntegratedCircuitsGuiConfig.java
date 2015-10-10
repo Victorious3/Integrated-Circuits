@@ -1,5 +1,9 @@
 package moe.nightfall.vic.integratedcircuits.client.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import cpw.mods.fml.client.config.GuiConfig;
 import cpw.mods.fml.client.config.IConfigElement;
 import moe.nightfall.vic.integratedcircuits.Config;
@@ -8,10 +12,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class IntegratedCircuitsGuiConfig extends GuiConfig
 {
@@ -33,10 +33,12 @@ public class IntegratedCircuitsGuiConfig extends GuiConfig
 
         IConfigElement generalCategoryElement = new ConfigElement(Config.config.getCategory(Configuration.CATEGORY_GENERAL));
         IConfigElement partsCategoryElement = new ConfigElement(Config.config.getCategory("parts"));
+		IConfigElement appearanceCategoryElement = new ConfigElement(Config.config.getCategory("appearance"));
 
         configElements.addAll(generalCategoryElement.getChildElements());
 
         configElements.add(partsCategoryElement);
+		configElements.add(appearanceCategoryElement);
 
         return configElements;
     }

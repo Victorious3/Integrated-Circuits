@@ -1,16 +1,18 @@
 package moe.nightfall.vic.integratedcircuits.cp.part;
 
+import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
-import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.EnumRenderType;
+import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Items;
@@ -128,12 +130,12 @@ public class PartTunnel extends CircuitPart {
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, EnumRenderType type) {
 		Tessellator tes = Tessellator.instance;
 
-		tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+		RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 		CircuitPartRenderer.addQuad(x, y, 16, 4 * 16, 16, 16);
 		if (getInput(pos, parent) || getProperty(pos, parent, PROP_IN)) {
-			tes.setColorRGBA_F(0F, 1F, 0F, 1F);
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 		} else {
-			tes.setColorRGBA_F(0F, 0.4F, 0F, 1F);
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 		}
 		CircuitPartRenderer.addQuad(x, y, 0, 4 * 16, 16, 16);
 	}
