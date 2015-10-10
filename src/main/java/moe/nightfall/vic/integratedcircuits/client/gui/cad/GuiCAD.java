@@ -669,7 +669,6 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	}
 
 	private void renderCadCursor(double mouseX, double mouseY, CircuitData cdata, int size) {
-		Tessellator tes = Tessellator.instance;
 		int gridX = (int) mouseX;
 		int gridY = (int) mouseY;
 		if (gridX > 0 && gridY > 0 && gridX < size - 1 && gridY < size - 1 && !isShiftKeyDown() && !blockMouseInput) {
