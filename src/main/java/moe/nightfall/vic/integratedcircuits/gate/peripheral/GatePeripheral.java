@@ -17,7 +17,11 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 
 @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 public abstract class GatePeripheral implements IPeripheral {
-
+	
+	// Everything from IPeripheral has to be implemented, to make sure things don't get stripped by forge.
+	@Override
+	public abstract String getType();
+	
 	private final Map<String, Method> methods = Maps.newLinkedHashMap();
 	private final String[] methodNames;
 
@@ -29,7 +33,7 @@ public abstract class GatePeripheral implements IPeripheral {
 		}
 		methodNames = methods.keySet().toArray(new String[methods.size()]);
 	}
-
+	
 	@Override
 	public final String[] getMethodNames() {
 		return methodNames;
