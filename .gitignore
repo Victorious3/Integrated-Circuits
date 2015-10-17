@@ -1,10 +1,10 @@
-*
-!.gitignore
+/*
+!/src/
+!/gradle/
 !build.gradle
 !gradle.properties
+!LICENSE.txt
+!version.dat
 !README.md
-!/src/
-!/libs/
-
-!gradle/
-!gradlew*
+!gradlew
+!gradlew.bat
