@@ -4,6 +4,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGatePeripheralProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketWrapper;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import codechicken.lib.vec.BlockCoord;
 import cpw.mods.fml.common.Optional.Interface;
@@ -55,10 +56,13 @@ public class GPComputerCraft extends GateIOProvider implements IBundledRedstoneP
 	@Override
 	@Method(modid = "ComputerCraft")
 	public IPeripheral getPeripheral(World world, int x, int y, int z, int side) {
-		ISocket socket = ((ISocketWrapper) world.getTileEntity(x, y, z)).getSocket();
-		if (socket.getGate() instanceof IGatePeripheralProvider) {
-			IGatePeripheralProvider provider = (IGatePeripheralProvider) socket.getGate();
-			return provider.hasPeripheral(side) ? provider.getPeripheral() : null;
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity instanceof ISocketWrapper) {
+			ISocket socket = ((ISocketWrapper) tileEntity).getSocket();
+			if (socket.getGate() instanceof IGatePeripheralProvider) {
+				IGatePeripheralProvider provider = (IGatePeripheralProvider) socket.getGate();
+				return provider.hasPeripheral(side) ? provider.getPeripheral() : null;
+			}
 		}
 		return null;
 	}
