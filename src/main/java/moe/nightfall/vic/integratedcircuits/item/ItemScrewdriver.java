@@ -11,9 +11,12 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 @InterfaceList({
 	@Interface(iface = "mrtjp.projectred.api.IScrewdriver", modid = "ProjRed|Core"),
-	@Interface(iface = "com.bluepowermod.api.misc.IScrewdriver", modid = "bluepowerAPI")
+	@Interface(iface = "com.bluepowermod.api.misc.IScrewdriver", modid = "bluepowerAPI"),
+	@Interface(iface = "buildcraft.api.tools.IToolWrench", modid = "BuildCraftAPI|tools")
 })
-public class ItemScrewdriver extends ItemBase implements mrtjp.projectred.api.IScrewdriver, com.bluepowermod.api.misc.IScrewdriver {
+public class ItemScrewdriver extends ItemBase implements mrtjp.projectred.api.IScrewdriver, 
+                                                         com.bluepowermod.api.misc.IScrewdriver,
+                                                         buildcraft.api.tools.IToolWrench {
 	public ItemScrewdriver() {
 		super("screwdriver");
 		setMaxStackSize(1);
@@ -57,5 +60,15 @@ public class ItemScrewdriver extends ItemBase implements mrtjp.projectred.api.IS
 	@Override
 	public boolean canUse(EntityPlayer player, ItemStack stack) {
 		return true;
+	}
+	
+	@Override
+	public boolean canWrench(EntityPlayer player, int x, int y, int z) {
+		return false;
+	}
+	
+	@Override
+	public void wrenchUsed(EntityPlayer player, int x, int y, int z) {
+		player.swingItem();
 	}
 }
