@@ -17,17 +17,17 @@ import codechicken.lib.vec.BlockCoord;
  * @author Vic Nightfall
  */
 public interface ISocket extends ISocketBase {
-	public void update();
+	void update();
 
-	public void readFromNBT(NBTTagCompound compound);
+	void readFromNBT(NBTTagCompound compound);
 
-	public void writeToNBT(NBTTagCompound compound);
+	void writeToNBT(NBTTagCompound compound);
 
-	public void writeDesc(NBTTagCompound compound);
+	void writeDesc(NBTTagCompound compound);
 
-	public void readDesc(NBTTagCompound compound);
+	void readDesc(NBTTagCompound compound);
 
-	public void read(MCDataInput packet);
+	void read(MCDataInput packet);
 
 	/**
 	 * Only has to be called when the orientation needs to be set automatically,
@@ -38,27 +38,38 @@ public interface ISocket extends ISocketBase {
 	 * @param player
 	 * @param pos
 	 * @param side
-	 * @param meta
+	 * @param stack
 	 */
-	public void preparePlacement(EntityPlayer player, BlockCoord pos, int side, ItemStack stack);
+	void preparePlacement(EntityPlayer player, BlockCoord pos, int side, ItemStack stack);
 
-	public boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack);
+	boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack);
 
-	public void onNeighborChanged();
+	void onNeighborChanged();
 
-	public void addDrops(List<ItemStack> list);
+	void addDrops(List<ItemStack> list);
+	
+	/**
+	 * Called when a gate (circuit) is placed onto the socket.
+	 * This is to allow a socket, if it wants, to allow a player to place something on it, without using it up.
+	 * A creative mode check should happen in other code, presumably the code calling this method.
+	 * 
+	 * This is also used to determine if the gate should be dropped when removed.
+	 * 
+	 * @return If the gate is to be used up (removed from inventory)
+	 */
+	boolean usesUpPlacedGate();
 
-	public ItemStack pickItem(MovingObjectPosition target);
+	ItemStack pickItem(MovingObjectPosition target);
 
-	public void scheduledTick();
+	void scheduledTick();
 
-	public void onAdded();
+	void onAdded();
 
-	public void onMoved();
+	void onMoved();
 
-	public void onRemoved();
+	void onRemoved();
 
-	public static enum EnumConnectionType {
+	enum EnumConnectionType {
 		SIMPLE, ANALOG, BUNDLED, NONE;
 
 		public boolean isBundled() {
@@ -74,5 +85,5 @@ public interface ISocket extends ISocketBase {
 	 * Rotates the socket (or gate in the socket)
 	 * @return true if successful.
 	 */
-	public boolean rotate();
+	boolean rotate();
 }

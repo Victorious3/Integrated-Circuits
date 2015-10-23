@@ -463,27 +463,38 @@ public class Socket implements ISocket {
 								player.inventory.setInventorySlotContents(
 										InventoryUtils.getSlotIndex(solderingIron, player.inventory), null);
 							player.inventoryContainer.detectAndSendChanges();
-						} else
-							return false;
+						} else return false;
 					}
 
+					// Set the rotation of the socket based on where the player is facing
 					int rotation = Rotation.getSidedRotation(player, getSide() ^ 1);
 					setRotation(rotation);
+					// Put the gate in the socket
 					setGate(stack, player);
-
+					// Now remove the item from the stack if the player is not in creative mode and the item and the socket wants it
+					if (!player.capabilities.isCreativeMode
+							&& ((IGateItem) stack.getItem()).usedUpOnPlace(player)
+							&& this.usesUpPlacedGate()) {
+						stack.stackSize--;
+					}
+					
 					MiscUtils.playPlaceSound(getWorld(), getPos());
 					return true;
 				} else if (gate != null && stack.getItem() == Content.itemSolderingIron) {
 					stack.damageItem(1, player);
 					if (stack.getItemDamage() == stack.getMaxDamage())
-						player.setCurrentItemOrArmor(0, null);
+						stack.stackSize--;
 					else
 						((EntityPlayerMP) player).updateHeldItem();
-
-					BlockCoord pos = getPos();
-					MiscUtils.dropItem(getWorld(), gate.getItemStack(), pos.x, pos.y, pos.z);
+					
+					if (!player.capabilities.isCreativeMode
+							&& ((IGateItem) gate.getItemStack().getItem()).usedUpOnPlace(player)
+							&& this.usesUpPlacedGate()) {
+						BlockCoord pos = getPos();
+						MiscUtils.dropItem(getWorld(), gate.getItemStack(), pos.x, pos.y, pos.z);
+					}
+					
 					gate = null;
-
 					sendDescription();
 					notifyBlocksAndChanges();
 
@@ -500,13 +511,11 @@ public class Socket implements ISocket {
 						rotate();
 					gate.onActivatedWithScrewdriver(player, hit, stack);
 				}
-
 				stack.damageItem(1, player);
 				return true;
 			}
-
-
 		}
+		
 		if (gate != null)
 			return gate.activate(player, hit, stack);
 		return false;
@@ -552,7 +561,12 @@ public class Socket implements ISocket {
 		if (gate != null)
 			list.add(gate.getItemStack());
 	}
-
+	
+	@Override
+	public boolean usesUpPlacedGate() {
+		return true;
+	}
+	
 	@Override
 	public ItemStack pickItem(MovingObjectPosition mop) {
 		if (gate != null)

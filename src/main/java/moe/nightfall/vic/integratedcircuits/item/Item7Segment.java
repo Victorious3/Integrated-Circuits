@@ -38,4 +38,9 @@ public class Item7Segment extends ItemGate implements IDyeable {
 	public String getGateID(ItemStack stack, EntityPlayer player, BlockCoord pos) {
 		return "7segment";
 	}
+	
+	@Override
+	public Boolean usedUpOnPlace(EntityPlayer player) {
+		return true;
+	}
 }

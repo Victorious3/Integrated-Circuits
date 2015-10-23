@@ -25,4 +25,9 @@ public class ItemCircuit extends ItemGate {
 	public String getGateID(ItemStack stack, EntityPlayer player, BlockCoord pos) {
 		return "circuit";
 	}
+	
+	@Override
+	public Boolean usedUpOnPlace(EntityPlayer player) {
+		return true;
+	}
 }
