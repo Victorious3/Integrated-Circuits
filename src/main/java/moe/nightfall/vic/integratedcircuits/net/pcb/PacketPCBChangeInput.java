@@ -2,6 +2,7 @@ package moe.nightfall.vic.integratedcircuits.net.pcb;
 
 import java.io.IOException;
 
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.net.PacketTileEntity;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
@@ -61,8 +62,29 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 			te.out = io;
 		if (te.getCircuitData().supportsBundled())
 			te.getCircuitData().getProperties().setCon(con);
-		else
-			te.getCircuitData().getProperties().setCon(0);
+		else {
+			// TODO: Make this nicer... This is a quick solution that seems to work, but isn't very good.
+			final int NA = te.getCircuitData().getProperties().setModeAtSide(0, ISocket.EnumConnectionType.ANALOG);
+			final int EA = te.getCircuitData().getProperties().setModeAtSide(1, ISocket.EnumConnectionType.ANALOG);
+			final int SA = te.getCircuitData().getProperties().setModeAtSide(2, ISocket.EnumConnectionType.ANALOG);
+			final int WA = te.getCircuitData().getProperties().setModeAtSide(3, ISocket.EnumConnectionType.ANALOG);
+			final int NN = te.getCircuitData().getProperties().setModeAtSide(0, ISocket.EnumConnectionType.NONE);
+			final int EN = te.getCircuitData().getProperties().setModeAtSide(1, ISocket.EnumConnectionType.NONE);
+			final int SN = te.getCircuitData().getProperties().setModeAtSide(2, ISocket.EnumConnectionType.NONE);
+			final int WN = te.getCircuitData().getProperties().setModeAtSide(3, ISocket.EnumConnectionType.NONE);
+			
+			if (con == NA) {
+				te.getCircuitData().getProperties().setCon(NN);
+			} else if (con == EA) {
+				te.getCircuitData().getProperties().setCon(EN);
+			} else if (con == SA) {
+				te.getCircuitData().getProperties().setCon(SN);
+			} else if (con == WA) {
+				te.getCircuitData().getProperties().setCon(WN);
+			} else {
+				te.getCircuitData().getProperties().setCon(0);
+			}
+		}
 		if (input && side == Side.SERVER) {
 			te.getCircuitData().updateInput();
 			CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().getWorldInfo()
