@@ -47,14 +47,10 @@ public class PacketPCBClear extends PacketTileEntity<PacketPCBClear> {
 				te.cache.create(player.getGameProfile().getId());
 
 			boolean changed = te.getCircuitData().hasChanged();
-			te.getCircuitData().clear(size);
-			if (!te.getCircuitData().supportsBundled())
-				te.getCircuitData().getProperties().setCon(0);
+			
+			te.getCircuitData().clearAllAndSetup(size);
 
-			// Clear out commments
-			te.getCircuitData().getProperties().clearComments();
-
-			// Reset IO
+			// Reset IO    TODO: Somehow move to circuitdata?
 			te.in = new int[4];
 			te.out = new int[4];
 

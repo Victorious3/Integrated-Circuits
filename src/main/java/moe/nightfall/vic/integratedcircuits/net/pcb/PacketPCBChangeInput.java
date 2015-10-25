@@ -74,7 +74,9 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 			te.out = io;
 		
 		CircuitData data = te.getCircuitData();
+		
 		data.getProperties().setCon(con);
+		data.clearIOAndSetupIO();
 		
 		if (input && side == Side.SERVER) {
 			te.getCircuitData().updateInput();

@@ -45,7 +45,7 @@ import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBCache;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangeName;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBClear;
-import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBIO;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSaveLoad;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.gui.GuiButton;
@@ -308,9 +308,9 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			else
 				onCallback(callbackDelete, Action.OK, 0);
 		} else if (button.id == 13)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(true, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBSaveLoad(true, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 12)
-			CommonProxy.networkWrapper.sendToServer(new PacketPCBIO(false, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
+			CommonProxy.networkWrapper.sendToServer(new PacketPCBSaveLoad(false, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 84)
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBCache(PacketPCBCache.UNDO, tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 		else if (button.id == 85)
@@ -518,6 +518,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		int gridX = (int) boardAbs2RelX(mouseX);
 		int gridY = (int) boardAbs2RelY(mouseY);
 
+		// Draw the comment
 		int w = data.getSize();
 		if (gridX >= 0 && gridY >= 0 && gridX < w && gridY < w && !blockMouseInput && !isShiftKeyDown()) {
 			if (mouseX >= editorLeft && mouseX < editorRight && mouseY >= editorTop && mouseY < editorBottom) {

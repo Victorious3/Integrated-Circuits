@@ -56,7 +56,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 
 	public void setup(int size) {
 		circuitData = new CircuitData(size, this);
-		circuitData.clear(size);
+		circuitData.clearAllAndSetup(size);
 	}
 
 	@Override
