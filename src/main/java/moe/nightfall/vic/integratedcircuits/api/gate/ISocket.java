@@ -7,6 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
+
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.vec.BlockCoord;
 
@@ -71,14 +72,10 @@ public interface ISocket extends ISocketBase {
 
 	enum EnumConnectionType {
 		SIMPLE, ANALOG, BUNDLED, NONE;
-
-		public boolean isBundled() {
-			return this == BUNDLED;
-		}
-
-		public boolean isRedstone() {
-			return this == SIMPLE || this == ANALOG;
-		}
+		
+		public boolean isRedstone() { return this == SIMPLE || this == ANALOG; }
+		public boolean isBundled() { return this == BUNDLED; }
+		public boolean isAnalog() { return this == ANALOG; }
 	}
 
 	/**

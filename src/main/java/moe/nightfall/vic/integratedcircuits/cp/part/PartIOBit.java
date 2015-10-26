@@ -37,7 +37,9 @@ public class PartIOBit extends CircuitPart {
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			CircuitPartRenderer.addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
 			if (type == CircuitPartRenderer.EnumRenderType.GUI) {
-				tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
+				if (parent.getCircuitData().getProperties().getModeAtSide(getRotation(pos, parent)).isAnalog())
+					tes.setColorRGBA_I((getFrequency(pos, parent) * 17) << 20, 255);
+				else tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
 				CircuitPartRenderer.addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
 			}
 		}
