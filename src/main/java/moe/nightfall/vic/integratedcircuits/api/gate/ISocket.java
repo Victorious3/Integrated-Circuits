@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.api.gate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketBridge.ISocketBase;
@@ -71,16 +72,33 @@ public interface ISocket extends ISocketBase {
 	void onRemoved();
 
 	enum EnumConnectionType {
-		SIMPLE, ANALOG, BUNDLED, NONE;
-		
-		public boolean isRedstone() { return this == SIMPLE || this == ANALOG; }
+		SIMPLE(Size.SINGLE), ANALOG(Size.SIXTEEN), BUNDLED(Size.SIXTEEN), NONE(Size.NONE);
+
+		EnumConnectionType(Size size) { this.size = size; }
+		public final Size size;
+		/** Possible sizes for the connection type. The order is important, so checks can be made using them. **/
+		public enum Size { NONE, AVAILABLE, SINGLE, SIXTEEN }
+
 		public boolean isBundled() { return this == BUNDLED; }
+		public boolean isRedstone() { return this == SIMPLE || this == ANALOG; }
+		public boolean isDisabled() { return this.size == Size.NONE; }
+		public boolean isSingle() { return this.size == Size.SINGLE; }
+		public boolean isFull() { return this.size == Size.AVAILABLE; }
 		public boolean isAnalog() { return this == ANALOG; }
 		
 		/** Get single character (as a string) that uniquely identifies this connection type. **/
 		public String singleID() { return Character.toString(singleCharID()); }
 		/** Get single character (as a character) that uniquely identifies this connection type. **/
 		public char singleCharID() { return name().charAt(0); }
+		
+		/** Get a List of supported connection types based on the maximum size supported. **/
+		public static List<EnumConnectionType> getSupportedList(Size size) {
+			ArrayList<EnumConnectionType> list = new ArrayList<EnumConnectionType>();
+			for (EnumConnectionType connectionType : EnumConnectionType.values()) {
+				if (connectionType.size.ordinal() <= size.ordinal()) list.add(connectionType);
+			}
+			return list;
+		}
 	}
 
 	/**
