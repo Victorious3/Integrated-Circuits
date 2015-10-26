@@ -76,7 +76,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 			if (updateIO) {
 				updateIO = false;
 				CommonProxy.networkWrapper.sendToAllAround(new PacketPCBChangeInput(false, out, circuitData
-					.getProperties().getCon(), xCoord, yCoord, zCoord), new TargetPoint(
+					.getProperties().getCon(), this), new TargetPoint(
 						worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 8));
 			}
 			markDirty();
@@ -136,7 +136,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 					i[MiscUtils.getSide(dir)] &= ~(1 << frequency);
 			}
 			CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, circuitData.getProperties()
-				.getCon(), xCoord, yCoord, zCoord));
+				.getCon(), this));
 		}
 	}
 
@@ -145,7 +145,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 		int con = circuitData.getProperties().setModeAtSide(side, mode);
 		int i[] = this.in.clone();
 		i[side] = mode == EnumConnectionType.ANALOG ? 1 : 0;
-		CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, xCoord, yCoord, zCoord));
+		CommonProxy.networkWrapper.sendToServer(new PacketPCBChangeInput(true, i, con, this));
 	}
 
 	@Override

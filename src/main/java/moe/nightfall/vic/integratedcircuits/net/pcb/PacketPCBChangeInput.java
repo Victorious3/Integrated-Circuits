@@ -2,12 +2,14 @@ package moe.nightfall.vic.integratedcircuits.net.pcb;
 
 import java.io.IOException;
 
-import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitProperties;
 import moe.nightfall.vic.integratedcircuits.net.PacketTileEntity;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
@@ -21,11 +23,21 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 	public PacketPCBChangeInput() {
 	}
 
-	public PacketPCBChangeInput(boolean input, int[] io, int con, int xCoord, int yCoord, int zCoord) {
-		super(xCoord, yCoord, zCoord);
+	public PacketPCBChangeInput(boolean input, int[] io, int con, TileEntityCAD tileEntityCAD) {
+		super(tileEntityCAD.xCoord, tileEntityCAD.yCoord, tileEntityCAD.zCoord);
 		this.io = io;
 		this.input = input;
 		this.con = con;
+		
+		// Validate IO width before we send the packet
+		CircuitData data = tileEntityCAD.getCircuitData();
+		boolean widthOK = true;
+		for(int ioSide = 0; ioSide <= 3; ioSide++) {
+			widthOK = widthOK && data.maximumIOSize().ordinal() >= CircuitProperties.getModeAtSide(con, ioSide).size.ordinal();
+		}
+		// Now crash people who try to send an "invalid" packet... Doing it here gives us a decent stacktrace.
+		if (!widthOK) Minecraft.getMinecraft().displayCrashReport(new CrashReport("PCB IO mode selected for at least one side is too long.\nContact mod authors to report this error.",
+		                                                          new AssertionError("PCB IO mode selected for at least one side is too long. Size of PCB is " + data.getSize() + "x" + data.getSize())));
 	}
 
 	@Override
@@ -60,31 +72,10 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 			te.in = io;
 		else
 			te.out = io;
-		if (te.getCircuitData().supportsBundled())
-			te.getCircuitData().getProperties().setCon(con);
-		else {
-			// TODO: Make this nicer... This is a quick solution that seems to work, but isn't very good.
-			final int NA = te.getCircuitData().getProperties().setModeAtSide(0, ISocket.EnumConnectionType.ANALOG);
-			final int EA = te.getCircuitData().getProperties().setModeAtSide(1, ISocket.EnumConnectionType.ANALOG);
-			final int SA = te.getCircuitData().getProperties().setModeAtSide(2, ISocket.EnumConnectionType.ANALOG);
-			final int WA = te.getCircuitData().getProperties().setModeAtSide(3, ISocket.EnumConnectionType.ANALOG);
-			final int NN = te.getCircuitData().getProperties().setModeAtSide(0, ISocket.EnumConnectionType.NONE);
-			final int EN = te.getCircuitData().getProperties().setModeAtSide(1, ISocket.EnumConnectionType.NONE);
-			final int SN = te.getCircuitData().getProperties().setModeAtSide(2, ISocket.EnumConnectionType.NONE);
-			final int WN = te.getCircuitData().getProperties().setModeAtSide(3, ISocket.EnumConnectionType.NONE);
-			
-			if (con == NA) {
-				te.getCircuitData().getProperties().setCon(NN);
-			} else if (con == EA) {
-				te.getCircuitData().getProperties().setCon(EN);
-			} else if (con == SA) {
-				te.getCircuitData().getProperties().setCon(SN);
-			} else if (con == WA) {
-				te.getCircuitData().getProperties().setCon(WN);
-			} else {
-				te.getCircuitData().getProperties().setCon(0);
-			}
-		}
+		
+		CircuitData data = te.getCircuitData();
+		data.getProperties().setCon(con);
+		
 		if (input && side == Side.SERVER) {
 			te.getCircuitData().updateInput();
 			CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().getWorldInfo()
