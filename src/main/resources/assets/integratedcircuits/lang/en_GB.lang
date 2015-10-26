@@ -1,0 +1,9 @@
+# color -> colour
+config.integratedcircuits.appearance.color1=Wire colour 1 (Green)
+config.integratedcircuits.appearance.color2=Wire colour 2 (Orange)
+config.integratedcircuits.appearance.color3=Wire colour 3 (Red)
+
+# analog -> analogue
+gui.integratedcircuits.cad.mode.analog=analogue
+gui.integratedcircuits.7segment.mode.analog=Analogue
+gui.integratedcircuits.7segment.mode.analog.tooltip=An analogue redstone signal:%n§8§oFrom 0 to F.
