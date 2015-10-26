@@ -9,6 +9,7 @@ import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.cp.legacy.LegacyLoader;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
@@ -209,7 +210,13 @@ public class CircuitData implements Cloneable {
 	}
 
 	public boolean supportsBundled() {
-		return size > 16;
+		return maximumIOSize() == EnumConnectionType.Size.SIXTEEN;
+	}
+	
+	public EnumConnectionType.Size maximumIOSize() {
+		if (size - 2 >= 16) return EnumConnectionType.Size.SIXTEEN;
+		else if (size - 2 >= 1) return EnumConnectionType.Size.SINGLE;
+		else return EnumConnectionType.Size.NONE;
 	}
 
 	public int getMeta(Vec2 pos) {

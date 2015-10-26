@@ -27,9 +27,15 @@ public class GuiIOMode extends GuiButton implements IHoverable {
 
 	@Override
 	public boolean mousePressed(Minecraft mc, int x, int y) {
-		boolean b = parent.blockMouseInput ? false : super.mousePressed(mc, x, y);
-		if (b)
-			parent.tileentity.setInputMode(side, EnumConnectionType.values()[(mode.ordinal() + 1) % EnumConnectionType.values().length]);
+		boolean b = !parent.blockMouseInput && super.mousePressed(mc, x ,y);
+		if (b) {
+			// Get the list of supported connection types for this width...
+			List<EnumConnectionType> supported = EnumConnectionType.getSupportedList(parent.getCircuitData().maximumIOSize());
+			// Work out the next one in the list...
+			EnumConnectionType next = supported.get((supported.indexOf(mode) + 1) % supported.size());
+			// Finally, set the input mode...
+			parent.tileentity.setInputMode(side, next);
+		}
 		return b;
 	}
 
