@@ -76,6 +76,11 @@ public interface ISocket extends ISocketBase {
 		public boolean isRedstone() { return this == SIMPLE || this == ANALOG; }
 		public boolean isBundled() { return this == BUNDLED; }
 		public boolean isAnalog() { return this == ANALOG; }
+		
+		/** Get single character (as a string) that uniquely identifies this connection type. **/
+		public String singleID() { return Character.toString(singleCharID()); }
+		/** Get single character (as a character) that uniquely identifies this connection type. **/
+		public char singleCharID() { return name().charAt(0); }
 	}
 
 	/**

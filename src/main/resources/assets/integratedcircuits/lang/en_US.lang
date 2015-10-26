@@ -75,6 +75,7 @@ gui.integratedcircuits.cad.mode=-Mode-
 gui.integratedcircuits.cad.mode.simple=simple
 gui.integratedcircuits.cad.mode.bundled=bundled
 gui.integratedcircuits.cad.mode.analog=analog
+gui.integratedcircuits.cad.mode.none=disabled
 gui.integratedcircuits.cad.mode.low=LOW
 gui.integratedcircuits.cad.mode.high=HIGH
 
