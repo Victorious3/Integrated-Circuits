@@ -72,18 +72,16 @@ public interface ISocket extends ISocketBase {
 	void onRemoved();
 
 	enum EnumConnectionType {
-		SIMPLE(Size.SINGLE), ANALOG(Size.SIXTEEN), BUNDLED(Size.SIXTEEN), NONE(Size.NONE);
+		SIMPLE(1), ANALOG(16), BUNDLED(16), NONE(0);
 
-		EnumConnectionType(Size size) { this.size = size; }
-		public final Size size;
-		/** Possible sizes for the connection type. The order is important, so checks can be made using them. **/
-		public enum Size { NONE, AVAILABLE, SINGLE, SIXTEEN }
+		EnumConnectionType(int size) { this.size = size; }
+		public final int size;
 
 		public boolean isBundled() { return this == BUNDLED; }
 		public boolean isRedstone() { return this == SIMPLE || this == ANALOG; }
-		public boolean isDisabled() { return this.size == Size.NONE; }
-		public boolean isSingle() { return this.size == Size.SINGLE; }
-		public boolean isFull() { return this.size == Size.AVAILABLE; }
+		public boolean isDisabled() { return this.size == 0; }
+		public boolean isSingle() { return this.size == 1; }
+		public boolean isFull() { return this.size == -1; }
 		public boolean isAnalog() { return this == ANALOG; }
 		
 		/** Get single character (as a string) that uniquely identifies this connection type. **/
@@ -92,10 +90,10 @@ public interface ISocket extends ISocketBase {
 		public char singleCharID() { return name().charAt(0); }
 		
 		/** Get a List of supported connection types based on the maximum size supported. **/
-		public static List<EnumConnectionType> getSupportedList(Size size) {
+		public static List<EnumConnectionType> getSupportedList(int size) {
 			ArrayList<EnumConnectionType> list = new ArrayList<EnumConnectionType>();
 			for (EnumConnectionType connectionType : EnumConnectionType.values()) {
-				if (connectionType.size.ordinal() <= size.ordinal()) list.add(connectionType);
+				if (connectionType.size <= size) list.add(connectionType);
 			}
 			return list;
 		}

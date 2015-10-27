@@ -33,7 +33,7 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 		CircuitData data = tileEntityCAD.getCircuitData();
 		boolean widthOK = true;
 		for(int ioSide = 0; ioSide <= 3; ioSide++) {
-			widthOK = widthOK && data.maximumIOSize().ordinal() >= CircuitProperties.getModeAtSide(con, ioSide).size.ordinal();
+			widthOK = widthOK && data.maximumIOSize() >= CircuitProperties.getModeAtSide(con, ioSide).size;
 		}
 		// Now crash people who try to send an "invalid" packet... Doing it here gives us a decent stacktrace.
 		if (!widthOK) Minecraft.getMinecraft().displayCrashReport(new CrashReport("PCB IO mode selected for at least one side is too long.\nContact mod authors to report this error.",

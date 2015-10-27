@@ -133,14 +133,14 @@ public class CircuitData implements Cloneable {
 		// Stores the mode on each side
 		EnumConnectionType[] modes = new EnumConnectionType[4];
 		// What is the maximum supported size of IO?
-		EnumConnectionType.Size maxIOSize = maximumIOSize();
+		int maxIOSize = maximumIOSize();
 		
 		// On each side...
 		for(int side = 0; side < 4; side++) {
 			// Get the mode.
 			EnumConnectionType mode = prop.getModeAtSide(side);
 			// Work out if the mode will need to be changed for it to fit
-			if (mode.size.ordinal() > maxIOSize.ordinal()) {
+			if (mode.size > maxIOSize) {
 				// if so, set the mode to the first available input mode
 				mode = EnumConnectionType.getSupportedList(maxIOSize).get(0);
 			}
@@ -172,7 +172,7 @@ public class CircuitData implements Cloneable {
 		// Get the ID of the IOBit
 		int cid = CircuitPart.getId(PartIOBit.class);
 		
-		for (int i = 0; i < ((maximumIOSize() == EnumConnectionType.Size.SIXTEEN) ? 16 : 1); i++) {
+		for (int i = 0; i < (supportsBundled() ? 16 : 1); i++) {
 			// Get the positions
 			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
 			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
@@ -318,13 +318,13 @@ public class CircuitData implements Cloneable {
 	}
 
 	public boolean supportsBundled() {
-		return maximumIOSize() == EnumConnectionType.Size.SIXTEEN;
+		return maximumIOSize() == 16;
 	}
 	
-	public EnumConnectionType.Size maximumIOSize() {
-		if (size - 2 >= 16) return EnumConnectionType.Size.SIXTEEN;
-		else if (size - 2 >= 1) return EnumConnectionType.Size.SINGLE;
-		else return EnumConnectionType.Size.NONE;
+	public int maximumIOSize() {
+		if (size - 2 >= 16) return 16;
+		else if (size - 2 >= 1) return 1;
+		else return 0;
 	}
 
 	public int getMeta(Vec2 pos) {
