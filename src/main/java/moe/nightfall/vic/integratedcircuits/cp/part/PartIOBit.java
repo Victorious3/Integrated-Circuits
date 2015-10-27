@@ -19,6 +19,7 @@ public class PartIOBit extends CircuitPart {
 	public final IntProperty PROP_FREQUENCY = new IntProperty("FREQUENCY", stitcher, 15);
 
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
 		int freq = this.getFrequency(pos, parent);
 		int rot = this.getRotation(pos, parent);
@@ -36,7 +37,9 @@ public class PartIOBit extends CircuitPart {
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			CircuitPartRenderer.addQuad(x, y, 4 * 16, 2 * 16, 16, 16, rot);
 			if (type == CircuitPartRenderer.EnumRenderType.GUI) {
-				tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
+				if (parent.getCircuitData().getProperties().getModeAtSide(getRotation(pos, parent)).isAnalog())
+					tes.setColorRGBA_I((getFrequency(pos, parent) * 17) << 20, 255);
+				else tes.setColorRGBA_I(MapColor.getMapColorForBlockColored(freq).colorValue, 255);
 				CircuitPartRenderer.addQuad(x, y, 3 * 16, 2 * 16, 16, 16, rot);
 			}
 		}
@@ -64,6 +67,7 @@ public class PartIOBit extends CircuitPart {
 				getInputFromSide(pos, parent, dir.getOpposite()));
 	}
 
+	@Override
 	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
 		ForgeDirection dir = MiscUtils.getDirection(getRotation(pos, parent));
 		return side == dir.getOpposite();

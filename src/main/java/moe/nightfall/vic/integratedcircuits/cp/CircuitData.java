@@ -9,11 +9,13 @@ import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.cp.legacy.LegacyLoader;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
@@ -126,59 +128,163 @@ public class CircuitData implements Cloneable {
 
 		return true;
 	}
-
-	public void setup() {
-		int o = supportsBundled() ? size / 2 - 8 : 1;
+	
+	private EnumConnectionType[] getAndFixModePerSide() {
+		// Stores the mode on each side
+		EnumConnectionType[] modes = new EnumConnectionType[4];
+		// What is the maximum supported size of IO?
+		int maxIOSize = maximumIOSize();
+		
+		// On each side...
+		for(int side = 0; side < 4; side++) {
+			// Get the mode.
+			EnumConnectionType mode = prop.getModeAtSide(side);
+			// Work out if the mode will need to be changed for it to fit
+			if (mode.size > maxIOSize) {
+				// if so, set the mode to the first available input mode
+				mode = EnumConnectionType.getSupportedList(maxIOSize).get(0);
+			}
+			// Set the mode
+			prop.setCon(prop.setModeAtSide(side, mode));
+			// Store the mode
+			modes[side] = mode;
+		}
+		return modes;
+	}
+	
+	/** Clears the circuit and sets it up **/
+	public void clearAllAndSetup(int size) {
+		clearAll(size);
+		setupIO();
+	}
+	
+	/** Clears the IOBits, and sets them up again. **/
+	public void clearIOAndSetupIO() {
+		clearIO();
+		setupIO();
+	}
+	
+	/** Sets up the IOBits for the circuit. **/
+	public void setupIO() {
+		getAndFixModePerSide();
+		
+		int o = (supportsBundled() ? size / 2 - 8 : 1);
+		// Get the ID of the IOBit
 		int cid = CircuitPart.getId(PartIOBit.class);
-
+		
 		for (int i = 0; i < (supportsBundled() ? 16 : 1); i++) {
+			// Get the positions
 			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
 			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
 			Vec2 pos3 = new Vec2(i + o, size - 1);
 			Vec2 pos4 = new Vec2(0, i + o);
-
-			setID(pos1, cid);
-			setID(pos2, cid);
-			setID(pos3, cid);
-			setID(pos4, cid);
-
-			PartIOBit io1 = (PartIOBit) getPart(pos1);
-			PartIOBit io2 = (PartIOBit) getPart(pos2);
-			PartIOBit io3 = (PartIOBit) getPart(pos3);
-			PartIOBit io4 = (PartIOBit) getPart(pos4);
-
-			io1.setFrequency(pos1, parent, i);
-			io2.setFrequency(pos2, parent, i);
-			io3.setFrequency(pos3, parent, i);
-			io4.setFrequency(pos4, parent, i);
-
-			io1.setRotation(pos1, parent, 0);
-			io2.setRotation(pos2, parent, 1);
-			io3.setRotation(pos3, parent, 2);
-			io4.setRotation(pos4, parent, 3);
+			
+			if (prop.getModeAtSide(0) != EnumConnectionType.NONE && !(prop.getModeAtSide(0) == EnumConnectionType.SIMPLE && i >= 1)) {
+				// Set the part at the position to be a IOBit
+				setID(pos1, cid);
+				// Get the IOBit at that position
+				PartIOBit io1 = (PartIOBit) getPart(pos1);
+				// Set the number of the IOBit (colour / redstone strength)
+				io1.setFrequency(pos1, parent, i);
+				// The rotation is what side the IOBit is on
+				io1.setRotation(pos1, parent, 0);
+			}
+			
+			if (prop.getModeAtSide(1) != EnumConnectionType.NONE && !(prop.getModeAtSide(1) == EnumConnectionType.SIMPLE && i >= 1)) {
+				setID(pos2, cid);
+				PartIOBit io2 = (PartIOBit) getPart(pos2);
+				io2.setFrequency(pos2, parent, i);
+				io2.setRotation(pos2, parent, 1);
+			}
+			
+			if (prop.getModeAtSide(2) != EnumConnectionType.NONE && !(prop.getModeAtSide(2) == EnumConnectionType.SIMPLE && i >= 1)) {
+				setID(pos3, cid);
+				PartIOBit io3 = (PartIOBit) getPart(pos3);
+				io3.setFrequency(pos3, parent, i);
+				io3.setRotation(pos3, parent, 2);
+			}
+			
+			if (prop.getModeAtSide(3) != EnumConnectionType.NONE && !(prop.getModeAtSide(3) == EnumConnectionType.SIMPLE && i >= 1)) {
+				setID(pos4, cid);
+				PartIOBit io4 = (PartIOBit) getPart(pos4);
+				io4.setFrequency(pos4, parent, i);
+				io4.setRotation(pos4, parent, 3);
+			}
 		}
+	}
+	
+	/** Clears everything with a new size, including comments and the actual circuit. Nothing, not even IOBits and comments, are left. **/
+	public void clearAll(int size) {
+		// Clear the actual circuit
+		clearContents(size);
+		// Clear out comments
+		getProperties().clearComments();
+	}
+	
+	public void clearCell(int x, int y) {
+		this.id[x][y] = 0;
+		this.meta[x][y] = 0;
+	}
+	
+	public void clearRow(int y) {
+		for (int x = 0; x < this.size; x++) {
+			clearCell(x, y);
+		}
+	}
+	
+	public void clearColumn(int x) {
+		for (int y = 0; y < this.size; y++) {
+			clearCell(x, y);
+		}
+	}
+	
+	public void clearIO() {
+		// Clear top
+		clearRow(0);
+		// Clear bottom
+		clearRow(this.size - 1);
+		// Clear left
+		clearColumn(0);
+		// Clear right
+		clearColumn(this.size - 1);
+	}
+	
+	/** Clears the contents of the circuit and gives it a new size. **/
+	public void clearContents(int size) {
+		this.id = new int[size][size];
+		this.meta = new int[size][size];
+		tickSchedule.clear();
+		updateQueue.clear();
+		this.size = size;
+		
+		// TODO: What's this for?
+		this.setChanged(false);
 	}
 
 	/** Syncs the circuit's IO bits with the suspected input **/
 	public void updateInput() {
 		int o = supportsBundled() ? size / 2 - 8 : 1;
-
+		
 		for (int i = 0; i < (supportsBundled() ? 16 : 1); i++) {
+			// Get the positions
 			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
 			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
 			Vec2 pos3 = new Vec2(i + o, size - 1);
 			Vec2 pos4 = new Vec2(0, i + o);
-
-			PartIOBit io1 = (PartIOBit) getPart(pos1);
-			PartIOBit io2 = (PartIOBit) getPart(pos2);
-			PartIOBit io3 = (PartIOBit) getPart(pos3);
-			PartIOBit io4 = (PartIOBit) getPart(pos4);
-
-			io1.notifyNeighbours(pos1, parent);
-			io2.notifyNeighbours(pos2, parent);
-			io3.notifyNeighbours(pos3, parent);
-			io4.notifyNeighbours(pos4, parent);
+			
+			// Get the parts
+			CircuitPart part1 = getPart(pos1);
+			CircuitPart part2 = getPart(pos2);
+			CircuitPart part3 = getPart(pos3);
+			CircuitPart part4 = getPart(pos4);
+			
+			// Only update PartIOBits
+			if (part1 instanceof PartIOBit) part1.notifyNeighbours(pos1, parent);
+			if (part2 instanceof PartIOBit) part2.notifyNeighbours(pos2, parent);
+			if (part3 instanceof PartIOBit) part3.notifyNeighbours(pos3, parent);
+			if (part4 instanceof PartIOBit) part4.notifyNeighbours(pos4, parent);
 		}
+		
 		propagateSignals();
 	}
 
@@ -187,20 +293,23 @@ public class CircuitData implements Cloneable {
 		int o = supportsBundled() ? size / 2 - 8 : 1;
 
 		for (int i = 0; i < (supportsBundled() ? 16 : 1); i++) {
+			// Get the positions
 			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
 			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
 			Vec2 pos3 = new Vec2(i + o, size - 1);
 			Vec2 pos4 = new Vec2(0, i + o);
-
-			PartIOBit io1 = (PartIOBit) getPart(pos1);
-			PartIOBit io2 = (PartIOBit) getPart(pos2);
-			PartIOBit io3 = (PartIOBit) getPart(pos3);
-			PartIOBit io4 = (PartIOBit) getPart(pos4);
-
-			io1.updateExternalOutput(pos1, parent);
-			io2.updateExternalOutput(pos2, parent);
-			io3.updateExternalOutput(pos3, parent);
-			io4.updateExternalOutput(pos4, parent);
+			
+			// Get the parts
+			CircuitPart part1 = getPart(pos1);
+			CircuitPart part2 = getPart(pos2);
+			CircuitPart part3 = getPart(pos3);
+			CircuitPart part4 = getPart(pos4);
+			
+			// Only update PartIOBits
+			if (part1 instanceof PartIOBit) ((PartIOBit) part1).updateExternalOutput(pos1, parent);
+			if (part2 instanceof PartIOBit) ((PartIOBit) part2).updateExternalOutput(pos2, parent);
+			if (part3 instanceof PartIOBit) ((PartIOBit) part3).updateExternalOutput(pos3, parent);
+			if (part4 instanceof PartIOBit) ((PartIOBit) part4).updateExternalOutput(pos4, parent);
 		}
 	}
 
@@ -209,7 +318,13 @@ public class CircuitData implements Cloneable {
 	}
 
 	public boolean supportsBundled() {
-		return size > 16;
+		return maximumIOSize() == 16;
+	}
+	
+	public int maximumIOSize() {
+		if (size - 2 >= 16) return 16;
+		else if (size - 2 >= 1) return 1;
+		else return 0;
 	}
 
 	public int getMeta(Vec2 pos) {
@@ -250,18 +365,6 @@ public class CircuitData implements Cloneable {
 
 	public int getSize() {
 		return size;
-	}
-
-	public void clear(int size) {
-		this.id = new int[size][size];
-		this.meta = new int[size][size];
-		tickSchedule.clear();
-		updateQueue.clear();
-		this.size = size;
-		setup();
-		if (!supportsBundled())
-			prop.setCon(0);
-		this.setChanged(false);
 	}
 
 	public CircuitPart getPart(Vec2 pos) {

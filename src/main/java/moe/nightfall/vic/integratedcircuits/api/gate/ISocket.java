@@ -1,5 +1,6 @@
 package moe.nightfall.vic.integratedcircuits.api.gate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocketBridge.ISocketBase;
@@ -7,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MovingObjectPosition;
+
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.vec.BlockCoord;
 
@@ -70,14 +72,30 @@ public interface ISocket extends ISocketBase {
 	void onRemoved();
 
 	enum EnumConnectionType {
-		SIMPLE, ANALOG, BUNDLED, NONE;
+		SIMPLE(1), ANALOG(16), BUNDLED(16), NONE(0);
 
-		public boolean isBundled() {
-			return this == BUNDLED;
-		}
+		EnumConnectionType(int size) { this.size = size; }
+		public final int size;
 
-		public boolean isRedstone() {
-			return this == SIMPLE || this == ANALOG;
+		public boolean isBundled() { return this == BUNDLED; }
+		public boolean isRedstone() { return this == SIMPLE || this == ANALOG; }
+		public boolean isDisabled() { return this.size == 0; }
+		public boolean isSingle() { return this.size == 1; }
+		public boolean isFull() { return this.size == -1; }
+		public boolean isAnalog() { return this == ANALOG; }
+		
+		/** Get single character (as a string) that uniquely identifies this connection type. **/
+		public String singleID() { return Character.toString(singleCharID()); }
+		/** Get single character (as a character) that uniquely identifies this connection type. **/
+		public char singleCharID() { return name().charAt(0); }
+		
+		/** Get a List of supported connection types based on the maximum size supported. **/
+		public static List<EnumConnectionType> getSupportedList(int size) {
+			ArrayList<EnumConnectionType> list = new ArrayList<EnumConnectionType>();
+			for (EnumConnectionType connectionType : EnumConnectionType.values()) {
+				if (connectionType.size <= size) list.add(connectionType);
+			}
+			return list;
 		}
 	}
 

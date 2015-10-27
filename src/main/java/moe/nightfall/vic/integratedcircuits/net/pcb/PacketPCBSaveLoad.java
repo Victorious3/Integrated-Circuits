@@ -13,13 +13,13 @@ import net.minecraft.network.PacketBuffer;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 
-public class PacketPCBIO extends PacketTileEntity<PacketPCBIO> {
+public class PacketPCBSaveLoad extends PacketTileEntity<PacketPCBSaveLoad> {
 	private boolean write;
 
-	public PacketPCBIO() {
+	public PacketPCBSaveLoad() {
 	}
 
-	public PacketPCBIO(boolean write, int xCoord, int yCoord, int zCoord) {
+	public PacketPCBSaveLoad(boolean write, int xCoord, int yCoord, int zCoord) {
 		super(xCoord, yCoord, zCoord);
 		this.write = write;
 	}
@@ -61,7 +61,7 @@ public class PacketPCBIO extends PacketTileEntity<PacketPCBIO> {
 						te.setCircuitData(CircuitData.readFromNBT((NBTTagCompound) comp.getCompoundTag("circuit")
 							.copy(), te));
 					else
-						te.getCircuitData().clear(te.getCircuitData().getSize());
+						te.getCircuitData().clearAllAndSetup(te.getCircuitData().getSize());
 					CommonProxy.networkWrapper.sendToAllAround(new PacketPCBLoad(te.getCircuitData(), xCoord, yCoord,
 							zCoord), new TargetPoint(te.getWorldObj().provider.dimensionId, xCoord, yCoord, zCoord, 8));
 				}

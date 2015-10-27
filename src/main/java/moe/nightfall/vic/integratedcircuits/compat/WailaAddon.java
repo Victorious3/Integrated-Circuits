@@ -9,6 +9,8 @@ import mcp.mobius.waila.api.IWailaFMPAccessor;
 import mcp.mobius.waila.api.IWailaFMPProvider;
 import mcp.mobius.waila.api.IWailaRegistrar;
 import moe.nightfall.vic.integratedcircuits.Constants;
+import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitProperties;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.tile.BlockSocket;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
@@ -47,10 +49,9 @@ public class WailaAddon implements IWailaDataProvider, IWailaFMPProvider {
 		currenttip.add(EnumChatFormatting.GOLD + "Size: " + EnumChatFormatting.RESET + size + "x" + size);
 		int con = properties.getInteger("con");
 		String io = "";
-		for (int i = 0; i < 4; i++) {
-			int i2 = (con & 3);
-			io += (i2 == 0 ? "S" : i2 == 1 ? "B" : "A") + (i < 3 ? "-" : "");
-			con >>= 2;
+		for (int side = 0; side < 4; side++) {
+			EnumConnectionType mode = CircuitProperties.getModeAtSide(con, side);
+			io += mode.singleCharID() + (side < 3 ? "-" : "");
 		}
 		currenttip.add(EnumChatFormatting.GOLD + "IO: " + EnumChatFormatting.RESET + io);
 		return currenttip;

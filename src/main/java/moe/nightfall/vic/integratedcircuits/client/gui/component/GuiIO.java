@@ -50,7 +50,8 @@ public class GuiIO extends GuiButton implements IHoverable {
 		GL11.glTranslatef(-4F, -4F, -0F);
 
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		isActive = te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.SIMPLE || color == 0;
+		isActive = (te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.SIMPLE || color == 0) 
+				&& (te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.NONE);
 		boolean isPowered = isActive && te.getExternalInputFromSide(dir, color) || te.getOutputToSide(dir, color);
 
 		if (isActive) {
@@ -83,7 +84,7 @@ public class GuiIO extends GuiButton implements IHoverable {
 	@Override
 	public boolean mousePressed(Minecraft mc, int par1, int par2) {
 		boolean b = super.mousePressed(mc, par1, par2) && !parent.blockMouseInput;
-		if (b) {
+		if (b && isActive) {
 			ForgeDirection dir = MiscUtils.getDirection(side);
 			te.setExternalInputFromSide(dir, color, !te.getExternalInputFromSide(dir, color));
 		}
