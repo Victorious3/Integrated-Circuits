@@ -51,24 +51,40 @@ public class TileEntityPrinter extends TileEntityContainer {
 		compound.setFloat("inkLevel", inkLevel);
 	}
 
-	@Override
-	public boolean receiveClientEvent(int id, int par) {
-		return super.receiveClientEvent(id, par);
-
-	}
-
-	public ItemStack addInk(ItemStack stack) {
+	public boolean addInk(ItemStack stack) {
 		// TODO If you ever need this again, move it to the utility functions
-		if (inkLevel < 1F && stack != null && stack.getItem() == Items.dye && stack.getItemDamage() == 1) {
+		if (inkLevel < 1F && stack != null && stack.getItem() == Items.dye && stack.getItemDamage() == 0) {
 			inkLevel += 0.2F;
 			inkLevel = Math.min(inkLevel, 1F);
 			stack.stackSize--;
-			if (stack.stackSize < 1) {
-				return null;
-			}
+
 			markDirty();
+			return true;
 		}
-		return stack;
+		return false;
+	}
+
+	public boolean addPaper(ItemStack stack) {
+		// TODO Same as above
+		if (stack != null && stack.getItem() == Items.paper && paperCount() < 16) {
+			if (paperStack == null) {
+				paperStack = new ItemStack(Items.paper);
+				paperStack.stackSize = stack.stackSize;
+			} else {
+				paperStack.stackSize += stack.stackSize;
+			}
+
+			markDirty();
+
+			stack.stackSize = 0;
+			int over = paperStack.stackSize - 16;
+			paperStack.stackSize = Math.min(paperStack.stackSize, 16);
+			if (over > 0) {
+				stack.stackSize = over;
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override

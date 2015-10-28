@@ -9,6 +9,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.text.WordUtils;
+
+import com.google.common.collect.HashBiMap;
+
+import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.Block.SoundType;
 import net.minecraft.client.Minecraft;
@@ -23,16 +31,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.oredict.OreDictionary;
-
-import org.apache.commons.lang3.text.WordUtils;
-
-import codechicken.lib.vec.BlockCoord;
-
-import com.google.common.collect.HashBiMap;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class MiscUtils {
 	private static ForgeDirection[] order = { NORTH, EAST, SOUTH, WEST };
@@ -152,6 +150,8 @@ public class MiscUtils {
 	}
 
 	public static void dropItem(World world, ItemStack stack, int x, int y, int z) {
+		if (stack == null)
+			return;
 		EntityItem entityItem = new EntityItem(world, x + 0.5, y + 0.5, z + 0.5, stack);
 		world.spawnEntityInWorld(entityItem);
 	}

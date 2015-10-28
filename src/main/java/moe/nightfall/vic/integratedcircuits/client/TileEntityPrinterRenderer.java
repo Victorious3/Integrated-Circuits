@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
@@ -49,9 +50,15 @@ public class TileEntityPrinterRenderer extends TileEntitySpecialRenderer impleme
 		RenderUtils.setBrightness(240, 240);
 
 		int inkLevel = (int) (tep.inkLevel() * 100);
+		int paperCount = tep.paperCount();
+		
 		FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-		fr.drawSplitString("I " + inkLevel + "%\nP " + tep.paperCount() + " /16", 0, 0, Integer.MAX_VALUE, 0xFFFFFF);
-
+		fr.drawSplitString(
+			// Realistic ink level warning at 50%
+			(inkLevel <= 15 ? EnumChatFormatting.RED : inkLevel <= 50 ? EnumChatFormatting.YELLOW : "") + "I " + inkLevel + "%\n" + 
+			(paperCount == 0 ? EnumChatFormatting.RED : paperCount < 3 ? EnumChatFormatting.YELLOW : EnumChatFormatting.WHITE) + "P " + paperCount + "/16", 0, 0, Integer.MAX_VALUE, 0xFFFFFF);
+		
+		GL11.glColor3f(1, 1, 1);
 		RenderUtils.resetBrightness();
 		GL11.glEnable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
