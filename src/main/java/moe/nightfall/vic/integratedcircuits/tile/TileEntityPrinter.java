@@ -20,7 +20,19 @@ public class TileEntityPrinter extends TileEntityContainer {
 	}
 
 	public boolean hasInk() {
-		return inkLevel > 0F;
+		return inkLevel() > 0F;
+	}
+
+	public float inkLevel() {
+		return inkLevel;
+	}
+
+	public boolean hasPaper() {
+		return paperCount() > 0F;
+	}
+
+	public int paperCount() {
+		return paperStack != null ? paperStack.stackSize : 0;
 	}
 
 	@Override

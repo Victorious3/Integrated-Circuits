@@ -18,6 +18,7 @@ public class BlockPrinter extends BlockContainer {
 		setBlockName(Constants.MOD_ID + ".pcbprinter");
 		setCreativeTab(IntegratedCircuits.creativeTab);
 		setHardness(2F);
+		setBlockBounds(0, 0, 0, 1F, 0.5F, 1F);
 	}
 
 	@Override
