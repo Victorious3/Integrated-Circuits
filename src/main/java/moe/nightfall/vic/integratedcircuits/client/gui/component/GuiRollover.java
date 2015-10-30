@@ -7,6 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.opengl.GL11;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
+import cpw.mods.fml.client.config.GuiUtils;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
@@ -17,24 +24,22 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 
-import org.lwjgl.opengl.GL11;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
-import cpw.mods.fml.client.config.GuiUtils;
-import cpw.mods.fml.relauncher.ReflectionHelper;
-
 public final class GuiRollover extends GuiButton implements IHoverable {
 
 	private static final double timeToOpen = 250;
 	private static final int boxHeight = 19;
 
 	private ResourceLocation resource;
-	private Map<String, List<GuiButton>> buttonMap = Maps.newLinkedHashMap();
-	private Map<String, Vec2> categoryMap = Maps.newLinkedHashMap();
-	private Map<String, String> tooltipMap = Maps.newLinkedHashMap();
-	private List<String> categoryList = Lists.newArrayList();
+	private Map<Integer, Category> categoryMap = Maps.newLinkedHashMap();
+	private List<Integer> categoryList = Lists.newArrayList();
+
+	public static class Category {
+		public List<GuiButton> buttonList;
+		public Vec2 icon;
+		public String tooltip;
+		public boolean enabled = true;
+		public int id;
+	}
 
 	private int currentHeight;
 	private int nextHeight;
@@ -42,7 +47,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	private int next = -1;
 	private long startTime;
 	private int moving = 0;
-	private String hoveredCategory = null;
+	private Category hoveredCategory = null;
 
 	// Public selected to avoid asynchronous sliding up
 	private int pSelected = -1;
@@ -54,35 +59,32 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		this.resource = resource;
 	}
 
-	private int offsetY() {
-		return categoryMap.size() * boxHeight;
+	public GuiRollover addCategory(int id, int u, int v, GuiButton... buttons) {
+		return addCategory(id, null, u, v, buttons);
 	}
 
-	public GuiRollover addCategory(String category, int u, int v, GuiButton... buttons) {
-		categoryMap.put(category, new Vec2(u, v));
-		buttonMap.put(category, new ArrayList<GuiButton>());
-		categoryList.add(category);
-		for (GuiButton button : buttons) {
-			add(button, category);
-		}
+	public GuiRollover addCategory(int id, String tooltip, int u, int v, GuiButton... buttons) {
+		Category category = new Category();
+		category.id = id;
+		category.icon = new Vec2(u, v);
+		category.buttonList = new ArrayList<GuiButton>(Arrays.asList(buttons));
+		category.tooltip = tooltip;
+
+		categoryMap.put(id, category);
+		categoryList.add(id);
 		return this;
 	}
 
-	public GuiRollover addCategory(String category, String tooltip, int u, int v, GuiButton... buttons) {
-		tooltipMap.put(category, tooltip);
-		return addCategory(category, u, v, buttons);
-	}
-
-	public GuiRollover add(GuiButton button, String category) {
+	public GuiRollover add(GuiButton button, int category) {
 		if (!categoryMap.containsKey(category))
 			throw new RuntimeException();
-		List<GuiButton> list = buttonMap.get(category);
+		List<GuiButton> list = getButtons(category);
 		list.add(button);
 		return this;
 	}
 
 	private int calcHeight(int index) {
-		List<GuiButton> buttons = buttonMap.get(categoryList.get(index));
+		List<GuiButton> buttons = getButtons(categoryList.get(index));
 		int height = buttons.size() > 0 ? 10 : 0;
 		for (GuiButton button : buttons) {
 			height += button.height + 1;
@@ -109,12 +111,16 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		return pSelected;
 	}
 
-	public List<GuiButton> getButtons(String category) {
-		return buttonMap.get(category);
+	public List<GuiButton> getButtons(int category) {
+		return categoryMap.get(category).buttonList;
 	}
 
-	public List<String> getCategories() {
+	public List<Integer> getCategories() {
 		return categoryList;
+	}
+
+	public Category getCategory(int category) {
+		return categoryMap.get(category);
 	}
 
 	@Override
@@ -133,37 +139,41 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 
 		mc.renderEngine.bindTexture(buttonTextures);
 		int i = 0;
-		for (String category : categoryMap.keySet()) {
+		for (Category category : categoryMap.values()) {
 			int ypos = yPosition + i * boxHeight;
 			if (i >= selected)
 				ypos += height;
 			int iconOffset = 66;
 			boolean hovered = (field_146123_n && my > ypos && my < ypos + boxHeight);
-			if (hovered && mc.currentScreen instanceof IHoverableHandler && tooltipMap.containsKey(category)) {
+			if (hovered && mc.currentScreen instanceof IHoverableHandler && category.tooltip != null) {
 				((IHoverableHandler) mc.currentScreen).setCurrentItem(this);
 				hoveredCategory = category;
 			}
-			if (i == selected || hovered)
+
+			if (!category.enabled)
+				iconOffset = 46;
+			else if (i == selected || hovered)
 				iconOffset = 86;
+
 			GuiUtils.drawContinuousTexturedBox(xPosition, ypos, 0, iconOffset, 18, 18, 200, 20, 2, 3, 2, 2, this.zLevel);
 			i++;
 		}
 
 		mc.renderEngine.bindTexture(resource);
-		Iterator<Vec2> iterator = categoryMap.values().iterator();
+		Iterator<Category> iterator = categoryMap.values().iterator();
 		for (i = 0; i < categoryMap.size(); i++) {
-			Vec2 value = iterator.next();
+			Category category = iterator.next();
 			int ypos = yPosition + i * boxHeight;
 			if (i >= selected)
 				ypos += height;
-			drawTexturedModalRect(xPosition, ypos, value.x, value.y, 16, 16);
+			drawTexturedModalRect(xPosition, ypos, category.icon.x, category.icon.y, 16, 16);
 		}
 
 		if (selected != -1) {
 			GL11.glTranslatef(0, 0, -5);
 
 			// draw buttons
-			List<GuiButton> buttons = buttonMap.get(categoryList.get(selected));
+			List<GuiButton> buttons = getButtons(categoryList.get(selected));
 
 			double interpolate2 = interpolate;
 			int height2 = (moving == -1 ? currentHeight : nextHeight) - (buttons.size() - selected) * boxHeight;
@@ -207,7 +217,7 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 	@Override
 	public void mouseReleased(int mx, int my) {
 		if (selected != -1) {
-			for (GuiButton button : buttonMap.get(categoryList.get(selected))) {
+			for (GuiButton button : getButtons(categoryList.get(selected))) {
 				button.mouseReleased(mx, my);
 			}
 		}
@@ -218,15 +228,17 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 		moveUp();
 	}
 
+	private static final Method m_actionPerformed = ReflectionHelper.findMethod(GuiScreen.class, null,
+			new String[] { "actionPerformed", "func_146284_a" }, GuiButton.class);
+
 	@Override
 	public boolean mousePressed(Minecraft mc, int mx, int my) {
 
 		if (selected != -1) {
-			for (GuiButton button : buttonMap.get(categoryList.get(selected))) {
+			for (GuiButton button : getButtons(categoryList.get(selected))) {
 				if (button.mousePressed(mc, mx, my)) {
-					Method m = ReflectionHelper.findMethod(GuiScreen.class, mc.currentScreen, new String[] { "actionPerformed", "func_146284_a" }, GuiButton.class);
 					try {
-						m.invoke(mc.currentScreen, button);
+						m_actionPerformed.invoke(mc.currentScreen, button);
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
@@ -252,26 +264,47 @@ public final class GuiRollover extends GuiButton implements IHoverable {
 
 		int y = (int) fy;
 
+		Category category = null;
 		if (y != selected && y < categoryMap.size()) {
-			pSelected = y;
-			if (selected != -1) {
-				next = y;
-				moveUp();
-			} else {
-				moveDown(y);
+			category = getCategory(categoryList.get(y));
+
+			// Its only a button if there are no subelements
+			if (category.buttonList.size() > 0) {
+				pSelected = y;
+				if (selected != -1) {
+					next = y;
+					moveUp();
+				} else {
+					moveDown(y);
+				}
 			}
 		} else if (y == selected) {
 			moveUp();
 			pSelected = -1;
+			category = getCategory(categoryList.get(y));
 		}
 
-		return true;
+		if (category != null) {
+			// Dirty hack to make it work with actionPerformed.
+			try {
+				if (category.enabled) {
+					int id = this.id;
+					this.id = category.id;
+					m_actionPerformed.invoke(mc.currentScreen, this);
+					this.id = id;
+					return true;
+				}
+			} catch (Exception e) {
+			}
+		}
+
+		return false;
 	}
 
 	@Override
 	public List<String> getHoverInformation() {
 		if (hoveredCategory != null)
-			return Arrays.asList(MiscUtils.stringNewlineSplit(tooltipMap.get(hoveredCategory)));
+			return Arrays.asList(MiscUtils.stringNewlineSplit(hoveredCategory.tooltip));
 		else return null;
 	}
 }

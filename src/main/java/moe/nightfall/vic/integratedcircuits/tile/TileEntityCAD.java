@@ -1,10 +1,13 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
+import codechicken.lib.vec.BlockCoord;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
+import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitCache;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
@@ -14,6 +17,8 @@ import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangeInput;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSimulation;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBUpdate;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -36,6 +41,9 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	// Simulation settings
 	private boolean pausing = false;
 	private boolean step = false;
+
+	// Shows if there is a printer connected
+	private ForgeDirection printerLocation;
 
 	public boolean isPausing() {
 		return pausing;
@@ -155,6 +163,47 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 		else
 			out[MiscUtils.getSide(dir)] &= ~(1 << frequency);
 		updateIO = true;
+	}
+
+	@Override
+	public boolean receiveClientEvent(int id, int par) {
+		if (id == 1) {
+			// Update GUI
+			printerLocation = ForgeDirection.getOrientation(par);
+			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+			if (gui instanceof GuiCAD) {
+				((GuiCAD) gui).refreshPrinter();
+			}
+			return true;
+		} else {
+			return super.receiveClientEvent(id, par);
+		}
+	}
+
+	public void onNeighborBlockChange() {
+		BlockCoord bc = new BlockCoord(this);
+		ForgeDirection oldPrinterLocation = printerLocation;
+		printerLocation = ForgeDirection.UNKNOWN;
+		for (ForgeDirection fd : ForgeDirection.VALID_DIRECTIONS) {
+			BlockCoord bcs = bc.offset(fd.ordinal());
+			if (worldObj.getBlock(bcs.x, bcs.y, bcs.z) == Content.blockPrinter) {
+				printerLocation = fd;
+			}
+		}
+		if (!worldObj.isRemote && oldPrinterLocation != printerLocation) {
+			worldObj.addBlockEvent(xCoord, yCoord, zCoord, getBlockType(), 1, printerLocation.ordinal());
+		}
+	}
+
+	public ForgeDirection printerLocation() {
+		if (printerLocation == null) {
+			onNeighborBlockChange();
+		}
+		return printerLocation;
+	}
+
+	public boolean isPrinterConnected() {
+		return printerLocation() != ForgeDirection.UNKNOWN;
 	}
 
 	@Override

@@ -256,7 +256,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 
 		// GUI rollover on the left
 		rollover = new GuiRollover(90, guiLeft + 5, guiTop + 5, height - 10, Resources.RESOURCE_GUI_CAD_BACKGROUND)
-			.addCategory("Comment", I18n.format("gui.integratedcircuits.cad.comment"), 0, 0,
+			.addCategory(100, I18n.format("gui.integratedcircuits.cad.comment"), 0, 0,
 					buttonEditComment = new GuiIconButton(91, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 0).setToggleable(true, true).setToggled(true)
 						.setTooltip(I18n.format("gui.integratedcircuits.cad.comment.edit")),
 					buttonMoveComment = new GuiIconButton(92, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 0).setToggleable(true, true)
@@ -264,7 +264,7 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 					buttonRemoveComment = new GuiIconButton(93, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 0).setToggleable(true, true)
 						.setTooltip(I18n.format("gui.integratedcircuits.cad.comment.remove"))
 			)
-			.addCategory("Selection", I18n.format("gui.integratedcircuits.cad.selection"), 0, 16,
+			.addCategory(101, I18n.format("gui.integratedcircuits.cad.selection"), 0, 16,
 					new GuiIconButton(94, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(16, 16)
 						.setTooltip(I18n.format("gui.integratedcircuits.cad.selection.cut")),
 					new GuiIconButton(95, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(32, 16)
@@ -274,17 +274,23 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 					new GuiIconButton(97, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(64, 16)
 						.setTooltip(I18n.format("gui.integratedcircuits.cad.selection.fill"))
 			)
-			.addCategory("Simulation", I18n.format("gui.integratedcircuits.cad.simulation"), 0, 32,
+			.addCategory(102, I18n.format("gui.integratedcircuits.cad.simulation"), 0, 32,
 					buttonSimulation = new GuiIconButton(98, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND),
 					buttonSimulationStep = new GuiIconButton(99, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 32)
 						.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.step"))
-			);
+			)
+			.addCategory(103, I18n.format("gui.integratedcircuits.cad.print"), 0, 0);
+		refreshPrinter();
 
 		this.buttonList.add(rollover);
 
 		refreshUI();
 	}
 	
+	public void refreshPrinter() {
+		rollover.getCategory(103).enabled = tileentity.isPrinterConnected();
+	}
+
 	@Override
 	protected void actionPerformed(GuiButton button) {
 
@@ -355,7 +361,14 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 		} else if (button.id == 99) {
 			tileentity.step();
 			tileentity.sendSimulationState();
+		} else if (button.id == 103) {
+			tryPrint();
 		}
+	}
+
+	private void tryPrint() {
+		// TODO Auto-generated method stub
+		System.out.println("I'm currently printing something");
 	}
 
 	//Functions to convert between screen coordinates and circuit board coordinates

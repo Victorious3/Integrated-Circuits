@@ -102,7 +102,6 @@ public class TileEntityPrinterRenderer extends TileEntitySpecialRenderer impleme
 		if (world != null) {
 			CCRenderState.lightMatrix.locate(world, x, y, z);
 			CCRenderState.setBrightness(world, x, y, z);
-			System.out.println(rotation);
 		}
 		
 		TransformationList tls = new Rotation((-rotation + 2) * Math.PI / 2, 0, 1, 0).at(Vector3.center)

@@ -7,6 +7,7 @@ import moe.nightfall.vic.integratedcircuits.DiskDrive;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -44,11 +45,20 @@ public class BlockCAD extends BlockContainer {
 	}
 
 	@Override
+	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+		TileEntityCAD te = (TileEntityCAD) world.getTileEntity(x, y, z);
+		if (te != null) {
+			te.onNeighborBlockChange();
+		}
+	}
+
+	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack stack) {
 		int rotation = MathHelper.floor_double((double) (entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
 		TileEntityCAD te = (TileEntityCAD) world.getTileEntity(x, y, z);
-		if (te != null)
+		if (te != null) {
 			te.rotation = rotation;
+		}
 	}
 
 	@Override
