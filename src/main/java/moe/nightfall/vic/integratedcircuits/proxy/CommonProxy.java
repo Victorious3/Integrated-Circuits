@@ -7,6 +7,21 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.google.common.collect.Maps;
+
+import codechicken.lib.vec.BlockCoord;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.Event.Result;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.Content;
@@ -36,8 +51,9 @@ import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBClear;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBComment;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBDeleteComment;
-import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSaveLoad;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBLoad;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBPrint;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSaveLoad;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSimulation;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBUpdate;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
@@ -56,23 +72,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
-
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-
-import codechicken.lib.vec.BlockCoord;
-
-import com.google.common.collect.Maps;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy {
 	public static int serverTicks;
@@ -101,6 +100,7 @@ public class CommonProxy {
 		AbstractPacket.registerPacket(PacketPCBComment.class, null, 18);
 		AbstractPacket.registerPacket(PacketPCBDeleteComment.class, null, 19);
 		AbstractPacket.registerPacket(PacketPCBSimulation.class, null, 20);
+		AbstractPacket.registerPacket(PacketPCBPrint.class, Side.SERVER, 21);
 
 		AbstractPacket.registerPacket(PacketAssemblerStart.class, null, 8);
 		AbstractPacket.registerPacket(PacketAssemblerUpdate.class, Side.CLIENT, 9);

@@ -1,5 +1,8 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
+import moe.nightfall.vic.integratedcircuits.item.ItemPCBPrint;
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -97,5 +100,15 @@ public class TileEntityPrinter extends TileEntityContainer {
 	@Override
 	public boolean isItemValidForSlot(int id, ItemStack stack) {
 		return id == 0 && stack != null && stack.getItem() == Items.paper ? true : false;
+	}
+
+	public void print(CircuitData cdata) {
+		if (hasPaper() && inkLevel() >= 0.1F) {
+			paperStack.stackSize--;
+			inkLevel -= 0.1F;
+			markDirty();
+			MiscUtils.dropItem(worldObj, ItemPCBPrint.create(cdata), xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
 	}
 }

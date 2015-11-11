@@ -1,47 +1,25 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
-import java.nio.ByteBuffer;
-import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+
 import moe.nightfall.vic.integratedcircuits.DiskDrive;
-import moe.nightfall.vic.integratedcircuits.LaserHelper;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.ModelFloppy;
+import moe.nightfall.vic.integratedcircuits.LaserHelper;
 import moe.nightfall.vic.integratedcircuits.LaserHelper.Laser;
+import moe.nightfall.vic.integratedcircuits.client.TextureRenderer.Entry;
 import moe.nightfall.vic.integratedcircuits.client.model.ModelLaser;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRenderWrapper;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.TextureUtil;
-import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.tileentity.TileEntity;
-
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-
-import com.google.common.collect.Lists;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
 
 public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRenderer {
 	private static ModelFloppy model = new ModelFloppy(-7, -7, -9, 12, 2, 1);
-
-	// Used to unload the FBOs when the world does. If there is a better way to
-	// do this, tell me.
-	public static List<Integer> textureList = Lists.newLinkedList();
-	private static List<TileEntityAssembler> schedule = Lists.newLinkedList();
-	private static Framebuffer fbo;
-
-	public TileEntityAssemblerRenderer() {
-		FMLCommonHandler.instance().bus().register(this);
-	}
 
 	public void renderTileEntityAt(TileEntityAssembler te, double x, double y, double z, float partialTicks) {
 		if (getCurrentRenderPass() == 0)
@@ -66,7 +44,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 			tes.addVertexWithUV(1, 8 / 16F, 0, 1, 0);
 			tes.draw();
 
-			if (te.circuitTexture != -1 && te.isOccupied) {
+			if (te.texture != null && te.isOccupied) {
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glColor3f(0, 0.1F, 0);
 
@@ -102,7 +80,7 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 
 				GL11.glColor3f(1, 1, 1);
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, te.circuitTexture);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, te.texture.textureID());
 
 				tes.startDrawingQuads();
 				tes.setNormal(0, 1, 0);
@@ -203,77 +181,31 @@ public class TileEntityAssemblerRenderer extends TileEntitySemiTransparentRender
 		this.renderTileEntityAt((TileEntityAssembler) te, x, y, z, partialTicks);
 	}
 
-	@SubscribeEvent
-	public void onRenderTick(TickEvent.RenderTickEvent event) {
-		if (event.phase == Phase.START && schedule.size() > 0) {
-			int currentFBO = GL11.glGetInteger(GL30.GL_FRAMEBUFFER_BINDING);
-			if (fbo == null)
-				fbo = new Framebuffer(256, 256, false);
-			fbo.unbindFramebuffer();
+	public static void scheduleFramebuffer(final TileEntityAssembler te) {
+		
+		if (te.texture == null) te.texture = new Entry() {
+			@Override
+			public void render(float partial) {
+				GL11.glColor3f(0, 0.1F, 0);
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				Tessellator tes = Tessellator.instance;
+				tes.startDrawingQuads();
+				tes.addVertex(0, 0, 0);
+				tes.addVertex(0, 256, 0);
+				tes.addVertex(256, 256, 0);
+				tes.addVertex(256, 0, 0);
+				tes.draw();
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				GL11.glColor3f(1, 1, 1);
 
-			fbo.bindFramebuffer(false);
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPushMatrix();
-			GL11.glLoadIdentity();
-			GL11.glViewport(0, 0, 256, 256);
-			GL11.glOrtho(0, 256, 256, 0, -1, 1);
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glPushMatrix();
-			GL11.glLoadIdentity();
-
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-			for (TileEntityAssembler te : schedule)
-				updateFramebuffer(te);
-			schedule.clear();
-
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPopMatrix();
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glPopMatrix();
-
-			fbo.unbindFramebuffer();
-			OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, currentFBO);
-		}
-	}
-
-	private void updateFramebuffer(TileEntityAssembler te) {
-		if (te.circuitTexture == -1) {
-			te.circuitTexture = fbo.framebufferTexture = TextureUtil.glGenTextures();
-			textureList.add(te.circuitTexture);
-			fbo.setFramebufferFilter(GL11.GL_NEAREST);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, fbo.framebufferTexture);
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, fbo.framebufferTextureWidth,
-					fbo.framebufferTextureHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
-			OpenGlHelper.func_153171_g(OpenGlHelper.field_153198_e, fbo.framebufferObject);
-		}
-
-		fbo.framebufferTexture = te.circuitTexture;
-		OpenGlHelper.func_153188_a(OpenGlHelper.field_153198_e, OpenGlHelper.field_153200_g, GL11.GL_TEXTURE_2D,
-				fbo.framebufferTexture, 0);
-
-		GL11.glColor3f(0, 0.1F, 0);
-		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		Tessellator tes = Tessellator.instance;
-		tes.startDrawingQuads();
-		tes.addVertex(0, 0, 0);
-		tes.addVertex(0, 256, 0);
-		tes.addVertex(256, 256, 0);
-		tes.addVertex(256, 0, 0);
-		tes.draw();
-		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glColor3f(1, 1, 1);
-
-		if (te.excMatrix != null && te.cdata != null) {
-			GL11.glScalef(16 / (float) te.cdata.getSize(), 16 / (float) te.cdata.getSize(), 1);
-			CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.cdata), 0, 0, te.excMatrix, te.size > 16 ? CircuitPartRenderer.EnumRenderType.WORLD_16x
-					: CircuitPartRenderer.EnumRenderType.WORLD);
-		}
-	}
-
-	public static void scheduleFramebuffer(TileEntityAssembler te) {
-		if (!schedule.contains(te))
-			schedule.add(te);
+				if (te.excMatrix != null && te.cdata != null) {
+					GL11.glScalef(16 / (float) te.cdata.getSize(), 16 / (float) te.cdata.getSize(), 1);
+					CircuitPartRenderer.renderParts(new CircuitRenderWrapper(te.cdata), 0, 0, te.excMatrix, te.size > 16 ? CircuitPartRenderer.EnumRenderType.WORLD_16x
+							: CircuitPartRenderer.EnumRenderType.WORLD);
+				}
+			}
+			};
+		
+		ClientProxy.textureRenderer.schedule(te.texture);
 	}
 }

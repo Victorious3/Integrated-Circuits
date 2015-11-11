@@ -45,6 +45,7 @@ import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBCache;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangeName;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBChangePart;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBClear;
+import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBPrint;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBSaveLoad;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
@@ -279,7 +280,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 					buttonSimulationStep = new GuiIconButton(99, 0, 0, 18, 18, Resources.RESOURCE_GUI_CAD_BACKGROUND).setIcon(48, 32)
 						.setTooltip(I18n.format("gui.integratedcircuits.cad.simulation.step"))
 			)
-			.addCategory(103, I18n.format("gui.integratedcircuits.cad.print"), 0, 0);
+			.addCategory(103, I18n.format("gui.integratedcircuits.cad.print"), 0, 48);
+		
 		refreshPrinter();
 
 		this.buttonList.add(rollover);
@@ -367,8 +369,8 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 	}
 
 	private void tryPrint() {
-		// TODO Auto-generated method stub
-		System.out.println("I'm currently printing something");
+		CommonProxy.networkWrapper
+				.sendToServer(new PacketPCBPrint(tileentity.xCoord, tileentity.yCoord, tileentity.zCoord));
 	}
 
 	//Functions to convert between screen coordinates and circuit board coordinates

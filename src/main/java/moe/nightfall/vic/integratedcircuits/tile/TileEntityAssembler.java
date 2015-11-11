@@ -1,8 +1,13 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
+import buildcraft.api.tiles.IControllable;
+import buildcraft.api.tiles.IHasWork;
+import cpw.mods.fml.common.Optional.Interface;
+import cpw.mods.fml.common.Optional.InterfaceList;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.LaserHelper;
+import moe.nightfall.vic.integratedcircuits.client.TextureRenderer;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiAssembler;
 import moe.nightfall.vic.integratedcircuits.client.gui.cad.GuiCAD;
@@ -14,9 +19,9 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.net.PacketAssemblerChangeItem;
 import moe.nightfall.vic.integratedcircuits.net.PacketAssemblerStart;
 import moe.nightfall.vic.integratedcircuits.net.PacketFloppyDisk;
+import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
@@ -25,10 +30,6 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
 import net.minecraftforge.common.util.ForgeDirection;
-import buildcraft.api.tiles.IControllable;
-import buildcraft.api.tiles.IHasWork;
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.InterfaceList;
 
 @InterfaceList({ @Interface(iface = "buildcraft.api.tiles.IControllable", modid = "BuildCraft|Core"),
 		@Interface(iface = "buildcraft.api.tiles.IHasWork", modid = "BuildCraft|Core") })
@@ -45,7 +46,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	private int statusCode;
 
 	// Client
-	public int circuitTexture = -1;
+	public TextureRenderer.Entry texture;
 	public boolean isOccupied;
 	public byte request = 1;
 
@@ -65,7 +66,7 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 
 	@Override
 	public void updateEntity() {
-		if (worldObj.isRemote && circuitTexture != -1)
+		if (worldObj.isRemote && texture != null)
 			TileEntityAssemblerRenderer.scheduleFramebuffer(this);
 		if (worldObj.isRemote)
 			return;
@@ -246,10 +247,9 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if (worldObj.isRemote && circuitTexture != -1) {
-			TileEntityAssemblerRenderer.textureList.remove((Object) circuitTexture);
-			TextureUtil.deleteTexture(circuitTexture);
-			circuitTexture = -1;
+		if (worldObj.isRemote && texture != null) {
+			ClientProxy.textureRenderer.delete(texture);
+			texture = null;
 		}
 	}
 

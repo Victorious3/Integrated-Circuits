@@ -37,6 +37,7 @@ import moe.nightfall.vic.integratedcircuits.client.ItemPCBPrintRenderer;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.client.SemiTransparentRenderer;
 import moe.nightfall.vic.integratedcircuits.client.ShaderHelper;
+import moe.nightfall.vic.integratedcircuits.client.TextureRenderer;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityGateRenderer;
 import moe.nightfall.vic.integratedcircuits.client.TileEntityPCBLayoutRenderer;
@@ -67,7 +68,6 @@ import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -88,7 +88,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.IExtendedEntityProperties;
-import net.minecraftforge.event.world.WorldEvent;
 
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
@@ -106,6 +105,8 @@ public class ClientProxy extends CommonProxy {
 	private static String tooltip;
 	public static Map<Class<?>, IPartRenderer<?>> rendererRegistry = Maps.newHashMap();
 	public static List<String> icons = Lists.newArrayList();
+
+	public static TextureRenderer textureRenderer;
 
 	@Override
 	public void initialize() {
@@ -139,13 +140,15 @@ public class ClientProxy extends CommonProxy {
 
 		MinecraftForgeClient.registerItemRenderer(Content.itemCircuit, circuitRenderer);
 		MinecraftForgeClient.registerItemRenderer(Content.item7Segment, segmentRenderer);
-		MinecraftForgeClient.registerItemRenderer(Content.itemPCBViewer, pcbPrintRenderer);
+		MinecraftForgeClient.registerItemRenderer(Content.itemPCBPrint, pcbPrintRenderer);
 
 		MinecraftForgeClient.registerItemRenderer(Content.itemSocket, socketRenderer);
 		if (IntegratedCircuits.isFMPLoaded)
 			MinecraftForgeClient.registerItemRenderer(Content.itemSocketFMP, socketRendererFMP);
 
 		MinecraftForgeClient.registerItemRenderer(Content.itemLaser, new ItemLaserRenderer());
+
+		textureRenderer = new TextureRenderer();
 
 		// Unreachable code:
 		curlMamisHair();
@@ -198,16 +201,6 @@ public class ClientProxy extends CommonProxy {
 		GL11.glDisable(GL11.GL_BLEND);
 
 		event.setCanceled(true);
-	}
-
-	@SubscribeEvent
-	public void onWorldUnload(WorldEvent.Unload event) {
-		try {
-			for (Integer texture : TileEntityAssemblerRenderer.textureList)
-				TextureUtil.deleteTexture(texture);
-		} catch (RuntimeException e) {
-		}
-		TileEntityAssemblerRenderer.textureList.clear();
 	}
 
 	@SubscribeEvent

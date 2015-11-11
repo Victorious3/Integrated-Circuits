@@ -2,18 +2,29 @@ package moe.nightfall.vic.integratedcircuits.item;
 
 import java.util.List;
 
+import moe.nightfall.vic.integratedcircuits.Content;
+import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
 
 public class ItemPCBPrint extends ItemMap {
 
+	public static ItemStack create(CircuitData cdata) {
+		ItemStack stack = new ItemStack(Content.itemPCBPrint);
+		stack.stackTagCompound = cdata.writeToNBT(new NBTTagCompound());
+		return stack;
+	}
+
 	public ItemPCBPrint() {
-		ItemBase.register(this, "pcbViewer");
+		ItemBase.register(this, "bcp_print");
+		this.setCreativeTab(null);
+		this.setMaxStackSize(1);
 	}
 
 	@Override

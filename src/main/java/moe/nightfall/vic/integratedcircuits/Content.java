@@ -27,7 +27,7 @@ public final class Content {
 	public static Item item7Segment;
 	public static Item itemFloppyDisk;
 	public static Item itemPCB;
-	public static Item itemPCBViewer;
+	public static Item itemPCBPrint;
 
 	public static Item itemLaser;
 	public static Item itemSolderingIron;
@@ -56,7 +56,7 @@ public final class Content {
 		itemFloppyDisk = new ItemFloppyDisk();
 		itemPCB = new ItemPCB();
 		itemPCBChip = new ItemBase("pcb_chip");
-		itemPCBViewer = new ItemPCBPrint();
+		itemPCBPrint = new ItemPCBPrint();
 		itemLaser = new ItemBase("laser").setHasIcon(false);
 
 		itemSolderingIron = new ItemBase("soldering_iron").setMaxDamage(25).setMaxStackSize(1).setNoRepair();
