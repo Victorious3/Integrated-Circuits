@@ -1,156 +1,156 @@
-# items
-item.integratedcircuits.floppy.name=Ð”Ð¸Ñ�ÐºÐµÑ‚Ð° Ð´Ð»Ñ� Ñ‡ÐµÑ€Ñ‚ÐµÐ¶ÐµÐ¹ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼
-item.integratedcircuits.laser.name=Ð›Ð°Ð·ÐµÑ€
-item.integratedcircuits.pcb.name=Ð—Ð°Ð³Ð¾Ñ‚Ð¾Ð²ÐºÐ° Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ñ‹
-item.integratedcircuits.pcb.printed.name=ÐœÐ¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ð° Ð±ÐµÐ· ÐºÐ¾Ñ€Ð¿ÑƒÑ�Ð°
-item.integratedcircuits.pcb_chip.name=ÐœÐ¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ð°
-item.integratedcircuits.silicon.name=ÐšÑ€ÐµÐ¼Ð½Ð¸Ð¹
-item.integratedcircuits.silicon_drop.name=ÐšÑƒÑ�Ð¾Ñ‡ÐµÐº ÐºÑ€ÐµÐ¼Ð½Ð¸Ñ�
-item.integratedcircuits.coalcompound.name=ÐŸÐµÑ�ÐºÐ¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð°Ñ� Ñ�Ð¼ÐµÑ�ÑŒ
-item.integratedcircuits.screwdriver.name=ÐžÑ‚Ð²Ñ‘Ñ€Ñ‚ÐºÐ°
-item.integratedcircuits.soldering_iron.name=ÐŸÐ°Ñ�Ð»ÑŒÐ½Ð¸Ðº
+﻿# items
+item.integratedcircuits.floppy.name=Дискета для чертежей микросхем
+item.integratedcircuits.laser.name=Лазер
+item.integratedcircuits.pcb.name=Заготовка микросхемы
+item.integratedcircuits.pcb.printed.name=Микросхема без корпуса
+item.integratedcircuits.pcb_chip.name=Микросхема
+item.integratedcircuits.silicon.name=Кремний
+item.integratedcircuits.silicon_drop.name=Кусочек кремния
+item.integratedcircuits.coalcompound.name=Пескоугольная смесь
+item.integratedcircuits.screwdriver.name=Отвёртка
+item.integratedcircuits.soldering_iron.name=Паяльник
 
-item.integratedcircuits.socket.name=Ð¡Ð»Ð¾Ñ‚ Ð¿Ð¾Ð´ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ñƒ
-item.integratedcircuits.socket_fmp.name=FMP Ñ�Ð»Ð¾Ñ‚ Ð¿Ð¾Ð´ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ñƒ
+item.integratedcircuits.socket.name=Слот под микросхему
+item.integratedcircuits.socket_fmp.name=FMP слот под микросхему
 
-item.integratedcircuits.7segment.name=Ð¡ÐµÐ³Ð¼ÐµÐ½Ñ‚
-item.integratedcircuits.circuit.name=ÐœÐ¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ð° (%s)
+item.integratedcircuits.7segment.name=Сегмент
+item.integratedcircuits.circuit.name=Микросхема (%s)
 
 # blocks
-tile.integratedcircuits.pcblayoutcad.name=Ð¡Ð�ÐŸÐ  Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼
-tile.integratedcircuits.assembler.name=Ð¡Ð±Ð¾Ñ€Ñ‰Ð¸Ðº Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼
+tile.integratedcircuits.pcblayoutcad.name=САПР микросхем
+tile.integratedcircuits.assembler.name=Сборщик микросхем
 
 # parts
-part.integratedcircuits.iobit.name=Ð’Ð½ÐµÑˆÐ½Ð¸Ð¹ Ð²Ñ‹Ð²Ð¾Ð´
-part.integratedcircuits.torch.name=Ð¤Ð°ÐºÐµÐ»
-part.integratedcircuits.tunnel.name=ÐŸÐµÑ€ÐµÐ¼Ñ‹Ñ‡ÐºÐ°
-part.integratedcircuits.wire.0.name=ÐŸÑ€Ð¾Ð²Ð¾Ð´
-part.integratedcircuits.wire.1.name=ÐšÑ€Ð°Ñ�Ð½Ñ‹Ð¹ Ð¿Ñ€Ð¾Ð²Ð¾Ð´
-part.integratedcircuits.wire.2.name=ÐžÑ€Ð°Ð½Ð¶ÐµÐ²Ñ‹Ð¹ Ð¿Ñ€Ð¾Ð²Ð¾Ð´
+part.integratedcircuits.iobit.name=Внешний вывод
+part.integratedcircuits.torch.name=Факел
+part.integratedcircuits.tunnel.name=Перемычка
+part.integratedcircuits.wire.0.name=Провод
+part.integratedcircuits.wire.1.name=Красный провод
+part.integratedcircuits.wire.2.name=Оранжевый провод
 
-part.integratedcircuits.nullcell.name=ÐŸÐµÑ€ÐµÑ�ÐµÑ‡ÐµÐ½Ð¸Ðµ
-part.integratedcircuits.buffercell.name=ÐŸÐµÑ€ÐµÑ�ÐµÑ‡ÐµÐ½Ð¸Ðµ Ñ� Ð±ÑƒÑ„ÐµÑ€Ð¾Ð¼
-part.integratedcircuits.invertcell.name=ÐŸÐµÑ€ÐµÑ�ÐµÑ‡ÐµÐ½Ð¸Ðµ Ñ� Ð¸Ð½Ð²ÐµÑ€Ñ‚Ð¾Ñ€Ð¾Ð¼
-part.integratedcircuits.andcell.name=ÐŸÐµÑ€ÐµÑ�ÐµÑ‡ÐµÐ½Ð¸Ðµ Ñ� Ñ�Ð»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð¼ Ð˜
+part.integratedcircuits.nullcell.name=Пересечение
+part.integratedcircuits.buffercell.name=Пересечение с буфером
+part.integratedcircuits.invertcell.name=Пересечение с инвертором
+part.integratedcircuits.andcell.name=Пересечение с элементом И
 
-part.integratedcircuits.andgate.name=Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð˜
-part.integratedcircuits.orgate.name=Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð˜Ð›Ð˜
-part.integratedcircuits.xorgate.name=Ð˜Ñ�ÐºÐ»ÑŽÑ‡Ð°ÑŽÑ‰ÐµÐµ Ð˜Ð›Ð˜
-part.integratedcircuits.buffergate.name=Ð‘ÑƒÑ„ÐµÑ€
-part.integratedcircuits.nandgate.name=Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð˜-Ð�Ð•
-part.integratedcircuits.norgate.name=Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ð˜Ð›Ð˜-Ð�Ð•
-part.integratedcircuits.xnorgate.name=Ð˜Ñ�ÐºÐ»ÑŽÑ‡Ð°ÑŽÑ‰ÐµÐµ Ð˜Ð›Ð˜-Ð�Ð•
-part.integratedcircuits.notgate.name=Ð˜Ð½Ð²ÐµÑ€Ñ‚Ð¾Ñ€
+part.integratedcircuits.andgate.name=Элемент И
+part.integratedcircuits.orgate.name=Элемент ИЛИ
+part.integratedcircuits.xorgate.name=Исключающее ИЛИ
+part.integratedcircuits.buffergate.name=Буфер
+part.integratedcircuits.nandgate.name=Элемент И-НЕ
+part.integratedcircuits.norgate.name=Элемент ИЛИ-НЕ
+part.integratedcircuits.xnorgate.name=Исключающее ИЛИ-НЕ
+part.integratedcircuits.notgate.name=Инвертор
 
-part.integratedcircuits.togglelatch.name=ÐŸÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð°Ñ‚ÐµÐ»ÑŒ
-part.integratedcircuits.rslatch.name=RS Ñ‚Ñ€Ð¸Ð³Ð³ÐµÑ€
-part.integratedcircuits.rslatch.mode=Ð ÐµÐ¶Ð¸Ð¼
-part.integratedcircuits.rslatch.mirrored=ÐŸÐµÑ€ÐµÐ²Ñ‘Ñ€Ð½ÑƒÑ‚
-part.integratedcircuits.transparentlatch.name=Ð¯Ñ‡ÐµÐ¹ÐºÐ° Ð¿Ð°Ð¼Ñ�Ñ‚Ð¸
+part.integratedcircuits.togglelatch.name=Переключатель
+part.integratedcircuits.rslatch.name=RS триггер
+part.integratedcircuits.rslatch.mode=Режим
+part.integratedcircuits.rslatch.mirrored=Перевёрнут
+part.integratedcircuits.transparentlatch.name=Ячейка памяти
 
-part.integratedcircuits.timer.name=Ð¢Ð°Ð¹Ð¼ÐµÑ€
-part.integratedcircuits.sequencer.name=Ð§Ð°Ñ�Ñ‹
-part.integratedcircuits.synchronizer.name=Ð¡Ð¸Ð½Ñ…Ñ€Ð¾Ð½Ð¸Ð·Ð°Ñ‚Ð¾Ñ€ Ð¸Ð¼Ð¿ÑƒÐ»ÑŒÑ�Ð¾Ð²
-part.integratedcircuits.statecell.name=ÐŸÐ°Ð¼Ñ�Ñ‚ÑŒ Ñ� Ð·Ð°Ð´ÐµÑ€Ð¶ÐºÐ¾Ð¹
-part.integratedcircuits.pulseformer.name=Ð“ÐµÐ½ÐµÑ€Ð°Ñ‚Ð¾Ñ€ Ð¸Ð¼Ð¿ÑƒÐ»ÑŒÑ�Ð¾Ð²
-part.integratedcircuits.randomizer.name=Ð¡Ð»ÑƒÑ‡Ð°Ð¹Ð½Ñ‹Ð¹ Ð³ÐµÐ½ÐµÑ€Ð°Ñ‚Ð¾Ñ€
-part.integratedcircuits.repeater.name=ÐŸÐ¾Ð²Ñ‚Ð¾Ñ€Ð¸Ñ‚ÐµÐ»ÑŒ
-part.integratedcircuits.multiplexer.name=ÐœÑƒÐ»ÑŒÑ‚Ð¸Ð¿Ð»ÐµÐºÑ�Ð¾Ñ€
+part.integratedcircuits.timer.name=Таймер
+part.integratedcircuits.sequencer.name=Часы
+part.integratedcircuits.synchronizer.name=Синхронизатор импульсов
+part.integratedcircuits.statecell.name=Память с задержкой
+part.integratedcircuits.pulseformer.name=Генератор импульсов
+part.integratedcircuits.randomizer.name=Случайный генератор
+part.integratedcircuits.repeater.name=Повторитель
+part.integratedcircuits.multiplexer.name=Мультиплексор
 
 # GUI
 gui.integratedcircuits.callback.ok=OK
-gui.integratedcircuits.callback.cancel=ÐžÑ‚Ð¼ÐµÐ½Ð°
-gui.integratedcircuits.callback.yes=Ð”Ð°
-gui.integratedcircuits.callback.no=Ð�ÐµÑ‚
+gui.integratedcircuits.callback.cancel=Отмена
+gui.integratedcircuits.callback.yes=Да
+gui.integratedcircuits.callback.no=Нет
 
-gui.integratedcircuits.cad.name=Ð¡Ð�ÐŸÐ  Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼
-gui.integratedcircuits.cad.edit=ÐŸÑ€Ð°Ð²ÐºÐ°
-gui.integratedcircuits.cad.erase=Ð£Ð´Ð°Ð»ÐµÐ½Ð¸Ðµ
+gui.integratedcircuits.cad.name=САПР микросхем
+gui.integratedcircuits.cad.edit=Правка
+gui.integratedcircuits.cad.erase=Удаление
 
-gui.integratedcircuits.cad.rotate=-ÐŸÐ¾Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ-
-gui.integratedcircuits.cad.toggle=-ÐŸÐµÑ€ÐµÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ-
-gui.integratedcircuits.cad.delay=-Ð—Ð°Ð´ÐµÑ€Ð¶ÐºÐ°-
-gui.integratedcircuits.cad.mode=-Ð ÐµÐ¶Ð¸Ð¼-
+gui.integratedcircuits.cad.rotate=-Повернуть-
+gui.integratedcircuits.cad.toggle=-Переключить-
+gui.integratedcircuits.cad.delay=-Задержка-
+gui.integratedcircuits.cad.mode=-Режим-
 
-gui.integratedcircuits.cad.mode.simple=ÐŸÑ€Ð¾Ñ�Ñ‚Ð¾Ð¹
-gui.integratedcircuits.cad.mode.bundled=ÐšÐ°Ð±ÐµÐ»ÑŒ
-gui.integratedcircuits.cad.mode.analog=Ð�Ð½Ð°Ð»Ð¾Ð³Ð¾Ð²Ñ‹Ð¹
-gui.integratedcircuits.cad.mode.low=Ð�Ð˜Ð—Ðš
-gui.integratedcircuits.cad.mode.high=Ð’Ð«Ð¡
+gui.integratedcircuits.cad.mode.simple=Простой
+gui.integratedcircuits.cad.mode.bundled=Кабель
+gui.integratedcircuits.cad.mode.analog=Аналоговый
+gui.integratedcircuits.cad.mode.low=НИЗК
+gui.integratedcircuits.cad.mode.high=ВЫС
 
-gui.integratedcircuits.cad.callback.show=ÐŸÐ¾ÐºÐ°Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ Ñ�Ñ‚Ð¾ Ñ�Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ?
-gui.integratedcircuits.cad.callback.confirm=Ð’Ñ‹ ÑƒÐ²ÐµÑ€ÐµÐ½Ñ‹?
-gui.integratedcircuits.cad.callback.continue=Ð’Ñ�Ñ‘ Ñ€Ð°Ð²Ð½Ð¾ Ð¿Ñ€Ð¾Ð´Ð¾Ð»Ð¶Ð¸Ñ‚ÑŒ?
-gui.integratedcircuits.cad.callback.message=Ð­Ñ‚Ð¾ Ð´ÐµÐ¹Ñ�Ñ‚Ð²Ð¸Ðµ ÑƒÐ´Ð°Ð»Ð¸Ñ‚ Ð²ÐµÑ�ÑŒ%nÐ¿Ñ€Ð¾Ð³Ñ€ÐµÑ�Ñ� Ð¸ Ð¾Ñ‡Ð¸Ñ�Ñ‚Ð¸Ñ‚%nÐ²Ñ‹Ð±Ñ€Ð°Ð½Ð½ÑƒÑŽ Ñ�Ñ…ÐµÐ¼Ñƒ.
-gui.integratedcitcuits.cad.callback.delay=Ð—Ð°Ð´ÐµÑ€Ð¶ÐºÐ°: %s Ñ‚Ð°ÐºÑ‚Ð¾Ð²
+gui.integratedcircuits.cad.callback.show=Показывать это сообщение?
+gui.integratedcircuits.cad.callback.confirm=Вы уверены?
+gui.integratedcircuits.cad.callback.continue=Всё равно продолжить?
+gui.integratedcircuits.cad.callback.message=Это действие удалит весь%nпрогресс и очистит%nвыбранную схему.
+gui.integratedcitcuits.cad.callback.delay=Задержка: %s тактов
 
-gui.integratedcircuits.assembler.statuscode.2=Ð�Ðµ Ñ…Ð²Ð°Ñ‚Ð°ÐµÑ‚ Ð¼Ð°Ñ‚ÐµÑ€Ð¸Ð°Ð»Ð¾Ð²!
-gui.integratedcircuits.assembler.statuscode.3=Ð�Ðµ Ñ…Ð²Ð°Ñ‚Ð°ÐµÑ‚ Ð·Ð°Ð³Ð¾Ñ‚Ð¾Ð²Ð¾Ðº!
+gui.integratedcircuits.assembler.statuscode.2=Не хватает материалов!
+gui.integratedcircuits.assembler.statuscode.3=Не хватает заготовок!
 
-gui.integratedcircuits.assembler.nocircuit=-Ð¡Ñ…ÐµÐ¼Ð° Ð½Ðµ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð°-
-gui.integratedcircuits.assembler.redstone.enabled=ÐŸÑƒÑ�Ðº Ð¿Ñ€Ð¸ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¸ ÐºÑ€Ð°Ñ�Ð½Ð¾Ð³Ð¾ ÐºÐ°Ð¼Ð½Ñ�.
-gui.integratedcircuits.assembler.redstone.inverted=ÐŸÑƒÑ�Ðº Ð¿Ñ€Ð¸ Ð¾Ñ‚ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ð¸ ÐºÑ€Ð°Ñ�Ð½Ð¾Ð³Ð¾ ÐºÐ°Ð¼Ð½Ñ�.
-gui.integratedcircuits.assembler.redstone.disabled=Ð˜Ð³Ð½Ð¾Ñ€Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ñ�Ð¸Ð³Ð½Ð°Ð» ÐºÑ€Ð°Ñ�Ð½Ð¾Ð³Ð¾ ÐºÐ°Ð¼Ð½Ñ�.
-gui.integratedcircuits.assembler.pull.single=ÐžÐ´Ð¸Ð½Ð¾Ñ‡Ð½Ð°Ñ� Ñ�Ð±Ð¾Ñ€ÐºÐ°
-gui.integratedcircuits.assembler.pull.auto=Ð�Ð²Ñ‚Ð¾Ñ�Ð±Ð¾Ñ€ÐºÐ°
-gui.integratedcircuits.assembler.run=ÐŸÑƒÑ�Ðº
+gui.integratedcircuits.assembler.nocircuit=-Схема не выбрана-
+gui.integratedcircuits.assembler.redstone.enabled=Пуск при включении красного камня.
+gui.integratedcircuits.assembler.redstone.inverted=Пуск при отключении красного камня.
+gui.integratedcircuits.assembler.redstone.disabled=Игнорировать сигнал красного камня.
+gui.integratedcircuits.assembler.pull.single=Одиночная сборка
+gui.integratedcircuits.assembler.pull.auto=Автосборка
+gui.integratedcircuits.assembler.run=Пуск
 
-gui.integratedcircuits.7segment.name=Ð¡ÐµÐ¼Ð¸Ñ�ÐµÐ³Ð¼ÐµÐ½Ñ‚Ð½Ñ‹Ð¹ Ð¸Ð½Ð´Ð¸ÐºÐ°Ñ‚Ð¾Ñ€
-gui.integratedcircuits.7segment.master=Ð“Ð»Ð°Ð²Ð½Ñ‹Ð¹
-gui.integratedcircuits.7segment.slave=Ð£Ð¿Ñ€Ð°Ð²Ð»Ñ�ÐµÐ¼Ñ‹Ð¹
-gui.integratedcircuits.7segment.mode=Ð ÐµÐ¶Ð¸Ð¼:
+gui.integratedcircuits.7segment.name=Семисегментный индикатор
+gui.integratedcircuits.7segment.master=Главный
+gui.integratedcircuits.7segment.slave=Управляемый
+gui.integratedcircuits.7segment.mode=Режим:
 
-gui.integratedcircuits.7segment.mode.simple=ÐŸÑ€Ð¾Ñ�Ñ‚Ð¾Ð¹
-gui.integratedcircuits.7segment.mode.analog=Ð�Ð½Ð°Ð»Ð¾Ð³Ð¾Ð²Ñ‹Ð¹
-gui.integratedcircuits.7segment.mode.short.signed=Ð—Ð½Ð°ÐºÐ¾Ð²Ð¾Ðµ Ñ†ÐµÐ»Ð¾Ðµ
-gui.integratedcircuits.7segment.mode.short.unsigned=Ð‘ÐµÐ·Ð·Ð½Ð°ÐºÐ¾Ð²Ð¾Ðµ Ñ†ÐµÐ»Ð¾Ðµ
-gui.integratedcircuits.7segment.mode.float=Ð¡ Ð¿Ð»Ð°Ð²Ð°ÑŽÑ‰ÐµÐ¹ Ñ‚Ð¾Ñ‡ÐºÐ¾Ð¹
-gui.integratedcircuits.7segment.mode.binary=Ð”Ð²Ð¾Ð¸Ñ‡Ð½Ñ‹Ð¹
-gui.integratedcircuits.7segment.mode.manual=Ð ÑƒÑ‡Ð½Ð¾Ð¹
+gui.integratedcircuits.7segment.mode.simple=Простой
+gui.integratedcircuits.7segment.mode.analog=Аналоговый
+gui.integratedcircuits.7segment.mode.short.signed=Знаковое целое
+gui.integratedcircuits.7segment.mode.short.unsigned=Беззнаковое целое
+gui.integratedcircuits.7segment.mode.float=С плавающей точкой
+gui.integratedcircuits.7segment.mode.binary=Двоичный
+gui.integratedcircuits.7segment.mode.manual=Ручной
 
-gui.integratedcircuits.7segment.mode.simple.tooltip=Ð¦Ð¸Ñ„Ñ€Ð¾Ð²Ð¾Ð¹ Ñ�Ð¸Ð³Ð½Ð°Ð» ÐºÑ€Ð°Ñ�Ð½Ð¾Ð³Ð¾ ÐºÐ°Ð¼Ð½Ñ�:%nÂ§8Â§oTrue Ð¸Ð»Ð¸ False.%nÂ§8Â§o0 Ð¸Ð»Ð¸ 1, ÐµÑ�Ð»Ð¸ Ð¼ÐµÐ½ÐµÐµ 5 Ñ�ÐµÐ³Ð¼ÐµÐ½Ñ‚Ð¾Ð².
-gui.integratedcircuits.7segment.mode.analog.tooltip=Ð�Ð½Ð°Ð»Ð¾Ð³Ð¾Ð²Ñ‹Ð¹ Ñ�Ð¸Ð³Ð½Ð°Ð» ÐºÑ€Ð°Ñ�Ð½Ð¾Ð³Ð¾ ÐºÐ°Ð¼Ð½Ñ�:%nÂ§8Â§oÐžÑ‚ 0 Ð´Ð¾ F.
-gui.integratedcircuits.7segment.mode.short.signed.tooltip=Ð’Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ Ñ�Ð¸Ð³Ð½Ð°Ð» Ñ� ÐºÐ°Ð±ÐµÐ»Ñ� ÐºÐ°Ðº%nÐ·Ð½Ð°ÐºÐ¾Ð²Ð¾Ðµ 16-Ð±Ð¸Ñ‚Ð½Ð¾Ðµ Ñ†ÐµÐ»Ð¾Ðµ:%nÂ§8Â§oÐžÑ‚ -32768 Ð´Ð¾ 32767.
-gui.integratedcircuits.7segment.mode.short.unsigned.tooltip=Ð’Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ Ñ�Ð¸Ð³Ð½Ð°Ð» Ñ� ÐºÐ°Ð±ÐµÐ»Ñ� ÐºÐ°Ðº%nÐ±ÐµÐ·Ð·Ð½Ð°ÐºÐ¾Ð²Ð¾Ðµ 16-Ð±Ð¸Ñ‚Ð½Ð¾Ðµ Ñ†ÐµÐ»Ð¾Ðµ:%nÂ§8Â§oÐžÑ‚ 0 Ð´Ð¾ 65535. 
-gui.integratedcircuits.7segment.mode.float.tooltip=Ð’Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ Ñ�Ð¸Ð³Ð½Ð°Ð» Ñ� ÐºÐ°Ð±ÐµÐ»Ñ� ÐºÐ°Ðº%n16-Ð±Ð¸Ñ‚Ð½Ð¾Ðµ Ñ‡Ð¸Ñ�Ð»Ð¾ Ñ� Ð¿Ð»Ð°Ð²Ð°ÑŽÑ‰ÐµÐ¹ Ð·Ð°Ð¿Ñ�Ñ‚Ð¾Ð¹:%nÂ§8Â§oÐžÑ‚ 0,000061 Ð´Ð¾ 65504,%nÂ§8Â§oÐ¿Ñ€Ð¸ Ñ‚Ð¾Ñ‡Ð½Ð¾Ñ�Ñ‚Ð¸ 3,3 Ð´ÐµÑ�Ñ�Ñ‚Ð¸Ñ‡Ð½Ñ‹Ñ… Ñ†Ð¸Ñ„Ñ€Ñ‹.
-gui.integratedcircuits.7segment.mode.binary.tooltip=Ð’Ñ‹Ð²Ð¾Ð´Ð¸Ñ‚ Ñ�Ð¸Ð³Ð½Ð°Ð» Ñ� ÐºÐ°Ð±ÐµÐ»Ñ� Ð¿Ð¾Ð±Ð¸Ñ‚Ð¾Ð²Ð¾.
-gui.integratedcircuits.7segment.mode.manual.tooltip=ÐšÐ°Ð¶Ð´Ñ‹Ð¹ Ñ�ÐµÐ³Ð¼ÐµÐ½Ñ‚ ÑƒÐ¿Ñ€Ð°Ð²Ð»Ñ�ÐµÑ‚Ñ�Ñ�%nÑ�Ð²Ð¾Ð¸Ð¼ Ñ�Ð¸Ð³Ð½Ð°Ð»Ð¾Ð¼ Ñ� ÐºÐ°Ð±ÐµÐ»Ñ�.
+gui.integratedcircuits.7segment.mode.simple.tooltip=Цифровой сигнал красного камня:%n§8§oTrue или False.%n§8§o0 или 1, если менее 5 сегментов.
+gui.integratedcircuits.7segment.mode.analog.tooltip=Аналоговый сигнал красного камня:%n§8§oОт 0 до F.
+gui.integratedcircuits.7segment.mode.short.signed.tooltip=Выводит сигнал с кабеля как%nзнаковое 16-битное целое:%n§8§oОт -32768 до 32767.
+gui.integratedcircuits.7segment.mode.short.unsigned.tooltip=Выводит сигнал с кабеля как%nбеззнаковое 16-битное целое:%n§8§oОт 0 до 65535. 
+gui.integratedcircuits.7segment.mode.float.tooltip=Выводит сигнал с кабеля как%n16-битное число с плавающей запятой:%n§8§oОт 0,000061 до 65504,%n§8§oпри точности 3,3 десятичных цифры.
+gui.integratedcircuits.7segment.mode.binary.tooltip=Выводит сигнал с кабеля побитово.
+gui.integratedcircuits.7segment.mode.manual.tooltip=Каждый сегмент управляется%nсвоим сигналом с кабеля.
 
-gui.integratedcircuits.config.titleline2=Ð�Ð°Ñ�Ñ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð¼Ð¾Ð´Ð° IntegratedCircuits
+gui.integratedcircuits.config.titleline2=Настройки мода IntegratedCircuits
 
 #config
-config.integratedcircuits.category.parts=ÐšÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ñ‹ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼
-config.integratedcircuits.category.parts.tooltip=Ð’ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ / ÐžÑ‚ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ñ‚Ð¸Ð¿Ð¾Ð² ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ð¾Ð² Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼%nÐžÑ‚ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð›Ð®Ð‘ÐžÐ“Ðž ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ð° Ð£Ð”Ð�Ð›Ð˜Ð¢ ÐµÐ³Ð¾ Ð¸Ð· ÐšÐ�Ð–Ð”ÐžÐ™ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ñ‹ Ð¿Ñ€Ð¸ ÐµÑ‘ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐµ, Ð�Ð�Ð’Ð¡Ð•Ð“Ð”Ð�!
-config.integratedcircuits.general.showConfirmMessage=Ð—Ð°Ð¿Ñ€Ð°ÑˆÐ¸Ð²Ð°Ñ‚ÑŒ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¸Ðµ
-config.integratedcircuits.general.showConfirmMessage.tooltip=Ð—Ð°Ð¿Ñ€Ð°ÑˆÐ¸Ð²Ð°Ñ‚ÑŒ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¸Ðµ Ð¾Ñ‡Ð¸Ñ�Ñ‚ÐºÐ¸ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ñ‹ Ð² Ð¡Ð�ÐŸÐ .
-config.integratedcircuits.general.showStartupMessage=ÐŸÐ¾ÐºÐ°Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ Ñ�Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð¿Ñ€Ð¸ Ð·Ð°Ð¿ÑƒÑ�ÐºÐµ.
-config.integratedcircuits.general.showStartupMessage.tooltip=ÐŸÐ¾ÐºÐ°Ð·Ñ‹Ð²Ð°Ñ‚ÑŒ Ð¿Ñ€Ð¸ Ð·Ð°Ð¿ÑƒÑ�ÐºÐµ Ñ�Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ, Ð¿Ñ€ÐµÐ´ÐºÐ¿Ñ€ÐµÐ¶Ð´Ð°ÑŽÑ‰ÐµÐµ Ð¿Ð¾Ð»ÑŒÐ·Ð¾Ð²Ð°Ñ‚ÐµÐ»ÐµÐ¹ Ð¾ Ñ‚Ð¾Ð¼,%nÑ‡Ñ‚Ð¾ Ð¼Ð¾Ð´ Ð½Ð°Ñ…Ð¾Ð´Ð¸Ñ‚Ñ�Ñ� Ð½Ð° Ñ€Ð°Ð½Ð½ÐµÐ¹ Ñ�Ñ‚Ð°Ð´Ð¸Ð¸ Ñ€Ð°Ð·Ñ€Ð°Ð±Ð¾Ñ‚ÐºÐ¸ Ð¸ Ð¾ Ñ�Ð²Ñ�Ð·Ð°Ð½Ð½Ñ‹Ñ… Ñ� Ñ�Ñ‚Ð¸Ð¼ Ñ€Ð¸Ñ�ÐºÐ°Ñ….
-config.integratedcircuits.general.enablePropertyEdit=Ð Ð°Ð·Ñ€ÐµÑˆÐ¸Ñ‚ÑŒ Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ�Ð²Ð¾Ð¹Ñ�Ñ‚Ð² Ð½Ð° Ñ…Ð¾Ð´Ñƒ
-config.integratedcircuits.general.enablePropertyEdit.tooltip=Ð Ð°Ð·Ñ€ÐµÑˆÐ¸Ñ‚ÑŒ Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ñ�Ð²Ð¾Ð¹Ñ�Ñ‚Ð² ÐºÐ¾Ð¼Ð¿Ð¾Ð½ÐµÐ½Ñ‚Ð¾Ð² Ð²Ð½ÑƒÑ‚Ñ€Ð¸ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼%nÐ¿Ñ€Ð¸ Ð¿Ð¾Ð¼Ð¾Ñ‰Ð¸ Ð¿Ð¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð½Ð¾Ð³Ð¾ ÐºÐ¾Ð¼Ð¿ÑŒÑŽÑ‚ÐµÑ€Ð°. ÐžÑ„Ð¸Ñ†Ð¸Ð°Ð»ÑŒÐ½Ð¾ Ð�Ð• ÐŸÐžÐ”Ð”Ð•Ð Ð–Ð˜Ð’Ð�Ð•Ð¢Ð¡Ð¯.
-config.integratedcircuits.general.circuitCacheSize=Ð Ð°Ð·Ð¼ÐµÑ€ Ð±ÑƒÑ„ÐµÑ€Ð° Ð¾Ñ‚Ð¼ÐµÐ½Ñ‹.
-config.integratedcircuits.general.circuitCacheSize.tooltip=ÐœÐ°ÐºÑ�Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑ�Ñ‚Ð²Ð¾ Ð¾Ñ‚Ð¼ÐµÐ½, ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ðµ Ð¼Ð¾Ð¶Ð½Ð¾ Ñ�Ð¾Ð²ÐµÑ€ÑˆÐ¸Ñ‚ÑŒ Ð² Ð¡Ð�ÐŸÐ .
-config.integratedcircuits.general.enableTooltips=Ð’ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð¿Ð¾Ð´Ñ�ÐºÐ°Ð·ÐºÐ¸
-config.integratedcircuits.general.enableTooltips.tooltip=Ð’ÐºÐ»ÑŽÑ‡Ð¸Ñ‚ÑŒ Ð²Ñ�Ð¿Ð»Ñ‹Ð²Ð°ÑŽÑ‰Ð¸Ðµ Ð¿Ð¾Ð´Ñ�ÐºÐ°Ð·ÐºÐ¸. Ð ÐµÐºÐ¾Ð¼ÐµÐ½Ð´ÑƒÐµÑ‚Ñ�Ñ� Ð´Ð»Ñ� Ð¾Ð·Ð½Ð°ÐºÐ¾Ð¼Ð»ÐµÐ½Ð¸Ñ� Ñ� Ð¼Ð¾Ð´Ð¾Ð¼ Ð¸ Ð²Ð¾Ð¾Ð±Ñ‰Ðµ.
-config.integratedcircuits.general.enableTracker=ÐŸÑ€Ð¾Ð²ÐµÑ€Ñ�Ñ‚ÑŒ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ�
-config.integratedcircuits.general.enableTracker.tooltip=Ð•Ñ�Ð»Ð¸ Ñ�Ñ‚Ð° Ð½Ð°Ñ�Ñ‚Ñ€Ð¾Ð¹ÐºÐ° Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½Ð°, Ð¿Ñ€Ð¸ ÐºÐ°Ð¶Ð´Ð¾Ð¼ Ð·Ð°Ð¿ÑƒÑ�ÐºÐµ Ð±ÑƒÐ´ÐµÑ‚ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ñ�Ñ‚ÑŒÑ�Ñ� Ñ„Ð°Ð¹Ð» Ð¿Ð¾ Ð°Ð´Ñ€ÐµÑ�Ñƒ:%nhttps://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat%nÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ð¾Ñ�ÑƒÑ‰ÐµÑ�Ñ‚Ð²Ð»Ñ�ÐµÑ‚Ñ�Ñ� Ñ‡ÐµÑ€ÐµÐ· bit.ly Ð´Ð»Ñ� Ñ�Ð±Ð¾Ñ€Ð° Ñ�Ñ‚Ð°Ñ‚Ð¸Ñ�Ñ‚Ð¸ÐºÐ¸.%nÐ¡Ñ‚Ð°Ñ‚Ð¸Ñ�Ñ‚Ð¸ÐºÐ° Ð´Ð¾Ñ�Ñ‚ÑƒÐ¿Ð½Ð° Ð²Ñ�ÐµÐ¼ Ð½Ð° https://bitly.com/1GIaUA6+.%nBit.ly Ð¾Ñ‚Ñ�Ð»ÐµÐ¶Ð¸Ð²Ð°ÐµÑ‚ Ð¢ÐžÐ›Ð¬ÐšÐž Ñ�Ñ‚Ñ€Ð°Ð½Ñƒ Ð¸ IP Ð°Ð´Ñ€ÐµÑ�.%nÐŸÐ¾ Ð²Ð¾Ð·Ð¼Ð¾Ð¶Ð½Ð¾Ñ�Ñ‚Ð¸ Ð½Ðµ Ð¾Ñ‚ÐºÐ»ÑŽÑ‡Ð°Ð¹Ñ‚Ðµ Ñ�Ñ‚Ñƒ Ð½Ð°Ñ�Ñ‚Ñ€Ð¾Ð¹ÐºÑƒ. Ð­Ñ‚Ð¾ Ð¿Ð¾Ð·Ð²Ð¾Ð»Ñ�ÐµÑ‚ Ð²Ð¸Ð´ÐµÑ‚ÑŒ, ÐºÐ°Ðº Ð¸Ñ�Ð¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚Ñ�Ñ� Ñ�Ñ‚Ð¾Ñ‚ Ð¼Ð¾Ð´.%nÐ¡Ð¿Ð°Ñ�Ð¸Ð±Ð¾!
-config.integratedcircuits.general.sevenSegmentMaxDigits=ÐœÐ°ÐºÑ�Ð¸Ð¼ÑƒÐ¼ Ñ†Ð¸Ñ„Ñ€ Ð´Ð»Ñ� Ð¸Ð½Ð´Ð¸ÐºÐ°Ñ‚Ð¾Ñ€Ð¾Ð².
-config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=ÐœÐ°ÐºÑ�Ð¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑ�Ñ‚Ð²Ð¾ Ñ�ÐµÐ¼Ð¸Ñ�ÐµÐ³Ð¼ÐµÐ½Ñ‚Ð½Ñ‹Ñ… Ð¸Ð½Ð´Ð¸ÐºÐ°Ñ‚Ð¾Ñ€Ð¾Ð², Ð¸Ð· ÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ð³Ð¾ Ð¼Ð¾Ð¶ÐµÑ‚ Ñ�Ð¾Ñ�Ñ‚Ð¾Ñ�Ñ‚ÑŒ Ð´Ð¸Ñ�Ð¿Ð»ÐµÐ¹.
+config.integratedcircuits.category.parts=Компоненты микросхем
+config.integratedcircuits.category.parts.tooltip=Включение / Отключение типов компонентов микросхем%nОтключение ЛЮБОГО компонента УДАЛИТ его из КАЖДОЙ микросхемы при её загрузке, НАВСЕГДА!
+config.integratedcircuits.general.showConfirmMessage=Запрашивать подтверждение
+config.integratedcircuits.general.showConfirmMessage.tooltip=Запрашивать подтверждение очистки микросхемы в САПР.
+config.integratedcircuits.general.showStartupMessage=Показывать сообщение при запуске.
+config.integratedcircuits.general.showStartupMessage.tooltip=Показывать при запуске сообщение, предкпреждающее пользователей о том,%nчто мод находится на ранней стадии разработки и о связанных с этим рисках.
+config.integratedcircuits.general.enablePropertyEdit=Разрешить редактирование свойств на ходу
+config.integratedcircuits.general.enablePropertyEdit.tooltip=Разрешить редактирование свойств компонентов внутри микросхем%nпри помощи подключенного компьютера. Официально НЕ ПОДДЕРЖИВАЕТСЯ.
+config.integratedcircuits.general.circuitCacheSize=Размер буфера отмены.
+config.integratedcircuits.general.circuitCacheSize.tooltip=Максимальное количество отмен, которое можно совершить в САПР.
+config.integratedcircuits.general.enableTooltips=Включить подсказки
+config.integratedcircuits.general.enableTooltips.tooltip=Включить всплывающие подсказки. Рекомендуется для ознакомления с модом и вообще.
+config.integratedcircuits.general.enableTracker=Проверять обновления
+config.integratedcircuits.general.enableTracker.tooltip=Если эта настройка включена, при каждом запуске будет проверяться файл по адресу:%nhttps://raw.githubusercontent.com/Victorious3/Integrated-Circuits/master/version.dat%nПодключение осуществляется через bit.ly для сбора статистики.%nСтатистика доступна всем на https://bitly.com/1GIaUA6+.%nBit.ly отслеживает ТОЛЬКО страну и IP адрес.%nПо возможности не отключайте эту настройку. Это позволяет видеть, как используется этот мод.%nСпасибо!
+config.integratedcircuits.general.sevenSegmentMaxDigits=Максимум цифр для индикаторов.
+config.integratedcircuits.general.sevenSegmentMaxDigits.tooltip=Максимальное количество семисегментных индикаторов, из которого может состоять дисплей.
 config.integratedcircuits.parts.redirect=part.integratedcircuits.%s.name
 
 # misc
 itemGroup.integratedcircuits.ctab=Integrated Circuits
-tooltip.integratedcircuits.socket=Ð”Ð»Ñ� ÑƒÑ�Ñ‚Ð°Ð½Ð¾Ð²ÐºÐ¸ Ð¼Ð¸ÐºÑ€Ð¾Ñ�Ñ…ÐµÐ¼Ñ‹%nÐ½ÑƒÐ¶ÐµÐ½ Ð¿Ð°Ñ�Ð»ÑŒÐ½Ð¸Ðº
+tooltip.integratedcircuits.socket=Для установки микросхемы%nнужен паяльник
 
 # Item tooltips
-circuit.tooltip.name=Ð�Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ: %s
-circuit.tooltip.size=Ð Ð°Ð·Ð¼ÐµÑ€: %s
-circuit.tooltip.author=Ð�Ð²Ñ‚Ð¾Ñ€: %s
-circuit.tooltip.info=ÐŸÐšÐœ Ð½Ð° Ñ„Ð»Ð¾Ð¿Ð¿Ð¾Ð²Ð¾Ð´Ðµ (Ñ‡Ñ‘Ñ€Ð½Ð°Ñ� Ð¿Ð¾Ð»Ð¾Ñ�ÐºÐ°)%nÐ²Ð½Ð¸Ð·Ñƒ Ñ�Ð±Ð¾Ñ€Ñ‰Ð¸ÐºÐ° Ð¸Ð»Ð¸ Ð¡Ð�ÐŸÐ Ð°...
+circuit.tooltip.name=Название: %s
+circuit.tooltip.size=Размер: %s
+circuit.tooltip.author=Автор: %s
+circuit.tooltip.info=ПКМ на флопповоде (чёрная полоска)%nвнизу сборщика или САПРа...
 
 # Forge Direction
-fdirection.north.name=Ð¡Ð•Ð’Ð•Ð 
-fdirection.east.name=Ð’ÐžÐ¡Ð¢ÐžÐš
-fdirection.south.name=Ð®Ð“
-fdirection.west.name=Ð—Ð�ÐŸÐ�Ð”
-fdirection.up.name=Ð’Ð•Ð Ð¥
-fdirection.down.name=Ð�Ð˜Ð—
+fdirection.north.name=СЕВЕР
+fdirection.east.name=ВОСТОК
+fdirection.south.name=ЮГ
+fdirection.west.name=ЗАПАД
+fdirection.up.name=ВЕРХ
+fdirection.down.name=НИЗ
