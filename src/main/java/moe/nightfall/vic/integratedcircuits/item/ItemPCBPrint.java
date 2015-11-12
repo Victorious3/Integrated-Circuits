@@ -2,6 +2,8 @@ package moe.nightfall.vic.integratedcircuits.item;
 
 import java.util.List;
 
+import com.mojang.realmsclient.gui.ChatFormatting;
+
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import net.minecraft.entity.Entity;
@@ -22,7 +24,7 @@ public class ItemPCBPrint extends ItemMap {
 	}
 
 	public ItemPCBPrint() {
-		ItemBase.register(this, "bcp_print");
+		ItemBase.register(this, "pcb_print");
 		this.setCreativeTab(null);
 		this.setMaxStackSize(1);
 	}
@@ -58,7 +60,12 @@ public class ItemPCBPrint extends ItemMap {
 	}
 
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par5) {
-	
+	public void addInformation(ItemStack stack, EntityPlayer player, List itemInformation, boolean par5) {
+		NBTTagCompound comp = stack.getTagCompound();
+		if (comp != null) {
+			ItemFloppyDisk.addInformation(comp, itemInformation, false);
+		} else {
+			itemInformation.add(ChatFormatting.RED + "Kill me...");
+		}
 	}
 }

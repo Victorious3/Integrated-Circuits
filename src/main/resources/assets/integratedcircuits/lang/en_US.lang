@@ -4,6 +4,7 @@ item.integratedcircuits.laser.name=Laser
 item.integratedcircuits.pcb.name=Raw Circuit Board
 item.integratedcircuits.pcb.printed.name=Printed Circuit Board
 item.integratedcircuits.pcb_chip.name=Circuit Board
+item.integratedcircuits.pcb_print.name=Circuit Blueprint
 item.integratedcircuits.silicon.name=Silicon
 item.integratedcircuits.silicon_drop.name=Silicon Drop
 item.integratedcircuits.coalcompound.name=Sandy Coal Compound
@@ -19,6 +20,7 @@ item.integratedcircuits.circuit.name=Integrated Circuit (%s)
 # blocks
 tile.integratedcircuits.pcblayoutcad.name=PCB Layout CAD
 tile.integratedcircuits.assembler.name=Assembler
+tile.integratedcircuits.pcbprinter.name=Printer
 
 # parts
 part.integratedcircuits.iobit.name=IOBit
@@ -101,6 +103,8 @@ gui.integratedcircuits.cad.simulation.pause=Pause
 gui.integratedcircuits.cad.simulation.play=Play
 gui.integratedcircuits.cad.simulation.step=Step
 
+gui.integratedcircuits.cad.print=Print
+
 gui.integratedcircuits.assembler.statuscode.2=Out of Materials!
 gui.integratedcircuits.assembler.statuscode.3=Out of PCBs!
 
@@ -164,10 +168,10 @@ itemGroup.integratedcircuits.ctab=Integrated Circuits
 tooltip.integratedcircuits.socket=You have to carry a soldering iron%nto solder onto a socket
 
 # Item tooltips
-item.integratedcircuits.floppy.tooltip.name=Name: %s
-item.integratedcircuits.floppy.tooltip.size=Size: %s
-item.integratedcircuits.floppy.tooltip.author=Author: %s
-item.integratedcircuits.floppy.tooltip.info=Right click on the drive (the black bar)%non the bottom of the assembler or CAD...
+circuit.tooltip.name=Name: %s
+circuit.tooltip.size=Size: %s
+circuit.tooltip.author=Author: %s
+circuit.tooltip.info=Right click on the drive (the black bar)%non the bottom of the assembler or CAD...
 
 # Forge Direction
 fdirection.north.name=NORTH

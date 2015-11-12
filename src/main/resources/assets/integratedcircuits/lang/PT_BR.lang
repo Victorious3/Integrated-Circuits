@@ -144,10 +144,10 @@ itemGroup.integratedcircuits.ctab=Circuitos Integrados
 tooltip.integratedcircuits.socket=Você tem que levar um ferro de solda%npara soldar para um soquete
 
 # Item tooltips
-item.integratedcircuits.floppy.tooltip.name=Nome: %s
-item.integratedcircuits.floppy.tooltip.size=Tamanho: %s
-item.integratedcircuits.floppy.tooltip.author=Autor: %s
-item.integratedcircuits.floppy.tooltip.info=Clique com o botao direito no drive(A barra preta)%nna parte de baixo do montador CAD...
+circuit.tooltip.name=Nome: %s
+circuit.tooltip.size=Tamanho: %s
+circuit.tooltip.author=Autor: %s
+circuit.tooltip.info=Clique com o botao direito no drive(A barra preta)%nna parte de baixo do montador CAD...
 
 # Forge Direction
 fdirection.north.name=NORTE

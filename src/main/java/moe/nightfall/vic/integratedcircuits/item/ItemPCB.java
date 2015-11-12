@@ -9,8 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
-
 public class ItemPCB extends ItemBase {
 	public ItemPCB() {
 		super("pcb");
@@ -21,10 +19,7 @@ public class ItemPCB extends ItemBase {
 		NBTTagCompound comp = stack.getTagCompound();
 		if (comp != null && comp.hasKey("circuit")) {
 			comp = comp.getCompoundTag("circuit");
-			int size = comp.getInteger("size");
-			itemInformation.add(ChatFormatting.GRAY + "Name: " + ChatFormatting.WHITE
-					+ comp.getCompoundTag("properties").getString("name"));
-			itemInformation.add(ChatFormatting.GRAY + "Size: " + ChatFormatting.WHITE + size + "x" + size);
+			ItemFloppyDisk.addInformation(comp, itemInformation, false);
 		}
 	}
 

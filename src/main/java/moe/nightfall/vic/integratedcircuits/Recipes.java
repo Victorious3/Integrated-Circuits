@@ -1,5 +1,8 @@
 package moe.nightfall.vic.integratedcircuits;
 
+import codechicken.microblock.ItemMicroPart;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.GameRegistry;
 import moe.nightfall.vic.integratedcircuits.item.recipe.RecipeCircuit;
 import moe.nightfall.vic.integratedcircuits.item.recipe.RecipeDyeable;
 import net.minecraft.init.Blocks;
@@ -9,9 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import codechicken.microblock.ItemMicroPart;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
 
 public class Recipes {
 	public static void loadRecipes() {
@@ -111,6 +111,10 @@ public class Recipes {
 				'#', Blocks.glass_pane,
 				's', Blocks.stone,
 				'p', Content.itemPCBChip);
+
+		GameRegistry.addRecipe(new ItemStack(Content.blockPrinter), "iii", "#d#", "sps",
+
+		'i', Items.iron_ingot, '#', Blocks.piston, 's', Blocks.stone, 'p', Content.itemPCBChip);
 
 		GameRegistry.addRecipe(new ItemStack(Content.itemFloppyDisk),
 				"iii",

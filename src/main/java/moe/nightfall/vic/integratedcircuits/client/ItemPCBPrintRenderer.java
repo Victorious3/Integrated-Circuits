@@ -97,7 +97,6 @@ public class ItemPCBPrintRenderer implements IItemRenderer {
 	@SubscribeEvent
 	public void onRenderInItemFrame(final RenderItemInFrameEvent event) throws Exception {
 		if (event.item.getItem() == Content.itemPCBPrint) {
-
 			if (!textures.containsKey(event.item)) {
 				TextureRenderer.Entry entry = new TextureRenderer.Entry() {
 					@Override
