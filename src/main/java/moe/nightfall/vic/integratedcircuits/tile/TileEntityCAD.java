@@ -168,11 +168,13 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	@Override
 	public boolean receiveClientEvent(int id, int par) {
 		if (id == 1) {
-			// Update GUI
-			printerLocation = ForgeDirection.getOrientation(par);
-			GuiScreen gui = Minecraft.getMinecraft().currentScreen;
-			if (gui instanceof GuiCAD) {
-				((GuiCAD) gui).refreshPrinter();
+			if (worldObj.isRemote) {
+				// Update GUI
+				printerLocation = ForgeDirection.getOrientation(par);
+				GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+				if (gui instanceof GuiCAD) {
+					((GuiCAD) gui).refreshPrinter();
+				}
 			}
 			return true;
 		} else {
