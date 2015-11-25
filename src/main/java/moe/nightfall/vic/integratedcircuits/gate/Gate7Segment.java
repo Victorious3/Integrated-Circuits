@@ -70,9 +70,11 @@ public class Gate7Segment extends Gate {
 	public static final int MODE_ANALOG = 1;
 	public static final int MODE_SHORT_SIGNED = 2;
 	public static final int MODE_SHORT_UNSIGNED = 3;
-	public static final int MODE_FLOAT = 4;
-	public static final int MODE_BINARY_STRING = 5;
-	public static final int MODE_MANUAL = 6;
+	public static final int MODE_INT_SIGNED = 4;
+	public static final int MODE_INT_UNSIGNED = 5;
+	public static final int MODE_FLOAT = 6;
+	public static final int MODE_BINARY_STRING = 7;
+	public static final int MODE_MANUAL = 8;
 
 	@Override
 	public void preparePlacement(EntityPlayer player, ItemStack stack) {
@@ -195,9 +197,7 @@ public class Gate7Segment extends Gate {
 		return null;
 	}
 
-	private void updateSlaves() {
-		if (provider.getWorld().isRemote)
-			return;
+	private void updateSlavesDefault() {
 
 		int input = 0;
 
@@ -213,7 +213,7 @@ public class Gate7Segment extends Gate {
 
 			if (slaves.size() < 4 || mode == MODE_ANALOG) {
 				writeDigits(null);
-				writeDigit(NUMBERS[input]);
+				writeDigit(NUMBERS[(int) input]);
 			} else {
 				byte[] digits = input == 0 ? FALSE : TRUE;
 				writeDigits(digits);
@@ -221,12 +221,15 @@ public class Gate7Segment extends Gate {
 		} else {
 			boolean sign = false;
 			int length = 16;
-
+			byte[][] provIn = provider.getInput();
+			System.out.println(provIn.length + " " + provIn[0].length);
 			for (byte[] in : provider.getInput()) {
+
 				int i2 = 0;
 				for (int i = 0; i < 16; i++)
 					i2 |= (in[i] != 0 ? 1 : 0) << i;
 				input |= i2;
+
 			}
 
 			boolean outOfBounds = false;
@@ -240,10 +243,10 @@ public class Gate7Segment extends Gate {
 
 			if (mode == MODE_MANUAL) {
 				writeDigits(null);
-				writeDigit(input & 255);
+				writeDigit((int) (input & 255));
 				return;
 			} else if (mode == MODE_FLOAT) {
-				float conv = MiscUtils.toBinary16Float(input);
+				float conv = MiscUtils.toBinary16Float((int) input);
 				if (Float.isNaN(conv) || Float.isInfinite(conv)) {
 					byte[] digits = null;
 					if (Float.isNaN(conv) && slaves.size() > 1)
@@ -276,10 +279,9 @@ public class Gate7Segment extends Gate {
 						decimalDot = dispString.length() - decimalDot;
 				}
 			} else if (mode == MODE_BINARY_STRING)
-				dispString = Integer.toBinaryString(input);
+				dispString = Integer.toBinaryString((int) input);
 			else
 				dispString = String.valueOf(input);
-
 			int size = dispString.length() - 1;
 			if (size > slaves.size() - (isSigned() ? 1 : 0))
 				outOfBounds = true;
@@ -299,6 +301,76 @@ public class Gate7Segment extends Gate {
 						slave.writeDigit(outOfBounds ? SIGN : NUMBERS[decimal] | (decimalDot == i ? DOT : 0));
 				}
 			}
+		}
+	}
+
+	private void updateSlavesSplit() {
+		boolean sign = false;
+		byte[][] provIn = provider.getInput();
+
+		String bin = "";
+		String pt0 = "";
+		String pt1 = "";
+
+		for (int i = 0; i < 16; i++) {
+			int b = (provIn[2][i] != 0 ? 1 : 0);
+			pt0 += b;
+		}
+		pt0 = StringUtils.reverse(pt0);
+		for (int i = 0; i < 16; i++) {
+			int b = (provIn[3][i] != 0 ? 1 : 0);
+			pt1 += b;
+		}
+		pt1 = StringUtils.reverse(pt1);
+		bin = pt0 + pt1;
+
+		long input = Long.parseLong(bin, 2);
+
+		boolean outOfBounds = false;
+		int decimalDot = -1;
+		String dispString = "";
+
+		if (isSigned()) {
+			sign = (input & (1 << 31)) != 0;
+			input &= 0x7FFFFFFF;
+		}
+
+		if (input < 0)
+			dispString = "0";
+		else {
+			dispString = Long.toString(input);
+		}
+
+		int size = dispString.length() - 1;
+		if (size > slaves.size() - (isSigned() ? 1 : 0))
+			outOfBounds = true;
+
+		dispString = StringUtils.reverse(dispString);
+		for (int i = 0; i <= slaves.size(); i++) {
+			int decimal = i < dispString.length() ? Integer.valueOf(String.valueOf(dispString.charAt(i))) : 0;
+			Gate7Segment slave = this;
+			if (i > 0) {
+				BlockCoord bc = slaves.get(i - 1);
+				slave = getSegment(bc);
+			}
+			if (slave != null) {
+				if (i == slaves.size() && isSigned())
+					slave.writeDigit(sign ? SIGN : 0);
+				else
+					slave.writeDigit(outOfBounds ? SIGN : NUMBERS[decimal] | (decimalDot == i ? DOT : 0));
+			}
+		}
+
+	}
+
+	private void updateSlaves() {
+		if (provider.getWorld().isRemote)
+			return;
+
+		if (mode != MODE_INT_SIGNED && mode != MODE_INT_UNSIGNED) {
+			updateSlavesDefault();
+		} else {
+			updateSlavesSplit();
 		}
 	}
 

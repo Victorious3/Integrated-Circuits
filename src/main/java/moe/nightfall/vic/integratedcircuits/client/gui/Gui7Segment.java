@@ -59,6 +59,8 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 				I18n.format("gui.integratedcircuits.7segment.mode.analog"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.signed"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.signed"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.unsigned"),
 				I18n.format("gui.integratedcircuits.7segment.mode.float"),
 				I18n.format("gui.integratedcircuits.7segment.mode.binary"),
 				I18n.format("gui.integratedcircuits.7segment.mode.manual")), this).setTooltips(Arrays.asList(
@@ -66,6 +68,8 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 				I18n.format("gui.integratedcircuits.7segment.mode.analog.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.signed.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned.tooltip"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.signed.tooltip"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.unsigned.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.float.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.binary.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.manual.tooltip")))));
