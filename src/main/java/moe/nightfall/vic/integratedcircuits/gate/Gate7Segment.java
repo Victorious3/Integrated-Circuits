@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.EnumConnectionState;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.util.Constants.NBT;
 
@@ -34,13 +35,14 @@ import codechicken.lib.vec.Rotation;
 import com.google.common.collect.Lists;
 
 public class Gate7Segment extends Gate {
-	
+
 	private final Cuboid6 dimensions = new Cuboid6(2, 0, 1, 14, 3, 15);
-	
+
 	public int digit = NUMBERS[0];
 	public int color;
 	public boolean isSlave;
 	public boolean hasSlaves;
+	public boolean hasThreeBuses = true;
 	public int mode = MODE_SIMPLE;
 
 	public BlockCoord parent;
@@ -48,12 +50,12 @@ public class Gate7Segment extends Gate {
 	// TODO Relative positions, will break upon moving like this
 	public ArrayList<BlockCoord> slaves = Lists.newArrayList();
 
-	//   0
-	//   --
+	// 0
+	// --
 	// 5|6 |1
-	//   --
+	// --
 	// 4|3 |2
-	//   --   # 7
+	// -- # 7
 	public static final byte[] NUMBERS = { 63, 6, 91, 79, 102, 109, 125, 7, 127, 111, 119, 124, 57, 94, 121, 113 }; // 0-F
 
 	// In reverse order
@@ -213,7 +215,7 @@ public class Gate7Segment extends Gate {
 
 			if (slaves.size() < 4 || mode == MODE_ANALOG) {
 				writeDigits(null);
-				writeDigit(NUMBERS[(int) input]);
+				writeDigit(NUMBERS[input]);
 			} else {
 				byte[] digits = input == 0 ? FALSE : TRUE;
 				writeDigits(digits);
@@ -221,8 +223,7 @@ public class Gate7Segment extends Gate {
 		} else {
 			boolean sign = false;
 			int length = 16;
-			byte[][] provIn = provider.getInput();
-			System.out.println(provIn.length + " " + provIn[0].length);
+
 			for (byte[] in : provider.getInput()) {
 
 				int i2 = 0;
@@ -243,10 +244,10 @@ public class Gate7Segment extends Gate {
 
 			if (mode == MODE_MANUAL) {
 				writeDigits(null);
-				writeDigit((int) (input & 255));
+				writeDigit((input & 255));
 				return;
 			} else if (mode == MODE_FLOAT) {
-				float conv = MiscUtils.toBinary16Float((int) input);
+				float conv = MiscUtils.toBinary16Float(input);
 				if (Float.isNaN(conv) || Float.isInfinite(conv)) {
 					byte[] digits = null;
 					if (Float.isNaN(conv) && slaves.size() > 1)
@@ -279,7 +280,7 @@ public class Gate7Segment extends Gate {
 						decimalDot = dispString.length() - decimalDot;
 				}
 			} else if (mode == MODE_BINARY_STRING)
-				dispString = Integer.toBinaryString((int) input);
+				dispString = Integer.toBinaryString(input);
 			else
 				dispString = String.valueOf(input);
 			int size = dispString.length() - 1;
@@ -307,24 +308,19 @@ public class Gate7Segment extends Gate {
 	private void updateSlavesSplit() {
 		boolean sign = false;
 		byte[][] provIn = provider.getInput();
+		
+		StringBuilder sb = new StringBuilder();
 
-		String bin = "";
-		String pt0 = "";
-		String pt1 = "";
-
-		for (int i = 0; i < 16; i++) {
-			int b = (provIn[2][i] != 0 ? 1 : 0);
-			pt0 += b;
+		for (int i = 15; i >= 0; i--) {
+			char b = (provIn[2][i] != 0 ? '1' : '0');
+			sb.append(b);
 		}
-		pt0 = StringUtils.reverse(pt0);
-		for (int i = 0; i < 16; i++) {
-			int b = (provIn[3][i] != 0 ? 1 : 0);
-			pt1 += b;
+		for (int i = 15; i >= 0; i--) {
+			char b = (provIn[3][i] != 0 ? '1' : '0');
+			sb.append(b);
 		}
-		pt1 = StringUtils.reverse(pt1);
-		bin = pt0 + pt1;
 
-		long input = Long.parseLong(bin, 2);
+		long input = Long.parseLong(sb.toString(), 2);
 
 		boolean outOfBounds = false;
 		int decimalDot = -1;
@@ -368,8 +364,10 @@ public class Gate7Segment extends Gate {
 			return;
 
 		if (mode != MODE_INT_SIGNED && mode != MODE_INT_UNSIGNED) {
+			hasThreeBuses = true;
 			updateSlavesDefault();
 		} else {
+			hasThreeBuses = false;
 			updateSlavesSplit();
 		}
 	}
@@ -395,7 +393,7 @@ public class Gate7Segment extends Gate {
 	}
 
 	private boolean isSigned() {
-		return mode == MODE_SHORT_SIGNED || mode == MODE_FLOAT;
+		return mode == MODE_SHORT_SIGNED || mode == MODE_FLOAT || mode == MODE_INT_SIGNED;
 	}
 
 	private void sendChangesToClient() {
@@ -482,9 +480,17 @@ public class Gate7Segment extends Gate {
 		return new ItemStack(Content.item7Segment, 1, color);
 	}
 
+	public EnumConnectionType getSplitConnectionTypeAtSide(int side) {
+		return side == 2 || side == 3 ? EnumConnectionType.BUNDLED : EnumConnectionType.NONE;
+	}
+
 	@Override
 	public EnumConnectionType getConnectionTypeAtSide(int side) {
-		return isSlave || (hasSlaves && side == 1) ? EnumConnectionType.NONE : mode == MODE_SIMPLE ? EnumConnectionType.SIMPLE : mode == MODE_ANALOG ? EnumConnectionType.ANALOG : EnumConnectionType.BUNDLED;
+		if (mode == MODE_INT_SIGNED || mode == MODE_INT_UNSIGNED)
+			return getSplitConnectionTypeAtSide(side);
+		return isSlave || (hasSlaves && side == 1) ? EnumConnectionType.NONE
+				: mode == MODE_SIMPLE ? EnumConnectionType.SIMPLE
+						: mode == MODE_ANALOG ? EnumConnectionType.ANALOG : EnumConnectionType.BUNDLED;
 	}
 
 	@Override
