@@ -9,8 +9,8 @@ import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.pluggable.IPipePluggableItem;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.Method;
+import net.minecraftforge.fml.common.Optional.Interface;
+import net.minecraftforge.fml.common.Optional.Method;
 
 @Interface(iface = "buildcraft.api.transport.pluggable.IPipePluggableItem", modid = "BuildCraft|Core")
 public abstract class ItemGate extends ItemBase implements IGateItem, IPipePluggableItem {

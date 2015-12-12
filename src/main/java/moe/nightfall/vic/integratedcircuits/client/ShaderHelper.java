@@ -17,8 +17,8 @@ import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /** See http://lwjgl.org/wiki/index.php?title=GLSL_Shaders_with_LWJGL **/
 @SideOnly(Side.CLIENT)

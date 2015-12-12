@@ -17,7 +17,7 @@ import net.minecraft.client.gui.GuiButton;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiDropdown extends GuiButton implements IHoverable {
 	private ImmutableList<String> elements;

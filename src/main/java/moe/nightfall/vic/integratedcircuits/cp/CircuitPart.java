@@ -47,8 +47,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class CircuitPart {
 	private static HashMap<Integer, CircuitPart> partRegistry = new HashMap<Integer, CircuitPart>();

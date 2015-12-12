@@ -12,7 +12,7 @@ import net.minecraft.network.PacketBuffer;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketDataStream extends PacketTileEntity<PacketDataStream> {
 	private MCDataInput in;

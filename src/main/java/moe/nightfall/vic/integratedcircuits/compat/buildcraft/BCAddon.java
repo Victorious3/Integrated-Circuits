@@ -19,8 +19,8 @@ import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.PipeManager;
 import buildcraft.api.transport.pluggable.PipePluggable;
 import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.common.eventhandler.Event.Result;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.Event.Result;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class BCAddon {
 	public static void preInit() {

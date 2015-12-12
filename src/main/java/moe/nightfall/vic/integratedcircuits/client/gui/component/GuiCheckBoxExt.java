@@ -10,8 +10,8 @@ import net.minecraft.client.Minecraft;
 
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.client.config.GuiCheckBox;
-import cpw.mods.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.config.GuiCheckBox;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiCheckBoxExt extends GuiCheckBox implements IHoverable {
 	private String hoverInfo;

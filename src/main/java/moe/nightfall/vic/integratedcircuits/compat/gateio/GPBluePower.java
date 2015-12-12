@@ -10,8 +10,8 @@ import com.bluepowermod.api.wire.redstone.IBundledDevice;
 import com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper;
 import com.bluepowermod.api.wire.redstone.IRedstoneApi;
 
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.Method;
+import net.minecraftforge.fml.common.Optional.Interface;
+import net.minecraftforge.fml.common.Optional.Method;
 
 @Interface(iface = "com.bluepowermod.api.wire.redstone.IBundledDeviceWrapper", modid = "bluepower")
 public class GPBluePower extends GateIOProvider implements IBundledDeviceWrapper {

@@ -11,11 +11,12 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
 
-repositories {   
+repositories {
+	/*
     maven {
         name "rx14"
         url "http://mvn.rx14.co.uk/repo/"
@@ -50,11 +51,12 @@ repositories {
         name "BuildCraft"
         artifactPattern "http://www.mod-buildcraft.com/releases/BuildCraft/[revision]/[module]-[revision]-[classifier].[ext]"
     }
+    */
 }
 
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "${mcVersion}-${modVersion}"
+version = "${mcVersion}-${modVersion}-${mcVersion}"
 group = "moe.nightfall.vic.integratedcircuits"
 archivesBaseName = "integratedcircuits"
 
@@ -66,10 +68,13 @@ minecraft {
     
     replaceIn "Constants.java"
     replace "\${version}", project.version
+    
+    mappings = "snapshot_20151210"
 }
 
 dependencies {
 
+	/* I can't really blame them...
     compile "codechicken:CodeChickenLib:${mcVersion}-${cclVersion}:dev"
     compile "codechicken:CodeChickenCore:${mcVersion}-${cccVersion}:dev"
     compile "codechicken:ForgeMultipart:${mcVersion}-${fmpVersion}:dev"
@@ -87,9 +92,11 @@ dependencies {
     compile "qmunity:QmunityLib:${qmlVersion}:deobf"
     compile "com.bluepowermod:BluePower:${bluepowerVersion}:deobf"
     compile "li.cil.oc:OpenComputers:MC${mcVersion}-${ocVersion}:dev"
+    
     compile name: "redlogic", version: "${redlogicVersion}", ext: "jar"
     compile name: "immibis-core", version: "${imcVersion}", ext: "jar"
     compile name: "buildcraft", version: "${buildcraftVersion}", classifier: "dev"
+    */
 }
 
 processResources {

@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.client;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
@@ -15,7 +15,7 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 
 public class TileEntityGateRenderer extends TileEntitySpecialRenderer implements ISimpleBlockRenderingHandler {
 	@Override

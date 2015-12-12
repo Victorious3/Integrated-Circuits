@@ -1,8 +1,8 @@
 package moe.nightfall.vic.integratedcircuits;
 
 import codechicken.microblock.ItemMicroPart;
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import moe.nightfall.vic.integratedcircuits.item.recipe.RecipeCircuit;
 import moe.nightfall.vic.integratedcircuits.item.recipe.RecipeDyeable;
 import net.minecraft.init.Blocks;

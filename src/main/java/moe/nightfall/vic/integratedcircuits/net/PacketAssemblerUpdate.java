@@ -7,7 +7,7 @@ import moe.nightfall.vic.integratedcircuits.client.TileEntityAssemblerRenderer;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketAssemblerUpdate extends PacketTileEntity<PacketAssemblerUpdate> {
 	private int x, y, id;

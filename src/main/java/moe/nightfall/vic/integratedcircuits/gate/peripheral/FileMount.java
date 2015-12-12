@@ -12,7 +12,7 @@ import java.util.jar.JarFile;
 
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
-import cpw.mods.fml.common.Optional.Interface;
+import net.minecraftforge.fml.common.Optional.Interface;
 import dan200.computercraft.api.filesystem.IMount;
 
 @Interface(iface = "dan200.computercraft.api.filesystem.IMount", modid = "ComputerCraft")

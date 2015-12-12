@@ -2,8 +2,8 @@ package moe.nightfall.vic.integratedcircuits.api.gate;
 
 import moe.nightfall.vic.integratedcircuits.api.IPartRenderer;
 import moe.nightfall.vic.integratedcircuits.api.IntegratedCircuitsAPI.Type;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IGateRegistry {
 	public void registerGate(String gateID, Class<? extends IGate> clazz);

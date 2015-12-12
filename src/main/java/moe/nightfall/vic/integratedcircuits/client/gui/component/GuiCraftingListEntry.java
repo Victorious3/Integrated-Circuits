@@ -18,7 +18,7 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
 
-import cpw.mods.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiCraftingListEntry implements IGuiListEntry, IHoverable {
 	private static final ResourceLocation buttonTextures = new ResourceLocation("textures/gui/widgets.png");

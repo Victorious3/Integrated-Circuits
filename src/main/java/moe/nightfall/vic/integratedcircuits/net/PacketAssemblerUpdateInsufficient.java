@@ -7,7 +7,7 @@ import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketAssemblerUpdateInsufficient extends PacketTileEntity<PacketAssemblerUpdateInsufficient> {
 	private ItemAmount insufficient;

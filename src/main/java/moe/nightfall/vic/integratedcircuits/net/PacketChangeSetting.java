@@ -7,8 +7,8 @@ import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketChangeSetting<T extends TileEntity & IOptionsProvider> extends PacketTileEntity {
 	private int setting, param;

@@ -10,7 +10,7 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.TransformationList;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+import net.minecraftforge.fml.client.registry.ISimpleBlockRenderingHandler;
 import moe.nightfall.vic.integratedcircuits.Constants;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPrinter;

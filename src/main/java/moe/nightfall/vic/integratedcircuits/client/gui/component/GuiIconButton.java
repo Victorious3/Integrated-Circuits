@@ -9,7 +9,7 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
-import cpw.mods.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class GuiIconButton extends GuiButtonExt implements IHoverable {
 

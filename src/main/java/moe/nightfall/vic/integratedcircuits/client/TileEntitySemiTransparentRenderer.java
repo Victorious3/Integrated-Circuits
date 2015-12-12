@@ -2,8 +2,8 @@ package moe.nightfall.vic.integratedcircuits.client;
 
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public abstract class TileEntitySemiTransparentRenderer extends TileEntitySpecialRenderer {

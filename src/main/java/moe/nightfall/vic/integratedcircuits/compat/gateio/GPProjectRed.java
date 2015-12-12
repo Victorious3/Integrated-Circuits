@@ -7,7 +7,7 @@ import mrtjp.projectred.transmission.IRedwireEmitter;
 import net.minecraft.tileentity.TileEntity;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TileMultipart;
-import cpw.mods.fml.common.Optional.Method;
+import net.minecraftforge.fml.common.Optional.Method;
 
 public class GPProjectRed extends GateIOProvider {
 

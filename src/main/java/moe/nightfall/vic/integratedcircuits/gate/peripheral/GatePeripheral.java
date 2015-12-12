@@ -10,7 +10,7 @@ import java.util.Map;
 import com.google.common.collect.Maps;
 import com.google.common.primitives.Primitives;
 
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.Optional;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;

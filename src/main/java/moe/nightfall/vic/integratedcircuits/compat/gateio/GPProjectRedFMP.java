@@ -10,9 +10,9 @@ import codechicken.lib.vec.Rotation;
 import codechicken.multipart.JCuboidPart;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.InterfaceList;
-import cpw.mods.fml.common.Optional.Method;
+import net.minecraftforge.fml.common.Optional.Interface;
+import net.minecraftforge.fml.common.Optional.InterfaceList;
+import net.minecraftforge.fml.common.Optional.Method;
 
 @InterfaceList({
 		@Interface(iface = "mrtjp.projectred.api.IBundledEmitter", modid = "ProjRed|Core"),

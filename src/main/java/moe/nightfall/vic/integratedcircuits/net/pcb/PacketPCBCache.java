@@ -8,8 +8,8 @@ import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ChatComponentText;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketPCBCache extends PacketTileEntity<PacketPCBCache> {
 	public static final byte SNAPSHOT = 0;

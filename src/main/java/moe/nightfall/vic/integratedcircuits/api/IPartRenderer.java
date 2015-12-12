@@ -6,8 +6,8 @@ import moe.nightfall.vic.integratedcircuits.client.model.IComponentModel;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.IItemRenderer;
 import codechicken.lib.vec.Transformation;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public interface IPartRenderer<T> extends IItemRenderer {

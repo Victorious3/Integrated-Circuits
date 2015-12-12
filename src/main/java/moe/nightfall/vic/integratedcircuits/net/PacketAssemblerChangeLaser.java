@@ -6,7 +6,7 @@ import moe.nightfall.vic.integratedcircuits.tile.TileEntityAssembler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketAssemblerChangeLaser extends PacketTileEntity<PacketAssemblerChangeLaser> {
 	private int id;

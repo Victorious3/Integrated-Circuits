@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class GuiCallback<E extends GuiScreen & IGuiCallback> extends GuiScreen implements IHoverableHandler {
 	private E parent;

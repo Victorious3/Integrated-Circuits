@@ -26,7 +26,7 @@ import codechicken.lib.vec.Vector3;
 
 import com.google.common.collect.Lists;
 
-import cpw.mods.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 public class GatePipePluggable extends PipePluggable implements ISocketWrapper {
 

@@ -25,7 +25,7 @@ import net.minecraft.util.MathHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 
 public class GuiAssembler extends GuiContainer implements IHoverableHandler {
 	public TileEntityAssembler te;

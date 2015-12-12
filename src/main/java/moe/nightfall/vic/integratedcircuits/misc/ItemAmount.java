@@ -3,7 +3,7 @@ package moe.nightfall.vic.integratedcircuits.misc;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import cpw.mods.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameData;
 
 public class ItemAmount {
 	public double amount;

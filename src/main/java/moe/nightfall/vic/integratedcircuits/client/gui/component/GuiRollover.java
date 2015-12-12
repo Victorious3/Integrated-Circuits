@@ -12,8 +12,8 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import cpw.mods.fml.client.config.GuiUtils;
-import cpw.mods.fml.relauncher.ReflectionHelper;
+import net.minecraftforge.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
 import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;

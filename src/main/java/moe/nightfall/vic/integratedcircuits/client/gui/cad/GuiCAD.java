@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 import com.google.common.collect.Lists;
 
 import codechicken.lib.math.MathHelper;
-import cpw.mods.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.ContainerCAD;
 import moe.nightfall.vic.integratedcircuits.client.Resources;

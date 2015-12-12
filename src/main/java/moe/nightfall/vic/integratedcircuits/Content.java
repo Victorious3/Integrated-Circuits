@@ -1,6 +1,6 @@
 package moe.nightfall.vic.integratedcircuits;
 
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import moe.nightfall.vic.integratedcircuits.item.Item7Segment;
 import moe.nightfall.vic.integratedcircuits.item.ItemBase;
 import moe.nightfall.vic.integratedcircuits.item.ItemCircuit;

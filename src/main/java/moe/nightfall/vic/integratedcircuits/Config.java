@@ -3,9 +3,9 @@ package moe.nightfall.vic.integratedcircuits;
 import java.io.File;
 import java.util.Set;
 
-import cpw.mods.fml.client.event.ConfigChangedEvent;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.config.Configuration;

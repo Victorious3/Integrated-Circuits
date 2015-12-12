@@ -4,7 +4,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocketBridge.ISocketBase;
 import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
 import moe.nightfall.vic.integratedcircuits.proxy.ClientProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class Packet7SegmentOpenGui extends PacketGate<Packet7SegmentOpenGui> {
 	public Packet7SegmentOpenGui() {

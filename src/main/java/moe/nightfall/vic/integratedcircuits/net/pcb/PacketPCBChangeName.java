@@ -11,8 +11,8 @@ import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class PacketPCBChangeName extends PacketTileEntity<PacketPCBChangeName> {
 	private String name;

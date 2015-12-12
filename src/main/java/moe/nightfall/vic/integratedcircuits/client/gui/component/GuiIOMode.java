@@ -12,7 +12,7 @@ import net.minecraft.client.resources.I18n;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
-import cpw.mods.fml.client.config.GuiUtils;
+import net.minecraftforge.fml.client.config.GuiUtils;
 
 public class GuiIOMode extends GuiButton implements IHoverable {
 	private GuiCAD parent;

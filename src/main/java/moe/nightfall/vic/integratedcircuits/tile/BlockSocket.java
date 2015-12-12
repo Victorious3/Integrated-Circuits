@@ -29,8 +29,8 @@ import codechicken.lib.vec.Cuboid6;
 import com.google.common.collect.Lists;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockSocket extends BlockContainer {
 	public BlockSocket() {

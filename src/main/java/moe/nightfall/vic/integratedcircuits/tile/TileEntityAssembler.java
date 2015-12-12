@@ -2,8 +2,8 @@ package moe.nightfall.vic.integratedcircuits.tile;
 
 import buildcraft.api.tiles.IControllable;
 import buildcraft.api.tiles.IHasWork;
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.InterfaceList;
+import net.minecraftforge.fml.common.Optional.Interface;
+import net.minecraftforge.fml.common.Optional.InterfaceList;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.LaserHelper;

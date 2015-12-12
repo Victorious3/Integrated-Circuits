@@ -1,9 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.tile;
 
-import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.DiskDrive.IDiskDrive;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
@@ -22,7 +18,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDiskDrive {
 	private ItemStack floppyStack;
@@ -43,7 +41,7 @@ public class TileEntityCAD extends TileEntityContainer implements ICircuit, IDis
 	private boolean step = false;
 
 	// Shows if there is a printer connected
-	private ForgeDirection printerLocation;
+	private EnumFacing printerLocation;
 
 	public boolean isPausing() {
 		return pausing;

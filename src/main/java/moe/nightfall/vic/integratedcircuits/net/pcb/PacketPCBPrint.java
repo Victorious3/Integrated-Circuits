@@ -1,7 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.net.pcb;
 
 import codechicken.lib.vec.BlockCoord;
-import cpw.mods.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.Side;
 import moe.nightfall.vic.integratedcircuits.net.PacketTileEntity;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityCAD;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntityPrinter;

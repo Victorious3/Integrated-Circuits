@@ -6,8 +6,8 @@ import net.minecraft.tileentity.TileEntity;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.multipart.TMultiPart;
 import codechicken.multipart.TileMultipart;
-import cpw.mods.fml.common.Optional.Interface;
-import cpw.mods.fml.common.Optional.Method;
+import net.minecraftforge.fml.common.Optional.Interface;
+import net.minecraftforge.fml.common.Optional.Method;
 
 @Interface(iface = "mrtjp.projectred.api.IBundledTile", modid = "ProjRed|Core")
 public class GPProjectRedTile extends GPProjectRed implements IBundledTile {
