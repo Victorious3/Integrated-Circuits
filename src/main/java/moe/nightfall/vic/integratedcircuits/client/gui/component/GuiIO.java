@@ -15,7 +15,7 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 import org.lwjgl.opengl.GL11;
 
@@ -49,7 +49,7 @@ public class GuiIO extends GuiButton implements IHoverable {
 		GL11.glRotatef(side * 90, 0F, 0F, 1F);
 		GL11.glTranslatef(-4F, -4F, -0F);
 
-		ForgeDirection dir = MiscUtils.getDirection(side);
+		EnumFacing dir = MiscUtils.getDirection(side);
 		isActive = (te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.SIMPLE || color == 0) 
 				&& (te.getCircuitData().getProperties().getModeAtSide(side) != EnumConnectionType.NONE);
 		boolean isPowered = isActive && te.getExternalInputFromSide(dir, color) || te.getOutputToSide(dir, color);
@@ -85,7 +85,7 @@ public class GuiIO extends GuiButton implements IHoverable {
 	public boolean mousePressed(Minecraft mc, int par1, int par2) {
 		boolean b = super.mousePressed(mc, par1, par2) && !parent.blockMouseInput;
 		if (b && isActive) {
-			ForgeDirection dir = MiscUtils.getDirection(side);
+			EnumFacing dir = MiscUtils.getDirection(side);
 			te.setExternalInputFromSide(dir, color, !te.getExternalInputFromSide(dir, color));
 		}
 		return b;
@@ -94,7 +94,7 @@ public class GuiIO extends GuiButton implements IHoverable {
 	@Override
 	public List<String> getHoverInformation() {
 		ArrayList<String> text = new ArrayList<String>();
-		ForgeDirection dir = MiscUtils.getDirection(side);
+		EnumFacing dir = MiscUtils.getDirection(side);
 		if (te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
 			text.add("S: " + color);
 		else

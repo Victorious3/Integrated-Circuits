@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional.InterfaceList;
 import net.minecraftforge.fml.common.Optional.Interface;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 @InterfaceList({
 	@Interface(iface = "mrtjp.projectred.api.IScrewdriver", modid = "ProjRed|Core"),
@@ -31,7 +31,7 @@ public class ItemScrewdriver extends ItemBase implements mrtjp.projectred.api.IS
 		boolean rotate = !player.isSneaking();
 
 		if (rotate) {
-			return blockClicked.rotateBlock(world, x, y, z, ForgeDirection.getOrientation(side));
+			return blockClicked.rotateBlock(world, x, y, z, EnumFacing.getOrientation(side));
 		}
 
 		return super.onItemUseFirst(stack, player, world, x, y, z, side, hitX, hitY, hitZ);

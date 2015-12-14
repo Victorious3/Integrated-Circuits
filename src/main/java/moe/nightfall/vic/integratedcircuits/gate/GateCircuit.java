@@ -11,7 +11,7 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import codechicken.lib.vec.Cuboid6;
 
 public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvider {
@@ -122,7 +122,7 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	}
 
 	@Override
-	public boolean getInputFromSide(ForgeDirection dir, int frequency) {
+	public boolean getInputFromSide(EnumFacing dir, int frequency) {
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
 		if (getConnectionTypeAtSide(side) == EnumConnectionType.ANALOG)
 			return provider.getRedstoneInput(side) == frequency;
@@ -130,7 +130,7 @@ public class GateCircuit extends Gate implements ICircuit, IGatePeripheralProvid
 	}
 
 	@Override
-	public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) {
+	public void setOutputToSide(EnumFacing dir, int frequency, boolean output) {
 		int side = (MiscUtils.getSide(dir) + 2) % 4;
 		EnumConnectionType mode = getConnectionTypeAtSide(side);
 		if (mode == EnumConnectionType.SIMPLE && frequency > 0)

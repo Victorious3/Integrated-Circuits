@@ -15,7 +15,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,7 +56,7 @@ public class BlockAssembler extends BlockContainer {
 	private IIcon getIcon(TileEntityAssembler te, int s) {
 		int rotation = te != null ? te.rotation : 0;
 
-		// TODO Maybe... just maybe use ForgeDirection's rotating here?
+		// TODO Maybe... just maybe use EnumFacing's rotating here?
 		if (s == 0)
 			return Resources.ICON_ASSEMBLER_BOTTOM;
 		else if (s == 1)
@@ -104,7 +104,7 @@ public class BlockAssembler extends BlockContainer {
 	}
 
 	@Override
-	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side) {
+	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, EnumFacing side) {
 		return true;
 	}
 
@@ -119,7 +119,7 @@ public class BlockAssembler extends BlockContainer {
 	}
 
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+	public boolean rotateBlock(World world, int x, int y, int z, EnumFacing axis) {
 		return ((TileEntityAssembler) world.getTileEntity(x, y, z)).rotate();
 	}
 

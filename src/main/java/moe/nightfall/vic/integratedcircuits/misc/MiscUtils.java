@@ -1,10 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.misc;
 
-import static net.minecraftforge.common.util.ForgeDirection.EAST;
-import static net.minecraftforge.common.util.ForgeDirection.NORTH;
-import static net.minecraftforge.common.util.ForgeDirection.SOUTH;
-import static net.minecraftforge.common.util.ForgeDirection.WEST;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -13,10 +8,6 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import com.google.common.collect.HashBiMap;
 
-import codechicken.lib.vec.BlockCoord;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.block.Block.SoundType;
 import net.minecraft.client.Minecraft;
@@ -27,14 +18,17 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
 
+//TODO A lot of this junk is probably not needed or should be moved elsewhere.
 public class MiscUtils {
-	private static ForgeDirection[] order = { NORTH, EAST, SOUTH, WEST };
-	private static int[] index = { -1, -1, 0, 2, 3, 1, -1 };
 	public static HashBiMap<String, Integer> colors = HashBiMap.create();
 
 	static {
@@ -72,11 +66,21 @@ public class MiscUtils {
 			return StatCollector.translateToLocal("item.fireworksCharge."
 					+ WordUtils.uncapitalize(colors.inverse().get(color).substring(3)));
 	}
+	
+	public static EnumFacing rot(EnumFacing facing, EnumFacing rot) {
+		int index = facing.getHorizontalIndex();
+		return EnumFacing.getHorizontal(index + rot.getHorizontalIndex());
+	}
+	
+	public static EnumFacing rotneg(EnumFacing facing, EnumFacing rot) {
+		int index = facing.getHorizontalIndex();
+		return EnumFacing.getHorizontal(index - rot.getHorizontalIndex());
+	}
 
-	public static void playPlaceSound(World world, BlockCoord pos) {
-		SoundType sound = world.getBlock(pos.x, pos.y, pos.z).stepSound;
-		world.playSoundEffect(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, sound.func_150496_b(),
-				(sound.getVolume() + 1.0F) / 2.0F, sound.getPitch() * 0.8F);
+	public static void playPlaceSound(World world, BlockPos pos) {
+		SoundType sound = world.getBlockState(pos).getBlock().stepSound;
+		world.playSoundEffect(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, sound.soundName,
+				(sound.getVolume() + 1.0F) / 2.0F, sound.getFrequency() * 0.8F);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -96,57 +100,33 @@ public class MiscUtils {
 	public static EntityPlayerMP getPlayerByUsername(String username) {
 		for (Object o : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			EntityPlayerMP player = (EntityPlayerMP) o;
-			if (player.getCommandSenderName().equalsIgnoreCase(username))
+			if (player.getName().equalsIgnoreCase(username))
 				return player;
 		}
 		return null;
 	}
 
-	public static ForgeDirection rotn(ForgeDirection fd, int offset) {
-		int pos = index[fd.ordinal()];
-		int newPos = pos + offset;
-		pos = newPos > 3 ? newPos - 4 : newPos < 0 ? newPos + 4 : newPos;
-		return order[pos];
-	}
-
-	public static ForgeDirection rot(ForgeDirection fd) {
-		return rotn(fd, 1);
-	}
-
-	public static ForgeDirection getDirection(int side) {
-		return order[side];
-	}
-
-	public static int getSide(ForgeDirection dir) {
-		return index[dir.ordinal()];
-	}
-
-	public static String getLocalizedDirection(ForgeDirection fd) {
+	public static String getLocalizedDirection(EnumFacing fd) {
 		return I18n.format("fdirection." + fd.name().toLowerCase() + ".name");
 	}
 
 	public static AxisAlignedBB getRotatedInstance(AxisAlignedBB def, int rotation) {
-		def = def.copy();
-		def.offset(-0.5, -0.5, -0.5);
+		def = def.offset(-0.5, -0.5, -0.5);
 		switch (rotation) {
 			case 2:
-				def = AxisAlignedBB.getBoundingBox(def.minZ, def.minY, -def.maxX, def.maxZ, def.maxY, -def.minX);
+				def = AxisAlignedBB.fromBounds(def.minZ, def.minY, -def.maxX, def.maxZ, def.maxY, -def.minX);
 			case 3:
-				def = AxisAlignedBB.getBoundingBox(-def.maxX, def.minY, -def.maxZ, -def.minX, def.maxY, -def.minZ);
+				def = AxisAlignedBB.fromBounds(-def.maxX, def.minY, -def.maxZ, -def.minX, def.maxY, -def.minZ);
 			case 1:
-				def = AxisAlignedBB.getBoundingBox(-def.maxZ, def.minY, def.minX, -def.minZ, def.maxY, def.maxX);
+				def = AxisAlignedBB.fromBounds(-def.maxZ, def.minY, def.minX, -def.minZ, def.maxY, def.maxX);
 		}
 		def.offset(0.5, 0.5, 0.5);
 		return def;
 	}
 
-	public static boolean canPlaceGateOnSide(World world, int x, int y, int z, int side) {
-		if (!world.blockExists(x, y, z))
-			return false;
-		Block block = world.getBlock(x, y, z);
-		if (block == null)
-			return false;
-		return block.isSideSolid(world, x, y, z, ForgeDirection.getOrientation(side));
+	public static boolean canPlaceGateOnSide(World world, BlockPos pos, EnumFacing facing) {
+		Block block = world.getBlockState(pos).getBlock();
+		return block.isSideSolid(world, pos, facing);
 	}
 
 	public static void dropItem(World world, ItemStack stack, int x, int y, int z) {

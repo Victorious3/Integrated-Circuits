@@ -1,7 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.cp.part;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
@@ -9,7 +7,10 @@ import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartTorch extends CircuitPart {
 	@Override
@@ -18,14 +19,14 @@ public class PartTorch extends CircuitPart {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
 		return true;
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
-		RenderUtils.applyColorIRGBA(Tessellator.instance, Config.colorGreen);
+		RenderUtils.applyColorIRGBA(Tessellator.getInstance(), Config.colorGreen);
 
 		int con = CircuitPartRenderer.checkConnections(pos, parent, this);
 		if ((con & 8) > 0)

@@ -8,6 +8,7 @@ import java.util.UUID;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants.NBT;
 
 public class CircuitProperties implements Cloneable {
@@ -61,12 +62,12 @@ public class CircuitProperties implements Cloneable {
 		return comments.values();
 	}
 
-	public EnumConnectionType getModeAtSide(int side) {
+	public EnumConnectionType getModeAtSide(EnumFacing side) {
 		return getModeAtSide(con, side);
 	}
 	
-	public static EnumConnectionType getModeAtSide(int con, int side) {
-		return EnumConnectionType.values()[con >> (side * 2) & 3];
+	public static EnumConnectionType getModeAtSide(int con, EnumFacing side) {
+		return EnumConnectionType.values()[con >> side.getHorizontalIndex()];
 	}
 
 	public int setModeAtSide(int side, EnumConnectionType type) {

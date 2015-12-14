@@ -2,7 +2,7 @@ package moe.nightfall.vic.integratedcircuits.misc;
 
 import java.util.Objects;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 /** An int value pair **/
 public class Vec2 {
@@ -16,8 +16,8 @@ public class Vec2 {
 		this.y = b;
 	}
 
-	public Vec2 offset(ForgeDirection dir) {
-		return new Vec2(x + dir.offsetX, y + dir.offsetZ);
+	public Vec2 offset(EnumFacing dir) {
+		return new Vec2(x + dir.getDirectionVec().getX(), y + dir.getDirectionVec().getZ());
 	}
 
 	public double distanceTo(Vec2 other) {

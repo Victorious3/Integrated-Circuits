@@ -2,17 +2,18 @@ package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
 import java.util.Random;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.init.Items;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartRandomizer extends PartDelayedAction {
 	public final IntProperty PROP_RANDOM = new IntProperty("RANDOM", stitcher, 7);
@@ -31,16 +32,16 @@ public class PartRandomizer extends PartDelayedAction {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.SOUTH)
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing s2 = toInternal(pos, parent, side);
+		if (s2 == EnumFacing.SOUTH)
 			return false;
 		int rand = getProperty(pos, parent, PROP_RANDOM);
-		if (s2 == ForgeDirection.EAST && (rand >> 2 & 1) != 0)
+		if (s2 == EnumFacing.EAST && (rand >> 2 & 1) != 0)
 			return true;
-		if (s2 == ForgeDirection.WEST && (rand >> 1 & 1) != 0)
+		if (s2 == EnumFacing.WEST && (rand >> 1 & 1) != 0)
 			return true;
-		if (s2 == ForgeDirection.NORTH && (rand & 1) != 0)
+		if (s2 == EnumFacing.NORTH && (rand & 1) != 0)
 			return true;
 		return false;
 	}
@@ -58,7 +59,7 @@ public class PartRandomizer extends PartDelayedAction {
 
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
-		if (!getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+		if (!getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.SOUTH))) {
 			// Do not call super() if input is low,
 			//  to prevent output change on the same tick when it goes low.
 			setDelay(pos, parent, false);

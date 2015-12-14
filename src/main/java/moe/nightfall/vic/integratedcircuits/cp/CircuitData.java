@@ -1,12 +1,13 @@
 package moe.nightfall.vic.integratedcircuits.cp;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.primitives.Ints;
+
+import io.netty.buffer.ByteBuf;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.IntegratedCircuits;
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
@@ -15,13 +16,11 @@ import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.util.Constants.NBT;
-
-import com.google.common.primitives.Ints;
 
 /**
  * Only {@link #updateMatrix()} is thread safe, so keep in mind to
@@ -138,7 +137,7 @@ public class CircuitData implements Cloneable {
 		// On each side...
 		for(int side = 0; side < 4; side++) {
 			// Get the mode.
-			EnumConnectionType mode = prop.getModeAtSide(side);
+			EnumConnectionType mode = prop.getModeAtSide(EnumFacing.getHorizontal(side));
 			// Work out if the mode will need to be changed for it to fit
 			if (mode.size > maxIOSize) {
 				// if so, set the mode to the first available input mode
@@ -173,42 +172,27 @@ public class CircuitData implements Cloneable {
 		int cid = CircuitPart.getId(PartIOBit.class);
 		
 		for (int i = 0; i < (supportsBundled() ? 16 : 1); i++) {
-			// Get the positions
-			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
-			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
-			Vec2 pos3 = new Vec2(i + o, size - 1);
-			Vec2 pos4 = new Vec2(0, i + o);
+			// Get the positions		
+			Vec2[] positions = new Vec2[] {
+				new Vec2(size - 1 - (i + o), 0),
+				new Vec2(size - 1, size - 1 - (i + o)),
+				new Vec2(i + o, size - 1),
+				new Vec2(0, i + o)
+			};
 			
-			if (prop.getModeAtSide(0) != EnumConnectionType.NONE && !(prop.getModeAtSide(0) == EnumConnectionType.SIMPLE && i >= 1)) {
-				// Set the part at the position to be a IOBit
-				setID(pos1, cid);
-				// Get the IOBit at that position
-				PartIOBit io1 = (PartIOBit) getPart(pos1);
-				// Set the number of the IOBit (colour / redstone strength)
-				io1.setFrequency(pos1, parent, i);
-				// The rotation is what side the IOBit is on
-				io1.setRotation(pos1, parent, 0);
-			}
-			
-			if (prop.getModeAtSide(1) != EnumConnectionType.NONE && !(prop.getModeAtSide(1) == EnumConnectionType.SIMPLE && i >= 1)) {
-				setID(pos2, cid);
-				PartIOBit io2 = (PartIOBit) getPart(pos2);
-				io2.setFrequency(pos2, parent, i);
-				io2.setRotation(pos2, parent, 1);
-			}
-			
-			if (prop.getModeAtSide(2) != EnumConnectionType.NONE && !(prop.getModeAtSide(2) == EnumConnectionType.SIMPLE && i >= 1)) {
-				setID(pos3, cid);
-				PartIOBit io3 = (PartIOBit) getPart(pos3);
-				io3.setFrequency(pos3, parent, i);
-				io3.setRotation(pos3, parent, 2);
-			}
-			
-			if (prop.getModeAtSide(3) != EnumConnectionType.NONE && !(prop.getModeAtSide(3) == EnumConnectionType.SIMPLE && i >= 1)) {
-				setID(pos4, cid);
-				PartIOBit io4 = (PartIOBit) getPart(pos4);
-				io4.setFrequency(pos4, parent, i);
-				io4.setRotation(pos4, parent, 3);
+			for (int j = 0; j < 4; j++) {
+				Vec2 pos = positions[j];
+				EnumConnectionType ctype = prop.getModeAtSide(EnumFacing.getHorizontal(j));
+				if (ctype != EnumConnectionType.NONE && !(ctype == EnumConnectionType.SIMPLE && i >= 1)) {
+					// Set the part at the position to be a IOBit
+					setID(pos, cid);
+					// Get the IOBit at that position
+					PartIOBit io1 = (PartIOBit) getPart(pos);
+					// Set the number of the IOBit (color / redstone strength)
+					io1.setFrequency(pos, parent, i);
+					// The rotation is what side the IOBit is on
+					io1.setRotation(pos, parent, EnumFacing.NORTH);
+				}
 			}
 		}
 	}
@@ -442,13 +426,13 @@ public class CircuitData implements Cloneable {
 		NBTTagList idlist = compound.getTagList("id", NBT.TAG_INT_ARRAY);
 		int[][] id = new int[idlist.tagCount()][];
 		for (int i = 0; i < idlist.tagCount(); i++) {
-			id[i] = idlist.func_150306_c(i);
+			id[i] = idlist.getIntArrayAt(i);
 		}
 
 		NBTTagList metalist = compound.getTagList("meta", NBT.TAG_INT_ARRAY);
 		int[][] meta = new int[metalist.tagCount()][];
 		for (int i = 0; i < metalist.tagCount(); i++) {
-			meta[i] = metalist.func_150306_c(i);
+			meta[i] = metalist.getIntArrayAt(i);
 		}
 
 		CircuitProperties prop = CircuitProperties.readFromNBT(compound.getCompoundTag("properties"));

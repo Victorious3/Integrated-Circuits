@@ -3,10 +3,11 @@ package moe.nightfall.vic.integratedcircuits.cp.part;
 import java.util.ArrayList;
 
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+
 
 public abstract class Part2I1O extends PartSimpleGate {
 	public final IntProperty PROP_CONNECTORS = new IntProperty("CONNECTORS", stitcher, 2);
@@ -21,23 +22,23 @@ public abstract class Part2I1O extends PartSimpleGate {
 	}
 
 	@Override
-	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.NORTH)
+	public boolean canConnectToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing s2 = toInternal(pos, parent, side);
+		if (s2 == EnumFacing.NORTH)
 			return true;
 		int i = getProperty(pos, parent, PROP_CONNECTORS);
-		if (s2 == ForgeDirection.EAST && i == 2)
+		if (s2 == EnumFacing.EAST && i == 2)
 			return false;
-		if (s2 == ForgeDirection.SOUTH && i == 0)
+		if (s2 == EnumFacing.SOUTH && i == 0)
 			return false;
-		if (s2 == ForgeDirection.WEST && i == 1)
+		if (s2 == EnumFacing.WEST && i == 1)
 			return false;
 		return true;
 	}
 
 	@Override
-	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd) {
-		return fd == ForgeDirection.NORTH;
+	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, EnumFacing fd) {
+		return fd == EnumFacing.NORTH;
 	}
 
 	@Override

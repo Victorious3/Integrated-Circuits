@@ -1,7 +1,5 @@
 package moe.nightfall.vic.integratedcircuits.cp.part.cell;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
@@ -10,7 +8,10 @@ import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartANDCell extends PartSimpleGate {
 	@Override
@@ -25,10 +26,10 @@ public class PartANDCell extends PartSimpleGate {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection fd = toInternal(pos, parent, side);
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing fd = toInternal(pos, parent, side);
 		// A-la NullCell (only NORTH<=>SOUTH)
-		if ((fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH) &&
+		if ((fd == EnumFacing.NORTH || fd == EnumFacing.SOUTH) &&
 				getInputFromSide(pos, parent, side.getOpposite()) && !getInputFromSide(pos, parent, side))
 			return true;
 		
@@ -39,10 +40,10 @@ public class PartANDCell extends PartSimpleGate {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
-		Tessellator tes = Tessellator.instance;
-		int rotation = this.getRotation(pos, parent);
+		Tessellator tes = Tessellator.getInstance();
+		EnumFacing rotation = this.getRotation(pos, parent);
 
-		ForgeDirection fd = MiscUtils.rotn(ForgeDirection.NORTH, rotation);
+		EnumFacing fd = MiscUtils.rot(EnumFacing.NORTH, rotation);
 		if (type == CircuitPartRenderer.EnumRenderType.GUI
 				&& (this.getOutputToSide(pos, parent, fd) || this.getInputFromSide(pos, parent, fd)
 				|| this.getOutputToSide(pos, parent, fd.getOpposite()) || this.getInputFromSide(pos, parent,
@@ -52,7 +53,7 @@ public class PartANDCell extends PartSimpleGate {
 			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 		CircuitPartRenderer.addQuad(x, y, 0, 2 * 16, 16, 16, rotation);
 
-		fd = MiscUtils.rotn(ForgeDirection.EAST, rotation);
+		fd = MiscUtils.rot(EnumFacing.EAST, rotation);
 		if (type == CircuitPartRenderer.EnumRenderType.GUI
 				&& (this.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || this
 				.getInputFromSide(pos, parent, fd)))
@@ -61,7 +62,7 @@ public class PartANDCell extends PartSimpleGate {
 			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 		CircuitPartRenderer.addQuad(x, y, 8 * 16, 2 * 16, 16, 16, rotation);
 
-		fd = MiscUtils.rotn(ForgeDirection.WEST, rotation);
+		fd = MiscUtils.rot(EnumFacing.WEST, rotation);
 		if (type == CircuitPartRenderer.EnumRenderType.GUI
 				&& (this.getNeighbourOnSide(pos, parent, fd).getInputFromSide(pos.offset(fd), parent, fd.getOpposite()) || this
 				.getInputFromSide(pos, parent, fd)))
@@ -81,15 +82,15 @@ public class PartANDCell extends PartSimpleGate {
 
 	@Override
 	protected void calcOutput(Vec2 pos, ICircuit parent) {
-		ForgeDirection f1 = toExternal(pos, parent, ForgeDirection.NORTH);
-		ForgeDirection f2 = f1.getOpposite();
-		ForgeDirection f3 = toExternal(pos, parent, ForgeDirection.EAST);
+		EnumFacing f1 = toExternal(pos, parent, EnumFacing.NORTH);
+		EnumFacing f2 = f1.getOpposite();
+		EnumFacing f3 = toExternal(pos, parent, EnumFacing.EAST);
 		setOutput(pos, parent, (getInputFromSide(pos, parent, f1) || getInputFromSide(pos, parent, f2))
 				&& getInputFromSide(pos, parent, f3));
 	}
 
 	@Override
-	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd) {
-		return fd == ForgeDirection.WEST;
+	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, EnumFacing fd) {
+		return fd == EnumFacing.WEST;
 	}
 }

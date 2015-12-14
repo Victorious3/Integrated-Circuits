@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 import codechicken.lib.vec.Cuboid6;
 
 import com.google.common.collect.Lists;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -62,7 +62,7 @@ public class BlockSocket extends BlockContainer {
 	}
 
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+	public boolean rotateBlock(World world, int x, int y, int z, EnumFacing axis) {
 		return !world.isRemote &&
 			((TileEntitySocket) world.getTileEntity(x, y, z)).getSocket().rotate();
 	}

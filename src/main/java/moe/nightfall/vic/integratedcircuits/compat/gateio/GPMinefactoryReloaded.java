@@ -6,7 +6,7 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocket.EnumConnectionType;
 import moe.nightfall.vic.integratedcircuits.tile.TileEntitySocket;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetNetworkContainer;
 import powercrystals.minefactoryreloaded.api.rednet.IRedNetOmniNode;
 import powercrystals.minefactoryreloaded.api.rednet.connectivity.RedNetConnectionType;
@@ -39,7 +39,7 @@ public class GPMinefactoryReloaded extends GateIOProvider implements IRedNetOmni
 
 	@Override
 	@Method(modid = "MineFactoryReloaded")
-	public RedNetConnectionType getConnectionType(World world, int x, int y, int z, ForgeDirection fd) {
+	public RedNetConnectionType getConnectionType(World world, int x, int y, int z, EnumFacing fd) {
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
 		ISocket socket = te.getSocket();
 
@@ -58,7 +58,7 @@ public class GPMinefactoryReloaded extends GateIOProvider implements IRedNetOmni
 
 	@Override
 	@Method(modid = "MineFactoryReloaded")
-	public void onInputsChanged(World world, int x, int y, int z, ForgeDirection fd, int[] inputValues) {
+	public void onInputsChanged(World world, int x, int y, int z, EnumFacing fd, int[] inputValues) {
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
 		ISocket socket = te.getSocket();
 
@@ -75,7 +75,7 @@ public class GPMinefactoryReloaded extends GateIOProvider implements IRedNetOmni
 
 	@Override
 	@Method(modid = "MineFactoryReloaded")
-	public void onInputChanged(World world, int x, int y, int z, ForgeDirection fd, int inputValue) {
+	public void onInputChanged(World world, int x, int y, int z, EnumFacing fd, int inputValue) {
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
 		ISocket socket = te.getSocket();
 
@@ -91,7 +91,7 @@ public class GPMinefactoryReloaded extends GateIOProvider implements IRedNetOmni
 
 	@Override
 	@Method(modid = "MineFactoryReloaded")
-	public int[] getOutputValues(World world, int x, int y, int z, ForgeDirection fd) {
+	public int[] getOutputValues(World world, int x, int y, int z, EnumFacing fd) {
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
 		ISocket socket = te.getSocket();
 
@@ -111,7 +111,7 @@ public class GPMinefactoryReloaded extends GateIOProvider implements IRedNetOmni
 
 	@Override
 	@Method(modid = "MineFactoryReloaded")
-	public int getOutputValue(World world, int x, int y, int z, ForgeDirection fd, int subnet) {
+	public int getOutputValue(World world, int x, int y, int z, EnumFacing fd, int subnet) {
 		TileEntitySocket te = (TileEntitySocket) world.getTileEntity(x, y, z);
 		ISocket socket = te.getSocket();
 

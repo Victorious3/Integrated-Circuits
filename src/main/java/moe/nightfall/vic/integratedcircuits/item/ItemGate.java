@@ -3,7 +3,7 @@ package moe.nightfall.vic.integratedcircuits.item;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGateItem;
 import moe.nightfall.vic.integratedcircuits.compat.buildcraft.GatePipePluggable;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import buildcraft.api.transport.IPipe;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.api.transport.pluggable.IPipePluggableItem;
@@ -21,7 +21,7 @@ public abstract class ItemGate extends ItemBase implements IGateItem, IPipePlugg
 
 	@Override
 	@Method(modid = "BuildCraft|Core")
-	public PipePluggable createPipePluggable(IPipe pipe, ForgeDirection side, ItemStack stack) {
+	public PipePluggable createPipePluggable(IPipe pipe, EnumFacing side, ItemStack stack) {
 		IPipeTile tile = pipe.getTile();
 		return new GatePipePluggable(stack, new BlockCoord(tile.x(), tile.y(), tile.z()), tile.getWorld(), side);
 	}

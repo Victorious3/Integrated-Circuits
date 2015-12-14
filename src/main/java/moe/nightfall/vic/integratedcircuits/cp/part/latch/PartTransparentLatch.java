@@ -1,13 +1,14 @@
 package moe.nightfall.vic.integratedcircuits.cp.part.latch;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
-import net.minecraftforge.common.util.ForgeDirection;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartTransparentLatch extends PartCPGate {
 	public final BooleanProperty PROP_OUT = new BooleanProperty("OUT", stitcher);
@@ -19,18 +20,18 @@ public class PartTransparentLatch extends PartCPGate {
 
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
-		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.SOUTH))) {
 			setProperty(pos, parent, PROP_OUT,
 					getInputFromSide(pos, parent,
-						toExternal(pos, parent, ForgeDirection.WEST)));
+						toExternal(pos, parent, EnumFacing.WEST)));
 			notifyNeighbours(pos, parent);
 		}
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.NORTH || s2 == ForgeDirection.EAST)
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing s2 = toInternal(pos, parent, side);
+		if (s2 == EnumFacing.NORTH || s2 == EnumFacing.EAST)
 			return getProperty(pos, parent, PROP_OUT);
 		return false;
 	}

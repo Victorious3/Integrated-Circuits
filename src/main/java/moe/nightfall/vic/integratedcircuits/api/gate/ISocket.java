@@ -7,10 +7,8 @@ import moe.nightfall.vic.integratedcircuits.api.gate.ISocketBridge.ISocketBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
-
-import codechicken.lib.data.MCDataInput;
-import codechicken.lib.vec.BlockCoord;
 
 /**
  * Contains all methods that have to be called by an {@link ISocketWrapper} and
@@ -29,7 +27,8 @@ public interface ISocket extends ISocketBase {
 
 	void readDesc(NBTTagCompound compound);
 
-	void read(MCDataInput packet);
+	// TODO recreate, fix up packet sending anyways
+	// void read(MCDataInput packet);
 
 	/**
 	 * Only has to be called when the orientation needs to be set automatically,
@@ -42,7 +41,7 @@ public interface ISocket extends ISocketBase {
 	 * @param side
 	 * @param stack
 	 */
-	void preparePlacement(EntityPlayer player, BlockCoord pos, int side, ItemStack stack);
+	void preparePlacement(EntityPlayer player, BlockPos pos, int side, ItemStack stack);
 
 	boolean activate(EntityPlayer player, MovingObjectPosition hit, ItemStack stack);
 

@@ -1,17 +1,18 @@
 package moe.nightfall.vic.integratedcircuits.cp.part.logic;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.cp.part.Part1I3O;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartBufferGate extends Part1I3O {
 	@Override
 	public void calcOutput(Vec2 pos, ICircuit parent) {
-		setOutput(pos, parent, getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)));
+		setOutput(pos, parent, getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.SOUTH)));
 	}
 
 	@Override

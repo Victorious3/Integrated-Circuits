@@ -2,8 +2,8 @@ package moe.nightfall.vic.integratedcircuits.cp.part;
 
 import java.util.ArrayList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import com.google.common.collect.Lists;
+
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
@@ -12,26 +12,25 @@ import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
 import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
-import net.minecraft.client.renderer.Tessellator;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.common.util.ForgeDirection;
-
-import com.google.common.collect.Lists;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /** Rotateable Part **/
 public abstract class PartCPGate extends CircuitPart {
 	public final IntProperty PROP_ROTATION = new IntProperty("ROTATION", stitcher, 3);
 
-	public final int getRotation(Vec2 pos, ICircuit parent) {
-		return getProperty(pos, parent, PROP_ROTATION);
+	public final EnumFacing getRotation(Vec2 pos, ICircuit parent) {
+		return EnumFacing.getHorizontal(getProperty(pos, parent, PROP_ROTATION));
 	}
 
-	public final void setRotation(Vec2 pos, ICircuit parent, int rotation) {
-		setProperty(pos, parent, PROP_ROTATION, rotation);
+	public final void setRotation(Vec2 pos, ICircuit parent, EnumFacing rotation) {
+		setProperty(pos, parent, PROP_ROTATION, rotation.getHorizontalIndex());
 		scheduleInputChange(pos, parent);
 		notifyNeighbours(pos, parent);
 	}
@@ -50,18 +49,18 @@ public abstract class PartCPGate extends CircuitPart {
 		}
 	}
 
-	public ForgeDirection toInternal(Vec2 pos, ICircuit parent, ForgeDirection dir) {
-		return MiscUtils.rotn(dir, -getRotation(pos, parent));
+	public EnumFacing toInternal(Vec2 pos, ICircuit parent, EnumFacing dir) {
+		return MiscUtils.rotneg(dir, getRotation(pos, parent));
 	}
 
-	public ForgeDirection toExternal(Vec2 pos, ICircuit parent, ForgeDirection dir) {
-		return MiscUtils.rotn(dir, getRotation(pos, parent));
+	public EnumFacing toExternal(Vec2 pos, ICircuit parent, EnumFacing dir) {
+		return MiscUtils.rot(dir, getRotation(pos, parent));
 	}
 
 	@Override
 	public ArrayList<String> getInformation(Vec2 pos, ICircuit parent, boolean edit, boolean ctrlDown) {
 		ArrayList<String> text = Lists.newArrayList();
-		ForgeDirection rot = MiscUtils.getDirection(getRotation(pos, parent));
+		EnumFacing rot = getRotation(pos, parent);
 		text.add(EnumChatFormatting.DARK_GRAY + "" + EnumChatFormatting.ITALIC + MiscUtils.getLocalizedDirection(rot));
 		if (edit && !ctrlDown)
 			text.add(I18n.format("gui.integratedcircuits.cad.rotate"));

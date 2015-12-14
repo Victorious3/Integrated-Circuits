@@ -9,7 +9,7 @@ import li.cil.oc.api.network.SimpleComponent.SkipInjection;
 import moe.nightfall.vic.integratedcircuits.api.gate.GateIOProvider;
 import moe.nightfall.vic.integratedcircuits.api.gate.IGatePeripheralProvider;
 import moe.nightfall.vic.integratedcircuits.gate.peripheral.GatePeripheral;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import net.minecraftforge.fml.common.Optional.Interface;
 import net.minecraftforge.fml.common.Optional.InterfaceList;
 import net.minecraftforge.fml.common.Optional.Method;
@@ -24,7 +24,7 @@ public class GPOpenComputers extends GateIOProvider implements SimpleComponent, 
 
 	@Override
 	@Method(modid = "OpenComputers")
-	public boolean canConnectNode(ForgeDirection side) {
+	public boolean canConnectNode(EnumFacing side) {
 		if (socket.getGate() instanceof IGatePeripheralProvider) {
 			IGatePeripheralProvider provider = (IGatePeripheralProvider) socket.getGate();
 			return provider.hasPeripheral(side.ordinal());

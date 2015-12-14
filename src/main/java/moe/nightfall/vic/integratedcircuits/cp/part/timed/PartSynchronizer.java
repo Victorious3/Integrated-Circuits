@@ -1,12 +1,13 @@
 package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
-import net.minecraftforge.common.util.ForgeDirection;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartSynchronizer extends PartDelayedAction {
 	public final BooleanProperty PROP_IN_EAST = new BooleanProperty("IN_EAST", stitcher);
@@ -27,10 +28,10 @@ public class PartSynchronizer extends PartDelayedAction {
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
 		super.onScheduledTick(pos, parent);
-		ForgeDirection west = toExternal(pos, parent, ForgeDirection.WEST);
+		EnumFacing west = toExternal(pos, parent, EnumFacing.WEST);
 		boolean westIn = getInputFromSide(pos, parent, west);
 		boolean eastIn = getInputFromSide(pos, parent, west.getOpposite());
-		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.SOUTH))) {
 			setProperty(pos, parent, PROP_IN_EAST, false);
 			setProperty(pos, parent, PROP_IN_WEST, false);
 			setDelay(pos, parent, false);
@@ -58,9 +59,9 @@ public class PartSynchronizer extends PartDelayedAction {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.NORTH)
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing s2 = toInternal(pos, parent, side);
+		if (s2 == EnumFacing.NORTH)
 			return isDelayActive(pos, parent);
 		return false;
 	}

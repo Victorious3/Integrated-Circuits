@@ -2,19 +2,20 @@ package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
 import java.util.ArrayList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartStateCell extends PartDelayedAction implements IConfigurableDelay {
 	public final IntProperty PROP_DELAY = new IntProperty("DELAY", stitcher, 255);
@@ -39,11 +40,11 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 == ForgeDirection.WEST && getProperty(pos, parent, PROP_OUT_WEST))
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing s2 = toInternal(pos, parent, side);
+		if (s2 == EnumFacing.WEST && getProperty(pos, parent, PROP_OUT_WEST))
 			return true;
-		if (s2 == ForgeDirection.NORTH && getProperty(pos, parent, PROP_OUT_NORTH))
+		if (s2 == EnumFacing.NORTH && getProperty(pos, parent, PROP_OUT_NORTH))
 			return true;
 		return false;
 	}
@@ -80,13 +81,13 @@ public class PartStateCell extends PartDelayedAction implements IConfigurableDel
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
 		super.onScheduledTick(pos, parent);
-		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.SOUTH))) {
 			setProperty(pos, parent, PROP_OUT_WEST, true);
 			setProperty(pos, parent, PROP_OUT_NORTH, false);
 			setDelay(pos, parent, false);
 			notifyNeighbours(pos, parent);
 		} else if (getProperty(pos, parent, PROP_OUT_WEST)) {
-			if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)))
+			if (getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.EAST)))
 				setDelay(pos, parent, false);
 			else if (!isDelayActive(pos, parent))
 				setDelay(pos, parent, true);

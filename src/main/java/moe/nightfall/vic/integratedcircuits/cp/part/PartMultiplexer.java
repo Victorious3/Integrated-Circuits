@@ -1,11 +1,12 @@
 package moe.nightfall.vic.integratedcircuits.cp.part;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartMultiplexer extends PartSimpleGate {
 	@Override
@@ -21,14 +22,14 @@ public class PartMultiplexer extends PartSimpleGate {
 
 	@Override
 	protected void calcOutput(Vec2 pos, ICircuit parent) {
-		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH)))
-			setOutput(pos, parent, getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.WEST)));
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.SOUTH)))
+			setOutput(pos, parent, getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.WEST)));
 		else
-			setOutput(pos, parent, getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.EAST)));
+			setOutput(pos, parent, getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.EAST)));
 	}
 
 	@Override
-	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd) {
-		return fd == ForgeDirection.NORTH;
+	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, EnumFacing fd) {
+		return fd == EnumFacing.NORTH;
 	}
 }

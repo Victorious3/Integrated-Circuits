@@ -2,19 +2,19 @@ package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
 import java.util.ArrayList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
-import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartSequencer extends PartDelayedAction implements IConfigurableDelay {
 	public final IntProperty PROP_OUTPUT_SIDE = new IntProperty("OUTPUT_SIDE", stitcher, 3);
@@ -56,8 +56,8 @@ public class PartSequencer extends PartDelayedAction implements IConfigurableDel
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		return MiscUtils.getDirection(getProperty(pos, parent, PROP_OUTPUT_SIDE))
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		return EnumFacing.getHorizontal(getProperty(pos, parent, PROP_OUTPUT_SIDE))
 				== toInternal(pos, parent, side);
 	}
 

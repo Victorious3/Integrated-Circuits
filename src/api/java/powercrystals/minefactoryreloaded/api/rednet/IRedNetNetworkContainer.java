@@ -1,7 +1,7 @@
 package powercrystals.minefactoryreloaded.api.rednet;
 
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 /**
  * 
@@ -18,7 +18,7 @@ public interface IRedNetNetworkContainer
 	 * @param x The y-coordinate of this cable.
 	 * @param x The z-coordinate of this cable.
 	 */
-	public void updateNetwork(World world, int x, int y, int z, ForgeDirection from);
+	public void updateNetwork(World world, int x, int y, int z, EnumFacing from);
 	
 	/**
 	 * Tells the network to recalculate a specific subnet.
@@ -28,5 +28,5 @@ public interface IRedNetNetworkContainer
 	 * @param x The z-coordinate of this cable.
 	 * @param subnet The subnet to recalculate.
 	 */
-	public void updateNetwork(World world, int x, int y, int z, int subnet, ForgeDirection from);
+	public void updateNetwork(World world, int x, int y, int z, int subnet, EnumFacing from);
 }

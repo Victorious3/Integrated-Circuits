@@ -1,9 +1,10 @@
 package moe.nightfall.vic.integratedcircuits.cp.part;
 
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
-import net.minecraftforge.common.util.ForgeDirection;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import net.minecraft.util.EnumFacing;
+
 
 /** Has only one type of output **/
 public abstract class PartSimpleGate extends PartCPGate {
@@ -20,7 +21,7 @@ public abstract class PartSimpleGate extends PartCPGate {
 	protected abstract void calcOutput(Vec2 pos, ICircuit parent);
 
 	/** already rotated **/
-	protected abstract boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd);
+	protected abstract boolean hasOutputToSide(Vec2 pos, ICircuit parent, EnumFacing fd);
 
 	@Override
 	public Category getCategory() {
@@ -28,7 +29,7 @@ public abstract class PartSimpleGate extends PartCPGate {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
 		return hasOutputToSide(pos, parent, toInternal(pos, parent, side)) && getProperty(pos, parent, PROP_OUT);
 	}
 

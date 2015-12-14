@@ -3,8 +3,6 @@ package moe.nightfall.vic.integratedcircuits.cp.part;
 import java.util.Arrays;
 import java.util.Collection;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
@@ -17,7 +15,10 @@ import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Items;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartWire extends CircuitPart {
 	public final IntProperty PROP_COLOR = new IntProperty("COLOR", stitcher, 2);
@@ -29,7 +30,7 @@ public class PartWire extends CircuitPart {
 	}*/
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
 		return getInput(pos, parent) && !getInputFromSide(pos, parent, side);
 	}
 
@@ -37,7 +38,7 @@ public class PartWire extends CircuitPart {
 	@SideOnly(Side.CLIENT)
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
 		int color = this.getColor(pos, parent);
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
 
 		if (type == CircuitPartRenderer.EnumRenderType.GUI) {
 			switch (color) {
@@ -93,7 +94,7 @@ public class PartWire extends CircuitPart {
 	}
 
 	@Override
-	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public boolean canConnectToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
 		CircuitPart part = getNeighbourOnSide(pos, parent, side);
 		if (part instanceof PartWire) {
 			int pcolor = ((PartWire) part).getColor(pos.offset(side), parent);

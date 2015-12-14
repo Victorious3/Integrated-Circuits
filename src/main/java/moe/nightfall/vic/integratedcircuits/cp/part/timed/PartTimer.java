@@ -2,19 +2,20 @@ package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
 import java.util.ArrayList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
 import moe.nightfall.vic.integratedcircuits.misc.ItemAmount;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.init.Items;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 //TODO The timer should really use the tick method instead of scheduled ticks.
 public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
@@ -53,7 +54,7 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
 		super.onScheduledTick(pos, parent);
-		if (getInputFromSide(pos, parent, toExternal(pos, parent, ForgeDirection.SOUTH))) {
+		if (getInputFromSide(pos, parent, toExternal(pos, parent, EnumFacing.SOUTH))) {
 			setProperty(pos, parent, PROP_OUT, false);
 			setDelay(pos, parent, false);
 			notifyNeighbours(pos, parent);
@@ -69,8 +70,8 @@ public class PartTimer extends PartDelayedAction implements IConfigurableDelay {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		if (toInternal(pos, parent, side) == ForgeDirection.SOUTH)
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		if (toInternal(pos, parent, side) == EnumFacing.SOUTH)
 			return false;
 		return getProperty(pos, parent, PROP_OUT);
 	}

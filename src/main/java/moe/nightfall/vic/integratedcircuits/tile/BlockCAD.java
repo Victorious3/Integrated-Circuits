@@ -19,7 +19,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 public class BlockCAD extends BlockContainer {
 	public BlockCAD() {
@@ -112,7 +112,7 @@ public class BlockCAD extends BlockContainer {
 	}
 
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+	public boolean rotateBlock(World world, int x, int y, int z, EnumFacing axis) {
 		return ((TileEntityContainer) world.getTileEntity(x, y, z)).rotate();
 	}
 }

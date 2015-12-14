@@ -16,7 +16,8 @@ import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Items;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+
 
 public class PartTunnel extends CircuitPart {
 
@@ -64,11 +65,11 @@ public class PartTunnel extends CircuitPart {
 		// updateInput analog for paired tunnel part
 		Vec2 pos2 = getConnectedPos(pos, parent);
 		PartTunnel part = getConnectedPart(pos, parent);
-		setProperty(pos, parent, PROP_IN, part == null ? false : part.getOutputToSide(pos2, parent, ForgeDirection.UNKNOWN));
+		setProperty(pos, parent, PROP_IN, part == null ? false : part.getOutputToSide(pos2, parent, null));
 
 		notifyNeighbours(pos, parent);
 		// notifyNeighbors analog for paired tunnel
-		if (part != null && getOutputToSide(pos, parent, ForgeDirection.UNKNOWN) != part.getProperty(pos2, parent, PROP_IN)) {
+		if (part != null && getOutputToSide(pos, parent, null) != part.getProperty(pos2, parent, PROP_IN)) {
 			// Unlike notifyNeighbors, nothing can be done here after disconnect from paired tunnel.
 			part.scheduleInputChange(pos2, parent);
 			part.markForUpdate(pos2, parent);
@@ -76,9 +77,9 @@ public class PartTunnel extends CircuitPart {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
 		boolean in = getProperty(pos, parent, PROP_IN);
-		if (side == ForgeDirection.UNKNOWN)
+		if (side == null)
 			return getInput(pos, parent) && !in;
 		return (getInput(pos, parent) || in) && !getInputFromSide(pos, parent, side);
 	}
@@ -128,7 +129,7 @@ public class PartTunnel extends CircuitPart {
 
 	@Override
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, EnumRenderType type) {
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
 
 		RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 		CircuitPartRenderer.addQuad(x, y, 16, 4 * 16, 16, 16);

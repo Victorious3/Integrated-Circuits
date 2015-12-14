@@ -16,7 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -150,7 +150,7 @@ public class LaserHelper {
 		private TileEntityAssembler te;
 		public boolean isActive = true, isRunning = false;
 		private int lastModified;
-		private ForgeDirection direction;
+		private EnumFacing direction;
 		private int step, max, turn;
 
 		private Laser(TileEntityAssembler te, int id) {
@@ -172,7 +172,7 @@ public class LaserHelper {
 			step = tag.getInteger("step");
 			max = tag.getInteger("max");
 			turn = tag.getInteger("turn");
-			direction = ForgeDirection.getOrientation(tag.getInteger("direction"));
+			direction = EnumFacing.getOrientation(tag.getInteger("direction"));
 		}
 
 		public NBTTagCompound writeToNBT(NBTTagCompound tag) {
@@ -330,16 +330,16 @@ public class LaserHelper {
 
 			switch (id) {
 				case 0:
-					direction = ForgeDirection.WEST;
+					direction = EnumFacing.WEST;
 					break;
 				case 1:
-					direction = ForgeDirection.SOUTH;
+					direction = EnumFacing.SOUTH;
 					break;
 				case 2:
-					direction = ForgeDirection.EAST;
+					direction = EnumFacing.EAST;
 					break;
 				default:
-					direction = ForgeDirection.NORTH;
+					direction = EnumFacing.NORTH;
 					break;
 			}
 

@@ -2,8 +2,6 @@ package moe.nightfall.vic.integratedcircuits.cp;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.client.Resources;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
@@ -15,7 +13,12 @@ import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 @SideOnly(Side.CLIENT)
 public class CircuitPartRenderer {
@@ -28,9 +31,10 @@ public class CircuitPartRenderer {
 
 	public static void renderPart(CircuitRenderWrapper crw, double x, double y) {
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
+		WorldRenderer wr = tes.getWorldRenderer();
+		wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		GL11.glTranslated(x, y, 0);
-		tes.startDrawingQuads();
 		renderPartPayload(crw.getPos(), crw, crw.getPart(), 0, 0, EnumRenderType.GUI);
 		tes.draw();
 		GL11.glTranslated(-x, -y, 0);
@@ -38,7 +42,9 @@ public class CircuitPartRenderer {
 
 	private static void renderPartPayload(Vec2 pos, ICircuit parent, CircuitPart part, double x, double y, EnumRenderType type) {
 		if (type == EnumRenderType.WORLD_16x && !(part instanceof PartNull || part instanceof PartWire || part instanceof PartIOBit)) {
-			Tessellator.instance.setColorRGBA_F(0, 0, 0, 1);
+			Tessellator tes = Tessellator.getInstance();
+			WorldRenderer wr = tes.getWorldRenderer();
+			wr.putColorRGB_F4(0, 0, 0);
 			addQuad(x, y, 0, 15 * 16, PART_SIZE, PART_SIZE);
 		}
 
@@ -47,75 +53,77 @@ public class CircuitPartRenderer {
 
 	@SideOnly(Side.CLIENT)
 	public static int checkConnections(Vec2 pos, ICircuit parent, CircuitPart part) {
-		boolean c1 = part.hasConnectionOnSide(pos, parent, ForgeDirection.NORTH);
-		boolean c2 = part.hasConnectionOnSide(pos, parent, ForgeDirection.SOUTH);
-		boolean c3 = part.hasConnectionOnSide(pos, parent, ForgeDirection.WEST);
-		boolean c4 = part.hasConnectionOnSide(pos, parent, ForgeDirection.EAST);
+		boolean c1 = part.hasConnectionOnSide(pos, parent, EnumFacing.NORTH);
+		boolean c2 = part.hasConnectionOnSide(pos, parent, EnumFacing.SOUTH);
+		boolean c3 = part.hasConnectionOnSide(pos, parent, EnumFacing.WEST);
+		boolean c4 = part.hasConnectionOnSide(pos, parent, EnumFacing.EAST);
 
 		return (c1 ? 1 : 0) << 3 | (c2 ? 1 : 0) << 2 | (c3 ? 1 : 0) << 1 | (c4 ? 1 : 0);
 	}
 
 	public static void addQuad(double x, double y, double u, double v, double w, double h) {
-		addQuad(x, y, u, v, w, h, 0);
+		addQuad(x, y, u, v, w, h, EnumFacing.NORTH);
 	}
 
-	public static void addQuad(double x, double y, double u, double v, double w, double h, double rotation) {
+	public static void addQuad(double x, double y, double u, double v, double w, double h, EnumFacing rotation) {
 		addQuad(x, y, u, v, w, h, w, h, 256, 256, rotation);
 	}
 
-	public static void addQuad(double x, double y, double u, double v, double w, double h, double w2, double h2,
-			double tw, double th, double rotation) {
+	//TODO No idea what magic numbers we have now, but be prepared for bugs...
+	public static void addQuad(double x, double y, double u, double v, double w, double h, double w2, double h2, double tw, double th, EnumFacing rotation) {
 		double d1, d2, d3, d4;
 		double scalew = 1 / tw;
 		double scaleh = 1 / th;
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
+		WorldRenderer wr = tes.getWorldRenderer();
 
 		d1 = u + 0;
 		d2 = u + w2;
 
-		if (rotation == 1) {
+		if (rotation == EnumFacing.EAST) {
 			d3 = v + h2;
 			d4 = v + 0;
 
-			tes.addVertexWithUV(x + w, y + h, 0, d2 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + 0, 0, d1 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scalew, d3 * scaleh);
-			tes.addVertexWithUV(x + 0, y + h, 0, d2 * scalew, d3 * scaleh);
-		} else if (rotation == 2) {
+			wr.pos(x + w, y + h, 0).tex(d2 * scalew, d4 * scaleh);
+			wr.pos(x + w, y + 0, 0).tex(d1 * scalew, d4 * scaleh);
+			wr.pos(x + 0, y + 0, 0).tex(d1 * scalew, d3 * scaleh);
+			wr.pos(x + 0, y + h, 0).tex(d2 * scalew, d3 * scaleh);
+		} else if (rotation == EnumFacing.SOUTH) {
 			d3 = v + h2;
 			d4 = v + 0;
 
-			tes.addVertexWithUV(x + 0, y + h, 0, d2 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + h, 0, d1 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + 0, 0, d1 * scalew, d3 * scaleh);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scalew, d3 * scaleh);
-		} else if (rotation == 3) {
+			wr.pos(x + 0, y + h, 0).tex(d2 * scalew, d4 * scaleh);
+			wr.pos(x + w, y + h, 0).tex(d1 * scalew, d4 * scaleh);
+			wr.pos(x + w, y + 0, 0).tex(d1 * scalew, d3 * scaleh);
+			wr.pos(x + 0, y + 0, 0).tex(d2 * scalew, d3 * scaleh);
+		} else if (rotation == EnumFacing.WEST) {
 			d3 = v + 0;
 			d4 = v + h2;
 
-			tes.addVertexWithUV(x + w, y + h, 0, d1 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d2 * scalew, d3 * scaleh);
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d3 * scaleh);
+			wr.pos(x + w, y + h, 0).tex(d1 * scalew, d4 * scaleh);
+			wr.pos(x + w, y + 0, 0).tex(d2 * scalew, d4 * scaleh);
+			wr.pos(x + 0, y + 0, 0).tex(d2 * scalew, d3 * scaleh);
+			wr.pos(x + 0, y + h, 0).tex(d1 * scalew, d3 * scaleh);
 		} else {
 			d3 = v + 0;
 			d4 = v + h2;
 
-			tes.addVertexWithUV(x + 0, y + h, 0, d1 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + h, 0, d2 * scalew, d4 * scaleh);
-			tes.addVertexWithUV(x + w, y + 0, 0, d2 * scalew, d3 * scaleh);
-			tes.addVertexWithUV(x + 0, y + 0, 0, d1 * scalew, d3 * scaleh);
+			wr.pos(x + 0, y + h, 0).tex(d1 * scalew, d4 * scaleh);
+			wr.pos(x + w, y + h, 0).tex(d2 * scalew, d4 * scaleh);
+			wr.pos(x + w, y + 0, 0).tex(d2 * scalew, d3 * scaleh);
+			wr.pos(x + 0, y + 0, 0).tex(d1 * scalew, d3 * scaleh);
 		}
 	}
 
 	public static void renderParts(ICircuit circuit) {
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
+		WorldRenderer wr = tes.getWorldRenderer();
 		int w = circuit.getCircuitData().getSize();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
 		GL11.glPushMatrix();
 		GL11.glScalef(1F / PART_SIZE, 1F / PART_SIZE, 1);
-		tes.startDrawingQuads();
+		wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		for (int x2 = 0; x2 < w; x2++) {
 			for (int y2 = 0; y2 < w; y2++) {
 				Vec2 pos = new Vec2(x2, y2);
@@ -127,7 +135,8 @@ public class CircuitPartRenderer {
 	}
 
 	public static void renderParts(ICircuit circuit, double offX, double offY, boolean[][] exc, EnumRenderType type) {
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
+		WorldRenderer wr = tes.getWorldRenderer();
 		int w = circuit.getCircuitData().getSize();
 
 		GL11.glPushMatrix();
@@ -135,7 +144,7 @@ public class CircuitPartRenderer {
 		if (type == EnumRenderType.GUI)
 			GL11.glScalef(1F / PART_SIZE, 1F / PART_SIZE, 1);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB);
-		tes.startDrawingQuads();
+		wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 		for (int x2 = 0; x2 < w; x2++) {
 			for (int y2 = 0; y2 < w; y2++) {
 				Vec2 pos = new Vec2(x2, y2);
@@ -148,61 +157,63 @@ public class CircuitPartRenderer {
 	}
 
 	public static void renderPerfboard(CircuitData data) {
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
+		WorldRenderer wr = tes.getWorldRenderer();
 		int size = data.getSize();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF1);
-		tes.startDrawingQuads();
-		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, size, size, 16, 16, 16D / size, 16D / size, 0);
+		wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		wr.putColorRGB_F4(1, 1, 1);
+		addQuad(0, 0, 0, 0, size, size, 16, 16, 16D / size, 16D / size, EnumFacing.NORTH);
 		tes.draw();
 
 		Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.RESOURCE_PCB_PERF2);
-		tes.startDrawingQuads();
-		tes.setColorRGBA_F(1F, 1F, 1F, 1F);
-		addQuad(0, 0, 0, 0, 1, size, 16, 16, 16D, 16D / size, 0);
-		addQuad(size - 1, 0, 0, 0, 1, size, 16, 16, 16, 16D / size, 0);
-		addQuad(0, 0, 0, 0, size, 1, 16, 16, 16D / size, 16, 0);
-		addQuad(0, size - 1, 0, 0, size, 1, 16, 16, 16D / size, 16, 0);
+		wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+		wr.putColorRGB_F4(1, 1, 1);
+		addQuad(0, 0, 0, 0, 1, size, 16, 16, 16D, 16D / size, EnumFacing.NORTH);
+		addQuad(size - 1, 0, 0, 0, 1, size, 16, 16, 16, 16D / size, EnumFacing.NORTH);
+		addQuad(0, 0, 0, 0, size, 1, 16, 16, 16D / size, 16, EnumFacing.NORTH);
+		addQuad(0, size - 1, 0, 0, size, 1, 16, 16, 16D / size, 16, EnumFacing.NORTH);
 		tes.draw();
 	}
 
 	public static void renderPartGate(Vec2 pos, ICircuit parent, PartCPGate gate, double x, double y, EnumRenderType type) {
-		Tessellator tes = Tessellator.instance;
-		if (gate.canConnectToSide(pos, parent, ForgeDirection.NORTH)) {
+		Tessellator tes = Tessellator.getInstance();
+		WorldRenderer wr = tes.getWorldRenderer();
+		if (gate.canConnectToSide(pos, parent, EnumFacing.NORTH)) {
 			if (type == EnumRenderType.GUI && (
-					gate.getOutputToSide(pos, parent, ForgeDirection.NORTH)
-					|| gate.getInputFromSide(pos, parent, ForgeDirection.NORTH)))
+					gate.getOutputToSide(pos, parent, EnumFacing.NORTH)
+					|| gate.getInputFromSide(pos, parent, EnumFacing.NORTH)))
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			addQuad(x, y, 2 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
-		if (gate.canConnectToSide(pos, parent, ForgeDirection.SOUTH)) {
+		if (gate.canConnectToSide(pos, parent, EnumFacing.SOUTH)) {
 			if (type == EnumRenderType.GUI && (
-					gate.getOutputToSide(pos, parent, ForgeDirection.SOUTH)
-					|| gate.getInputFromSide(pos, parent, ForgeDirection.SOUTH)))
+					gate.getOutputToSide(pos, parent, EnumFacing.SOUTH)
+					|| gate.getInputFromSide(pos, parent, EnumFacing.SOUTH)))
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			addQuad(x, y, 4 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
-		if (gate.canConnectToSide(pos, parent, ForgeDirection.WEST)) {
+		if (gate.canConnectToSide(pos, parent, EnumFacing.WEST)) {
 			if (type == EnumRenderType.GUI && (
-					gate.getOutputToSide(pos, parent, ForgeDirection.WEST)
-					|| gate.getInputFromSide(pos, parent, ForgeDirection.WEST)))
+					gate.getOutputToSide(pos, parent, EnumFacing.WEST)
+					|| gate.getInputFromSide(pos, parent, EnumFacing.WEST)))
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 			addQuad(x, y, 1 * 16, 0, PART_SIZE, PART_SIZE);
 		}
 
-		if (gate.canConnectToSide(pos, parent, ForgeDirection.EAST)) {
+		if (gate.canConnectToSide(pos, parent, EnumFacing.EAST)) {
 			if (type == EnumRenderType.GUI && (
-					gate.getOutputToSide(pos, parent, ForgeDirection.EAST)
-					|| gate.getInputFromSide(pos, parent, ForgeDirection.EAST)))
+					gate.getOutputToSide(pos, parent, EnumFacing.EAST)
+					|| gate.getInputFromSide(pos, parent, EnumFacing.EAST)))
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 			else
 				RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
@@ -214,27 +225,28 @@ public class CircuitPartRenderer {
 
 	@SideOnly(Side.CLIENT)
 	public static void renderPartCell(Vec2 pos, ICircuit parent, CircuitPart cell, double x, double y, EnumRenderType type) {
-		Tessellator tes = Tessellator.instance;
+		Tessellator tes = Tessellator.getInstance();
+		WorldRenderer wr = tes.getWorldRenderer();
 
-		int rotation = 0;
+		EnumFacing rotation = EnumFacing.NORTH;
 		if(cell instanceof PartCPGate)
 			rotation = ((PartCPGate) cell).getRotation(pos, parent);
 
 		if (type == EnumRenderType.GUI
-				&& (cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.NORTH, rotation))
-				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.NORTH, rotation))
-				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation))
-				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.SOUTH, rotation))))
+				&& (cell.getOutputToSide(pos, parent, MiscUtils.rot(EnumFacing.NORTH, rotation))
+				|| cell.getInputFromSide(pos, parent, MiscUtils.rot(EnumFacing.NORTH, rotation))
+				|| cell.getOutputToSide(pos, parent, MiscUtils.rot(EnumFacing.SOUTH, rotation))
+				|| cell.getInputFromSide(pos, parent, MiscUtils.rot(EnumFacing.SOUTH, rotation))))
 			RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 		else
 			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
 		addQuad(x, y, 0, 2 * 16, PART_SIZE, PART_SIZE, rotation);
 
 		if (type == EnumRenderType.GUI
-				&& (cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, rotation))
-				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.EAST, rotation))
-				|| cell.getOutputToSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation))
-				|| cell.getInputFromSide(pos, parent, MiscUtils.rotn(ForgeDirection.WEST, rotation))))
+				&& (cell.getOutputToSide(pos, parent, MiscUtils.rot(EnumFacing.EAST, rotation))
+				|| cell.getInputFromSide(pos, parent, MiscUtils.rot(EnumFacing.EAST, rotation))
+				|| cell.getOutputToSide(pos, parent, MiscUtils.rot(EnumFacing.WEST, rotation))
+				|| cell.getInputFromSide(pos, parent, MiscUtils.rot(EnumFacing.WEST, rotation))))
 			RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
 		else
 			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
@@ -295,12 +307,12 @@ public class CircuitPartRenderer {
 		}
 
 		@Override
-		public boolean getInputFromSide(ForgeDirection dir, int frequency) {
+		public boolean getInputFromSide(EnumFacing dir, int frequency) {
 			return false;
 		}
 
 		@Override
-		public void setOutputToSide(ForgeDirection dir, int frequency, boolean output) {
+		public void setOutputToSide(EnumFacing dir, int frequency, boolean output) {
 		}
 	}
 }

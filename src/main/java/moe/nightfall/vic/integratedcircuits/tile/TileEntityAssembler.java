@@ -29,7 +29,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraftforge.common.util.Constants.NBT;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 @InterfaceList({ @Interface(iface = "buildcraft.api.tiles.IControllable", modid = "BuildCraft|Core"),
 		@Interface(iface = "buildcraft.api.tiles.IHasWork", modid = "BuildCraft|Core") })
@@ -463,15 +463,15 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	}
 
 	private int getConnectionOnSide(int side) {
-		ForgeDirection dir = ForgeDirection.getOrientation(side);
-		if (dir == ForgeDirection.UP)
+		EnumFacing dir = EnumFacing.getOrientation(side);
+		if (dir == EnumFacing.UP)
 			return -1;
-		else if (dir == ForgeDirection.DOWN)
+		else if (dir == EnumFacing.DOWN)
 			return 0;
-		dir = MiscUtils.rotn(ForgeDirection.getOrientation(side), -rotation);
-		if (dir == ForgeDirection.SOUTH)
+		dir = MiscUtils.rotn(EnumFacing.getOrientation(side), -rotation);
+		if (dir == EnumFacing.SOUTH)
 			return 1;
-		else if (dir != ForgeDirection.NORTH)
+		else if (dir != EnumFacing.NORTH)
 			return 0;
 		return -1;
 	}

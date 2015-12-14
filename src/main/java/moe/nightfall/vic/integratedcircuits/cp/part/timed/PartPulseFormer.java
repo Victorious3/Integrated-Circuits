@@ -1,12 +1,13 @@
 package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
-import net.minecraftforge.common.util.ForgeDirection;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartPulseFormer extends PartDelayedAction {
 	public BooleanProperty PROP_OLD_IN = new BooleanProperty("OLD_IN", stitcher);
@@ -17,9 +18,9 @@ public class PartPulseFormer extends PartDelayedAction {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection f2 = toInternal(pos, parent, side);
-		if (f2 != ForgeDirection.NORTH)
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing f2 = toInternal(pos, parent, side);
+		if (f2 != EnumFacing.NORTH)
 			return false;
 		return isDelayActive(pos, parent);
 	}
@@ -31,16 +32,16 @@ public class PartPulseFormer extends PartDelayedAction {
 	}
 
 	@Override
-	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection f2 = toInternal(pos, parent, side);
-		return f2 == ForgeDirection.NORTH || f2 == ForgeDirection.SOUTH;
+	public boolean canConnectToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing f2 = toInternal(pos, parent, side);
+		return f2 == EnumFacing.NORTH || f2 == EnumFacing.SOUTH;
 	}
 
 	@Override
 	public void onScheduledTick(Vec2 pos, ICircuit parent) {
 		super.onScheduledTick(pos, parent);
 		boolean newIn = getInputFromSide(pos, parent,
-				toExternal(pos, parent, ForgeDirection.SOUTH));
+				toExternal(pos, parent, EnumFacing.SOUTH));
 		if (newIn && !getProperty(pos, parent, PROP_OLD_IN)) {
 			setDelay(pos, parent, true);
 			notifyNeighbours(pos, parent);

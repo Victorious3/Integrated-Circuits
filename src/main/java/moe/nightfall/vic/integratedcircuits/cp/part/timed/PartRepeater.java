@@ -2,14 +2,15 @@ package moe.nightfall.vic.integratedcircuits.cp.part.timed;
 
 import java.util.ArrayList;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
-import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.BooleanProperty;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IntProperty;
-import net.minecraftforge.common.util.ForgeDirection;
+import moe.nightfall.vic.integratedcircuits.misc.Vec2;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 
 public class PartRepeater extends PartDelayedAction {
 	public final IntProperty PROP_DELAY = new IntProperty("DELAY", stitcher, 255);
@@ -40,15 +41,15 @@ public class PartRepeater extends PartDelayedAction {
 	}
 
 	@Override
-	public boolean canConnectToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		return s2 == ForgeDirection.NORTH || s2 == ForgeDirection.SOUTH;
+	public boolean canConnectToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing s2 = toInternal(pos, parent, side);
+		return s2 == EnumFacing.NORTH || s2 == EnumFacing.SOUTH;
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
-		ForgeDirection s2 = toInternal(pos, parent, side);
-		if (s2 != ForgeDirection.NORTH)
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
+		EnumFacing s2 = toInternal(pos, parent, side);
+		if (s2 != EnumFacing.NORTH)
 			return false;
 		return getProperty(pos, parent, PROP_OUT);
 	}
@@ -80,7 +81,7 @@ public class PartRepeater extends PartDelayedAction {
 		super.onScheduledTick(pos, parent);
 		if (checkInput && getProperty(pos, parent, PROP_OUT) !=
 				getInputFromSide(pos, parent,
-					toExternal(pos, parent, ForgeDirection.SOUTH)))
+					toExternal(pos, parent, EnumFacing.SOUTH)))
 			setDelay(pos, parent, true);
 	}
 

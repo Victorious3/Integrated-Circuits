@@ -15,7 +15,7 @@ public abstract class LegacyLoader implements Comparable<LegacyLoader> {
 
 	private static final List<LegacyLoader> legacyLoaders = new ArrayList<LegacyLoader>();
 	static {
-		legacyLoaders.add(new LegacyLoader_0_8());
+		//legacyLoaders.add(new LegacyLoader_0_8());
 		Collections.sort(legacyLoaders);
 	}
 

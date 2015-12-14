@@ -4,7 +4,7 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer;
 import moe.nightfall.vic.integratedcircuits.cp.ICircuit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartSimpleGate;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -21,7 +21,7 @@ public class PartBufferCell extends PartSimpleGate {
 	}
 
 	@Override
-	public boolean getOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection side) {
+	public boolean getOutputToSide(Vec2 pos, ICircuit parent, EnumFacing side) {
 		// A-la NullCell
 		if (getInputFromSide(pos, parent, side.getOpposite()) && !getInputFromSide(pos, parent, side))
 			return true;
@@ -47,13 +47,13 @@ public class PartBufferCell extends PartSimpleGate {
 
 	@Override
 	protected void calcOutput(Vec2 pos, ICircuit parent) {
-		ForgeDirection east = toExternal(pos, parent, ForgeDirection.EAST);
+		EnumFacing east = toExternal(pos, parent, EnumFacing.EAST);
 		setOutput(pos, parent,
 			getInputFromSide(pos, parent, east) || getInputFromSide(pos, parent, east.getOpposite()));
 	}
 
 	@Override
-	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, ForgeDirection fd) {
-		return fd == ForgeDirection.NORTH || fd == ForgeDirection.SOUTH;
+	protected boolean hasOutputToSide(Vec2 pos, ICircuit parent, EnumFacing fd) {
+		return fd == EnumFacing.NORTH || fd == EnumFacing.SOUTH;
 	}
 }

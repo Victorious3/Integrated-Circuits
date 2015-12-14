@@ -9,7 +9,7 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitPart;
 import moe.nightfall.vic.integratedcircuits.gate.GateCircuit;
 import moe.nightfall.vic.integratedcircuits.misc.PropertyStitcher.IProperty;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -47,10 +47,10 @@ public class CircuitPeripheral extends GatePeripheral {
 		Vec2 pos = getPos(x, y);
 		CircuitPart cp = cdata.getPart(pos);
 
-		boolean b1 = cp.getInputFromSide(pos, circuit, ForgeDirection.NORTH);
-		boolean b2 = cp.getInputFromSide(pos, circuit, ForgeDirection.EAST);
-		boolean b3 = cp.getInputFromSide(pos, circuit, ForgeDirection.SOUTH);
-		boolean b4 = cp.getInputFromSide(pos, circuit, ForgeDirection.WEST);
+		boolean b1 = cp.getInputFromSide(pos, circuit, EnumFacing.NORTH);
+		boolean b2 = cp.getInputFromSide(pos, circuit, EnumFacing.EAST);
+		boolean b3 = cp.getInputFromSide(pos, circuit, EnumFacing.SOUTH);
+		boolean b4 = cp.getInputFromSide(pos, circuit, EnumFacing.WEST);
 
 		return new Boolean[] { b1, b2, b3, b4 };
 	}

@@ -2,7 +2,7 @@ package moe.nightfall.vic.integratedcircuits.compat;
 
 import moe.nightfall.vic.integratedcircuits.api.gate.ISocket;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
 
 import com.bluepowermod.api.BPApi;
 import com.bluepowermod.api.misc.MinecraftColor;
@@ -44,7 +44,7 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice {
 	}
 
 	@Override
-	public boolean canConnect(ForgeDirection side, IBundledDevice dev, ConnectionType type) {
+	public boolean canConnect(EnumFacing side, IBundledDevice dev, ConnectionType type) {
 		return socket.getConnectionTypeAtSide(socket.getSideRel(side.ordinal())).isBundled();
 	}
 
@@ -54,18 +54,18 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice {
 	}
 
 	@Override
-	public byte[] getBundledOutput(ForgeDirection side) {
+	public byte[] getBundledOutput(EnumFacing side) {
 		return socket.getOutput()[(socket.getSideRel(side.ordinal()))];
 	}
 
 	@Override
-	public void setBundledPower(ForgeDirection side, byte[] power) {
+	public void setBundledPower(EnumFacing side, byte[] power) {
 		socket.updateInputPre();
 		socket.getInput()[socket.getSideRel(side.ordinal())] = power;
 	}
 
 	@Override
-	public byte[] getBundledPower(ForgeDirection side) {
+	public byte[] getBundledPower(EnumFacing side) {
 		return socket.getInput()[socket.getSideRel(side.ordinal())];
 	}
 
@@ -75,17 +75,17 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice {
 	}
 
 	@Override
-	public MinecraftColor getBundledColor(ForgeDirection side) {
+	public MinecraftColor getBundledColor(EnumFacing side) {
 		return MinecraftColor.ANY;
 	}
 
 	@Override
-	public boolean isNormalFace(ForgeDirection side) {
+	public boolean isNormalFace(EnumFacing side) {
 		return true;
 	}
 
 	@Override
-	public boolean canConnect(ForgeDirection side, IRedstoneDevice dev, ConnectionType type) {
+	public boolean canConnect(EnumFacing side, IRedstoneDevice dev, ConnectionType type) {
 		return socket.getConnectionTypeAtSide(socket.getSideRel(side.ordinal())).isRedstone();
 	}
 
@@ -95,13 +95,13 @@ public class BPDevice implements IBundledDevice, IRedstoneDevice {
 	}
 
 	@Override
-	public byte getRedstonePower(ForgeDirection side) {
+	public byte getRedstonePower(EnumFacing side) {
 		int out = socket.getRedstoneOutput(socket.getSideRel(side.ordinal()));
 		return (byte) (17 * out); //BluePower uses unsigned byte values from 0 to 255
 	}
 
 	@Override
-	public void setRedstonePower(ForgeDirection side, byte power) {
+	public void setRedstonePower(EnumFacing side, byte power) {
 		socket.updateInputPre();
 		power = (byte) ((power & 0xFF) / 17); //Convert signed byte to unsigned int
 		socket.setInput(socket.getSideRel(side.ordinal()), 0, power);
