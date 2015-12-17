@@ -267,11 +267,12 @@ public class ClientProxy extends CommonProxy {
 		String uuidStr = uuid.toString();
 		// Is this someone who has deserved it?
 		if (uuidStr.equals("b027a4f4-d480-426c-84a3-a9cb029f4b72") || // victorious3
-		uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
-		uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
-		uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
-		uuidStr.equals("462b56b5-3047-4efd-901c-e1ecc062af30") || // ljfa
-		uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758")) {
+		    uuidStr.equals("6a7f2000-5853-4934-981d-5077be5a0b50") || // Thog
+		    uuidStr.equals("e2519b08-5d04-42a3-a98e-c70de4a0374e") || // RX14
+		    uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
+		    uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") || // skyem
+			uuidStr.equals("462b56b5-3047-4efd-901c-e1ecc062af30") || // ljfa
+			uuidStr.equals("edd31c45-b095-49c5-a9f5-59cec4cfed8c")) { // Achati
 
 			// Work out what skin they have
 			if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro
@@ -608,7 +609,7 @@ public class ClientProxy extends CommonProxy {
 
 	@SubscribeEvent
 	public void onPlayerRender(RenderPlayerEvent.Specials.Post event) {
-		
+
 		EntityPlayer player = event.entityPlayer;
 		Minecraft mc = Minecraft.getMinecraft();
 
@@ -644,12 +645,12 @@ public class ClientProxy extends CommonProxy {
 
 		if (hideThing)
 			return;
-		
+
 		GL11.glColor3f(1, 1, 1);
 
 		if (cosplay == Cosplay.NANO) // We do this here because there is code
-										// before the switch block that breaks
-										// this.
+									 // before the switch block that breaks
+									 // this.
 		{
 			// Nano Shinonome
 			long time = System.currentTimeMillis();
@@ -809,7 +810,7 @@ public class ClientProxy extends CommonProxy {
 				break;
 		}
 		GL11.glPopMatrix();
-		
+
 		GL11.glColor3f(1, 1, 1);
 	}
 
