@@ -415,15 +415,14 @@ public class ClientProxy extends CommonProxy {
 								MathHelper.floor_double(entity.posZ))) {
 					found = true;
 					GL11.glPushMatrix();
-					double scale = 1.2 + (Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.02;
-					GL11.glScaled(scale, scale, scale);
+
 					GL11.glColor3f(0, (float) ((Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.2), 1);
 
 					RenderManager rm = RenderManager.instance;
 
-					double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partial - rm.renderPosX;
-					double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partial - rm.renderPosY;
-					double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partial - rm.renderPosZ;
+					double x2 = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partial - RenderManager.renderPosX;
+					double y2 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partial - RenderManager.renderPosY;
+					double z2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partial - RenderManager.renderPosZ;
 
 					float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partial;
 
@@ -490,9 +489,8 @@ public class ClientProxy extends CommonProxy {
 						if (limbSwing > 1.0F)
 							limbSwing = 1.0F;
 
-						GL11.glRotatef(180, 1, 0, 0);
-						GL11.glRotatef(180, 0, 1, 0);
-						GL11.glTranslatef(0, player.eyeHeight, 0);
+						GL11.glTranslatef(0, player.eyeHeight - 6 / 16F, 0);
+						GL11.glRotatef(180, 0, 0, 1);
 
 						// Various hardcoded offsets to make it look a little
 						// bit more natural
@@ -501,15 +499,15 @@ public class ClientProxy extends CommonProxy {
 
 						render.modelBipedMain.bipedBody.render(tilt);
 
-						render.modelBipedMain.bipedRightArm.offsetX = 1 / 16F;
+						render.modelBipedMain.bipedRightArm.offsetX = 1 / 32F;
 						render.modelBipedMain.bipedRightArm.render(tilt);
 
-						render.modelBipedMain.bipedLeftArm.offsetX = -1 / 16F;
+						render.modelBipedMain.bipedLeftArm.offsetX = -1 / 32F;
 						render.modelBipedMain.bipedLeftArm.render(tilt);
 
-						render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = -2 / 16F;
+						render.modelBipedMain.bipedRightLeg.offsetY = render.modelBipedMain.bipedLeftLeg.offsetY = -1 / 32F;
 						if (player.isSneaking())
-							render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = -1 / 16F;
+							render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = -1 / 64F;
 						render.modelBipedMain.bipedRightLeg.render(tilt);
 						render.modelBipedMain.bipedLeftLeg.render(tilt);
 
@@ -521,6 +519,9 @@ public class ClientProxy extends CommonProxy {
 						render.modelBipedMain.bipedRightLeg.offsetZ = render.modelBipedMain.bipedLeftLeg.offsetZ = 0;
 						render.modelBipedMain.bipedHeadwear.offsetY = 0;
 					}
+
+					double scale = 1.2 + (Math.sin((player.ticksExisted + partial) / 20D) + 1) * 0.02;
+					GL11.glScaled(scale, scale, scale);
 
 					GL11.glColor3f(1, 1, 1);
 					GL11.glPopMatrix();
