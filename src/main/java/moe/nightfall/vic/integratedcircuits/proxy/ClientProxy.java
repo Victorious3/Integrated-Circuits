@@ -150,9 +150,8 @@ public class ClientProxy extends CommonProxy {
 
 		textureRenderer = new TextureRenderer();
 
-		// Unreachable code:
 		curlMamisHair();
-		// End of unreachable code.
+		createAnnaHat();
 	}
 
 	@Override
@@ -298,6 +297,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	private int curlDisplayList;
+	private int annaHatDisplayList;
 
 	private void curlMamisHair() {
 
@@ -805,7 +805,18 @@ public class ClientProxy extends CommonProxy {
 				GL11.glEnable(GL11.GL_LIGHTING);
 				break;
 			case ANNA:
+				//Anna Kushina
+				GL11.glPushMatrix();
+				scale = 1 / 64F;
 
+				GL11.glTranslated(15 * scale, -0.74, 15 * scale);
+				f1 = (float) (7 * Math.sin(Math.toRadians(45)) + 7 / 2F) * scale;
+				GL11.glTranslatef(-f1, 0, -f1);
+				GL11.glRotated(-25, 1, 0, -1);
+				GL11.glTranslatef(f1, 0, f1);
+
+				GL11.glCallList(annaHatDisplayList);
+				GL11.glPopMatrix();
 				break;
 			default:
 				break;
@@ -858,6 +869,73 @@ public class ClientProxy extends CommonProxy {
 		tes.draw();
 
 		GL11.glPopMatrix();
+	}
+	
+	private void createAnnaHat() {
+		annaHatDisplayList = GLAllocation.generateDisplayLists(1);
+		GL11.glNewList(annaHatDisplayList, GL11.GL_COMPILE);
+		
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glScalef(1 / 64F, 1 / 64F, 1 / 64F);
+		GL11.glColor3ub((byte)128, (byte)0, (byte)0);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+
+		Tessellator tes = Tessellator.instance;
+		
+		float height = 9;
+		float inner = 11;
+		float outer = 18;
+		int points = 12;
+		
+		//Cylinder mantle
+		tes.startDrawing(GL11.GL_QUAD_STRIP);
+		for(int i = 0; i <= points; i++)
+		{
+			float angle = 2 * (float)Math.PI * (i + 0.5f)/points;
+			float cos = (float)Math.cos(angle);
+			float sin = (float)Math.sin(angle);
+			tes.setNormal(0.95f * cos, -0.31225f, 0.95f * sin);
+			tes.addVertex(inner * cos, 0, inner * sin);
+			tes.addVertex(inner * cos, height, inner * sin);
+		}
+		tes.draw();
+		
+		//Cylinder top
+		tes.startDrawing(GL11.GL_TRIANGLE_FAN);
+		tes.setNormal(0, -1, 0);
+		tes.addVertex(0, 0, 0);
+		for(int i = 0; i <= points; i++) {
+			float angle = 2 * (float)Math.PI * (i + 0.5f)/points;
+			tes.addVertex(inner * Math.cos(angle), 0, inner * Math.sin(angle));
+		}
+		tes.draw();
+		
+		//Outer part
+		tes.startDrawing(GL11.GL_TRIANGLE_FAN);
+		tes.setNormal(0, -1, 0);
+		tes.addVertex(0, height, 0);
+		for(int i = 0; i <= points; i++) {
+			float angle = 2 * (float)Math.PI * (i + 0.5f)/points;
+			tes.addVertex(outer * Math.cos(angle), height, outer * Math.sin(angle));
+		}
+		tes.draw();
+		
+		//Bottom
+		tes.startDrawing(GL11.GL_TRIANGLE_FAN);
+		tes.setNormal(0, 1, 0);
+		tes.addVertex(0, height, 0);
+		for(int i = 0; i <= points; i++) {
+			float angle = 2 * (float)Math.PI * -(i + 0.5f)/points;
+			tes.addVertex(outer * Math.cos(angle), height, outer * Math.sin(angle));
+		}
+		tes.draw();
+
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		
+		GL11.glEndList();
 	}
 
 	public static class ModelCrown extends ModelBase {
@@ -939,15 +1017,6 @@ public class ClientProxy extends CommonProxy {
 			ear.render(1 / 16F);
 			GL11.glPopMatrix();
 		}
-	}
-
-	private static class ModelHat extends ModelBase {
-		public static ModelHat instance = new ModelHat();
-
-		public ModelHat() {
-
-		}
-
 	}
 
 	private static class NanoProperties implements IExtendedEntityProperties {
