@@ -150,9 +150,8 @@ public class ClientProxy extends CommonProxy {
 
 		textureRenderer = new TextureRenderer();
 
-		// Unreachable code:
 		curlMamisHair();
-		// End of unreachable code.
+		createAnnaHat();
 	}
 
 	@Override
@@ -297,6 +296,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	private int curlDisplayList;
+	private int annaHatDisplayList;
 
 	private void curlMamisHair() {
 
@@ -813,9 +813,7 @@ public class ClientProxy extends CommonProxy {
 				GL11.glRotated(-25, 1, 0, -1);
 				GL11.glTranslatef(f1, 0, f1);
 
-				GL11.glEnable(GL11.GL_CULL_FACE);
-				renderAnnaHat();
-				GL11.glDisable(GL11.GL_CULL_FACE);
+				GL11.glCallList(annaHatDisplayList);
 				GL11.glPopMatrix();
 				break;
 			default:
@@ -871,7 +869,11 @@ public class ClientProxy extends CommonProxy {
 		GL11.glPopMatrix();
 	}
 	
-	private void renderAnnaHat() {
+	private void createAnnaHat() {
+		annaHatDisplayList = GLAllocation.generateDisplayLists(1);
+		GL11.glNewList(annaHatDisplayList, GL11.GL_COMPILE);
+		
+		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glScalef(1 / 64F, 1 / 64F, 1 / 64F);
 		GL11.glColor3ub((byte)128, (byte)0, (byte)0);
@@ -929,6 +931,9 @@ public class ClientProxy extends CommonProxy {
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glShadeModel(GL11.GL_FLAT);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		
+		GL11.glEndList();
 	}
 
 	public static class ModelCrown extends ModelBase {
