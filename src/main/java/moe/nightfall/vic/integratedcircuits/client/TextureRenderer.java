@@ -110,6 +110,8 @@ public class TextureRenderer {
 				fbo.framebufferTexture, 0);
 
 		GL11.glColor3f(1, 1, 1);
+		GL11.glPushMatrix();
 		entry.render(partial);
+		GL11.glPopMatrix();
 	}
 }
