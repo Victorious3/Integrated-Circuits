@@ -271,7 +271,8 @@ public class ClientProxy extends CommonProxy {
 		    uuidStr.equals("eba64cb1-0d29-4434-8d5e-31004b00488c") || // riskyken
 		    uuidStr.equals("3239d8f3-dd0c-48d3-890e-d3dad403f758") || // skyem
 			uuidStr.equals("462b56b5-3047-4efd-901c-e1ecc062af30") || // ljfa
-			uuidStr.equals("edd31c45-b095-49c5-a9f5-59cec4cfed8c")) { // Achati
+			uuidStr.equals("edd31c45-b095-49c5-a9f5-59cec4cfed8c") || // Achati
+			uuidStr.equals("b79043e0-b35e-4c3e-988f-42a63a2929ce")) { // asdd444 (gamemanj on IRC)
 
 			// Work out what skin they have
 			if (skinID.equals("skins/8fcd9586da356dfe3038fcad96925c43bea5b67a576c9b4e6b10f1b0bb7f1fc5")) // Shiro
