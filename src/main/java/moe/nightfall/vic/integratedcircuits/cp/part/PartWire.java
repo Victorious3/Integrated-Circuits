@@ -35,9 +35,16 @@ public class PartWire extends CircuitPart {
 
 	@Override
 	@SideOnly(Side.CLIENT)
+	// This renders BOTH WIRES AND TUNNELS
 	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
 		int color = this.getColor(pos, parent);
+		boolean tun = this instanceof PartTunnel;
 		Tessellator tes = Tessellator.instance;
+
+		if (tun) {
+			RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
+			CircuitPartRenderer.addQuad(x, y, 16, 4*16, 16, 16);
+		}
 
 		if (type == CircuitPartRenderer.EnumRenderType.GUI) {
 			switch (color) {
@@ -66,9 +73,9 @@ public class PartWire extends CircuitPart {
 		int ty = type == CircuitPartRenderer.EnumRenderType.WORLD_16x ? 3 * 16 : 0;
 
 		int con = CircuitPartRenderer.checkConnections(pos, parent, this);
-		if ((con & 12) == 12 && (con & ~12) == 0)
+		if ((con & 12) == 12 && (con & ~12) == 0 && !tun)
 			CircuitPartRenderer.addQuad(x, y, 6 * 16, ty, 16, 16);
-		else if ((con & 3) == 3 && (con & ~3) == 0)
+		else if ((con & 3) == 3 && (con & ~3) == 0 && !tun)
 			CircuitPartRenderer.addQuad(x, y, 5 * 16, ty, 16, 16);
 		else {
 			if ((con & 8) > 0)

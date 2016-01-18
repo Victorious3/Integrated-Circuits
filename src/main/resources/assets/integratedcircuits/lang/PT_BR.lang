@@ -23,7 +23,9 @@ tile.integratedcircuits.assembler.name=Montadora
 # parts
 part.integratedcircuits.iobit.name=IOBit
 part.integratedcircuits.torch.name=Tocha
-part.integratedcircuits.tunnel.name=Tunel
+part.integratedcircuits.tunnel.0.name=Tunel
+part.integratedcircuits.tunnel.1.name=Tunel vermelho
+part.integratedcircuits.tunnel.2.name=Tunel laranja
 part.integratedcircuits.wire.0.name=Fio
 part.integratedcircuits.wire.1.name=Fio vermelho
 part.integratedcircuits.wire.2.name=Fio laranja

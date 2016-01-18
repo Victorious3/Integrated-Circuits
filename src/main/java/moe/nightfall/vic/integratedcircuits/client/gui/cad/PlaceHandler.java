@@ -51,7 +51,7 @@ public class PlaceHandler extends CADHandler {
 			CircuitPartRenderer.renderPart(selectedPart, gridX * PART_SIZE, gridY * PART_SIZE);
 			GL11.glPopMatrix();
 			GL11.glColor3f(1, 1, 1);
-		} else if (selectedPart.getPart() instanceof PartWire) {
+		} else if (selectedPart.getPart().getClass().equals(PartWire.class)) {
 			PartWire wire = (PartWire) selectedPart.getPart();
 			switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
 				case 1:
@@ -143,7 +143,7 @@ public class PlaceHandler extends CADHandler {
 		if (gridX > 0 && gridY > 0 && gridX < w - 1 && gridY < w - 1 && !GuiScreen.isShiftKeyDown()) {
 			parent.startX = gridX;
 			parent.startY = gridY;
-			if (selectedPart.getPart() instanceof PartWire) {
+			if (selectedPart.getPart().getClass().equals(PartWire.class)) {
 				parent.drag = true;
 			}
 		}
@@ -160,7 +160,7 @@ public class PlaceHandler extends CADHandler {
 		}
 
 		if (parent.drag) {
-			if (selectedPart.getPart() instanceof PartWire) {
+			if (selectedPart.getPart().getClass().equals(PartWire.class)) {
 				int id = CircuitPart.getId(selectedPart.getPart());
 				int state = selectedPart.getState();
 

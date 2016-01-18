@@ -279,7 +279,7 @@ public abstract class CircuitPart {
 		return parent.getCircuitData().getPart(pos.offset(side));
 	}
 
-	public final boolean getInput(Vec2 pos, ICircuit parent) {
+	public boolean getInput(Vec2 pos, ICircuit parent) {
 		return getInputFromSide(pos, parent, ForgeDirection.NORTH)
 				|| getInputFromSide(pos, parent, ForgeDirection.EAST)
 				|| getInputFromSide(pos, parent, ForgeDirection.SOUTH)

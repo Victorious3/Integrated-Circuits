@@ -32,7 +32,7 @@ import com.google.common.primitives.Ints;
 public class CircuitData implements Cloneable {
 
 	// cdata version
-	public static final int version = 1;
+	public static final int version = 2;
 
 	private int size;
 	private int[][] meta;
