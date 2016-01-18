@@ -95,18 +95,22 @@ public class GuiIO extends GuiButton implements IHoverable {
 	public List<String> getHoverInformation() {
 		ArrayList<String> text = new ArrayList<String>();
 		ForgeDirection dir = MiscUtils.getDirection(side);
-		if (te.getCircuitData().getProperties().getModeAtSide(side) == EnumConnectionType.ANALOG)
-			text.add("S: " + color);
-		else
-			text.add("F: 0x" + Integer.toHexString(color));
 		if (isActive) {
+			EnumConnectionType mode = te.getCircuitData().getProperties().getModeAtSide(side);
+			if (mode != EnumConnectionType.SIMPLE) {
+				if (mode == EnumConnectionType.ANALOG)
+					text.add("S: " + color);
+				else
+					text.add("F: 0x" + Integer.toHexString(color));
+			}
 			text.add("I: "
 					+ I18n.format("gui.integratedcircuits.cad.mode."
 							+ (te.getExternalInputFromSide(dir, color) ? "high" : "low")));
 			text.add("O: "
 					+ I18n.format("gui.integratedcircuits.cad.mode."
 							+ (te.getOutputToSide(dir, color) ? "high" : "low")));
-		}
+		} else
+			text.add("N");
 		return text;
 	}
 }

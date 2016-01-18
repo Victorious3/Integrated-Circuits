@@ -76,10 +76,10 @@ public class PacketPCBChangeInput extends PacketTileEntity<PacketPCBChangeInput>
 		CircuitData data = te.getCircuitData();
 		
 		data.getProperties().setCon(con);
-		data.clearIOAndSetupIO();
+		data.FixIO();
 		
 		if (input && side == Side.SERVER) {
-			te.getCircuitData().updateInput();
+			data.updateInput();
 			CommonProxy.networkWrapper.sendToAllAround(this, new TargetPoint(te.getWorldObj().getWorldInfo()
 				.getVanillaDimension(), xCoord, yCoord, zCoord, 8));
 		}

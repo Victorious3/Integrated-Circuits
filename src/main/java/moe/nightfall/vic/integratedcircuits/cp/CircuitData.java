@@ -14,6 +14,7 @@ import moe.nightfall.vic.integratedcircuits.cp.legacy.LegacyLoader;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartIOBit;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.misc.CraftingAmount;
+import moe.nightfall.vic.integratedcircuits.misc.MiscUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -155,60 +156,53 @@ public class CircuitData implements Cloneable {
 	/** Clears the circuit and sets it up **/
 	public void clearAllAndSetup(int size) {
 		clearAll(size);
-		setupIO();
+		FixIO();
 	}
 	
-	/** Clears the IOBits, and sets them up again. **/
-	public void clearIOAndSetupIO() {
-		clearIO();
-		setupIO();
-	}
-	
-	/** Sets up the IOBits for the circuit. **/
-	public void setupIO() {
+	/** Sets up the IOBits and clears unused ones. **/
+	public void FixIO() {
 		getAndFixModePerSide();
 		
-		int o = (supportsBundled() ? size / 2 - 8 : 1);
+		int o = (supportsBundled() ? size / 2 - 8 : 1); // Offset of first IOBit
 		// Get the ID of the IOBit
 		int cid = CircuitPart.getId(PartIOBit.class);
+		Vec2[] pos = new Vec2[4];
 		
 		for (int i = 0; i < (supportsBundled() ? 16 : 1); i++) {
 			// Get the positions
-			Vec2 pos1 = new Vec2(size - 1 - (i + o), 0);
-			Vec2 pos2 = new Vec2(size - 1, size - 1 - (i + o));
-			Vec2 pos3 = new Vec2(i + o, size - 1);
-			Vec2 pos4 = new Vec2(0, i + o);
+			pos[0] = new Vec2(size - 1 - (i + o), 0);
+			pos[1] = new Vec2(size - 1, size - 1 - (i + o));
+			pos[2] = new Vec2(i + o, size - 1);
+			pos[3] = new Vec2(0, i + o);
 			
-			if (prop.getModeAtSide(0) != EnumConnectionType.NONE && !(prop.getModeAtSide(0) == EnumConnectionType.SIMPLE && i >= 1)) {
-				// Set the part at the position to be a IOBit
-				setID(pos1, cid);
-				// Get the IOBit at that position
-				PartIOBit io1 = (PartIOBit) getPart(pos1);
-				// Set the number of the IOBit (colour / redstone strength)
-				io1.setFrequency(pos1, parent, i);
-				// The rotation is what side the IOBit is on
-				io1.setRotation(pos1, parent, 0);
-			}
-			
-			if (prop.getModeAtSide(1) != EnumConnectionType.NONE && !(prop.getModeAtSide(1) == EnumConnectionType.SIMPLE && i >= 1)) {
-				setID(pos2, cid);
-				PartIOBit io2 = (PartIOBit) getPart(pos2);
-				io2.setFrequency(pos2, parent, i);
-				io2.setRotation(pos2, parent, 1);
-			}
-			
-			if (prop.getModeAtSide(2) != EnumConnectionType.NONE && !(prop.getModeAtSide(2) == EnumConnectionType.SIMPLE && i >= 1)) {
-				setID(pos3, cid);
-				PartIOBit io3 = (PartIOBit) getPart(pos3);
-				io3.setFrequency(pos3, parent, i);
-				io3.setRotation(pos3, parent, 2);
-			}
-			
-			if (prop.getModeAtSide(3) != EnumConnectionType.NONE && !(prop.getModeAtSide(3) == EnumConnectionType.SIMPLE && i >= 1)) {
-				setID(pos4, cid);
-				PartIOBit io4 = (PartIOBit) getPart(pos4);
-				io4.setFrequency(pos4, parent, i);
-				io4.setRotation(pos4, parent, 3);
+			for (int j = 0; j < 4; j++) {
+				if (prop.getModeAtSide(j) != EnumConnectionType.NONE && !(prop.getModeAtSide(j) == EnumConnectionType.SIMPLE && i >= 1)) {
+					// Set the part at the position to be a IOBit
+					setID(pos[j], cid);
+					// Get the IOBit at that position
+					PartIOBit io = (PartIOBit) getPart(pos[j]);
+					// Set the number of the IOBit (colour / redstone strength)
+					io.setFrequency(pos[j], parent, i);
+					// The rotation is what side the IOBit is on
+					io.setRotation(pos[j], parent, j);
+					// Make sure that IOBit does not stall
+					io.scheduleInputChange(pos[j], parent);
+				} else {
+					// Get old part at the position
+					CircuitPart part = getPart(pos[j]);
+					if (part instanceof PartIOBit) {
+						// There was an IOBit. Clear corresponding output signal.
+						PartIOBit io = (PartIOBit)part;
+						parent.setOutputToSide(
+							MiscUtils.getDirection(io.getRotation(pos[j], parent)),
+							io.getFrequency(pos[j], parent), false);
+					}
+					// Clear part at the position
+					setID(pos[j], 0);
+					setMeta(pos[j], 0);
+					// Notify neighbour parts about is
+					getPart(pos[j]).notifyNeighbours(pos[j], parent);
+				}
 			}
 		}
 	}
@@ -236,17 +230,6 @@ public class CircuitData implements Cloneable {
 		for (int y = 0; y < this.size; y++) {
 			clearCell(x, y);
 		}
-	}
-	
-	public void clearIO() {
-		// Clear top
-		clearRow(0);
-		// Clear bottom
-		clearRow(this.size - 1);
-		// Clear left
-		clearColumn(0);
-		// Clear right
-		clearColumn(this.size - 1);
 	}
 	
 	/** Clears the contents of the circuit and gives it a new size. **/
