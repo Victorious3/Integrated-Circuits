@@ -289,6 +289,11 @@ public abstract class CircuitPart {
 	@SideOnly(Side.CLIENT)
 	public abstract void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type);
 
+	@SideOnly(Side.CLIENT)
+	public boolean allowsDragPlacement() {
+		return false;
+	}
+
 	/** Gets called on a client update */
 	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {
 		scheduleInputChange(pos, parent);

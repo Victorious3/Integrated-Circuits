@@ -156,11 +156,11 @@ public class CircuitData implements Cloneable {
 	/** Clears the circuit and sets it up **/
 	public void clearAllAndSetup(int size) {
 		clearAll(size);
-		FixIO();
+		fixIO();
 	}
 	
 	/** Sets up the IOBits and clears unused ones. **/
-	public void FixIO() {
+	public void fixIO() {
 		getAndFixModePerSide();
 		
 		int o = (supportsBundled() ? size / 2 - 8 : 1); // Offset of first IOBit

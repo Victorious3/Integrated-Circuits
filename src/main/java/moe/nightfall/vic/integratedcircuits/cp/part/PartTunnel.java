@@ -1,5 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.cp.part;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
@@ -134,6 +136,23 @@ public class PartTunnel extends PartWire {
 	@Override
 	public Category getCategory() {
 		return Category.WIRE;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
+		Tessellator tes = Tessellator.instance;
+
+		RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
+		CircuitPartRenderer.addQuad(x, y, 16, 4*16, 16, 16);
+
+		renderViaWire(pos, parent, x, y, type);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean allowsDragPlacement() {
+		return false;
 	}
 
 	@Override
