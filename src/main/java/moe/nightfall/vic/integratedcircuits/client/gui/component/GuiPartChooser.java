@@ -23,6 +23,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 	private boolean showList = false;
 	private GuiCAD parent;
 	private GuiPartChooser chooserParent;
+	private int partsAbove = 0;
 
 	public GuiPartChooser(int id, int x, int y, int mode, GuiCAD parent) {
 		super(id, x, y, 20, 20, "");
@@ -53,14 +54,15 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		this.parent = parent;
 	}
 
-	public GuiPartChooser(int id, int x, int y, List<CircuitRenderWrapper> list2, GuiCAD parent) {
+	public GuiPartChooser(int id, int x, int y, int above, List<CircuitRenderWrapper> list2, GuiCAD parent) {
 		super(id, x, y, 20, 20, "");
+		partsAbove = above;
 		if (list2.size() > 0) {
 			current = list2.get(0);
 			ArrayList<CircuitRenderWrapper> list3 = new ArrayList<CircuitRenderWrapper>(list2);
 			this.children = new ArrayList<GuiPartChooser>();
 			for (int i = 0; i < list3.size(); i++) {
-				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + i * 21, list3.get(i), parent);
+				GuiPartChooser child = new GuiPartChooser(i, x - 21, y + (i - partsAbove) * 21, list3.get(i), parent);
 				child.chooserParent = this;
 				child.visible = false;
 				this.children.add(child);
@@ -68,6 +70,10 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 		}
 		mode = 0;
 		this.parent = parent;
+	}
+
+	public GuiPartChooser(int id, int x, int y, List<CircuitRenderWrapper> list2, GuiCAD parent) {
+		this(id, x, y, 0, list2, parent);
 	}
 
 	public GuiPartChooser(int id, int x, int y, CircuitPart.Category category, GuiCAD parent) {
@@ -100,7 +106,7 @@ public class GuiPartChooser extends GuiButton implements IHoverable {
 
 		if (showList && children != null) {
 			drawRect(xPosition, yPosition - 1, xPosition + width + 1, yPosition + height + 1, 180 << 24);
-			drawRect(xPosition - 22, yPosition - 1, xPosition, yPosition + children.size() * 21, 180 << 24);
+			drawRect(xPosition - 22, yPosition - 1 - partsAbove * 21, xPosition, yPosition + (children.size() - partsAbove) * 21, 180 << 24);
 			for (GuiPartChooser child : children) {
 				child.drawButton(mc, x, y);
 			}
