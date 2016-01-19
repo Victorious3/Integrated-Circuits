@@ -60,7 +60,15 @@ public class CircuitPartRenderer {
 	}
 
 	public static void addQuad(double x, double y, double u, double v, double w, double h, double rotation) {
-		addQuad(x, y, u, v, w, h, w, h, 256, 256, rotation);
+		addQuad(x, y, u, v, w, h, rotation, false, false);
+	}
+
+	public static void addQuad(double x, double y, double u, double v, double w, double h, double rotation, boolean invX, boolean invY) {
+		addQuad(x, y,
+			invX ? u + w : u, invY ? v + h : v,
+			w, h,
+			invX ? -w : w, invY ? -h : h,
+			256, 256, rotation);
 	}
 
 	public static void addQuad(double x, double y, double u, double v, double w, double h, double w2, double h2,
