@@ -14,14 +14,27 @@ import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public final class LegacyLoader_1_Tunnels extends LegacyLoader {
+public final class LegacyLoader1 extends LegacyLoader {
 	@Override
 	public int getVersion() {
 		return 1;
 	}
 
 	{
+		addTransformer(new PartTransparentLatchTransformer(), 18);
 		addTransformer(new PartTunnelTransformer(), 27);
+	}
+
+	private static class PartTransparentLatchTransformer extends PartTransformer {
+		protected final int oldBits = old.allocate(4 + 2 + 1);
+		protected final int newBits = transformed.allocate(4 + 2 + 1);
+		protected final int newConfig = transformed.allocate(3);
+
+		@Override
+		public void transformImpl() {
+			setInt(newBits, getInt(oldBits));
+			setInt(newConfig, 0);
+		}
 	}
 
 	private static class PartTunnelTransformer extends PartTransformer {
