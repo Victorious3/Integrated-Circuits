@@ -72,11 +72,11 @@ public class Gate7Segment extends Gate {
 	public static final int MODE_ANALOG = 1;
 	public static final int MODE_SHORT_SIGNED = 2;
 	public static final int MODE_SHORT_UNSIGNED = 3;
-	public static final int MODE_INT_SIGNED = 4;
-	public static final int MODE_INT_UNSIGNED = 5;
-	public static final int MODE_FLOAT = 6;
-	public static final int MODE_BINARY_STRING = 7;
-	public static final int MODE_MANUAL = 8;
+	public static final int MODE_FLOAT = 4;
+	public static final int MODE_BINARY_STRING = 5;
+	public static final int MODE_MANUAL = 6;
+	public static final int MODE_INT_SIGNED = 7;
+	public static final int MODE_INT_UNSIGNED = 8;
 
 	@Override
 	public void preparePlacement(EntityPlayer player, ItemStack stack) {
@@ -98,6 +98,7 @@ public class Gate7Segment extends Gate {
 			return;
 
 		isSlave = false;
+		
 		int abs = Rotation.rotateSide(provider.getSide(), provider.getRotationAbs(3));
 		BlockCoord pos = provider.getPos();
 		BlockCoord pos2 = pos.copy();
@@ -481,7 +482,7 @@ public class Gate7Segment extends Gate {
 	}
 
 	public EnumConnectionType getSplitConnectionTypeAtSide(int side) {
-		return side == 2 || side == 3 ? EnumConnectionType.BUNDLED : EnumConnectionType.NONE;
+		return (side == 2 || side == 3) ? EnumConnectionType.BUNDLED : EnumConnectionType.NONE;
 	}
 
 	@Override

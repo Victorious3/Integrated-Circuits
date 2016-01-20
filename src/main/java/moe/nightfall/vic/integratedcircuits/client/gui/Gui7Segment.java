@@ -1,22 +1,18 @@
 package moe.nightfall.vic.integratedcircuits.client.gui;
 
-import java.util.Arrays;
+import java.util.*;
 
-import moe.nightfall.vic.integratedcircuits.client.Gate7SegmentRenderer;
-import moe.nightfall.vic.integratedcircuits.client.Resources;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverable;
-import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.IHoverableHandler;
-import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiCheckBoxExt;
-import moe.nightfall.vic.integratedcircuits.client.gui.component.GuiDropdown;
-import moe.nightfall.vic.integratedcircuits.gate.Gate7Segment;
-import moe.nightfall.vic.integratedcircuits.net.Packet7SegmentChangeMode;
-import moe.nightfall.vic.integratedcircuits.proxy.CommonProxy;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
+import org.lwjgl.input.*;
+import org.lwjgl.opengl.*;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
+import moe.nightfall.vic.integratedcircuits.client.*;
+import moe.nightfall.vic.integratedcircuits.client.gui.GuiInterfaces.*;
+import moe.nightfall.vic.integratedcircuits.client.gui.component.*;
+import moe.nightfall.vic.integratedcircuits.gate.*;
+import moe.nightfall.vic.integratedcircuits.net.*;
+import moe.nightfall.vic.integratedcircuits.proxy.*;
+import net.minecraft.client.gui.*;
+import net.minecraft.client.resources.*;
 
 public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 	private Gate7Segment part;
@@ -59,20 +55,20 @@ public class Gui7Segment extends GuiScreen implements IHoverableHandler {
 				I18n.format("gui.integratedcircuits.7segment.mode.analog"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.signed"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned"),
-				I18n.format("gui.integratedcircuits.7segment.mode.int.signed"),
-				I18n.format("gui.integratedcircuits.7segment.mode.int.unsigned"),
 				I18n.format("gui.integratedcircuits.7segment.mode.float"),
 				I18n.format("gui.integratedcircuits.7segment.mode.binary"),
-				I18n.format("gui.integratedcircuits.7segment.mode.manual")), this).setTooltips(Arrays.asList(
+				I18n.format("gui.integratedcircuits.7segment.mode.manual"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.signed"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.unsigned")), this).setTooltips(Arrays.asList(
 				I18n.format("gui.integratedcircuits.7segment.mode.simple.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.analog.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.signed.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.short.unsigned.tooltip"),
-				I18n.format("gui.integratedcircuits.7segment.mode.int.signed.tooltip"),
-				I18n.format("gui.integratedcircuits.7segment.mode.int.unsigned.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.float.tooltip"),
 				I18n.format("gui.integratedcircuits.7segment.mode.binary.tooltip"),
-				I18n.format("gui.integratedcircuits.7segment.mode.manual.tooltip")))));
+				I18n.format("gui.integratedcircuits.7segment.mode.manual.tooltip"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.signed.tooltip"),
+				I18n.format("gui.integratedcircuits.7segment.mode.int.unsigned.tooltip")))));
 
 		refreshUI();
 	}
