@@ -11,6 +11,7 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRender
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartTunnel;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBCache;
@@ -190,7 +191,7 @@ public class PlaceHandler extends CADHandler {
 					int newID = CircuitPart.getId(selectedPart.getPart());
 
 					Vec2 pos = new Vec2(parent.startX, parent.startY);
-					if (newID != parent.getCircuitData().getID(pos)) {
+					if (newID != parent.getCircuitData().getID(pos) || newID == CircuitPart.getId(PartTunnel.class)) {
 						CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(!(selectedPart.getPart() instanceof PartNull), parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord).add(pos, newID, selectedPart.getState()));
 					}
 				}
