@@ -1,5 +1,7 @@
 package moe.nightfall.vic.integratedcircuits.cp.part;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import moe.nightfall.vic.integratedcircuits.Config;
 import moe.nightfall.vic.integratedcircuits.Content;
 import moe.nightfall.vic.integratedcircuits.cp.CircuitData;
@@ -18,11 +20,16 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.init.Items;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class PartTunnel extends CircuitPart {
+public class PartTunnel extends PartWire {
 
 	public final IntProperty PROP_POS_X = new IntProperty("PROP_POS_X", stitcher, 255);
 	public final IntProperty PROP_POS_Y = new IntProperty("PROP_POS_Y", stitcher, 255);
 	public final BooleanProperty PROP_IN = new BooleanProperty("PROP_IN", stitcher);
+
+	@Override
+	public boolean getInput(Vec2 pos, ICircuit parent) {
+		return super.getInput(pos, parent) || getProperty(pos, parent, PROP_IN);
+	}
 
 	// pos is for CURRENT part
 	public Vec2 getConnectedPos(Vec2 pos, ICircuit parent) {
@@ -80,7 +87,7 @@ public class PartTunnel extends CircuitPart {
 		boolean in = getProperty(pos, parent, PROP_IN);
 		if (side == ForgeDirection.UNKNOWN)
 			return getInput(pos, parent) && !in;
-		return (getInput(pos, parent) || in) && !getInputFromSide(pos, parent, side);
+		return (getInput(pos, parent)) && !getInputFromSide(pos, parent, side);
 	}
 
 	@Override
@@ -127,22 +134,25 @@ public class PartTunnel extends CircuitPart {
 	}
 
 	@Override
-	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, EnumRenderType type) {
-		Tessellator tes = Tessellator.instance;
-
-		RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
-		CircuitPartRenderer.addQuad(x, y, 16, 4 * 16, 16, 16);
-		if (getInput(pos, parent) || getProperty(pos, parent, PROP_IN)) {
-			RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
-		} else {
-			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
-		}
-		CircuitPartRenderer.addQuad(x, y, 0, 4 * 16, 16, 16);
+	public Category getCategory() {
+		return Category.WIRE;
 	}
 
 	@Override
-	public Category getCategory() {
-		return Category.WIRE;
+	@SideOnly(Side.CLIENT)
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
+		Tessellator tes = Tessellator.instance;
+
+		RenderUtils.applyColorIRGBA(tes, Config.colorGreen);
+		CircuitPartRenderer.addQuad(x, y, 16, 4*16, 16, 16);
+
+		renderViaWire(pos, parent, x, y, type);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean allowsDragPlacement() {
+		return false;
 	}
 
 	@Override
@@ -156,13 +166,15 @@ public class PartTunnel extends CircuitPart {
 
 	@Override
 	public void getCraftingCost(CraftingAmount amount, CircuitData parent, Vec2 pos) {
+		// Tunnels are twice as expensive as wires and also cost a bit of silicon.
 		amount.add(new ItemAmount(Items.redstone, 0.1));
 		amount.add(new ItemAmount(Content.itemSiliconDrop, 0.1));
 
 		int data = parent.getMeta(pos);
 		Vec2 end = new Vec2(PROP_POS_X.get(data), PROP_POS_Y.get(data));
 		if (isConnected(end)) {
-			amount.add(new ItemAmount(Items.redstone, 0.1 * pos.distanceTo(end)));
+			// Half the amount, because it will be added twice.
+			amount.add(new ItemAmount(Items.redstone, 0.05 * pos.distanceTo(end)));
 		}
 	}
 }

@@ -279,7 +279,7 @@ public abstract class CircuitPart {
 		return parent.getCircuitData().getPart(pos.offset(side));
 	}
 
-	public final boolean getInput(Vec2 pos, ICircuit parent) {
+	public boolean getInput(Vec2 pos, ICircuit parent) {
 		return getInputFromSide(pos, parent, ForgeDirection.NORTH)
 				|| getInputFromSide(pos, parent, ForgeDirection.EAST)
 				|| getInputFromSide(pos, parent, ForgeDirection.SOUTH)
@@ -288,6 +288,11 @@ public abstract class CircuitPart {
 
 	@SideOnly(Side.CLIENT)
 	public abstract void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type);
+
+	@SideOnly(Side.CLIENT)
+	public boolean allowsDragPlacement() {
+		return false;
+	}
 
 	/** Gets called on a client update */
 	public void onChanged(Vec2 pos, ICircuit parent, int oldMeta) {

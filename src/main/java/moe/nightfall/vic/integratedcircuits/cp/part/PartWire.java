@@ -33,9 +33,8 @@ public class PartWire extends CircuitPart {
 		return getInput(pos, parent) && !getInputFromSide(pos, parent, side);
 	}
 
-	@Override
 	@SideOnly(Side.CLIENT)
-	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
+	public final void applyWireRenderColor(Vec2 pos, ICircuit parent, CircuitPartRenderer.EnumRenderType type) {
 		int color = this.getColor(pos, parent);
 		Tessellator tes = Tessellator.instance;
 
@@ -62,25 +61,45 @@ public class PartWire extends CircuitPart {
 			}
 		} else
 			RenderUtils.applyColorIRGBA(tes, Config.colorGreen, 0.4F);
+	}
+
+	@SideOnly(Side.CLIENT)
+	// Render wire with a via
+	public final void renderViaWire(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
+		applyWireRenderColor(pos, parent, type);
 
 		int ty = type == CircuitPartRenderer.EnumRenderType.WORLD_16x ? 3 * 16 : 0;
 
 		int con = CircuitPartRenderer.checkConnections(pos, parent, this);
-		if ((con & 12) == 12 && (con & ~12) == 0)
-			CircuitPartRenderer.addQuad(x, y, 6 * 16, ty, 16, 16);
-		else if ((con & 3) == 3 && (con & ~3) == 0)
-			CircuitPartRenderer.addQuad(x, y, 5 * 16, ty, 16, 16);
-		else {
-			if ((con & 8) > 0)
-				CircuitPartRenderer.addQuad(x, y, 2 * 16, ty, 16, 16);
-			if ((con & 4) > 0)
-				CircuitPartRenderer.addQuad(x, y, 4 * 16, ty, 16, 16);
-			if ((con & 2) > 0)
-				CircuitPartRenderer.addQuad(x, y, 1 * 16, ty, 16, 16);
-			if ((con & 1) > 0)
-				CircuitPartRenderer.addQuad(x, y, 3 * 16, ty, 16, 16);
-			CircuitPartRenderer.addQuad(x, y, 0, ty, 16, 16);
-		}
+		// Connections with nearby gates / wires
+		if ((con & 8) > 0)
+			CircuitPartRenderer.addQuad(x, y, 2 * 16, ty, 16, 16);
+		if ((con & 4) > 0)
+			CircuitPartRenderer.addQuad(x, y, 4 * 16, ty, 16, 16);
+		if ((con & 2) > 0)
+			CircuitPartRenderer.addQuad(x, y, 1 * 16, ty, 16, 16);
+		if ((con & 1) > 0)
+			CircuitPartRenderer.addQuad(x, y, 3 * 16, ty, 16, 16);
+		// The via (circle which looks like "through pcb")
+		CircuitPartRenderer.addQuad(x, y, 0, ty, 16, 16);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void renderPart(Vec2 pos, ICircuit parent, double x, double y, CircuitPartRenderer.EnumRenderType type) {
+		int con = CircuitPartRenderer.checkConnections(pos, parent, this);
+		if (con == 12 || con == 3) {
+			// Render straight line wire
+			applyWireRenderColor(pos, parent, type);
+
+			int ty = type == CircuitPartRenderer.EnumRenderType.WORLD_16x ? 3 * 16 : 0;
+
+			if (con == 12)
+				CircuitPartRenderer.addQuad(x, y, 6 * 16, ty, 16, 16);
+			else
+				CircuitPartRenderer.addQuad(x, y, 5 * 16, ty, 16, 16);
+		} else
+			renderViaWire(pos, parent, x, y, type);
 	}
 
 	@Override
@@ -102,6 +121,12 @@ public class PartWire extends CircuitPart {
 				return true;
 			return color == pcolor;
 		}
+		return true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public boolean allowsDragPlacement() {
 		return true;
 	}
 

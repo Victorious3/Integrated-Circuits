@@ -25,7 +25,9 @@ tile.integratedcircuits.pcbprinter.name=Printer
 # parts
 part.integratedcircuits.iobit.name=IOBit
 part.integratedcircuits.torch.name=Torch
-part.integratedcircuits.tunnel.name=Tunnel
+part.integratedcircuits.tunnel.0.name=Tunnel
+part.integratedcircuits.tunnel.1.name=Red Tunnel
+part.integratedcircuits.tunnel.2.name=Orange Tunnel
 part.integratedcircuits.wire.0.name=Wire
 part.integratedcircuits.wire.1.name=Red Wire
 part.integratedcircuits.wire.2.name=Orange Wire

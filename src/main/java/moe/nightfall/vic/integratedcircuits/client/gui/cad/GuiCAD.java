@@ -244,7 +244,12 @@ public class GuiCAD extends GuiContainer implements IGuiCallback, IHoverableHand
 			// If the part hasn't got a category, or there are no parts in the category, do not add the button for the category.
 			if (category == CircuitPart.Category.NONE || parts.size() == 0)
 				continue;
-			this.buttonList.add(new GuiPartChooser(7, toolsXPosition, currentPosition, GuiPartChooser.getRenderWrapperParts(parts), this));
+			// To fit drop-down menu should have its bottom no lower than eraser button's.
+			List<CircuitRenderWrapper> wrappers = GuiPartChooser.getRenderWrapperParts(parts);
+			int partsAbove = wrappers.size() - (guiBottom - 19 - currentPosition) / 21;
+			if (partsAbove < 0)
+				partsAbove = 0;
+			this.buttonList.add(new GuiPartChooser(7, toolsXPosition, currentPosition, partsAbove, wrappers, this));
 			currentPosition += 21;
 		}
 

@@ -11,6 +11,7 @@ import moe.nightfall.vic.integratedcircuits.cp.CircuitPartRenderer.CircuitRender
 import moe.nightfall.vic.integratedcircuits.cp.part.PartCPGate;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartNull;
 import moe.nightfall.vic.integratedcircuits.cp.part.PartWire;
+import moe.nightfall.vic.integratedcircuits.cp.part.PartTunnel;
 import moe.nightfall.vic.integratedcircuits.misc.RenderUtils;
 import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import moe.nightfall.vic.integratedcircuits.net.pcb.PacketPCBCache;
@@ -51,7 +52,7 @@ public class PlaceHandler extends CADHandler {
 			CircuitPartRenderer.renderPart(selectedPart, gridX * PART_SIZE, gridY * PART_SIZE);
 			GL11.glPopMatrix();
 			GL11.glColor3f(1, 1, 1);
-		} else if (selectedPart.getPart() instanceof PartWire) {
+		} else if (selectedPart.getPart().allowsDragPlacement()) {
 			PartWire wire = (PartWire) selectedPart.getPart();
 			switch (wire.getColor(selectedPart.getPos(), selectedPart)) {
 				case 1:
@@ -143,7 +144,7 @@ public class PlaceHandler extends CADHandler {
 		if (gridX > 0 && gridY > 0 && gridX < w - 1 && gridY < w - 1 && !GuiScreen.isShiftKeyDown()) {
 			parent.startX = gridX;
 			parent.startY = gridY;
-			if (selectedPart.getPart() instanceof PartWire) {
+			if (selectedPart.getPart().allowsDragPlacement()) {
 				parent.drag = true;
 			}
 		}
@@ -160,7 +161,7 @@ public class PlaceHandler extends CADHandler {
 		}
 
 		if (parent.drag) {
-			if (selectedPart.getPart() instanceof PartWire) {
+			if (selectedPart.getPart().allowsDragPlacement()) {
 				int id = CircuitPart.getId(selectedPart.getPart());
 				int state = selectedPart.getState();
 
@@ -190,7 +191,7 @@ public class PlaceHandler extends CADHandler {
 					int newID = CircuitPart.getId(selectedPart.getPart());
 
 					Vec2 pos = new Vec2(parent.startX, parent.startY);
-					if (newID != parent.getCircuitData().getID(pos)) {
+					if (newID != parent.getCircuitData().getID(pos) || newID == CircuitPart.getId(PartTunnel.class)) {
 						CommonProxy.networkWrapper.sendToServer(new PacketPCBChangePart(!(selectedPart.getPart() instanceof PartNull), parent.tileentity.xCoord, parent.tileentity.yCoord, parent.tileentity.zCoord).add(pos, newID, selectedPart.getState()));
 					}
 				}

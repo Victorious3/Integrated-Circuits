@@ -200,7 +200,7 @@ public class BlockSocket extends BlockContainer {
 		if ((side & 6) == (socket.getSide() & 6))
 			return 0;
 		int rot = socket.getSideRel(side);
-		if (!socket.getConnectionTypeAtSide(side).isRedstone())
+		if (!socket.getConnectionTypeAtSide(rot).isRedstone())
 			return 0;
 
 		return socket.getRedstoneOutput(rot);

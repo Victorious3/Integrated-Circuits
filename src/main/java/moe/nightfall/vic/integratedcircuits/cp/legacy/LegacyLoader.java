@@ -15,7 +15,11 @@ public abstract class LegacyLoader implements Comparable<LegacyLoader> {
 
 	private static final List<LegacyLoader> legacyLoaders = new ArrayList<LegacyLoader>();
 	static {
-		legacyLoaders.add(new LegacyLoader_0_8());
+		legacyLoaders.add(new LegacyLoaderUnversioned());
+		legacyLoaders.add(new LegacyLoader1());
+		/* TODO Fix all NBT transforms being done before all Transforms
+		 *  before all PostTransforms. Be careful until then.
+		 */
 		Collections.sort(legacyLoaders);
 	}
 

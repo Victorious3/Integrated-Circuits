@@ -23,7 +23,9 @@ tile.integratedcircuits.assembler.name=Сборщик микросхем
 # parts
 part.integratedcircuits.iobit.name=Внешний вывод
 part.integratedcircuits.torch.name=Факел
-part.integratedcircuits.tunnel.name=Перемычка
+part.integratedcircuits.tunnel.0.name=Перемычка
+part.integratedcircuits.tunnel.1.name=Красная Перемычка
+part.integratedcircuits.tunnel.2.name=Оранжевая Перемычка
 part.integratedcircuits.wire.0.name=Провод
 part.integratedcircuits.wire.1.name=Красный провод
 part.integratedcircuits.wire.2.name=Оранжевый провод

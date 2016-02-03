@@ -14,7 +14,7 @@ import moe.nightfall.vic.integratedcircuits.misc.Vec2;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public final class LegacyLoader_0_8 extends LegacyLoader {
+public final class LegacyLoaderUnversioned extends LegacyLoader {
 	@Override
 	public int getVersion() {
 		return 0;
