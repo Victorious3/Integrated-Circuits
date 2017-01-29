@@ -29,13 +29,63 @@ import buildcraft.api.tiles.IControllable;
 import buildcraft.api.tiles.IHasWork;
 import cpw.mods.fml.common.Optional.Interface;
 import cpw.mods.fml.common.Optional.InterfaceList;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
+import java.lang.Math;
 
 @InterfaceList({ @Interface(iface = "buildcraft.api.tiles.IControllable", modid = "BuildCraft|Core"),
 		@Interface(iface = "buildcraft.api.tiles.IHasWork", modid = "BuildCraft|Core") })
 public class TileEntityAssembler extends TileEntityContainer implements IDiskDrive, ISidedInventory, IOptionsProvider,
 		IHasWork, IControllable {
-	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2,
-			OUT_OF_PCB = 3;
+
+	public final static class LaserTarget {
+		public final int x, y;
+		public LaserTarget(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+		public final static LaserTarget invalid =
+			new LaserTarget(-1, -1);
+	}
+
+	public final static class LaserTargetComparator implements Comparator<LaserTarget> {
+		private final int cx, cy, id;
+		public LaserTargetComparator(int cx, int cy, int id) {
+			this.cx = cx;
+			this.cy = cy;
+			this.id = id;
+		}
+		private int norm(LaserTarget t) {
+			if (t.x < 0) {
+				return 1000000000;
+			}
+			final int dx = t.x - cx, dy = t.y - cy;
+			final int d = dx * dx + dy * dy;
+			final int p;
+			switch(id) {
+			case 0:
+				p = (dy < 0 ? 6 : dy > 0 ? 0 : 3) + (dx < 0 ? 2 : dx > 0 ? 0 : 1);
+				break;
+			case 1:
+				p = (dx < 0 ? 6 : dx > 0 ? 0 : 3) + (dy > 0 ? 2 : dy < 0 ? 0 : 1);
+				break;
+			case 2:
+				p = (dy > 0 ? 6 : dy < 0 ? 0 : 3) + (dx > 0 ? 2 : dx < 0 ? 0 : 1);
+				break;
+			default:
+				p = (dx > 0 ? 6 : dx < 0 ? 0 : 3) + (dy < 0 ? 2 : dy > 0 ? 0 : 1);
+				break;
+			}
+			return d * 9 + p;
+		}
+		public int compare(LaserTarget t1, LaserTarget t2) {
+			final int v1 = norm(t1), v2 = norm(t2);
+			return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
+		}
+	}
+
+	public static final int IDLE = 0, RUNNING = 1, OUT_OF_MATERIALS = 2, OUT_OF_PCB = 3;
 	public static final int SETTING_PULL = 0, SETTING_REDSTONE = 1;
 	public static final int RS_ENABLED = 0, RS_INVERTED = 1, RS_DISABLED = 2;
 
@@ -56,12 +106,22 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 	private boolean powerOverride;
 
 	public boolean[][] excMatrix;
+	public ArrayList<LaserTarget> excTargets;
 	public CircuitData cdata;
 	public LaserHelper laserHelper = new LaserHelper(this, 9);
 
 	public ItemStack[] contents = new ItemStack[13];
 	public CraftingSupply craftingSupply = new CraftingSupply(this, 2, 9);
 	private OptionSet<TileEntityAssembler> optionSet = new OptionSet<TileEntityAssembler>(this);
+
+	public void sortExcTargets(int cx, int cy, int id) {
+		Collections.sort(excTargets, new LaserTargetComparator(cx, cy, id));
+		int i = excTargets.size() - 1;
+		while (i >= 0 && excTargets.get(i) == LaserTarget.invalid) {
+			i--;
+		}
+		excTargets.subList(i + 1, excTargets.size()).clear();
+	}
 
 	@Override
 	public void updateEntity() {
@@ -376,9 +436,14 @@ public class TileEntityAssembler extends TileEntityContainer implements IDiskDri
 		loadMatrix(compound);
 		if (compound.hasKey("tmp")) {
 			excMatrix = new boolean[size][size];
+			excTargets = new ArrayList<LaserTarget>(size * size);
 			byte[] temp = compound.getByteArray("tmp");
-			for (int i = 0; i < temp.length; i++)
+			for (int i = 0; i < temp.length; i++) {
 				excMatrix[i / size][i % size] = temp[i] != 0;
+				if (temp[i] == 0) {
+					excTargets.add(new LaserTarget(i / size, i % size));
+				}
+			}
 		}
 
 		laserHelper.readFromNBT(compound);
